@@ -119,9 +119,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const { data: settings } = useSiteSettings();
 
   const navLinks = [
-    { href: '/catalog', key: 'catalog' as const },
-    { href: '/chat', key: 'chat' as const },
-    { href: '/about', key: 'about' as const },
+    { href: '/catalog', label: locale === 'uz' ? 'Katalog' : locale === 'en' ? 'Catalog' : 'Каталог' },
+    { href: '/ai', label: 'AI' },
+    { href: '/support', label: locale === 'uz' ? 'Yordam' : locale === 'en' ? 'Support' : 'Поддержка' },
+    { href: '/about', label: locale === 'uz' ? 'Biz haqimizda' : locale === 'en' ? 'About' : 'О нас' },
   ];
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -336,7 +337,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   );
                 })
               ) : (
-                navLinks.map(({ href, key }) => (
+                navLinks.map(({ href, label }) => (
                   <Link
                     key={href}
                     href={to(href)}
@@ -347,7 +348,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                         : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-white')
                     }
                   >
-                    {t(key)}
+                    {label}
                   </Link>
                 ))
               )}
@@ -641,7 +642,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               );
             })
           ) : (
-            navLinks.map(({ href, key }) => (
+            navLinks.map(({ href, label }) => (
               <Link
                 key={href}
                 href={to(href)}
@@ -653,7 +654,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     : 'text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5')
                 }
               >
-                <span>{t(key)}</span>
+                <span>{label}</span>
                 <ChevronRight size={15} className="text-stone-400 opacity-50" />
               </Link>
             ))

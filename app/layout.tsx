@@ -1,4 +1,9 @@
-import type { Viewport } from 'next';
+import type { Metadata, Viewport } from 'next';
+
+export const metadata: Metadata = {
+  title: { default: 'AVERON | Главная', template: 'AVERON | %s' },
+  description: 'Одежда, обувь и аксессуары из Китая с доставкой по Узбекистану.',
+};
 
 export const viewport: Viewport = {
   width: 'device-width',

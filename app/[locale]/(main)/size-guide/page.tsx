@@ -1,0 +1,3 @@
+import { InfoPage } from '@/components/content/InfoPage';
+export const metadata = { title: 'Размеры' };
+export default async function Page({params}:{params:Promise<{locale:string}>}){const {locale}=await params;return <InfoPage locale={locale} eyebrow="Размеры" title="Как выбрать подходящий размер" description="Сверяйте параметры карточки с личными мерками, а не только с привычной буквой размера." items={[{title:'Снимите мерки',text:'Измерьте грудь, талию, бёдра и длину стопы.'},{title:'Откройте таблицу',text:'Используйте таблицу именно выбранного товара.'},{title:'Учитывайте посадку',text:'Обратите внимание на описание свободной или облегающей посадки.'},{title:'Спросите поддержку',text:'Если сомневаетесь между размерами, отправьте нам мерки.'}]}/>}

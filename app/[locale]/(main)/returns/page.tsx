@@ -1,0 +1,3 @@
+import { InfoPage } from '@/components/content/InfoPage';
+export const metadata = { title: 'Возвраты' };
+export default async function Page({params}:{params:Promise<{locale:string}>}){const {locale}=await params;return <InfoPage locale={locale} eyebrow="Возвраты" title="Если с заказом что-то не так" description="Сохраните упаковку и сразу сообщите поддержке о проблеме." items={[{title:'Зафиксируйте состояние',text:'Сделайте фото товара, упаковки и этикетки.'},{title:'Создайте обращение',text:'Укажите номер заказа и кратко опишите ситуацию.'},{title:'Дождитесь проверки',text:'Команда изучит материалы и предложит решение.'},{title:'Следуйте инструкции',text:'Условия зависят от причины обращения и состояния товара.'}]}/>}

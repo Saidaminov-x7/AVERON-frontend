@@ -1,0 +1,3 @@
+import { InfoPage } from '@/components/content/InfoPage';
+export const metadata = { title: 'Вопросы и ответы' };
+export default async function Page({params}:{params:Promise<{locale:string}>}){const {locale}=await params;return <InfoPage locale={locale} eyebrow="FAQ" title="Частые вопросы" description="Короткие ответы о каталоге, заказе, оплате и поддержке." items={[{title:'Кто публикует товары?',text:'AI готовит данные, но публикацию всегда подтверждает администратор.'},{title:'Как войти?',text:'Введите номер телефона и одноразовый код из SMS.'},{title:'Где посмотреть заказ?',text:'История и текущий статус доступны в личном кабинете.'},{title:'Куда задать вопрос?',text:'AI помогает с поиском, а команда поддержки — с заказами.'}]}/>}

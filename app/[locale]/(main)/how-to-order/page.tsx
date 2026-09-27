@@ -1,0 +1,3 @@
+import { InfoPage } from '@/components/content/InfoPage';
+export const metadata = { title: 'Как заказать' };
+export default async function Page({params}:{params:Promise<{locale:string}>}){const {locale}=await params;return <InfoPage locale={locale} eyebrow="Как заказать" title="Четыре простых шага" description="От выбора вещи до подтверждения — без лишних форм и непонятных действий." items={[{title:'Найдите товар',text:'Используйте каталог, поиск или AI-помощника.'},{title:'Выберите вариант',text:'Укажите размер, цвет и количество.'},{title:'Оставьте контакт',text:'Войдите по номеру телефона и подтвердите данные.'},{title:'Следите за статусом',text:'Все изменения появятся в истории заказа.'}]}/>}

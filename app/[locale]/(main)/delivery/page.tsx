@@ -1,0 +1,3 @@
+import { InfoPage } from '@/components/content/InfoPage';
+export const metadata = { title: 'Доставка' };
+export default async function Page({params}:{params:Promise<{locale:string}>}){const {locale}=await params;return <InfoPage locale={locale} eyebrow="Доставка" title="Понятный путь заказа" description="Следите за основными этапами доставки в личном кабинете." items={[{title:'Подтверждение',text:'Проверяем состав заказа и контактные данные.'},{title:'Закупка',text:'Передаём подтверждённый заказ поставщику.'},{title:'Перевозка',text:'Обновляем статус по мере движения заказа.'},{title:'Получение',text:'Сообщаем, когда заказ готов к выдаче.'}]}/>}

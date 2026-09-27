@@ -1,13 +1,14 @@
 import Link from 'next/link';
-import { ArrowRight, Search, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import type { Metadata } from 'next';
+import { ArrowRight, Search, ShieldCheck, Sparkles, Zap, Headphones } from 'lucide-react';
 import { SearchInput } from '@/components/ui/SearchInput';
-import { ApartmentCard } from './catalog/components/ApartmentCard';
+import { ProductCard, type StoreProduct } from '@/components/commerce/ProductCard';
 import { externalBaseURL } from '@/lib/axios';
 
 async function getPopularListings() {
   try {
     const response = await fetch(
-      `${externalBaseURL}/listings?status=ACTIVE&sortBy=viewsCount&sortOrder=desc&limit=6`,
+      `${externalBaseURL}/api/v1/products?limit=8`,
       { next: { revalidate: 60 }, signal: AbortSignal.timeout(3000) },
     );
     if (!response.ok) return [];
@@ -17,6 +18,8 @@ async function getPopularListings() {
     return [];
   }
 }
+
+export const metadata: Metadata = { title: 'Главная' };
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -58,7 +61,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
           {popularListings.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {popularListings.slice(0, 6).map((listing: any) => <ApartmentCard key={listing.id} apartment={listing} locale={locale} />)}
+              {(popularListings as StoreProduct[]).slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
             </div>
           ) : (
             <div className="rounded-3xl border border-dashed border-stone-300 bg-white px-6 py-16 text-center dark:border-stone-700 dark:bg-stone-900">
@@ -82,6 +85,17 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-3xl bg-violet-600 p-8 text-white sm:p-10"><Sparkles size={28} /><h2 className="mt-6 text-3xl font-extrabold">Опишите вещь своими словами</h2><p className="mt-3 max-w-lg leading-7 text-violet-100">AI-помощник поймёт запрос, предложит точные формулировки и найдёт подходящие товары в каталоге.</p><Link href={to('/ai')} className="mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-violet-700">Спросить AI <ArrowRight size={16} /></Link></div>
+            <div className="rounded-3xl border border-stone-200 bg-white p-8 dark:border-white/10 dark:bg-stone-900 sm:p-10"><Headphones size={28} className="text-violet-600" /><h2 className="mt-6 text-3xl font-extrabold">Поддержка отдельно от AI</h2><p className="mt-3 max-w-lg leading-7 text-stone-500 dark:text-stone-400">По вопросам оплаты, заказа и доставки отвечает команда поддержки. История обращения сохраняется в одном месте.</p><Link href={to('/support')} className="mt-7 inline-flex items-center gap-2 rounded-xl border border-stone-300 px-5 py-3 text-sm font-bold dark:border-white/15">Открыть поддержку <ArrowRight size={16} /></Link></div>
+          </div>
+        </section>
+
+        <section className="bg-[#f1eadf] dark:bg-stone-900">
+          <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8"><p className="text-xs font-bold uppercase tracking-[.18em] text-violet-600">Как это работает</p><h2 className="mt-2 text-3xl font-extrabold">От поиска до получения</h2><div className="mt-8 grid gap-5 md:grid-cols-3">{[['01', 'Выберите товар', 'Используйте категории, умный поиск или помощь AI.'], ['02', 'Подтвердите заказ', 'Проверьте вариант, размер, цену и контактные данные.'], ['03', 'Следите за доставкой', 'Получайте понятные обновления статуса заказа.']].map(([num, title, text]) => <div key={num} className="rounded-2xl bg-white p-6 dark:bg-stone-950"><span className="text-sm font-black text-violet-600">{num}</span><h3 className="mt-4 text-lg font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-stone-500">{text}</p></div>)}</div></div>
         </section>
       </main>
     </div>
