@@ -92,8 +92,8 @@ export function Footer({ locale: localeProp }: { locale?: string }) {
     {
       title: locale === 'uz' ? 'Yordam' : locale === 'en' ? 'Help' : 'Помощь',
       links: [
-        { href: '/chat', label: locale === 'uz' ? 'AI yordamchi' : locale === 'en' ? 'AI assistant' : 'AI-помощник' },
-        { href: '/about', label: t('aboutService') },
+        { href: '/ai', label: locale === 'uz' ? 'AI yordamchi' : locale === 'en' ? 'AI assistant' : 'AI-помощник' },
+        { href: '/support', label: locale === 'uz' ? 'Qo‘llab-quvvatlash' : locale === 'en' ? 'Support' : 'Поддержка' },
       ],
     },
     {

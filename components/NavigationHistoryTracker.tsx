@@ -3,9 +3,9 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
-const PREV_PAGE_KEY = 'ijara_prev_page';
+const PREV_PAGE_KEY = 'averon_prev_page';
 const CURR_PAGE_KEY = 'ijara_curr_page';
-const LAST_PUBLIC_PAGE_KEY = 'ijara_last_public_page';
+const LAST_PUBLIC_PAGE_KEY = 'averon_last_public_page';
 
 const AUTH_AND_PROTECTED_ROUTES = [
   '/login',

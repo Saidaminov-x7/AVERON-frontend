@@ -206,8 +206,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
-      const prev = sessionStorage.getItem('ijara_prev_page');
-      const lastPublic = sessionStorage.getItem('ijara_last_public_page');
+      const prev = sessionStorage.getItem('averon_prev_page');
+      const lastPublic = sessionStorage.getItem('averon_last_public_page');
       
       const isAuthOrProtected = (url: string | null) =>
         !url ||
@@ -422,7 +422,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               )}
             </Link>
 
-            <Link href={to('/compare')} aria-label="Сравнение" title="Сравнение объектов" className={`${BTN_CLASS} relative`}>
+            <Link href={to('/compare')} aria-label="Сравнение" title="Сравнение товаров" className={`${BTN_CLASS} relative`}>
               <Scale size={17} />
               {compareCount > 0 && (
                 <motion.span
@@ -571,7 +571,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
       >
         <div className="flex h-20 shrink-0 items-center justify-between border-b border-stone-200 px-5 dark:border-white/10">
           <Link href={to('/')} onClick={() => setMobileOpen(false)} className="flex items-center text-xl font-black text-stone-900 dark:text-white">
-            <span>ija</span><span className="text-primary-600 dark:text-primary-400">rauz</span>
+            <span className="tracking-[0.2em]">AVERON</span>
           </Link>
           <button type="button" aria-label={t('close')} onClick={() => setMobileOpen(false)} className={BTN_CLASS}>
             <X size={18} />

@@ -64,37 +64,21 @@ export function getSearchSuggestions(q: string) {
   const lower = q.toLowerCase().trim();
   if (!lower) return [];
 
-  const cityMap: Record<string, string> = {
-    ташкент: 'Ташкент',
-    tashkent: 'Ташкент',
-    самарканд: 'Самарканд',
-    samarkand: 'Самарканд',
-    бухара: 'Бухара',
-    bukhara: 'Бухара',
-    фергана: 'Фергана',
-    fergana: 'Фергана',
-    наманган: 'Наманган',
-    namangan: 'Наманган',
-  };
-
   const suggestions: { icon: string; text: string; sub: string; href: string }[] = [];
-  for (const [key, city] of Object.entries(cityMap)) {
-    if (lower.includes(key)) {
-      suggestions.push({ icon: 'location', text: `Аренда в ${city}`, sub: 'Открыть объявления этого города', href: `/catalog?city=${encodeURIComponent(city)}` });
-      break;
+  const categorySuggestions = [
+    { pattern: /(куртк|пальто|пуховик|jacket|coat)/i, text: 'Верхняя одежда', category: 'women' },
+    { pattern: /(плать|юбк|dress|skirt)/i, text: 'Женская одежда', category: 'women' },
+    { pattern: /(кроссов|ботин|туфл|обув|shoes|sneaker)/i, text: 'Обувь', category: 'shoes' },
+    { pattern: /(сумк|ремн|очк|аксессуар|bag|accessor)/i, text: 'Аксессуары', category: 'accessories' },
+    { pattern: /(мужск|рубаш|брюк|men)/i, text: 'Мужская одежда', category: 'men' },
+  ];
+
+  for (const item of categorySuggestions) {
+    if (item.pattern.test(lower)) {
+      suggestions.push({ icon: 'sparkles', text: item.text, sub: 'Открыть подходящие товары', href: `/catalog?category=${item.category}` });
     }
   }
 
-  if (/(комнат|room)/i.test(lower)) {
-    suggestions.push({ icon: 'home', text: 'Аренда комнат', sub: 'Открыть объявления комнат', href: '/catalog?type=room' });
-  }
-  if (/(посуточ|сутки|daily)/i.test(lower)) {
-    suggestions.push({ icon: 'calendar', text: 'Посуточная аренда', sub: 'Открыть посуточные объявления', href: '/catalog?type=daily' });
-  }
-  if (/(студент|student)/i.test(lower)) {
-    suggestions.push({ icon: 'graduation', text: 'Жилье для студентов', sub: 'Искать подходящие объявления', href: '/catalog?audience=students' });
-  }
-
-  suggestions.push({ icon: 'search', text: `Искать «${q}»`, sub: 'Поиск по реальным объявлениям', href: `/catalog?q=${encodeURIComponent(q)}` });
+  suggestions.push({ icon: 'search', text: `Искать «${q}»`, sub: 'Поиск по каталогу AVERON', href: `/catalog?q=${encodeURIComponent(q)}` });
   return suggestions.slice(0, 5);
 }
