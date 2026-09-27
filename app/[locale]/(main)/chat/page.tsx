@@ -13,6 +13,7 @@ import { Apartment } from '@/types';
 import { getApartments, getApartmentById, getChatConversations, getChatMessages, sendChatMessage, deleteChatMessage, type ChatConversationItem } from '@/lib/api';
 import { VoiceAndMediaChat } from '@/components/chat/VoiceAndMediaChat';
 import { toast } from 'sonner';
+import api from '@/lib/axios';
 
 interface Message {
   id: string;
@@ -47,8 +48,8 @@ interface ChatContact {
 
 const AI_CONTACT: ChatContact = {
   id: 'ai-assistant',
-  name: 'ijara AI Ассистент',
-  lastMessage: 'Нажмите, чтобы подобрать квартиру или комнату',
+  name: 'AVERON AI Помощник',
+  lastMessage: 'Помогу найти одежду, обувь или аксессуары',
   time: 'Сейчас',
   isAi: true,
   isPinned: true,
@@ -180,7 +181,7 @@ function ChatContent() {
       {
         id: 'welcome',
         sender: 'ai',
-        text: 'Здравствуйте! Я умный AI-ассистент AVERON. Напишите, какое жилье вы ищете (например: "Ищу 1-комнатную студенту возле ТГТУ до $250" или "Посуточно в Самарканде"), и я подберу варианты с точными фильтрами!',
+        text: 'Здравствуйте! Я AI-помощник AVERON. Опишите нужную вещь обычными словами — например: «чёрная женская куртка размера M» или «белые кроссовки до 600 000 сум».',
         timestamp: '12:00',
         quickReplies: ['Студенту в Ташкенте до $300', '2-комнатная в Юнусабаде', 'Посуточно в центре', 'Для семьи с детьми'],
       },
@@ -363,6 +364,35 @@ function ChatContent() {
     }
 
     try {
+      const history = (conversations['ai-assistant'] || []).slice(-8).map((item) => ({
+        role: item.sender === 'user' ? 'user' as const : 'assistant' as const,
+        content: item.text,
+      }));
+      const { data } = await api.post<{ response: string }>('/ai-chat/chat', { message: text, history });
+      setIsTyping(false);
+      setConversations((prev) => ({
+        ...prev,
+        'ai-assistant': [...(prev['ai-assistant'] || []), {
+          id: String(Date.now() + 1), sender: 'ai', text: data.response,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          quickReplies: ['Женская одежда', 'Мужская одежда', 'Обувь', 'Аксессуары'],
+        }],
+      }));
+      return;
+    } catch {
+      setIsTyping(false);
+      setConversations((prev) => ({
+        ...prev,
+        'ai-assistant': [...(prev['ai-assistant'] || []), {
+          id: String(Date.now() + 1), sender: 'ai',
+          text: 'Поддержка временно недоступна. Попробуйте ещё раз через минуту.',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        }],
+      }));
+      return;
+    }
+
+    try {
       const lower = text.toLowerCase();
 
       // Guardrail: Private information
@@ -458,8 +488,9 @@ function ChatContent() {
       }
 
       const priceMatch = lower.match(/(?:до|<|\bне дороже\b)\s*(\d+)/) || lower.match(/(\d+)\s*(?:\$|долл|usd)/);
-      if (priceMatch && priceMatch[1]) {
-        detectedFilters.maxPrice = priceMatch[1];
+      const matchedPrice = priceMatch?.[1];
+      if (matchedPrice) {
+        detectedFilters.maxPrice = String(matchedPrice);
       }
 
       const hasCriteria = Object.keys(detectedFilters).length > 0;
@@ -747,12 +778,12 @@ function ChatContent() {
                       )}
                       {selectedContact.isAi && (
                         <span className="rounded-md bg-amber-50 px-1.5 py-0.2 text-[10px] font-semibold text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40">
-                          Демо
+                          AI
                         </span>
                       )}
                     </h3>
                     <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate">
-                      {selectedContact.isAi ? 'Умный ассистент (демо-режим) • Поиск жилья по параметрам' : selectedContact.online ? 'в сети' : 'был(а) недавно'}
+                      {selectedContact.isAi ? 'AI-поиск товаров и поддержка' : selectedContact.online ? 'в сети' : 'был(а) недавно'}
                     </p>
                   </div>
                 </div>
@@ -761,7 +792,7 @@ function ChatContent() {
                   {selectedContact.isAi ? (
                     <div className="flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-950/60 dark:text-primary-300">
                       <ShieldCheck size={14} />
-                      <span className="hidden sm:inline">AI Помощник (Демо)</span>
+                      <span className="hidden sm:inline">AI-помощник</span>
                     </div>
                   ) : selectedContact.peerPhone ? (
                     <a

@@ -3,7 +3,7 @@ import { getMe, logout as apiLogout } from '@/lib/api';
 
 export interface AuthUser {
   id: string;
-  email: string;
+  email?: string;
   name: string;
   phone?: string;
   avatar?: string;

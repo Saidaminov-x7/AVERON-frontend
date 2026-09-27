@@ -23,7 +23,7 @@ const LOCALES = [
 ] as const;
 
 const BTN_CLASS =
-  'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ' +
+  'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ' +
   'border-stone-200 bg-white text-stone-600 transition-all duration-200 ' +
   'hover:border-stone-300 hover:bg-stone-50 hover:text-stone-900 ' +
   'dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 ' +
@@ -120,7 +120,6 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
   const navLinks = [
     { href: '/catalog', key: 'catalog' as const },
-    { href: '/add-listing', key: 'addListing' as const },
     { href: '/chat', key: 'chat' as const },
     { href: '/about', key: 'about' as const },
   ];
@@ -291,10 +290,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     <>
       <header
         className={cn(
-          'sticky top-0 z-40 w-full border-b transition-all duration-300 flex items-center',
+          'sticky top-0 z-40 flex h-20 w-full items-center border-b transition-[background-color,border-color,box-shadow] duration-300',
           scrolled
-            ? 'h-14 border-stone-200/80 bg-white/95 backdrop-blur-md shadow-md dark:border-white/10 dark:bg-[#1A1A1A]/95'
-            : 'h-20 border-transparent bg-white/90 shadow-none dark:bg-[#1A1A1A]/90'
+            ? 'border-stone-200/80 bg-white/95 shadow-[0_10px_30px_-20px_rgba(28,25,23,0.55)] backdrop-blur-xl dark:border-white/10 dark:bg-[#1A1A1A]/95'
+            : 'border-transparent bg-white/90 shadow-none dark:bg-[#1A1A1A]/90'
         )}
       >
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -315,7 +314,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               }
             >
               {Array.isArray(settings?.navLinks) && settings.navLinks.length > 0 ? (
-                settings.navLinks.map((item: any, idx: number) => {
+                settings.navLinks.filter((item: any) => {
+                  const href = item.url || item.href || '/';
+                  return !href.includes('/add-listing');
+                }).map((item: any, idx: number) => {
                   const label = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
                   const href = item.url || item.href || '/';
                   return (
@@ -399,7 +401,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 </form>
               ) : (
                 <button type="button" onClick={() => setSearchOpen(true)} aria-label={t('search')} className={BTN_CLASS}>
-                  <Search size={17} />
+                  <Search size={20} strokeWidth={2.2} />
                 </button>
               )}
             </div>

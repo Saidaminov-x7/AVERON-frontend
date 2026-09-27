@@ -14,21 +14,20 @@ import { Apartment } from '@/types';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { SavedSearchModal } from '@/components/search/SavedSearchModal';
 import { CatalogMapView } from '@/components/ui/CatalogMapView';
-import { regions, regionNames } from '@/lib/regions';
 
 const CATEGORIES = [
-  { id: 'all', label: 'Все' },
-  { id: 'apartment', label: 'Квартиры' },
-  { id: 'room', label: 'Комнаты' },
-  { id: 'daily', label: 'Посуточно' },
-  { id: 'house', label: 'Дома' },
+  { id: 'all', label: 'Все товары' },
+  { id: 'women', label: 'Женское' },
+  { id: 'men', label: 'Мужское' },
+  { id: 'shoes', label: 'Обувь' },
+  { id: 'accessories', label: 'Аксессуары' },
 ];
 
 const AUDIENCES = [
   { id: 'all', label: 'Для всех' },
-  { id: 'students', label: 'Студентам' },
-  { id: 'families', label: 'Для семей' },
-  { id: 'girls', label: 'Девушкам' },
+  { id: 'women', label: 'Женщинам' },
+  { id: 'men', label: 'Мужчинам' },
+  { id: 'kids', label: 'Детям' },
 ];
 
 function CatalogContent() {
@@ -254,23 +253,29 @@ function CatalogContent() {
     router.push(pathname, { scroll: false });
   };
 
-  const cityOptions = regionNames.map((c) => ({ value: c, label: c }));
-  const districtOptions = (selectedCity && regions[selectedCity])
-    ? regions[selectedCity].map((d) => ({ value: d, label: d }))
-    : [];
+  const cityOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'One size']
+    .map((size) => ({ value: size, label: size }));
+  const districtOptions = [
+    ['black', 'Чёрный'],
+    ['white', 'Белый'],
+    ['beige', 'Бежевый'],
+    ['blue', 'Синий'],
+    ['red', 'Красный'],
+    ['green', 'Зелёный'],
+  ].map(([value, label]) => ({ value, label }));
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 dark:bg-[#121212] dark:text-stone-100 transition-colors duration-200">
       {/* Top Banner */}
-      <header className="border-b border-stone-200/80 bg-white/80 backdrop-blur-md dark:border-white/5 dark:bg-[#181818]/80 sticky top-0 z-30">
+      <header className="border-b border-stone-200/80 bg-white/80 backdrop-blur-md dark:border-white/5 dark:bg-[#181818]/80">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-xl sm:text-2xl font-black tracking-tight text-stone-900 dark:text-white">
-                Каталог аренды недвижимости
+                Каталог товаров
               </h1>
               <p className="text-xs text-stone-500 dark:text-stone-400">
-                Найдите подходящее жильё для аренды в Узбекистане
+                Одежда, обувь и аксессуары с доставкой из Китая
               </p>
             </div>
 
@@ -418,7 +423,7 @@ function CatalogContent() {
                   animate={{ opacity: 1, height: 'auto', scale: 1 }}
                   exit={{ opacity: 0, height: 0, scale: 0.98 }}
                   transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="w-full lg:w-80 shrink-0 overflow-hidden"
+                  className="w-full lg:w-80 shrink-0 overflow-visible lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto"
                 >
                   <div className="w-full sm:w-80 rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#1A1A1A] space-y-6">
                     <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-white/5">
@@ -441,7 +446,7 @@ function CatalogContent() {
                     {/* 1. Category / Property Type */}
                     <div>
                       <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2.5">
-                        Тип жилья
+                        Категория
                       </h3>
                       <div className="flex flex-wrap gap-1.5">
                         {CATEGORIES.map((cat) => {
@@ -494,12 +499,12 @@ function CatalogContent() {
                     {/* 3. Location: Умные выпадающие списки */}
                     <div className="space-y-3">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
-                        Местоположение
+                        Размер и цвет
                       </h3>
                       
                       <div>
                         <label className="block text-[11px] font-medium text-stone-400 mb-1">
-                          Город / Область:
+                          Размер:
                         </label>
                         <Dropdown
                           value={selectedCity || ''}
@@ -509,24 +514,24 @@ function CatalogContent() {
                             updateUrlParams({ city: val || null, district: null });
                           }}
                           options={cityOptions}
-                          placeholder="Все регионы Узбекистана"
+                          placeholder="Любой размер"
                         />
                       </div>
 
                       <div>
                         <label className="block text-[11px] font-medium text-stone-400 mb-1">
-                          Район:
+                          Цвет:
                         </label>
                         <Dropdown
                           disabled={!selectedCity || districtOptions.length === 0}
-                          disabledPlaceholder="Сначала выберите город выше"
+                          disabledPlaceholder="Сначала выберите размер"
                           value={selectedDistrict || ''}
                           onChange={(val) => {
                             setSelectedDistrict(val || null);
                             updateUrlParams({ district: val || null });
                           }}
                           options={districtOptions}
-                          placeholder="Все районы"
+                          placeholder="Любой цвет"
                         />
                       </div>
                     </div>
@@ -534,7 +539,7 @@ function CatalogContent() {
                     {/* 4. Price Range */}
                     <div>
                       <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2.5">
-                        Цена ($ / месяц)
+                        Цена (сум)
                       </h3>
                       <div className="flex gap-2">
                         <input
@@ -544,7 +549,7 @@ function CatalogContent() {
                             setMinPrice(e.target.value);
                             updateUrlParams({ minPrice: e.target.value });
                           }}
-                          placeholder="От ($)"
+                          placeholder="От"
                           className="h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-xs font-semibold text-stone-900 placeholder-stone-400 outline-none focus:border-primary-500 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-white"
                         />
                         <input
@@ -554,7 +559,7 @@ function CatalogContent() {
                             setMaxPrice(e.target.value);
                             updateUrlParams({ maxPrice: e.target.value });
                           }}
-                          placeholder="До ($)"
+                          placeholder="До"
                           className="h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-xs font-semibold text-stone-900 placeholder-stone-400 outline-none focus:border-primary-500 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-white"
                         />
                       </div>
@@ -563,7 +568,7 @@ function CatalogContent() {
                     {/* 5. Удобства: интерактивные кнопки */}
                     <div>
                       <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2.5">
-                        Удобства
+                        Характеристики
                       </h3>
                       <AmenitiesFilter
                         selected={selectedAmenities}

@@ -27,22 +27,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     <div className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
       <main>
         <section className="mx-auto max-w-[1440px] px-4 pb-10 pt-8 sm:px-6 sm:pt-12 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-violet-700 via-indigo-700 to-slate-900 px-6 py-16 text-white shadow-xl sm:px-12 lg:px-16 lg:py-24">
-            <div className="absolute -right-24 -top-24 size-80 rounded-full bg-fuchsia-400/20 blur-3xl" />
+          <div className="relative overflow-hidden rounded-3xl border border-stone-200 bg-[#f1eadf] px-6 py-16 text-stone-950 shadow-[0_30px_80px_-45px_rgba(41,37,36,0.55)] dark:border-white/10 dark:bg-[#171714] dark:text-white sm:px-12 lg:px-16 lg:py-24">
+            <div className="absolute -right-24 -top-24 size-80 rounded-full bg-amber-300/30 blur-3xl dark:bg-amber-500/10" />
             <div className="relative max-w-3xl">
-              <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide">AVERON</span>
-              <h1 className="mt-6 text-4xl font-extrabold tracking-tight sm:text-6xl">Найдите подходящий вариант быстрее</h1>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-violet-100 sm:text-lg">
-                Удобный поиск, понятные карточки и всё необходимое для уверенного выбора в одном сервисе.
+              <span className="inline-flex rounded-full border border-stone-900/10 bg-white/55 px-3 py-1 text-xs font-semibold tracking-wide dark:border-white/15 dark:bg-white/5">AVERON · ИЗ КИТАЯ</span>
+              <h1 className="mt-6 text-4xl font-extrabold tracking-tight sm:text-6xl">Находите вещи, которые подходят именно вам</h1>
+              <p className="mt-5 max-w-2xl text-base leading-7 text-stone-600 dark:text-stone-300 sm:text-lg">
+                Одежда, обувь и аксессуары из Китая — с понятным поиском, проверенными карточками и поддержкой на каждом шаге.
               </p>
               <div className="mt-8 max-w-2xl rounded-2xl bg-white p-2 shadow-2xl shadow-black/20">
                 <SearchInput locale={locale} placeholder="Что вы хотите найти?" className="h-12 text-stone-900" />
               </div>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href={to('/catalog')} className="inline-flex h-11 items-center gap-2 rounded-xl bg-white px-5 text-sm font-bold text-violet-800 transition hover:bg-violet-50">
+                <Link href={to('/catalog')} className="inline-flex h-11 items-center gap-2 rounded-xl bg-stone-950 px-5 text-sm font-bold text-white transition hover:bg-stone-800 dark:bg-white dark:text-stone-950 dark:hover:bg-stone-100">
                   Открыть каталог <ArrowRight size={16} />
                 </Link>
-                <Link href={to('/about')} className="inline-flex h-11 items-center rounded-xl border border-white/25 px-5 text-sm font-bold transition hover:bg-white/10">О сервисе</Link>
+                <Link href={to('/about')} className="inline-flex h-11 items-center rounded-xl border border-stone-900/15 px-5 text-sm font-bold transition hover:bg-white/50 dark:border-white/20 dark:hover:bg-white/10">О сервисе</Link>
               </div>
             </div>
           </div>
