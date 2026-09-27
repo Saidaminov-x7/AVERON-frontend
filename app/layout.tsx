@@ -1,0 +1,106 @@
+import type { Viewport } from 'next';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
+async function getServerTheme() {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) throw new Error('no apiUrl');
+    const res = await fetch(`${apiUrl}/site-settings/public/theme`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) throw new Error('theme fetch failed');
+    return await res.json();
+  } catch {
+    return {
+      primaryColor: '#a97724',
+      secondaryColor: '#151812',
+      backgroundColor: '#f8f7f2',
+      textColor: '#171712',
+      borderRadius: '0.75rem',
+      fontFamily: 'Inter, sans-serif',
+    };
+  }
+}
+
+async function getServerSettings() {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) throw new Error('no apiUrl');
+    const res = await fetch(`${apiUrl}/site-settings/public`, {
+      next: { revalidate: 30 },
+    });
+    if (!res.ok) throw new Error('settings fetch failed');
+    return await res.json();
+  } catch {
+    return {
+      mobilePinchZoomEnabled: true,
+    };
+  }
+}
+
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [theme] = await Promise.all([
+    getServerTheme(),
+    getServerSettings(),
+  ]);
+
+  return (
+    <html suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logotip.png" />
+        <style
+          id="server-theme-tokens"
+          dangerouslySetInnerHTML={{
+            __html: `:root {
+              --color-primary: ${theme.primaryColor || '#a97724'};
+              --color-secondary: ${theme.secondaryColor || '#151812'};
+              --color-bg: ${theme.backgroundColor || '#f8f7f2'};
+              --color-text: ${theme.textColor || '#171712'};
+              --border-radius: ${theme.borderRadius || '0.75rem'};
+              --font-family: ${theme.fontFamily || 'Inter, sans-serif'};
+            }`,
+          }}
+        />
+        {/* Yandex.Metrika counter */}
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(m,e,t,r,i,k,a){
+                  m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+                  m[i].l=1*new Date();
+                  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+                  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+              })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112059980', 'ym');
+
+              ym(112059980, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+            `,
+          }}
+        />
+        {/* /Yandex.Metrika counter */}
+      </head>
+      <body>
+        <noscript>
+          <div>
+            <img
+              src="https://mc.yandex.ru/watch/112059980"
+              style={{ position: 'absolute', left: '-9999px' }}
+              alt=""
+            />
+          </div>
+        </noscript>
+        {children}
+      </body>
+    </html>
+  );
+}

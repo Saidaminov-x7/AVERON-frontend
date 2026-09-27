@@ -1,0 +1,18 @@
+[
+  "/",
+  "/about",
+  "/cart",
+  "/catalog",
+  "/catalog/:id",
+  "/favorites",
+  "/forgot-password",
+  "/login",
+  "/maintenance",
+  "/order-by-url",
+  "/orders",
+  "/privacy",
+  "/profile",
+  "/register",
+  "/reset-password",
+  "/terms"
+]
