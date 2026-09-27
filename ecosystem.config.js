@@ -34,8 +34,8 @@ module.exports = {
       user: 'node',
       host: process.env.DEPLOY_HOST || 'your-server-ip',
       ref: 'origin/main',
-      repo: 'git@github.com:your-username/ijara.uz.git',
-      path: '/var/www/ijara.uz',
+      repo: 'git@github.com:your-username/averon-frontend-three.vercel.app.git',
+      path: '/var/www/averon-frontend-three.vercel.app',
       'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
       env: {
         NODE_ENV: 'production'

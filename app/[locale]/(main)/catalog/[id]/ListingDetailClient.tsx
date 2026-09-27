@@ -203,7 +203,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
         <div className="flex items-center gap-2 flex-wrap">
           {isVerified && (
             <span className="inline-flex items-center gap-1 rounded-full bg-primary-500/15 text-primary-700 dark:text-primary-300 border border-primary-500/30 px-3 py-0.5 text-xs font-bold shadow-xs">
-              <ShieldCheck size={14} className="text-primary-600 dark:text-primary-400" /> Проверено Ijarauz (0% комиссии)
+              <ShieldCheck size={14} className="text-primary-600 dark:text-primary-400" /> Проверено AVERON (0% комиссии)
             </span>
           )}
           {listing.isPromoted && listing.promotionTier === 'URGENT' && (

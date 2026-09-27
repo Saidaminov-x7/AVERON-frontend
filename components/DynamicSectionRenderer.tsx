@@ -391,7 +391,7 @@ export function DynamicSectionRenderer({
 
           case 'PLATFORM_STATS': {
             const c = content as PlatformStatsContent;
-            const title = c.title || section.title || 'Ijarauz в цифрах';
+            const title = c.title || section.title || 'AVERON в цифрах';
             const stats = platformStats || { totalListings: 0, activeUsers: 0, cities: 0, dailyViews: 0 };
             return (
               <div key={section.id} className="rounded-3xl bg-stone-100 p-8 shadow-sm dark:bg-stone-900 sm:p-12">

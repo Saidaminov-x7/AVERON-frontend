@@ -81,7 +81,7 @@ export function MobileMenu({ locale }: MobileMenuProps) {
               <div className="flex h-full flex-col overflow-y-auto bg-white shadow-xl dark:bg-stone-900">
                 <div className="flex items-center justify-between p-4">
                   <div className="text-xl font-bold text-stone-900 dark:text-white" style={{ width: '96px', height: '32px' }}>
-                    ijara.uz
+                    AVERON
                   </div>
                   <button
                     onClick={() => setIsOpen(false)}

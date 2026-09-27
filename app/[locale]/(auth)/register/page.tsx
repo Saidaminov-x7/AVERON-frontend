@@ -111,7 +111,7 @@ export default function RegisterPage() {
     <div className="space-y-6">
       <div className="space-y-1.5">
         <h1 className="text-2xl font-bold text-white tracking-tight">Регистрация</h1>
-        <p className="text-sm text-stone-400">Создайте аккаунт, чтобы сохранять товары и отслеживать заказы</p>
+        <p className="text-sm text-stone-400">Создайте аккаунт, чтобы сохранять избранное и публиковать объявления</p>
       </div>
 
       {serverError && (
@@ -275,7 +275,7 @@ export default function RegisterPage() {
                     >
                       Политику конфиденциальности
                     </a>{' '}
-                    и согласен на сбор технической аналитики сервисом <strong>Яндекс.Метрика</strong> для улучшения работы AVERON.
+                    и согласен на сбор технической аналитики сервисом <strong>Яндекс.Метрика</strong> (данные используются исключительно для улучшения работы платформы AVERON и не передаются 3-м лицам).
                   </label>
                 </div>
                 <FormMessage className="text-xs text-red-400 mt-1" />

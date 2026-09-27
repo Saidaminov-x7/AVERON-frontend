@@ -1,3 +1,171 @@
-'use client';
-import{useEffect,useState}from'react';import{useParams}from'next/navigation';import{Heart,ShieldCheck,ShoppingBag,Truck}from'lucide-react';import{getCommerceProduct,productTitle,type CommerceProduct}from'@/lib/commerce';
-export default function ProductPage(){const params=useParams();const locale=String(params.locale||'ru');const slug=String(params.id);const[product,setProduct]=useState<CommerceProduct|null>(null);const[loading,setLoading]=useState(true);const[selected,setSelected]=useState('');useEffect(()=>{getCommerceProduct(slug).then(setProduct).finally(()=>setLoading(false))},[slug]);if(loading)return <div className="min-h-[60vh] animate-pulse bg-stone-100"/>;if(!product)return <div className="mx-auto max-w-3xl px-5 py-24 text-center"><h1 className="text-3xl font-black">Товар не найден</h1></div>;const title=productTitle(product,locale);const description:any=product.description?.[locale]??product.description?.ru;return <div className="bg-[#f8f7f2]"><div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.15fr_.85fr] lg:px-8"><div className="grid grid-cols-2 gap-3">{product.images?.length?product.images.map((image,i)=><div key={i} className="aspect-[4/5] overflow-hidden rounded-3xl bg-stone-200"><img src={image.url} alt={title} className="h-full w-full object-cover"/></div>):<div className="col-span-2 grid aspect-square place-items-center rounded-3xl bg-stone-200 font-black tracking-[.25em] text-stone-400">AVERON</div>}</div><div className="lg:sticky lg:top-28 lg:self-start"><p className="text-xs font-bold tracking-[.18em] text-[#9a7135]">{product.source.replace('SOURCE_','')} · ПРОВЕРЕНО AVERON</p><h1 className="mt-4 text-3xl font-black leading-tight sm:text-5xl">{title}</h1><div className="mt-5 text-2xl font-black">{Number(product.salePriceUzs).toLocaleString('ru-RU')} сум</div>{product.variants?.length>0&&<div className="mt-8"><p className="mb-3 text-sm font-bold">Выберите вариант</p><div className="flex flex-wrap gap-2">{product.variants.map(v=><button key={v.id} onClick={()=>setSelected(v.id)} className={`rounded-xl border px-4 py-2 text-sm font-semibold ${selected===v.id?'border-black bg-black text-white':'border-stone-300 bg-white'}`}>{[v.color,v.size].filter(Boolean).join(' · ')||'Стандарт'}</button>)}</div></div>}<div className="mt-8 grid grid-cols-[1fr_52px] gap-2"><button className="flex h-13 items-center justify-center gap-2 rounded-full bg-black font-bold text-white"><ShoppingBag size={18}/>Добавить в корзину</button><button className="grid size-13 place-items-center rounded-full border border-stone-300 bg-white"><Heart size={19}/></button></div><div className="mt-8 space-y-4 border-t border-stone-200 pt-7"><div className="flex gap-3"><Truck size={20}/><div><strong className="text-sm">Доставка из Китая</strong><p className="text-sm text-stone-500">Ориентировочный срок уточняется после закупки.</p></div></div><div className="flex gap-3"><ShieldCheck size={20}/><div><strong className="text-sm">Карточка проверена</strong><p className="text-sm text-stone-500">Товар опубликован после ручного одобрения.</p></div></div></div>{description&&<div className="mt-8"><h2 className="font-black">Описание</h2><p className="mt-3 whitespace-pre-line text-sm leading-7 text-stone-600">{typeof description==='string'?description:description.text}</p></div>}</div></div></div>}
+import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
+import { Metadata } from 'next';
+import { MapView } from '@/components/ui/MapView';
+import { ApartmentImage } from '@/components/ui/ApartmentImage';
+import { getApartmentById, getPopularApartmentIds } from '@/lib/api';
+import { ListingDetailClient } from './ListingDetailClient';
+
+interface ApartmentPageProps {
+  params: Promise<{
+    locale: string;
+    id: string;
+  }>;
+}
+
+export const revalidate = 3600; // Revalidate every hour
+
+export async function generateStaticParams() {
+  // Pre-render popular apartments
+  const popularApartments = await getPopularApartmentIds();
+  
+  const params = [];
+  for (const id of popularApartments) {
+    params.push({ locale: 'ru', id });
+    params.push({ locale: 'uz', id });
+  }
+  
+  return params;
+}
+
+
+export async function generateMetadata({ params }: ApartmentPageProps): Promise<Metadata> {
+  const { id, locale } = await params;
+  const apartment = await getApartmentById(id);
+  const t = await getTranslations('Apartment');
+
+  if (!apartment) {
+    return {
+      title: t('notFound'),
+    };
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://averon-frontend-three.vercel.app';
+  const images = apartment.images?.length ? apartment.images : [apartment.image || '/placeholder-apartment.jpg'];
+  const firstImage = images[0];
+  const imageUrl = firstImage.startsWith('http')
+    ? firstImage
+    : `${baseUrl}${firstImage}`;
+
+  return {
+    title: `${apartment.title} - ${apartment.price}$/месяц | AVERON`,
+    description: apartment.description || '',
+    openGraph: {
+      title: apartment.title,
+      description: apartment.description || '',
+      url: `${baseUrl}/${locale}/catalog/${apartment.id}`,
+      siteName: 'AVERON',
+      images: images.map((img: string) => ({
+        url: img.startsWith('http') ? img : `${baseUrl}${img}`,
+        width: 1200,
+        height: 630,
+        alt: apartment.title,
+      })),
+      locale: locale,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: apartment.title,
+      description: apartment.description || '',
+      images: [imageUrl],
+    },
+    alternates: {
+      canonical: `${baseUrl}/${locale}/catalog/${apartment.id}`,
+    },
+  };
+}
+
+export default async function ApartmentPage({ params }: ApartmentPageProps) {
+  const { id, locale } = await params;
+  const apartment = await getApartmentById(id);
+  const t = await getTranslations('Apartment');
+
+  if (!apartment) {
+    notFound();
+  }
+
+  const images = apartment.images?.length ? apartment.images : [apartment.image || '/placeholder-apartment.jpg'];
+  const amenities = apartment.amenities || [];
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://averon-frontend-three.vercel.app';
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Apartment',
+    name: apartment.title,
+    description: apartment.description || '',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: apartment.city || 'Tashkent',
+      addressRegion: apartment.district || '',
+      addressCountry: 'UZ',
+    },
+    numberOfRooms: apartment.rooms || 1,
+    floorSize: {
+      '@type': 'QuantitativeValue',
+      value: apartment.area || 0,
+      unitCode: 'MTK',
+    },
+    image: images.map((img: string) => (img.startsWith('http') ? img : `${baseUrl}${img}`)),
+    offers: {
+      '@type': 'Offer',
+      price: apartment.price,
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+    },
+  };
+
+  // Преобразуем Apartment в Listing для богатого интерактивного UI
+  const listingData = {
+    id: apartment.id,
+    title: apartment.title,
+    description: apartment.description,
+    price: apartment.price,
+    city: apartment.city || 'Ташкент',
+    district: apartment.district || apartment.location || 'Ташкент',
+    type: (apartment.type as any) || 'apartment',
+    rooms: apartment.rooms || 1,
+    area: apartment.area || 50,
+    floor: apartment.floor || 1,
+    totalFloors: apartment.totalFloors || 9,
+    furnished: true,
+    image: images[0] || '',
+    images: images,
+    features: amenities,
+    forStudents: !!apartment.forStudents || apartment.audience === 'students',
+    rating: apartment.rating || 0,
+    reviews: apartment.reviews || 0,
+    reviewsCount: apartment.reviews || 0,
+    verified: !!apartment.isVerified || !!apartment.verified,
+    isVerified: !!apartment.isVerified || !!apartment.verified,
+    isPromoted: !!apartment.isPromoted,
+    promotionTier: apartment.promotionTier,
+    author: {
+      id: apartment.owner?.id || (apartment as any).author?.id,
+      name: apartment.owner?.name || (apartment as any).author?.name || 'Владелец жилья',
+      phone: apartment.owner?.phone || (apartment as any).author?.phone || '+998 90 123 45 67',
+      avatar: apartment.owner?.avatar || (apartment as any).author?.avatar,
+    },
+    owner: {
+      id: apartment.owner?.id || (apartment as any).author?.id,
+      name: apartment.owner?.name || (apartment as any).author?.name || 'Владелец жилья',
+      phone: apartment.owner?.phone || (apartment as any).author?.phone || '+998 90 123 45 67',
+      avatar: apartment.owner?.avatar || (apartment as any).author?.avatar,
+    },
+  };
+
+  const coordinates = (apartment as any).coordinates || { lat: 41.2995, lng: 69.2401 };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ListingDetailClient
+        listing={listingData as any}
+        coordinates={coordinates}
+        locale={locale}
+      />
+    </>
+  );
+}

@@ -33,8 +33,8 @@ export const getSiteSettings = async (): Promise<PublicSiteSettings> => {
   try {
     const { data } = await api.get('/site-settings/public');
     cachedSettings = {
-      siteName: data.siteName || 'Ijarauz',
-      contactEmail: data.contactEmail || 'support@ijarauz.uz',
+      siteName: data.siteName || 'AVERON',
+      contactEmail: data.contactEmail || 'support@averon.uz',
       contactPhone: data.contactPhone || '+998 71 200-00-00',
       logoUrl: data.logoUrl || null,
       navLinks: data.navLinks || null,
@@ -44,11 +44,10 @@ export const getSiteSettings = async (): Promise<PublicSiteSettings> => {
     };
     lastFetchTime = now;
     return cachedSettings;
-  } catch (error) {
-    console.error('Failed to fetch site settings, using defaults:', error);
+  } catch {
     return {
-      siteName: 'Ijarauz',
-      contactEmail: 'support@ijarauz.uz',
+      siteName: 'AVERON',
+      contactEmail: 'support@averon.uz',
       contactPhone: '+998 71 200-00-00',
       logoUrl: null,
       googleAuthEnabled: true,

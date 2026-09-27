@@ -42,7 +42,7 @@ export function ShareModal({
     };
   }, [isOpen]);
 
-  const messageText = `🏠 ${title}\n💰 Цена: $${price}/мес\n📍 Район: ${district ? `${district}, ` : ''}${city}\n🔗 Смотреть на Ijarauz: ${url}`;
+  const messageText = `🏠 ${title}\n💰 Цена: $${price}/мес\n📍 Район: ${district ? `${district}, ` : ''}${city}\n🔗 Смотреть на AVERON: ${url}`;
 
   const shareTelegram = () => {
     const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(messageText)}`;
@@ -119,7 +119,7 @@ export function ShareModal({
             />
           ) : (
             <div className="w-20 h-16 rounded-lg bg-primary-600/20 text-primary-600 flex items-center justify-center shrink-0 font-bold text-xs">
-              Ijarauz
+              AVERON
             </div>
           )}
           <div className="min-w-0 flex-1">

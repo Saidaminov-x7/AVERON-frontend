@@ -4,9 +4,9 @@ import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyB8vKhBKWckhyaIlYfpumfgrzZqUfS0D3U',
-  authDomain: 'ijarauz.firebaseapp.com',
-  projectId: 'ijarauz',
-  storageBucket: 'ijarauz.firebasestorage.app',
+  authDomain: 'averon.firebaseapp.com',
+  projectId: 'averon',
+  storageBucket: 'averon.firebasestorage.app',
   messagingSenderId: '2516836673',
   appId: '1:2516836673:web:9739843733f07f545981c0',
   measurementId: 'G-BLQ0F1QX7V',

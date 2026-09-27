@@ -1,2 +1,0 @@
-import{PackageSearch}from'lucide-react';
-export default function OrdersPage(){return <div className="min-h-[65vh] bg-[#f8f7f2] px-5 py-16"><div className="mx-auto max-w-5xl"><h1 className="text-4xl font-black">Мои заказы</h1><div className="mt-8 rounded-3xl bg-white px-6 py-20 text-center"><PackageSearch className="mx-auto" size={42}/><h2 className="mt-4 text-xl font-black">Заказов пока нет</h2><p className="mt-2 text-stone-500">Здесь появится история и отслеживание доставки.</p></div></div></div>}

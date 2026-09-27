@@ -1,4 +1,4 @@
-// /workspace/ijarauz/app/[locale]/api/page-routes/route.ts
+// /workspace/averon/app/[locale]/api/page-routes/route.ts
 // API endpoint для предоставления списка всех маршрутов сайта админ-панели
 
 import { NextResponse } from 'next/server';

@@ -211,7 +211,7 @@ export const SECTION_DEFAULTS: SectionContentMap = {
     ],
   },
   BENEFITS: {
-    title: 'Почему выбирают ijarauz',
+    title: 'Почему выбирают averon',
     items: [
       { icon: 'ShieldCheck', title: 'Прямой контакт с собственниками', text: 'Все объявления проходят модерацию. Никаких скрытых комиссий риелторов.' },
       { icon: 'Map', title: 'Удобный поиск по карте', text: 'Выбирайте жильё рядом с работой, учёбой или станциями метро.' },
@@ -243,7 +243,7 @@ export const SECTION_DEFAULTS: SectionContentMap = {
   },
   TEXT_BLOCK: {
     title: 'О нашем сервисе',
-    text: 'Ijarauz — это современная национальная платформа аренды жилой и коммерческой недвижимости в Узбекистане.',
+    text: 'AVERON — это современная национальная платформа аренды жилой и коммерческой недвижимости в Узбекистане.',
     align: 'left',
   },
   CUSTOM_HTML: {
@@ -259,18 +259,18 @@ export const SECTION_DEFAULTS: SectionContentMap = {
     title: 'Часто задаваемые вопросы',
     items: [
       { question: 'Как разместить объявление?', answer: 'Нажмите кнопку «Разместить объявление» в верхнем меню, заполните данные о квартире и прикрепите фотографии.' },
-      { question: 'Берётся ли комиссия с арендаторов?', answer: 'Нет! Ijarauz соединяет арендаторов напрямую с проверенными собственниками без комиссий.' },
-      { question: 'Как связаться с поддержкой?', answer: 'Вы можете написать нам через Telegram-бота или на email support@ijarauz.uz.' },
+      { question: 'Берётся ли комиссия с арендаторов?', answer: 'Нет! AVERON соединяет арендаторов напрямую с проверенными собственниками без комиссий.' },
+      { question: 'Как связаться с поддержкой?', answer: 'Вы можете написать нам через Telegram-бота или на email support@averon.uz.' },
     ],
   },
   CONTACT_INFO: {
     title: 'Контакты',
-    email: 'support@ijarauz.uz',
+    email: 'support@averon.uz',
     phone: '+998 71 200-00-00',
     address: 'г. Ташкент, Узбекистан',
     workingHours: 'Пн–Пт, 9:00–18:00',
   },
   PLATFORM_STATS: {
-    title: 'Ijarauz в цифрах',
+    title: 'AVERON в цифрах',
   },
 };

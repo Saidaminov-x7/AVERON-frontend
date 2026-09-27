@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import { safeJsonStorage } from '@/lib/safeJsonStorage';
+import { persist } from 'zustand/middleware';
 
 interface CompareState {
   ids: (string | number)[];
@@ -48,6 +47,6 @@ export const useCompareStore = create<CompareState>()(
         return get().ids.some((x) => String(x) === strId);
       },
     }),
-    { name: 'averon-compare', storage: createJSONStorage(() => safeJsonStorage) }
+    { name: 'averon-compare' }
   )
 );

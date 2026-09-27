@@ -1,1 +1,61 @@
-export default function PrivacyPage(){return <article className="mx-auto max-w-3xl px-5 py-16"><h1 className="text-4xl font-black">Конфиденциальность</h1><p className="mt-6 leading-7 text-stone-600">AVERON обрабатывает данные, необходимые для регистрации, оформления, оплаты и доставки заказов. Мы не продаём персональные данные и ограничиваем доступ сотрудников по ролям. Платёжные реквизиты должны обрабатываться платёжным провайдером, а не храниться в открытом виде.</p></article>}
+import { getTranslations } from 'next-intl/server';
+import { fetchDynamicPageSections, DynamicSectionRenderer } from '@/components/DynamicSectionRenderer';
+
+export default async function PrivacyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations('Privacy');
+  const sections = await fetchDynamicPageSections('privacy', locale);
+
+  return (
+    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
+        <h1 className="text-3xl sm:text-4xl font-bold text-stone-900 dark:text-white tracking-tight">
+          {t('title')}
+        </h1>
+        <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+          {t('lastUpdated')}
+        </p>
+      </div>
+
+      {sections && sections.length > 0 ? (
+        <DynamicSectionRenderer sections={sections} locale={locale} />
+      ) : (
+        <div className="prose max-w-none dark:prose-invert prose-headings:text-stone-900 prose-headings:font-bold prose-p:text-stone-600 dark:prose-headings:text-white dark:prose-p:text-stone-300 prose-p:leading-relaxed space-y-6">
+          <section>
+            <h2 className="text-xl">{t('section1Title')}</h2>
+            <p>{t('section1Text')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl">{t('section2Title')}</h2>
+            <p>{t('section2Text')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl">{t('section3Title')}</h2>
+            <p>{t('section3Text')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl">{t('section4Title')}</h2>
+            <p>{t('section4Text')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl">{t('section5Title')}</h2>
+            <p>{t('section5Text')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl">{t('section6Title')}</h2>
+            <p>{t('section6Text')}</p>
+          </section>
+        </div>
+      )}
+    </div>
+  );
+}

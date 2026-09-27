@@ -10,8 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Статические страницы для всех 3 локалей
   const staticPaths = [
     '',
-    '/catalog',
-    '/order-by-url',
+    '/listings',
     '/about',
     '/favorites',
     '/login',
@@ -24,8 +23,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       routes.push({
         url: `${BASE_URL}/${locale}${path}`,
         lastModified: new Date(),
-        changeFrequency: path === '' || path === '/catalog' ? 'daily' : 'weekly',
-        priority: path === '' ? 1.0 : path === '/catalog' ? 0.9 : 0.7,
+        changeFrequency: path === '' || path === '/listings' ? 'daily' : 'weekly',
+        priority: path === '' ? 1.0 : path === '/listings' ? 0.9 : 0.7,
         alternates: {
           languages: {
             ru: `${BASE_URL}/ru${path}`,
@@ -37,29 +36,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Опубликованные товары (если API доступен)
+  // Динамические объявления (если API доступен)
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   if (apiUrl) {
     try {
-      const res = await fetch(`${apiUrl}/api/v1/products?limit=100`, {
+      const res = await fetch(`${apiUrl}/listings?limit=100`, {
         next: { revalidate: 3600 },
       });
       if (res.ok) {
         const data = await res.json();
         const items = Array.isArray(data) ? data : data.items || [];
         for (const item of items) {
-          if (item.slug) {
+          if (item.id) {
             for (const locale of LOCALES) {
               routes.push({
-                url: `${BASE_URL}/${locale}/catalog/${item.slug}`,
+                url: `${BASE_URL}/${locale}/listings/${item.id}`,
                 lastModified: item.updatedAt ? new Date(item.updatedAt) : new Date(),
                 changeFrequency: 'weekly',
                 priority: 0.8,
                 alternates: {
                   languages: {
-                    ru: `${BASE_URL}/ru/catalog/${item.slug}`,
-                    uz: `${BASE_URL}/uz/catalog/${item.slug}`,
-                    en: `${BASE_URL}/en/catalog/${item.slug}`,
+                    ru: `${BASE_URL}/ru/listings/${item.id}`,
+                    uz: `${BASE_URL}/uz/listings/${item.id}`,
+                    en: `${BASE_URL}/en/listings/${item.id}`,
                   },
                 },
               });

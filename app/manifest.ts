@@ -3,13 +3,13 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'AVERON — товары из Китая в Узбекистан',
+    name: 'AVERON — Аренда жилья в Узбекистане',
     short_name: 'AVERON',
-    description: 'Одежда и товары из Китая с доставкой по Узбекистану.',
+    description: 'Национальная платформа долгосрочной и посуточной аренды квартир, домов и комнат в Ташкенте и регионах Узбекистана.',
     start_url: '/',
     display: 'standalone',
     background_color: '#090d16',
-    theme_color: '#151812',
+    theme_color: '#7c3aed',
     icons: [
       {
         src: '/favicon.ico',

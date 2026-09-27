@@ -19,10 +19,10 @@ async function getServerTheme() {
     return await res.json();
   } catch {
     return {
-      primaryColor: '#a97724',
-      secondaryColor: '#151812',
-      backgroundColor: '#f8f7f2',
-      textColor: '#171712',
+      primaryColor: '#7c3aed',
+      secondaryColor: '#5b21b6',
+      backgroundColor: '#f9fafb',
+      textColor: '#111827',
       borderRadius: '0.75rem',
       fontFamily: 'Inter, sans-serif',
     };
@@ -64,10 +64,10 @@ export default async function RootLayout({
           id="server-theme-tokens"
           dangerouslySetInnerHTML={{
             __html: `:root {
-              --color-primary: ${theme.primaryColor || '#a97724'};
-              --color-secondary: ${theme.secondaryColor || '#151812'};
-              --color-bg: ${theme.backgroundColor || '#f8f7f2'};
-              --color-text: ${theme.textColor || '#171712'};
+              --color-primary: ${theme.primaryColor || '#7c3aed'};
+              --color-secondary: ${theme.secondaryColor || '#5b21b6'};
+              --color-bg: ${theme.backgroundColor || '#f9fafb'};
+              --color-text: ${theme.textColor || '#111827'};
               --border-radius: ${theme.borderRadius || '0.75rem'};
               --font-family: ${theme.fontFamily || 'Inter, sans-serif'};
             }`,

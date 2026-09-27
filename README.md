@@ -1,8 +1,8 @@
-# 🏠 ijara.uz - Platform for Renting Real Estate in Uzbekistan
+# 🏠 averon-frontend-three.vercel.app - Platform for Renting Real Estate in Uzbekistan
 
-![ijara.uz Banner](https://ijara.uz/banner.jpg)
+![averon-frontend-three.vercel.app Banner](https://averon-frontend-three.vercel.app/banner.jpg)
 
-**ijara.uz** is a modern platform for searching and renting real estate in Uzbekistan. The service provides users with a convenient catalog of apartments and houses with advanced filtering capabilities, integration with interactive maps, and a personal account for managing listings.
+**averon-frontend-three.vercel.app** is a modern platform for searching and renting real estate in Uzbekistan. The service provides users with a convenient catalog of apartments and houses with advanced filtering capabilities, integration with interactive maps, and a personal account for managing listings.
 
 ## 🌟 Features
 
@@ -56,7 +56,7 @@
 ## 🏗 Project Structure
 
 ```
-ijara.uz/
+averon-frontend-three.vercel.app/
 ├── app/
 │   └── [locale]/                  # Internationalization support
 │       ├── (auth)/                # Route Group for auth pages
@@ -153,8 +153,8 @@ Each page has its own isolated structure with:
 
 1. Clone the repository:
 ```bash
- git clone https://github.com/your-username/ijara.uz.git
- cd ijara.uz
+ git clone https://github.com/your-username/averon-frontend-three.vercel.app.git
+ cd averon-frontend-three.vercel.app
 ```
 
 2. Install dependencies:
@@ -179,7 +179,7 @@ PEPPER="your-password-pepper"
 
 # API
 NEXT_PUBLIC_API_URL="http://localhost:3000"
-NEXT_PUBLIC_SITE_URL="https://ijara.uz"
+NEXT_PUBLIC_SITE_URL="https://averon-frontend-three.vercel.app"
 
 # Cloudflare
 CLOUDFLARE_TURNSTILE_SITE_KEY="your-site-key"
@@ -224,9 +224,9 @@ This project is licensed under the **MIT License**.
 ## 📧 Contact
 
 For questions or support, please contact:
-- **Email**: support@ijara.uz
+- **Email**: support@averon-frontend-three.vercel.app
 - **GitHub**: [@your-username](https://github.com/your-username)
 
 ---
 
-🏠 **Happy renting with ijara.uz!**
+🏠 **Happy renting with averon-frontend-three.vercel.app!**

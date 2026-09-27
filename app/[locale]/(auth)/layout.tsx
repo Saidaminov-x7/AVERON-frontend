@@ -50,7 +50,7 @@ function AuthLayoutInner({ children, params }: AuthLayoutProps) {
 
       {/* Bottom branding */}
       <p className="relative z-10 mt-4 text-xs text-stone-500">
-        © 2026 AVERON — товары из Китая в Узбекистан
+        © 2026 AVERON
       </p>
     </div>
   );

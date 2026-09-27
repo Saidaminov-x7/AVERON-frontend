@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import { safeJsonStorage } from '@/lib/safeJsonStorage';
+import { persist } from 'zustand/middleware';
 
 interface FavoritesState {
   ids: number[];
@@ -22,6 +21,6 @@ export const useFavoritesStore = create<FavoritesState>()(
         })),
       isFavorite: (id) => get().ids.includes(id),
     }),
-    { name: 'averon-favorites', storage: createJSONStorage(() => safeJsonStorage) }
+    { name: 'averon-favorites' }
   )
 );
