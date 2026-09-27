@@ -6,7 +6,6 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { AppChrome } from '@/components/AppChrome';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { ChatWidget } from '@/components/chat/ChatWidget';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
 import { YandexMetrika } from '@/components/analytics/YandexMetrika';
 import { DesignTokensInjector } from '@/components/DesignTokensInjector';
