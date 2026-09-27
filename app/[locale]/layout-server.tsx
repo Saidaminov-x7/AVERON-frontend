@@ -6,9 +6,10 @@ const locales = ['uz', 'en', 'ru'];
 
 async function getServerSiteSettings() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-production-d0a5.up.railway.app/api';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production-128zjje.up.railway.app';
     const res = await fetch(`${apiUrl}/site-settings/public`, {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(3000),
     });
     if (!res.ok) throw new Error('settings fetch failed');
     return await res.json();

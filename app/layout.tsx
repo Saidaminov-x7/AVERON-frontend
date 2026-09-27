@@ -13,6 +13,7 @@ async function getServerTheme() {
     if (!apiUrl) throw new Error('no apiUrl');
     const res = await fetch(`${apiUrl}/site-settings/public/theme`, {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(3000),
     });
     if (!res.ok) throw new Error('theme fetch failed');
     return await res.json();
@@ -34,6 +35,7 @@ async function getServerSettings() {
     if (!apiUrl) throw new Error('no apiUrl');
     const res = await fetch(`${apiUrl}/site-settings/public`, {
       next: { revalidate: 30 },
+      signal: AbortSignal.timeout(3000),
     });
     if (!res.ok) throw new Error('settings fetch failed');
     return await res.json();

@@ -19,12 +19,7 @@ export async function proxy(request: NextRequest) {
 
   // Maintenance mode check via backend API
   const isMaintenancePage = pathname.includes('/maintenance');
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-  if (!API_BASE_URL) {
-    throw new Error(
-      'NEXT_PUBLIC_API_URL не задан. Укажи переменную окружения перед сборкой/запуском — без неё приложение не может обратиться к backend API.',
-    );
-  }
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production-128zjje.up.railway.app';
 
   const bypassCookie = request.cookies.get('maintenance_bypass')?.value;
   const locale = locales.find((l) => pathname.startsWith(`/${l}`)) || defaultLocale;
@@ -32,6 +27,7 @@ export async function proxy(request: NextRequest) {
   try {
     const maintenanceRes = await fetch(`${API_BASE_URL}/site-settings/public`, {
       next: { revalidate: 10 },
+      signal: AbortSignal.timeout(3000),
     });
     if (maintenanceRes.ok) {
       const data = await maintenanceRes.json();
