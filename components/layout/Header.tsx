@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import {
-  Search, X, Heart, ChevronRight, LogIn, UserPlus, Menu, ArrowLeft, User, MessageSquare, Sparkles, Scale,
+  Search, X, Heart, ChevronRight, LogIn, Menu, ArrowLeft, User, MessageSquare, Sparkles, Scale,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
@@ -457,12 +457,6 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 >
                   {t('login')}
                 </Link>
-                <Link
-                  href={to('/register')}
-                  className="inline-flex h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-700"
-                >
-                  {t('register')}
-                </Link>
               </>
             )}
           </div>
@@ -684,7 +678,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <span>{user?.name || 'Профиль'}</span>
             </Link>
           ) : (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2">
               <Link
                 href={to('/login')}
                 onClick={() => setMobileOpen(false)}
@@ -692,14 +686,6 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               >
                 <LogIn size={15} />
                 {t('login')}
-              </Link>
-              <Link
-                href={to('/register')}
-                onClick={() => setMobileOpen(false)}
-                className="flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 text-sm font-semibold text-white"
-              >
-                <UserPlus size={15} />
-                {t('register')}
               </Link>
             </div>
           )}

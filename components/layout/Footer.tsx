@@ -90,9 +90,9 @@ export function Footer({ locale: localeProp }: { locale?: string }) {
       ],
     },
     {
-      title: t('landlords'),
+      title: locale === 'uz' ? 'Yordam' : locale === 'en' ? 'Help' : 'Помощь',
       links: [
-        { href: '/add-listing', label: t('addListing') },
+        { href: '/chat', label: locale === 'uz' ? 'AI yordamchi' : locale === 'en' ? 'AI assistant' : 'AI-помощник' },
         { href: '/about', label: t('aboutService') },
       ],
     },
