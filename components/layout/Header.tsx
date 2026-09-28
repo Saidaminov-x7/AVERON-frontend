@@ -321,7 +321,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 }).map((item: any, idx: number) => {
                   const rawLabel = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
                   const label = /объявлен/i.test(String(rawLabel)) ? 'Товары' : /чат/i.test(String(rawLabel)) ? 'AI' : rawLabel;
-                  const href = item.url || item.href || '/';
+                  const rawHref = item.url || item.href || '/';
+                  const href = rawHref === '/chat' ? '/ai' : rawHref;
                   return (
                     <Link
                       key={idx}
