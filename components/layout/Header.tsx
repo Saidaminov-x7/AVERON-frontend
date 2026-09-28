@@ -119,9 +119,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const { data: settings } = useSiteSettings();
 
   const navLinks = [
-    { href: '/catalog', label: locale === 'uz' ? 'Katalog' : locale === 'en' ? 'Catalog' : 'Каталог' },
+    { href: '/catalog', label: locale === 'uz' ? 'Tovarlar' : locale === 'en' ? 'Products' : 'Товары' },
     { href: '/ai', label: 'AI' },
-    { href: '/support', label: locale === 'uz' ? 'Yordam' : locale === 'en' ? 'Support' : 'Поддержка' },
     { href: '/about', label: locale === 'uz' ? 'Biz haqimizda' : locale === 'en' ? 'About' : 'О нас' },
   ];
 
@@ -316,10 +315,12 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             >
               {Array.isArray(settings?.navLinks) && settings.navLinks.length > 0 ? (
                 settings.navLinks.filter((item: any) => {
-                  const href = item.url || item.href || '/';
+                  const rawHref = item.url || item.href || '/';
+                  const href = rawHref === '/chat' ? '/ai' : rawHref;
                   return !href.includes('/add-listing');
                 }).map((item: any, idx: number) => {
-                  const label = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
+                  const rawLabel = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
+                  const label = /объявлен/i.test(String(rawLabel)) ? 'Товары' : /чат/i.test(String(rawLabel)) ? 'AI' : rawLabel;
                   const href = item.url || item.href || '/';
                   return (
                     <Link
@@ -442,6 +443,15 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
             <div className="mx-1.5 h-6 w-px bg-stone-200 dark:bg-white/10" />
 
+            <a
+              href="https://t.me/averon_fashion_admin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white transition hover:brightness-110 xl:inline-flex"
+            >
+              У вас вопрос?
+            </a>
+
             {isAuthenticated ? (
               <Link
                 href={to('/profile')}
@@ -457,6 +467,12 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   className="border border-stone-200 dark:border-white/10 inline-flex h-10 items-center justify-center rounded-xl px-4 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-800"
                 >
                   {t('login')}
+                </Link>
+                <Link
+                  href={to('/register')}
+                  className="inline-flex h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white transition hover:brightness-110"
+                >
+                  Регистрация
                 </Link>
               </>
             )}
@@ -622,8 +638,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3">
           {Array.isArray(settings?.navLinks) && settings.navLinks.length > 0 ? (
             settings.navLinks.map((item: any, idx: number) => {
-              const label = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
-              const href = item.url || item.href || '/';
+              const rawLabel = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
+              const label = /объявлен/i.test(String(rawLabel)) ? 'Товары' : /чат/i.test(String(rawLabel)) ? 'AI' : rawLabel;
+              const rawHref = item.url || item.href || '/';
+              const href = rawHref === '/chat' ? '/ai' : rawHref;
               return (
                 <Link
                   key={idx}
@@ -669,6 +687,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <ThemeToggle />
             </div>
           </div>
+          <a href="https://t.me/averon_fashion_admin" target="_blank" rel="noopener noreferrer" className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 text-sm font-semibold text-white">
+            У вас вопрос?
+          </a>
           {isAuthenticated ? (
             <Link
               href={to('/profile')}
@@ -679,7 +700,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <span>{user?.name || 'Профиль'}</span>
             </Link>
           ) : (
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <Link
                 href={to('/login')}
                 onClick={() => setMobileOpen(false)}
@@ -687,6 +708,13 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               >
                 <LogIn size={15} />
                 {t('login')}
+              </Link>
+              <Link
+                href={to('/register')}
+                onClick={() => setMobileOpen(false)}
+                className="flex h-11 items-center justify-center rounded-xl bg-primary-600 text-sm font-semibold text-white"
+              >
+                Регистрация
               </Link>
             </div>
           )}

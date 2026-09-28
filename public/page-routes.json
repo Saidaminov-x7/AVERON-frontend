@@ -17,6 +17,7 @@
   "/pages/:slug",
   "/privacy",
   "/profile",
+  "/public-offer",
   "/register",
   "/reset-password",
   "/returns",

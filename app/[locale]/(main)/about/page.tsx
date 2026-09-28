@@ -13,14 +13,14 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   ];
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <section className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-8 lg:py-20">
+      <section className="mx-auto w-full max-w-[1440px] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div className="rounded-3xl border border-stone-200 bg-[#f1eadf] px-6 py-14 dark:border-white/10 dark:bg-stone-900 sm:px-12 lg:px-16">
           <p className="text-xs font-bold uppercase tracking-[.2em] text-violet-600 dark:text-violet-400">О компании</p>
           <h1 className="mt-4 max-w-3xl text-4xl font-extrabold tracking-tight sm:text-6xl">AVERON помогает выбирать вещи уверенно</h1>
           <p className="mt-6 max-w-2xl text-base leading-7 text-stone-600 dark:text-stone-300">Мы делаем заказ товаров из Китая понятным: структурируем карточки, проверяем информацию вручную и остаёмся рядом, когда нужна поддержка.</p>
         </div>
       </section>
-      <section className="mx-auto max-w-[1200px] px-4 pb-16 sm:px-6 lg:px-8">
+      <section className="mx-auto w-full max-w-[1440px] px-4 pb-16 sm:px-6 lg:px-8">
         <div className="grid gap-5 md:grid-cols-3">{steps.map(([Icon, title, text]: any) => <article key={title} className="rounded-2xl border border-stone-200 bg-white p-7 dark:border-white/10 dark:bg-stone-900"><div className="flex size-11 items-center justify-center rounded-xl bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"><Icon size={21} /></div><h2 className="mt-5 text-xl font-bold">{title}</h2><p className="mt-2 text-sm leading-6 text-stone-500 dark:text-stone-400">{text}</p></article>)}</div>
         <div className="mt-14 grid gap-10 lg:grid-cols-2 lg:items-center">
           <div><p className="text-xs font-bold uppercase tracking-[.2em] text-violet-600">Наш принцип</p><h2 className="mt-3 text-3xl font-extrabold">AI помогает, человек принимает решение</h2><p className="mt-4 leading-7 text-stone-600 dark:text-stone-300">Технологии ускоряют перевод, поиск и подготовку характеристик. Но публикацию товара всегда подтверждает администратор. Так каталог остаётся аккуратным и честным.</p></div>
