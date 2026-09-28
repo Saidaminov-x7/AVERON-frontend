@@ -198,7 +198,7 @@ export function DynamicSectionRenderer({
             const title = c.title || section.title || 'Сдайте жильё быстро и безопасно';
             const text = c.text || 'Разместите объявление бесплатно за пару минут';
             const buttonText = c.buttonText || 'Разместить объявление';
-            const buttonLink = c.buttonLink || '/add-listing';
+            const buttonLink = c.buttonLink || '/catalog';
             return (
               <div
                 key={section.id}

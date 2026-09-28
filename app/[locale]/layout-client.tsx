@@ -5,7 +5,6 @@ import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { AppChrome } from '@/components/AppChrome';
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
 import { YandexMetrika } from '@/components/analytics/YandexMetrika';
 import { GlobalErrorListener } from '@/components/GlobalErrorListener';
@@ -36,7 +35,6 @@ export default function LocaleLayout({
   const validLocale = locale || DEFAULT_LOCALE;
 
   return (
-    <GoogleOAuthProvider clientId="114863832086-ubhij3d5vekmksft6g4gme9k3ncd6etb.apps.googleusercontent.com">
       <ThemeProvider>
         <NextIntlClientProvider locale={validLocale} messages={messages} timeZone="Asia/Tashkent">
           <QueryProvider initialSiteSettings={initialSiteSettings}>
@@ -54,6 +52,5 @@ export default function LocaleLayout({
           </QueryProvider>
         </NextIntlClientProvider>
       </ThemeProvider>
-    </GoogleOAuthProvider>
   );
 }

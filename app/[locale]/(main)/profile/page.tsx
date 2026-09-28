@@ -138,7 +138,7 @@ export default function ProfilePage() {
               {t('myListings')}
             </h2>
             <Button asChild className="bg-primary-600 hover:bg-primary-700 text-white">
-              <Link href={`/${locale}/add-listing`}>
+              <Link href={`/${locale}/catalog`}>
                 <PlusCircle size={16} className="mr-2" />
                 {t('addListing')}
               </Link>
@@ -165,7 +165,7 @@ export default function ProfilePage() {
                 {t('noListingsText')}
               </p>
               <Button asChild className="bg-primary-600 hover:bg-primary-700 text-white">
-                <Link href={`/${locale}/add-listing`}>
+                <Link href={`/${locale}/catalog`}>
                   <PlusCircle size={16} className="mr-2" />
                   {t('addFirstListing')}
                 </Link>

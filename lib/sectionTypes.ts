@@ -228,7 +228,7 @@ export const SECTION_DEFAULTS: SectionContentMap = {
     title: 'Сдайте жильё выгодно и быстро',
     text: 'Разместите объявление бесплатно за 2 минуты и найдите надёжных арендаторов уже сегодня',
     buttonText: 'Разместить объявление',
-    buttonLink: '/add-listing',
+    buttonLink: '/catalog',
   },
   CATEGORIES: {
     title: 'Категории недвижимости',
