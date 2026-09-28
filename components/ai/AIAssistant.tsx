@@ -2,7 +2,9 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Bot, Send, Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
+import Link from "next/link";
 import api from "@/lib/axios";
+import { useAuthStore } from "@/store/useAuthStore";
 type Message = { role: "user" | "assistant"; content: string };
 const dict = {
   ru: {
@@ -52,33 +54,45 @@ const dict = {
   },
 } as const;
 export default function AIAssistant() {
-  const t = dict[useLocale() as keyof typeof dict] ?? dict.ru;
+  const locale = useLocale();
+  const t = dict[locale as keyof typeof dict] ?? dict.ru;
+  const { isAuthenticated, isLoading: authLoading } = useAuthStore();
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: t.hello },
   ]);
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | undefined>();
+  const [historyLoading, setHistoryLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
   useEffect(
     () => endRef.current?.scrollIntoView({ behavior: "smooth" }),
     [messages, loading],
   );
-  useEffect(
-    () => setMessages([{ role: "assistant", content: t.hello }]),
-    [t.hello],
-  );
+  useEffect(() => {
+    if (authLoading) return;
+    if (!isAuthenticated) { setHistoryLoading(false); return; }
+    let cancelled = false;
+    void api.get<Array<{id:string}>>("/ai-chat/sessions").then(async ({data}) => {
+      if (!data[0] || cancelled) return;
+      setSessionId(data[0].id);
+      const history = await api.get<Array<Message & {id:string}>>(`/ai-chat/sessions/${data[0].id}`);
+      if (!cancelled && history.data.length) setMessages(history.data.map(({role,content}) => ({role,content})));
+    }).finally(() => { if (!cancelled) setHistoryLoading(false); });
+    return () => { cancelled = true; };
+  }, [authLoading, isAuthenticated]);
   const submit = async (text = value) => {
     const clean = text.trim();
     if (!clean || loading) return;
-    const history = messages.slice(-8);
     setMessages((c) => [...c, { role: "user", content: clean }]);
     setValue("");
     setLoading(true);
     try {
-      const { data } = await api.post<{ response: string }>("/ai-chat/chat", {
+      const { data } = await api.post<{ response: string; sessionId: string }>("/ai-chat/message", {
         message: clean,
-        history,
+        sessionId,
       });
+      setSessionId(data.sessionId);
       setMessages((c) => [...c, { role: "assistant", content: data.response }]);
     } catch {
       setMessages((c) => [...c, { role: "assistant", content: t.fail }]);
@@ -90,6 +104,8 @@ export default function AIAssistant() {
     e.preventDefault();
     void submit();
   };
+  if (authLoading || historyLoading) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white dark:bg-stone-900"><span className="text-sm text-stone-500">AVERON…</span></main>;
+  if (!isAuthenticated) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white p-6 dark:bg-stone-900"><div className="max-w-md text-center"><Bot className="mx-auto mb-4 text-violet-500" size={42}/><h1 className="text-xl font-bold text-stone-900 dark:text-white">AVERON AI</h1><p className="mt-2 text-sm text-stone-500">{locale === 'uz' ? 'AI bilan suhbatlashish va tarixni saqlash uchun telefon raqamingiz orqali kiring.' : locale === 'en' ? 'Sign in with your phone number to use AI and keep your conversation history.' : 'Войдите по номеру телефона, чтобы общаться с AI и сохранять историю.'}</p><Link href={`/${locale}/login`} className="mt-5 inline-flex h-11 items-center rounded-xl bg-violet-600 px-6 font-semibold text-white">{locale === 'uz' ? 'Kirish' : locale === 'en' ? 'Sign in' : 'Войти'}</Link></div></main>;
   return (
     <main className="flex h-[calc(100dvh-80px)] w-full overflow-hidden bg-white text-stone-950 dark:bg-stone-900 dark:text-white">
       <section className="flex h-full w-full flex-col">

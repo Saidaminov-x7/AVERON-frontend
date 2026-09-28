@@ -35,7 +35,7 @@ export const getSiteSettings = async (): Promise<PublicSiteSettings> => {
     cachedSettings = {
       siteName: data.siteName || 'AVERON',
       contactEmail: data.contactEmail || 'support@averon.uz',
-      contactPhone: data.contactPhone || '+998 71 200-00-00',
+      contactPhone: data.contactPhone || '',
       logoUrl: data.logoUrl || null,
       navLinks: data.navLinks || null,
       googleAuthEnabled: data.googleAuthEnabled ?? true,
@@ -48,7 +48,7 @@ export const getSiteSettings = async (): Promise<PublicSiteSettings> => {
     return {
       siteName: 'AVERON',
       contactEmail: 'support@averon.uz',
-      contactPhone: '+998 71 200-00-00',
+      contactPhone: '',
       logoUrl: null,
       googleAuthEnabled: true,
       autoModerationEnabled: false,

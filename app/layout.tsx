@@ -5,13 +5,6 @@ export const metadata: Metadata = {
   description: 'Одежда, обувь и аксессуары из Китая с доставкой по Узбекистану.',
 };
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 5,
-  userScalable: true,
-};
-
 async function getServerSettings() {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -29,12 +22,17 @@ async function getServerSettings() {
   }
 }
 
+export async function generateViewport(): Promise<Viewport> {
+  const settings = await getServerSettings();
+  const allowZoom = settings.mobilePinchZoomEnabled !== false;
+  return { width: 'device-width', initialScale: 1, minimumScale: 1, maximumScale: allowZoom ? 5 : 1, userScalable: allowZoom };
+}
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await getServerSettings();
   return (
     <html suppressHydrationWarning>
       <head>
