@@ -8,7 +8,6 @@ import { AppChrome } from '@/components/AppChrome';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
 import { YandexMetrika } from '@/components/analytics/YandexMetrika';
-import { DesignTokensInjector } from '@/components/DesignTokensInjector';
 import { GlobalErrorListener } from '@/components/GlobalErrorListener';
 import { NavigationHistoryTracker } from '@/components/NavigationHistoryTracker';
 import AuthInitializer from '@/components/AuthInitializer';
@@ -44,7 +43,6 @@ export default function LocaleLayout({
             <NavigationHistoryTracker />
             <AuthInitializer />
             <GlobalErrorListener />
-            <DesignTokensInjector />
             <AnalyticsTracker />
             <Suspense fallback={null}>
               <YandexMetrika counterId="112059980" />

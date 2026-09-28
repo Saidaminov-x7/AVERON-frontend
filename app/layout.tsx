@@ -35,28 +35,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   await getServerSettings();
-  const theme = {
-    primaryColor: '#7c3aed', secondaryColor: '#5b21b6', backgroundColor: '#f9fafb',
-    textColor: '#111827', borderRadius: '0.75rem', fontFamily: 'Inter, sans-serif',
-  };
-
   return (
     <html suppressHydrationWarning>
       <head>
         <link rel="icon" href="/logotip.png" />
-        <style
-          id="server-theme-tokens"
-          dangerouslySetInnerHTML={{
-            __html: `:root {
-              --color-primary: ${theme.primaryColor || '#7c3aed'};
-              --color-secondary: ${theme.secondaryColor || '#5b21b6'};
-              --color-bg: ${theme.backgroundColor || '#f9fafb'};
-              --color-text: ${theme.textColor || '#111827'};
-              --border-radius: ${theme.borderRadius || '0.75rem'};
-              --font-family: ${theme.fontFamily || 'Inter, sans-serif'};
-            }`,
-          }}
-        />
         {/* Yandex.Metrika counter */}
         <script
           type="text/javascript"
