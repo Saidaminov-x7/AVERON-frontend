@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 const copy = {
   ru: {
     desc: "Товары из Китая с понятным выбором, ручной проверкой карточек и доставкой по Узбекистану.",
@@ -91,6 +92,7 @@ const copy = {
 export function Footer({ locale: localeProp }: { locale?: string } = {}) {
   const locale = (useLocale() || localeProp || 'ru') as keyof typeof copy;
   const t = copy[locale] ?? copy.ru;
+  const { data: settings } = useSiteSettings();
   const col = (
     title: string,
     links: readonly (readonly [string, string])[],
@@ -143,6 +145,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
                 {t.support}
               </a>
             </div>
+            {(settings?.contactEmail || settings?.contactPhone) && <div className="mt-4 space-y-1 text-sm text-stone-500 dark:text-stone-400">{settings.contactEmail && <a className="block hover:text-violet-500" href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>}{settings.contactPhone && <a className="block hover:text-violet-500" href={`tel:${settings.contactPhone.replace(/[^+\d]/g, '')}`}>{settings.contactPhone}</a>}</div>}
           </div>
           {col(t.buyers, t.links)}
           {col(t.help, t.helpLinks)}

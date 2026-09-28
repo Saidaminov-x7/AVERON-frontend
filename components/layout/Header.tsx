@@ -123,6 +123,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     { href: '/ai', label: 'AI' },
     { href: '/about', label: locale === 'uz' ? 'Biz haqimizda' : locale === 'en' ? 'About' : 'О нас' },
   ];
+  const labelForHref = (href: string, fallback: unknown) => navLinks.find((item) => item.href === href)?.label || String(fallback || '');
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -330,9 +331,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   return !href.includes('/add-listing');
                 }).map((item: any, idx: number) => {
                   const rawLabel = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
-                  const label = /объявлен/i.test(String(rawLabel)) ? 'Товары' : /чат/i.test(String(rawLabel)) ? 'AI' : rawLabel;
                   const rawHref = item.url || item.href || '/';
                   const href = rawHref === '/chat' ? '/ai' : rawHref;
+                  const label = labelForHref(href, rawLabel);
                   return (
                     <Link
                       key={idx}
@@ -650,9 +651,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           {Array.isArray(settings?.navLinks) && settings.navLinks.length > 0 ? (
             settings.navLinks.filter((item: any) => !String(item.url || item.href || '').includes('/add-listing')).map((item: any, idx: number) => {
               const rawLabel = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
-              const label = /объявлен/i.test(String(rawLabel)) ? 'Товары' : /чат/i.test(String(rawLabel)) ? 'AI' : rawLabel;
               const rawHref = item.url || item.href || '/';
               const href = rawHref === '/chat' ? '/ai' : rawHref;
+              const label = labelForHref(href, rawLabel);
               return (
                 <Link
                   key={idx}
