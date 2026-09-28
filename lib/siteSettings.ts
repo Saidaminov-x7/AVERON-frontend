@@ -9,6 +9,7 @@ export interface PublicSiteSettings {
   contactPhone: string;
   logoUrl: string | null;
   navLinks?: any[] | null;
+  mobilePinchZoomEnabled?: boolean;
   googleAuthEnabled?: boolean;
   autoModerationEnabled?: boolean;
   maxImagesPerListing?: number;
@@ -34,10 +35,11 @@ export const getSiteSettings = async (): Promise<PublicSiteSettings> => {
     const { data } = await api.get('/site-settings/public');
     cachedSettings = {
       siteName: data.siteName || 'AVERON',
-      contactEmail: data.contactEmail || 'support@averon.uz',
+      contactEmail: data.contactEmail || '',
       contactPhone: data.contactPhone || '',
       logoUrl: data.logoUrl || null,
       navLinks: data.navLinks || null,
+      mobilePinchZoomEnabled: data.mobilePinchZoomEnabled ?? true,
       googleAuthEnabled: data.googleAuthEnabled ?? true,
       autoModerationEnabled: data.autoModerationEnabled ?? false,
       maxImagesPerListing: data.maxImagesPerListing ?? 10,
@@ -47,9 +49,11 @@ export const getSiteSettings = async (): Promise<PublicSiteSettings> => {
   } catch {
     return {
       siteName: 'AVERON',
-      contactEmail: 'support@averon.uz',
+      contactEmail: '',
       contactPhone: '',
       logoUrl: null,
+      navLinks: null,
+      mobilePinchZoomEnabled: true,
       googleAuthEnabled: true,
       autoModerationEnabled: false,
       maxImagesPerListing: 10,

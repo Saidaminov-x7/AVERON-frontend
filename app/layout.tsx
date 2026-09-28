@@ -25,7 +25,7 @@ async function getServerSettings() {
 export async function generateViewport(): Promise<Viewport> {
   const settings = await getServerSettings();
   const allowZoom = settings.mobilePinchZoomEnabled !== false;
-  return { width: 'device-width', initialScale: 1, minimumScale: 1, maximumScale: allowZoom ? 5 : 1, userScalable: allowZoom };
+  return { width: 'device-width', initialScale: 1, minimumScale: 1, maximumScale: allowZoom ? 5 : 1, userScalable: allowZoom, viewportFit: 'cover', themeColor: [{ media: '(prefers-color-scheme: light)', color: '#fafafa' }, { media: '(prefers-color-scheme: dark)', color: '#0f0f10' }] };
 }
 
 export default async function RootLayout({

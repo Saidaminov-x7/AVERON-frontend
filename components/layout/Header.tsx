@@ -290,7 +290,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             className="flex items-center gap-1.5 text-sm text-stone-400 hover:opacity-80 transition-opacity"
           >
             <div className="h-2 w-2 rounded-full bg-primary-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
-            <span className="text-primary-400 font-semibold tracking-tight">AVERON</span>
+            <span className="text-primary-400 font-semibold tracking-tight">{settings?.siteName || 'AVERON'}</span>
           </Link>
         </div>
       </header>
@@ -315,7 +315,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               href={to('/')}
               className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
             >
-              <span className="text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">AVERON</span>
+              <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">{settings?.siteName || 'AVERON'}</span>
             </Link>
 
             <nav
@@ -328,7 +328,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 settings.navLinks.filter((item: any) => {
                   const rawHref = item.url || item.href || '/';
                   const href = rawHref === '/chat' ? '/ai' : rawHref;
-                  return !href.includes('/add-listing');
+                  return item.position !== 'footer' && !href.includes('/add-listing');
                 }).map((item: any, idx: number) => {
                   const rawLabel = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
                   const rawHref = item.url || item.href || '/';
@@ -599,7 +599,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
       >
         <div className="flex h-20 shrink-0 items-center justify-between border-b border-stone-200 px-5 dark:border-white/10">
           <Link href={to('/')} onClick={() => setMobileOpen(false)} className="flex items-center text-xl font-black text-stone-900 dark:text-white">
-            <span className="tracking-[0.2em]">AVERON</span>
+            <span className="max-w-52 truncate tracking-[0.2em]">{settings?.siteName || 'AVERON'}</span>
           </Link>
           <button type="button" aria-label={t('close')} onClick={() => setMobileOpen(false)} className={BTN_CLASS}>
             <X size={18} />
@@ -649,7 +649,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         {/* Навигационные ссылки */}
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3">
           {Array.isArray(settings?.navLinks) && settings.navLinks.length > 0 ? (
-            settings.navLinks.filter((item: any) => !String(item.url || item.href || '').includes('/add-listing')).map((item: any, idx: number) => {
+            settings.navLinks.filter((item: any) => item.position !== 'footer' && !String(item.url || item.href || '').includes('/add-listing')).map((item: any, idx: number) => {
               const rawLabel = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
               const rawHref = item.url || item.href || '/';
               const href = rawHref === '/chat' ? '/ai' : rawHref;

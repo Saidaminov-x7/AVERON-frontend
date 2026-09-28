@@ -28,18 +28,29 @@
   --color-text: #111827;
   --border-radius: 0.75rem;
   --font-family: 'Inter, sans-serif';
+  --ease-out-ui: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-ui: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-press: 140ms;
+  --duration-ui: 180ms;
+  --duration-overlay: 280ms;
 }
 
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
-  html, body { min-height: 100%; }
+  html, body { min-height: 100%; overscroll-behavior: none; }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
 
   body {
     background-color: #FAFAFA;
     color: #171717;
     -webkit-font-smoothing: antialiased;
     font-family: var(--font-family, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif);
-    transition: background-color 200ms ease, color 200ms ease;
+    transition: background-color var(--duration-ui) var(--ease-out-ui), color var(--duration-ui) var(--ease-out-ui);
   }
 
   /* Тёмная тема */
@@ -52,6 +63,18 @@
   button, [role="button"], a, summary, select,
   input[type="checkbox"], input[type="radio"] {
     cursor: pointer;
+    touch-action: manipulation;
+  }
+  button, [role="button"], summary { user-select: none; }
+
+  button, [role="button"], a {
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+    transition-duration: var(--duration-press);
+    transition-timing-function: var(--ease-out-ui);
+  }
+
+  button:active:not(:disabled), [role="button"]:active:not([aria-disabled="true"]), a:active {
+    transform: scale(0.98);
   }
   button:disabled, [role="button"][aria-disabled="true"] {
     cursor: not-allowed;
@@ -69,14 +92,37 @@
 }
 
 .animate-fade-up {
-  animation: fade-up 0.45s ease both;
+  animation: fade-up 280ms var(--ease-out-ui) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
   .animate-fade-up,
   .animate-\[fade-in_200ms_ease\] {
     animation: none !important;
   }
+}
+
+@media (pointer: coarse) {
+  input, textarea, select { font-size: 16px !important; }
+  button, [role="button"], a { min-height: 44px; }
+}
+
+@media (hover: none) {
+  button:hover, [role="button"]:hover, a:hover { transform: none; }
+  button:active:not(:disabled), [role="button"]:active:not([aria-disabled="true"]), a:active { transform: scale(0.98); }
+}
+
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-x {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 .rounded-theme {

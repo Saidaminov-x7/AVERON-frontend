@@ -56,7 +56,8 @@ const dict = {
 export default function AIAssistant() {
   const locale = useLocale();
   const t = dict[locale as keyof typeof dict] ?? dict.ru;
-  const { isAuthenticated, isLoading: authLoading } = useAuthStore();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuthStore();
+  const canUseAI = isAuthenticated && Boolean(user?.phone);
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: t.hello },
   ]);
@@ -71,7 +72,7 @@ export default function AIAssistant() {
   );
   useEffect(() => {
     if (authLoading) return;
-    if (!isAuthenticated) { setHistoryLoading(false); return; }
+    if (!canUseAI) { setHistoryLoading(false); return; }
     let cancelled = false;
     void api.get<Array<{id:string}>>("/ai-chat/sessions").then(async ({data}) => {
       if (!data[0] || cancelled) return;
@@ -80,7 +81,7 @@ export default function AIAssistant() {
       if (!cancelled && history.data.length) setMessages(history.data.map(({role,content}) => ({role,content})));
     }).finally(() => { if (!cancelled) setHistoryLoading(false); });
     return () => { cancelled = true; };
-  }, [authLoading, isAuthenticated]);
+  }, [authLoading, canUseAI]);
   const submit = async (text = value) => {
     const clean = text.trim();
     if (!clean || loading) return;
@@ -105,7 +106,7 @@ export default function AIAssistant() {
     void submit();
   };
   if (authLoading || historyLoading) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white dark:bg-stone-900"><span className="text-sm text-stone-500">AVERON…</span></main>;
-  if (!isAuthenticated) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white p-6 dark:bg-stone-900"><div className="max-w-md text-center"><Bot className="mx-auto mb-4 text-violet-500" size={42}/><h1 className="text-xl font-bold text-stone-900 dark:text-white">AVERON AI</h1><p className="mt-2 text-sm text-stone-500">{locale === 'uz' ? 'AI bilan suhbatlashish va tarixni saqlash uchun telefon raqamingiz orqali kiring.' : locale === 'en' ? 'Sign in with your phone number to use AI and keep your conversation history.' : 'Войдите по номеру телефона, чтобы общаться с AI и сохранять историю.'}</p><Link href={`/${locale}/login`} className="mt-5 inline-flex h-11 items-center rounded-xl bg-violet-600 px-6 font-semibold text-white">{locale === 'uz' ? 'Kirish' : locale === 'en' ? 'Sign in' : 'Войти'}</Link></div></main>;
+  if (!canUseAI) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white p-6 dark:bg-stone-900"><div className="max-w-md text-center"><Bot className="mx-auto mb-4 text-violet-500" size={42}/><h1 className="text-xl font-bold text-stone-900 dark:text-white">AVERON AI</h1><p className="mt-2 text-sm text-stone-500">{locale === 'uz' ? 'AI bilan suhbatlashish va tarixni saqlash uchun telefon raqamingiz orqali kiring.' : locale === 'en' ? 'Sign in with your phone number to use AI and keep your conversation history.' : 'Войдите по номеру телефона, чтобы общаться с AI и сохранять историю.'}</p><Link href={`/${locale}/login`} className="mt-5 inline-flex h-11 items-center rounded-xl bg-violet-600 px-6 font-semibold text-white">{locale === 'uz' ? 'Kirish' : locale === 'en' ? 'Sign in' : 'Войти'}</Link></div></main>;
   return (
     <main className="flex h-[calc(100dvh-80px)] w-full overflow-hidden bg-white text-stone-950 dark:bg-stone-900 dark:text-white">
       <section className="flex h-full w-full flex-col">

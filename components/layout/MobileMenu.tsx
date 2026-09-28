@@ -67,7 +67,7 @@ export function MobileMenu({ locale }: MobileMenuProps) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed right-4 top-4 z-50 rounded-full bg-white p-2 shadow-md dark:bg-stone-800 md:hidden"
+        className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-50 flex size-11 items-center justify-center rounded-full bg-white/90 shadow-[0_8px_30px_rgba(0,0,0,.12)] backdrop-blur-xl active:scale-[.97] dark:bg-stone-800/90 md:hidden"
         aria-label={t('openMenu')}
       >
         <Menu size={24} />
@@ -78,7 +78,7 @@ export function MobileMenu({ locale }: MobileMenuProps) {
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
           <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
             <div className="pointer-events-auto w-screen max-w-md">
-              <div className="flex h-full flex-col overflow-y-auto bg-white shadow-xl dark:bg-stone-900">
+              <div className="safe-top safe-bottom flex h-dvh flex-col overflow-y-auto bg-white/95 shadow-[0_0_60px_rgba(0,0,0,.2)] backdrop-blur-2xl dark:bg-stone-900/95">
                 <div className="flex items-center justify-between p-4">
                   <div className="text-xl font-bold text-stone-900 dark:text-white" style={{ width: '96px', height: '32px' }}>
                     AVERON

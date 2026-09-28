@@ -93,6 +93,16 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
   const locale = (useLocale() || localeProp || 'ru') as keyof typeof copy;
   const t = copy[locale] ?? copy.ru;
   const { data: settings } = useSiteSettings();
+  const configuredFooterLinks = Array.isArray(settings?.navLinks)
+    ? settings.navLinks
+        .filter((item: any) => item.position === "footer" && item.label && (item.href || item.url))
+        .map((item: any) => [
+          typeof item.label === "object"
+            ? item.label[locale] || item.label.ru || item.label.uz || item.label.en
+            : String(item.label),
+          String(item.href || item.url),
+        ] as const)
+    : [];
   const col = (
     title: string,
     links: readonly (readonly [string, string])[],
@@ -124,7 +134,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
               href={`/${locale}`}
               className="text-xl font-black tracking-[.18em]"
             >
-              AVERON
+              {settings?.siteName || "AVERON"}
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-6 text-stone-500">
               {t.desc}
@@ -147,13 +157,13 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
             </div>
             {(settings?.contactEmail || settings?.contactPhone) && <div className="mt-4 space-y-1 text-sm text-stone-500 dark:text-stone-400">{settings.contactEmail && <a className="block hover:text-violet-500" href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>}{settings.contactPhone && <a className="block hover:text-violet-500" href={`tel:${settings.contactPhone.replace(/[^+\d]/g, '')}`}>{settings.contactPhone}</a>}</div>}
           </div>
-          {col(t.buyers, t.links)}
+          {col(t.buyers, configuredFooterLinks.length ? configuredFooterLinks : t.links)}
           {col(t.help, t.helpLinks)}
           {col(t.docs, t.docLinks)}
         </div>
         <div className="mt-10 flex flex-col justify-between gap-3 border-t pt-6 text-xs text-stone-400 dark:border-white/10 sm:flex-row">
           <p>
-            © {new Date().getFullYear()} AVERON. {t.rights}
+            © {new Date().getFullYear()} {settings?.siteName || "AVERON"}. {t.rights}
           </p>
           <p>{t.country}</p>
         </div>
