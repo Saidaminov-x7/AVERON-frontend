@@ -124,6 +124,30 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     { href: '/about', label: locale === 'uz' ? 'Biz haqimizda' : locale === 'en' ? 'About' : 'О нас' },
   ];
   const labelForHref = (href: string, fallback: unknown) => navLinks.find((item) => item.href === href)?.label || String(fallback || '');
+  const configuredNavLinks = (() => {
+    const saved = Array.isArray(settings?.navLinks)
+      ? settings.navLinks
+          .filter((item: any) => item.position !== 'footer')
+          .map((item: any) => {
+            const rawHref = String(item.url || item.href || '/');
+            const href = rawHref === '/chat' ? '/ai' : rawHref;
+            const rawLabel = typeof item.label === 'object'
+              ? item.label[locale] || item.label.ru || item.label.uz || item.label.en
+              : item.label;
+            return { href, label: labelForHref(href, rawLabel) };
+          })
+          .filter((item: { href: string }) => !item.href.includes('/add-listing'))
+      : [];
+    const source = saved.length > 0 ? saved : navLinks;
+    const unique = source.filter((item: { href: string }, index: number, items: Array<{ href: string }>) =>
+      items.findIndex((candidate) => candidate.href === item.href) === index,
+    );
+    if (!unique.some((item: { href: string }) => item.href === '/ai')) {
+      const catalogIndex = unique.findIndex((item: { href: string }) => item.href === '/catalog');
+      unique.splice(catalogIndex >= 0 ? catalogIndex + 1 : 0, 0, navLinks[1]);
+    }
+    return unique;
+  })();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -324,36 +348,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 (searchOpen ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-xl opacity-100')
               }
             >
-              {Array.isArray(settings?.navLinks) && settings.navLinks.length > 0 ? (
-                settings.navLinks.filter((item: any) => {
-                  const rawHref = item.url || item.href || '/';
-                  const href = rawHref === '/chat' ? '/ai' : rawHref;
-                  return item.position !== 'footer' && !href.includes('/add-listing');
-                }).map((item: any, idx: number) => {
-                  const rawLabel = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
-                  const rawHref = item.url || item.href || '/';
-                  const href = rawHref === '/chat' ? '/ai' : rawHref;
-                  const label = labelForHref(href, rawLabel);
-                  return (
-                    <Link
-                      key={idx}
-                      href={href.startsWith('http') ? href : to(href)}
-                      className={
-                        'whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors duration-250 ' +
-                        (isActive(href)
-                          ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300'
-                          : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-white')
-                      }
-                    >
-                      {label}
-                    </Link>
-                  );
-                })
-              ) : (
-                navLinks.map(({ href, label }) => (
+              {configuredNavLinks.map(({ href, label }) => (
                   <Link
                     key={href}
-                    href={to(href)}
+                    href={href.startsWith('http') ? href : to(href)}
                     className={
                       'whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors duration-250 ' +
                       (isActive(href)
@@ -363,8 +361,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   >
                     {label}
                   </Link>
-                ))
-              )}
+                ))}
             </nav>
           </div>
 
@@ -648,15 +645,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
         {/* Навигационные ссылки */}
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3">
-          {Array.isArray(settings?.navLinks) && settings.navLinks.length > 0 ? (
-            settings.navLinks.filter((item: any) => item.position !== 'footer' && !String(item.url || item.href || '').includes('/add-listing')).map((item: any, idx: number) => {
-              const rawLabel = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
-              const rawHref = item.url || item.href || '/';
-              const href = rawHref === '/chat' ? '/ai' : rawHref;
-              const label = labelForHref(href, rawLabel);
-              return (
+          {configuredNavLinks.map(({ href, label }) => (
                 <Link
-                  key={idx}
+                  key={href}
                   href={href.startsWith('http') ? href : to(href)}
                   onClick={() => setMobileOpen(false)}
                   className={
@@ -669,26 +660,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   <span>{label}</span>
                   <ChevronRight size={15} className="text-stone-400 opacity-50" />
                 </Link>
-              );
-            })
-          ) : (
-            navLinks.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={to(href)}
-                onClick={() => setMobileOpen(false)}
-                className={
-                  'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ' +
-                  (isActive(href)
-                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300 font-semibold'
-                    : 'text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5')
-                }
-              >
-                <span>{label}</span>
-                <ChevronRight size={15} className="text-stone-400 opacity-50" />
-              </Link>
-            ))
-          )}
+              ))}
         </nav>
 
         <div className="shrink-0 space-y-3 border-t border-stone-200 p-4 dark:border-white/10 bg-stone-50/60 dark:bg-[#1C1C1C]">

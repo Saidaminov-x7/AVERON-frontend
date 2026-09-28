@@ -17,7 +17,7 @@ const DEFAULTS: ThemeTokens = {
   backgroundColor: '#f9fafb',
   textColor: '#111827',
   borderRadius: '0.75rem',
-  fontFamily: 'Inter, sans-serif',
+  fontFamily: 'Calibri, "Segoe UI", Arial, sans-serif',
 };
 
 function applyTokensToDom(tokens: ThemeTokens) {
@@ -41,4 +41,3 @@ export function DesignTokensInjector() {
 
   return null;
 }
-
