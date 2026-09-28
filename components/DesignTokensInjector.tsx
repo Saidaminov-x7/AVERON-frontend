@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { externalBaseURL } from '@/lib/axios';
+import { useEffect } from 'react';
 
 interface ThemeTokens {
   primaryColor: string;
@@ -36,35 +35,9 @@ function applyTokensToDom(tokens: ThemeTokens) {
 }
 
 export function DesignTokensInjector() {
-  const [tokens, setTokens] = useState<ThemeTokens>(DEFAULTS);
-
   useEffect(() => {
-    const fetchTheme = async () => {
-      try {
-        const endpoint = typeof window !== 'undefined'
-          ? '/api/backend/site-settings/public/theme'
-          : `${externalBaseURL}/site-settings/public/theme`;
-        
-        let res = await fetch(endpoint, { cache: 'no-store' });
-        if (!res.ok && typeof window !== 'undefined' && externalBaseURL) {
-          res = await fetch(`${externalBaseURL}/site-settings/public/theme`, { cache: 'no-store' });
-        }
-        if (res.ok) {
-          const data: ThemeTokens = await res.json();
-          setTokens(data);
-          applyTokensToDom(data);
-        }
-      } catch {
-        // Fallback to defaults
-      }
-    };
-
-    fetchTheme();
+    applyTokensToDom(DEFAULTS);
   }, []);
-
-  useEffect(() => {
-    applyTokensToDom(tokens);
-  }, [tokens]);
 
   return null;
 }

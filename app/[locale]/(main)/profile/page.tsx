@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { User, Heart, PlusCircle, LogOut, Settings, Building, Phone, Mail, ShieldCheck } from 'lucide-react';
+import { User, Heart, PlusCircle, LogOut, Building, Phone, Mail, MonitorSmartphone, ShieldCheck, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { ApartmentCard } from '@/app/[locale]/(main)/catalog/components/ApartmentCard';
@@ -12,6 +12,9 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { Apartment } from '@/types';
 import Link from 'next/link';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import api from '@/lib/axios';
+
+type AuthSession = { id: string; userAgent?: string; ipAddress?: string; createdAt: string; lastSeenAt: string; current: boolean };
 
 export default function ProfilePage() {
   const t = useTranslations('Profile');
@@ -24,6 +27,20 @@ export default function ProfilePage() {
   const [myListings, setMyListings] = useState<Apartment[]>([]);
   const [favoriteListings, setFavoriteListings] = useState<Apartment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sessions, setSessions] = useState<AuthSession[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+
+  const loadSessions = async () => {
+    setSessionsLoading(true);
+    try { setSessions((await api.get<AuthSession[]>('/auth/sessions')).data); }
+    finally { setSessionsLoading(false); }
+  };
+
+  const revokeSession = async (id: string, current: boolean) => {
+    await api.delete(`/auth/sessions/${id}`);
+    if (current) return handleLogout();
+    await loadSessions();
+  };
 
   useEffect(() => {
     const loadProfileData = async () => {
@@ -45,6 +62,8 @@ export default function ProfilePage() {
 
     loadProfileData();
   }, []);
+
+  useEffect(() => { void loadSessions(); }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -99,7 +118,7 @@ export default function ProfilePage() {
       </div>
 
       <Tabs defaultValue="myListings" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="mb-6 grid w-full grid-cols-2 md:w-auto">
+        <TabsList className="mb-6 grid w-full grid-cols-3 md:w-auto">
           <TabsTrigger value="myListings" className="gap-2">
             <PlusCircle size={16} />
             {t('myListings')} ({myListings.length})
@@ -107,6 +126,9 @@ export default function ProfilePage() {
           <TabsTrigger value="favorites" className="gap-2">
             <Heart size={16} />
             {t('favorites')} ({favoriteListings.length})
+          </TabsTrigger>
+          <TabsTrigger value="sessions" className="gap-2">
+            <MonitorSmartphone size={16} /> Сессии ({sessions.length})
           </TabsTrigger>
         </TabsList>
 
@@ -183,6 +205,24 @@ export default function ProfilePage() {
               </Button>
             </div>
           )}
+        </TabsContent>
+        <TabsContent value="sessions">
+          <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div><h2 className="text-xl font-bold">Активные сессии</h2><p className="mt-1 text-sm text-stone-500">Устройства, на которых выполнен вход в ваш аккаунт.</p></div>
+              <button onClick={async () => { await api.delete('/auth/sessions'); await loadSessions(); }} className="h-10 rounded-xl border border-red-500/30 px-4 text-sm font-semibold text-red-500 hover:bg-red-500/10">Завершить остальные</button>
+            </div>
+            <div className="mt-5 divide-y divide-stone-200 dark:divide-white/10">
+              {sessionsLoading ? <p className="py-8 text-center text-sm text-stone-500">Загружаем сессии…</p> : sessions.map((session) => (
+                <div key={session.id} className="flex items-center gap-4 py-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-500"><MonitorSmartphone size={19}/></div>
+                  <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="truncate text-sm font-semibold">{session.userAgent || 'Неизвестное устройство'}</p>{session.current ? <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-500">Текущая</span> : null}</div><p className="mt-1 text-xs text-stone-500">{session.ipAddress || 'IP скрыт'} · активность {new Date(session.lastSeenAt).toLocaleString('ru-RU')}</p></div>
+                  <button onClick={() => void revokeSession(session.id, session.current)} aria-label="Завершить сессию" className="flex h-9 w-9 items-center justify-center rounded-xl border border-stone-200 text-stone-500 hover:border-red-500/40 hover:text-red-500 dark:border-white/10"><X size={16}/></button>
+                </div>
+              ))}
+              {!sessionsLoading && sessions.length === 0 ? <p className="py-8 text-center text-sm text-stone-500">Активных сессий не найдено.</p> : null}
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

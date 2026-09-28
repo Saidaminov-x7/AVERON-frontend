@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { use } from 'react';
+import { use, useEffect, useRef } from 'react';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -21,10 +21,27 @@ export default function AuthLayout({ children, params }: AuthLayoutProps) {
 function AuthLayoutInner({ children, params }: AuthLayoutProps) {
   const router = useRouter();
   const { locale } = use(params);
+  const glowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const glow = glowRef.current;
+    if (!glow) return;
+    let frame = 0;
+    const move = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') return;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        glow.style.setProperty('--glow-x', `${event.clientX}px`);
+        glow.style.setProperty('--glow-y', `${event.clientY}px`);
+      });
+    };
+    window.addEventListener('pointermove', move, { passive: true });
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('pointermove', move); };
+  }, []);
 
   return (
-    <div className="relative flex min-h-[calc(100dvh-80px)] flex-col items-center justify-center overflow-hidden bg-stone-100 px-4 py-8 dark:bg-stone-950">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,color-mix(in_srgb,var(--color-primary)_22%,transparent),transparent_38%)]" />
+    <div className="auth-grid relative flex min-h-[calc(100dvh-80px)] flex-col items-center justify-center overflow-hidden bg-[#090a0f] px-4 py-8">
+      <div ref={glowRef} className="auth-pointer-glow pointer-events-none absolute inset-0" />
       
       {/* Decorative blobs */}
       <div className="absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-primary-600/10 blur-[120px]" />

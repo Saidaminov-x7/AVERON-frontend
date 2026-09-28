@@ -140,7 +140,17 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    const closeOnDesktop = () => {
+      if (window.innerWidth >= 768) {
+        setMobileOpen(false);
+        document.body.style.overflow = '';
+      }
+    };
+    window.addEventListener('resize', closeOnDesktop);
+    return () => {
+      window.removeEventListener('resize', closeOnDesktop);
+      document.body.style.overflow = '';
+    };
   }, [mobileOpen]);
 
   useEffect(() => {
@@ -290,10 +300,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     <>
       <header
         className={cn(
-          'sticky top-0 z-40 flex h-20 w-full items-center border-b transition-[background-color,border-color,box-shadow] duration-300',
+          'sticky top-0 z-40 flex h-20 w-full items-center transition-[background-color,backdrop-filter] duration-300',
           scrolled
-            ? 'border-stone-200/80 bg-white/95 shadow-[0_10px_30px_-20px_rgba(28,25,23,0.55)] backdrop-blur-xl dark:border-white/10 dark:bg-[#1A1A1A]/95'
-            : 'border-transparent bg-white/90 shadow-none dark:bg-[#1A1A1A]/90'
+            ? 'bg-white/90 backdrop-blur-2xl after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-violet-500/60 after:to-transparent dark:bg-[#111111]/90'
+            : 'bg-white/95 dark:bg-[#111111]/95'
         )}
       >
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -450,7 +460,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               rel="noopener noreferrer"
               className="hidden h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white transition hover:brightness-110 xl:inline-flex"
             >
-              У вас вопрос?
+              Поддержка
             </a>
 
             {isAuthenticated ? (
@@ -582,7 +592,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         className={
-          'fixed left-0 top-0 z-50 flex h-full w-full max-w-sm flex-col bg-white shadow-2xl transition-transform duration-400 dark:bg-[#1A1A1A] md:hidden ' +
+          'fixed left-0 top-0 z-50 flex h-full w-screen max-w-none flex-col bg-white shadow-2xl transition-transform duration-400 dark:bg-[#1A1A1A] md:hidden ' +
           (mobileOpen ? 'translate-x-0' : '-translate-x-full')
         }
       >
@@ -638,7 +648,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         {/* Навигационные ссылки */}
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3">
           {Array.isArray(settings?.navLinks) && settings.navLinks.length > 0 ? (
-            settings.navLinks.map((item: any, idx: number) => {
+            settings.navLinks.filter((item: any) => !String(item.url || item.href || '').includes('/add-listing')).map((item: any, idx: number) => {
               const rawLabel = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
               const label = /объявлен/i.test(String(rawLabel)) ? 'Товары' : /чат/i.test(String(rawLabel)) ? 'AI' : rawLabel;
               const rawHref = item.url || item.href || '/';
@@ -689,7 +699,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             </div>
           </div>
           <a href="https://t.me/averon_fashion_admin" target="_blank" rel="noopener noreferrer" className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 text-sm font-semibold text-white">
-            У вас вопрос?
+            Поддержка AVERON
           </a>
           {isAuthenticated ? (
             <Link

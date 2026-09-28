@@ -12,28 +12,6 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-async function getServerTheme() {
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiUrl) throw new Error('no apiUrl');
-    const res = await fetch(`${apiUrl}/site-settings/public/theme`, {
-      next: { revalidate: 60 },
-      signal: AbortSignal.timeout(3000),
-    });
-    if (!res.ok) throw new Error('theme fetch failed');
-    return await res.json();
-  } catch {
-    return {
-      primaryColor: '#7c3aed',
-      secondaryColor: '#5b21b6',
-      backgroundColor: '#f9fafb',
-      textColor: '#111827',
-      borderRadius: '0.75rem',
-      fontFamily: 'Inter, sans-serif',
-    };
-  }
-}
-
 async function getServerSettings() {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -56,10 +34,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme] = await Promise.all([
-    getServerTheme(),
-    getServerSettings(),
-  ]);
+  await getServerSettings();
+  const theme = {
+    primaryColor: '#7c3aed', secondaryColor: '#5b21b6', backgroundColor: '#f9fafb',
+    textColor: '#111827', borderRadius: '0.75rem', fontFamily: 'Inter, sans-serif',
+  };
 
   return (
     <html suppressHydrationWarning>
