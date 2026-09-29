@@ -1,230 +1,354 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { User, Heart, PlusCircle, LogOut, Building, Phone, Mail, MonitorSmartphone, ShieldCheck, X } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import { ApartmentCard } from '@/app/[locale]/(main)/catalog/components/ApartmentCard';
-import { getMyListings, getFavorites } from '@/lib/api';
-import { useAuthStore } from '@/store/useAuthStore';
-import { Apartment } from '@/types';
-import Link from 'next/link';
-import ProtectedRoute from '@/components/ProtectedRoute';
-import api from '@/lib/axios';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Bot,
+  Heart,
+  LoaderCircle,
+  LogOut,
+  MonitorSmartphone,
+  PackageCheck,
+  Phone,
+  ShieldCheck,
+  User,
+  X,
+} from "lucide-react";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import {
+  ProductCard,
+  type StoreProduct,
+} from "@/components/commerce/ProductCard";
+import { getProduct } from "@/lib/products";
+import api from "@/lib/axios";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useFavoritesStore } from "@/store/useFavoritesStore";
 
-type AuthSession = { id: string; userAgent?: string; ipAddress?: string; createdAt: string; lastSeenAt: string; current: boolean };
+type AuthSession = {
+  id: string;
+  userAgent?: string;
+  ipAddress?: string;
+  lastSeenAt: string;
+  current: boolean;
+};
+type AiSession = {
+  id: string;
+  title?: string;
+  createdAt: string;
+  updatedAt?: string;
+  _count?: { messages: number };
+};
+type Order = {
+  id: string;
+  orderNumber: string;
+  status: string;
+  currency: string;
+  totalRevenue: string | number;
+  createdAt: string;
+  items: Array<{ id: string; title: string; quantity: number }>;
+};
+type Tab = "overview" | "orders" | "favorites" | "ai" | "sessions";
 
 export default function ProfilePage() {
-  const t = useTranslations('Profile');
+  return (
+    <ProtectedRoute>
+      <ProfileContent />
+    </ProtectedRoute>
+  );
+}
+
+function ProfileContent() {
+  const { locale = "ru" } = useParams<{ locale: string }>();
   const router = useRouter();
-  const params = useParams();
-  const locale = (params?.locale as string) || 'ru';
-
   const { user, logout } = useAuthStore();
-  const [activeTab, setActiveTab] = useState('myListings');
-  const [myListings, setMyListings] = useState<Apartment[]>([]);
-  const [favoriteListings, setFavoriteListings] = useState<Apartment[]>([]);
-  const [loading, setLoading] = useState(true);
+  const favoriteIds = useFavoritesStore((state) => state.ids);
+  const [tab, setTab] = useState<Tab>("overview");
+  const [favorites, setFavorites] = useState<StoreProduct[]>([]);
   const [sessions, setSessions] = useState<AuthSession[]>([]);
-  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [aiSessions, setAiSessions] = useState<AiSession[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const favoriteIdsKey = favoriteIds.join("|");
 
-  const loadSessions = async () => {
-    setSessionsLoading(true);
-    try { setSessions((await api.get<AuthSession[]>('/auth/sessions')).data); }
-    finally { setSessionsLoading(false); }
+  const load = async () => {
+    setLoading(true);
+    const [favoriteResult, authResult, aiResult, ordersResult] =
+      await Promise.allSettled([
+        Promise.all(favoriteIds.map(getProduct)),
+        api.get<AuthSession[]>("/auth/sessions"),
+        api.get<AiSession[]>("/ai-chat/sessions"),
+        api.get<Order[]>("/api/v1/orders/me"),
+      ]);
+    if (favoriteResult.status === "fulfilled")
+      setFavorites(
+        favoriteResult.value.filter(
+          (item): item is StoreProduct => item !== null,
+        ),
+      );
+    if (authResult.status === "fulfilled") setSessions(authResult.value.data);
+    if (aiResult.status === "fulfilled") setAiSessions(aiResult.value.data);
+    if (ordersResult.status === "fulfilled") setOrders(ordersResult.value.data);
+    setLoading(false);
   };
-
-  const revokeSession = async (id: string, current: boolean) => {
-    await api.delete(`/auth/sessions/${id}`);
-    if (current) return handleLogout();
-    await loadSessions();
-  };
-
   useEffect(() => {
-    const loadProfileData = async () => {
-      setLoading(true);
-      try {
-        const [myApts, favApts] = await Promise.all([
-          getMyListings(),
-          getFavorites(),
-        ]);
+    const timer = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [favoriteIdsKey]);
 
-        setMyListings(myApts);
-        setFavoriteListings(favApts);
-      } catch (err) {
-        console.error('Error loading profile data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProfileData();
-  }, []);
-
-  useEffect(() => { void loadSessions(); }, []);
-
-  const handleLogout = async () => {
+  const signOut = async () => {
     await logout();
     router.push(`/${locale}`);
     router.refresh();
   };
+  const tabs: Array<{
+    id: Tab;
+    label: string;
+    icon: typeof User;
+    count?: number;
+  }> = [
+    { id: "overview", label: "Профиль", icon: User },
+    { id: "orders", label: "Заказы", icon: PackageCheck, count: orders.length },
+    { id: "favorites", label: "Товары", icon: Heart, count: favorites.length },
+    { id: "ai", label: "История AI", icon: Bot, count: aiSessions.length },
+    {
+      id: "sessions",
+      label: "Сессии",
+      icon: MonitorSmartphone,
+      count: sessions.length,
+    },
+  ];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      <div className="mb-8 flex flex-col items-center gap-6 rounded-2xl border border-stone-200/80 bg-white p-6 md:flex-row md:items-center dark:border-white/10 dark:bg-[#1f1f1f]">
-        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-950/60 dark:text-primary-400">
-          <User size={36} />
-        </div>
-        <div className="flex-1 text-center md:text-left">
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-            <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
-              {user?.name || 'Пользователь'}
-            </h1>
-            {user?.role && (
-              <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700 dark:bg-primary-950/50 dark:text-primary-300">
-                {user.role}
-              </span>
-            )}
+    <main className="mx-auto min-w-0 max-w-7xl overflow-hidden px-4 py-8 sm:px-6 lg:px-8">
+      <section className="rounded-3xl border border-stone-200 bg-white p-5 sm:p-7 dark:border-white/10 dark:bg-stone-900">
+        <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
+          <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-600">
+            <User size={30} />
           </div>
-          <div className="mt-2 flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-stone-500 dark:text-stone-400">
-            {user?.email && (
-              <span className="flex items-center gap-1.5">
-                <Mail size={14} />
-                {user.email}
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="max-w-full break-words text-2xl font-bold">
+                {user?.name || "Пользователь AVERON"}
+              </h1>
+              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-600">
+                <ShieldCheck className="mr-1 inline" size={13} />
+                Активен
               </span>
-            )}
-            {user?.phone && (
-              <span className="flex items-center gap-1.5">
-                <Phone size={14} />
-                {user.phone}
-              </span>
-            )}
+            </div>
+            <div className="mt-2 flex min-w-0 flex-col gap-2 text-sm text-stone-500 sm:flex-row sm:flex-wrap sm:gap-4">
+              {user?.phone ? (
+                <span className="flex min-w-0 items-center gap-2">
+                  <Phone size={15} />
+                  <span className="break-all">{user.phone}</span>
+                </span>
+              ) : (
+                <span className="text-amber-600">
+                  Добавьте номер телефона для доступа к AI
+                </span>
+              )}
+              {user?.email ? (
+                <span className="break-all">{user.email}</span>
+              ) : null}
+            </div>
           </div>
-        </div>
-
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleLogout}
-            className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/30 dark:hover:bg-red-950/30"
+          <button
+            onClick={() => void signOut()}
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-red-500/20 px-4 text-sm font-semibold text-red-500"
           >
-            <LogOut size={16} className="mr-2" />
-            {t('logout')}
-          </Button>
+            <LogOut size={16} />
+            Выйти
+          </button>
         </div>
-      </div>
-
-      <Tabs defaultValue="myListings" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="mb-6 grid w-full grid-cols-3 md:w-auto">
-          <TabsTrigger value="myListings" className="gap-2">
-            <PlusCircle size={16} />
-            {t('myListings')} ({myListings.length})
-          </TabsTrigger>
-          <TabsTrigger value="favorites" className="gap-2">
-            <Heart size={16} />
-            {t('favorites')} ({favoriteListings.length})
-          </TabsTrigger>
-          <TabsTrigger value="sessions" className="gap-2">
-            <MonitorSmartphone size={16} /> Сессии ({sessions.length})
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="myListings">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-stone-900 dark:text-white">
-              {t('myListings')}
-            </h2>
-            <Button asChild className="bg-primary-600 hover:bg-primary-700 text-white">
-              <Link href={`/${locale}/catalog`}>
-                <PlusCircle size={16} className="mr-2" />
-                {t('addListing')}
-              </Link>
-            </Button>
-          </div>
-
-          {myListings.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {myListings.map((apartment) => (
-                <ApartmentCard
-                  key={apartment.id}
-                  apartment={apartment}
+      </section>
+      <nav className="mt-6 flex max-w-full gap-2 overflow-x-auto pb-2">
+        {tabs.map(({ id, label, icon: Icon, count }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`flex h-11 shrink-0 items-center gap-2 rounded-xl px-4 text-sm font-semibold ${tab === id ? "bg-violet-600 text-white" : "border border-stone-200 bg-white dark:border-white/10 dark:bg-stone-900"}`}
+          >
+            <Icon size={16} />
+            {label}
+            {count !== undefined ? (
+              <span className="opacity-70">{count}</span>
+            ) : null}
+          </button>
+        ))}
+      </nav>
+      {loading ? (
+        <div className="flex items-center justify-center gap-3 py-24 text-stone-500">
+          <LoaderCircle className="animate-spin" />
+          Загружаем профиль…
+        </div>
+      ) : null}
+      {!loading && tab === "overview" ? (
+        <section className="mt-6 grid gap-4 md:grid-cols-3">
+          <Info
+            title="Избранные товары"
+            value={String(favorites.length)}
+            text="Сохранены на этом устройстве"
+          />
+          <Info
+            title="Диалоги с AI"
+            value={String(aiSessions.length)}
+            text="Хранятся в вашем аккаунте"
+          />
+          <Info
+            title="Активные сессии"
+            value={String(sessions.length)}
+            text="Устройства с выполненным входом"
+          />
+        </section>
+      ) : null}
+      {!loading && tab === "orders" ? (
+        <section className="mt-6 space-y-3">
+          {orders.length ? orders.map((order) => (
+            <article key={order.id} className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div><p className="text-xs text-stone-500">Заказ</p><h2 className="font-bold">№ {order.orderNumber}</h2></div>
+                <span className="rounded-full bg-violet-500/10 px-3 py-1 text-xs font-bold text-violet-600">{order.status}</span>
+              </div>
+              <div className="mt-4 space-y-2">{order.items.map((item) => <div key={item.id} className="flex justify-between gap-4 text-sm"><span className="min-w-0 truncate">{item.title}</span><span className="shrink-0">× {item.quantity}</span></div>)}</div>
+              <div className="mt-4 flex justify-between border-t border-stone-200 pt-4 text-sm dark:border-white/10"><span className="text-stone-500">{new Date(order.createdAt).toLocaleDateString("ru-RU")}</span><strong>{Number(order.totalRevenue).toLocaleString("ru-RU")} {order.currency}</strong></div>
+            </article>
+          )) : <Empty title="Заказов пока нет" href={`/${locale}/catalog`} action="Перейти к товарам" />}
+        </section>
+      ) : null}
+      {!loading && tab === "favorites" ? (
+        <section className="mt-6">
+          {favorites.length ? (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {favorites.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
                   locale={locale}
                 />
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-stone-200/80 bg-white p-12 text-center dark:border-white/10 dark:bg-[#1f1f1f]">
-              <Building size={48} className="mx-auto mb-4 text-stone-300 dark:text-stone-600" />
-              <h3 className="mb-2 text-lg font-semibold text-stone-900 dark:text-white">
-                {t('noListingsTitle')}
-              </h3>
-              <p className="mb-6 text-sm text-stone-500 dark:text-stone-400">
-                {t('noListingsText')}
-              </p>
-              <Button asChild className="bg-primary-600 hover:bg-primary-700 text-white">
-                <Link href={`/${locale}/catalog`}>
-                  <PlusCircle size={16} className="mr-2" />
-                  {t('addFirstListing')}
-                </Link>
-              </Button>
-            </div>
+            <Empty
+              title="Сохранённых товаров нет"
+              href={`/${locale}/catalog`}
+              action="Открыть каталог"
+            />
           )}
-        </TabsContent>
-
-        <TabsContent value="favorites">
-          <h2 className="mb-6 text-xl font-bold text-stone-900 dark:text-white">
-            {t('favorites')}
-          </h2>
-
-          {favoriteListings.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {favoriteListings.map((apartment) => (
-                <ApartmentCard
-                  key={apartment.id}
-                  apartment={apartment}
-                  locale={locale}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-stone-200/80 bg-white p-12 text-center dark:border-white/10 dark:bg-[#1f1f1f]">
-              <Heart size={48} className="mx-auto mb-4 text-stone-300 dark:text-stone-600" />
-              <h3 className="mb-2 text-lg font-semibold text-stone-900 dark:text-white">
-                {t('noFavoritesTitle')}
-              </h3>
-              <p className="mb-6 text-sm text-stone-500 dark:text-stone-400">
-                {t('noFavoritesText')}
-              </p>
-              <Button variant="outline" asChild>
-                <Link href={`/${locale}/catalog`}>
-                  {t('browseCatalog')}
-                </Link>
-              </Button>
-            </div>
-          )}
-        </TabsContent>
-        <TabsContent value="sessions">
-          <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div><h2 className="text-xl font-bold">Активные сессии</h2><p className="mt-1 text-sm text-stone-500">Устройства, на которых выполнен вход в ваш аккаунт.</p></div>
-              <button onClick={async () => { await api.delete('/auth/sessions'); await loadSessions(); }} className="h-10 rounded-xl border border-red-500/30 px-4 text-sm font-semibold text-red-500 hover:bg-red-500/10">Завершить остальные</button>
-            </div>
-            <div className="mt-5 divide-y divide-stone-200 dark:divide-white/10">
-              {sessionsLoading ? <p className="py-8 text-center text-sm text-stone-500">Загружаем сессии…</p> : sessions.map((session) => (
-                <div key={session.id} className="flex items-center gap-4 py-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-500"><MonitorSmartphone size={19}/></div>
-                  <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="truncate text-sm font-semibold">{session.userAgent || 'Неизвестное устройство'}</p>{session.current ? <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-500">Текущая</span> : null}</div><p className="mt-1 text-xs text-stone-500">{session.ipAddress || 'IP скрыт'} · активность {new Date(session.lastSeenAt).toLocaleString('ru-RU')}</p></div>
-                  <button onClick={() => void revokeSession(session.id, session.current)} aria-label="Завершить сессию" className="flex h-9 w-9 items-center justify-center rounded-xl border border-stone-200 text-stone-500 hover:border-red-500/40 hover:text-red-500 dark:border-white/10"><X size={16}/></button>
+        </section>
+      ) : null}
+      {!loading && tab === "ai" ? (
+        <section className="mt-6 space-y-3">
+          {aiSessions.length ? (
+            aiSessions.map((session) => (
+              <Link
+                key={session.id}
+                href={`/${locale}/ai?session=${session.id}`}
+                className="flex min-w-0 items-center gap-4 rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900"
+              >
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600">
+                  <Bot size={19} />
                 </div>
-              ))}
-              {!sessionsLoading && sessions.length === 0 ? <p className="py-8 text-center text-sm text-stone-500">Активных сессий не найдено.</p> : null}
-            </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold">
+                    {session.title || "Диалог с AVERON AI"}
+                  </p>
+                  <p className="mt-1 text-xs text-stone-500">
+                    {new Date(
+                      session.updatedAt || session.createdAt,
+                    ).toLocaleString("ru-RU")}{" "}
+                    · {session._count?.messages ?? 0} сообщений
+                  </p>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <Empty
+              title="История AI пока пуста"
+              href={`/${locale}/ai`}
+              action="Открыть AI"
+            />
+          )}
+        </section>
+      ) : null}
+      {!loading && tab === "sessions" ? (
+        <section className="mt-6 overflow-hidden rounded-2xl border border-stone-200 bg-white dark:border-white/10 dark:bg-stone-900">
+          <div className="divide-y divide-stone-200 dark:divide-white/10">
+            {sessions.map((session) => (
+              <div
+                key={session.id}
+                className="flex min-w-0 items-center gap-3 p-4"
+              >
+                <MonitorSmartphone className="shrink-0 text-violet-600" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">
+                    {session.userAgent || "Неизвестное устройство"}{" "}
+                    {session.current ? (
+                      <span className="ml-2 text-xs text-emerald-600">
+                        Текущая
+                      </span>
+                    ) : null}
+                  </p>
+                  <p className="mt-1 break-words text-xs text-stone-500">
+                    {session.ipAddress || "IP скрыт"} ·{" "}
+                    {new Date(session.lastSeenAt).toLocaleString("ru-RU")}
+                  </p>
+                </div>
+                <button
+                  aria-label="Завершить сессию"
+                  onClick={async () => {
+                    await api.delete(`/auth/sessions/${session.id}`);
+                    if (session.current) await signOut();
+                    else void load();
+                  }}
+                  className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-stone-200 text-stone-500 dark:border-white/10"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
           </div>
-        </TabsContent>
-      </Tabs>
+        </section>
+      ) : null}
+    </main>
+  );
+}
+
+function Info({
+  title,
+  value,
+  text,
+}: {
+  title: string;
+  value: string;
+  text: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+      <p className="text-sm text-stone-500">{title}</p>
+      <p className="mt-2 text-3xl font-black">{value}</p>
+      <p className="mt-2 text-xs text-stone-500">{text}</p>
+    </div>
+  );
+}
+function Empty({
+  title,
+  href,
+  action,
+}: {
+  title: string;
+  href: string;
+  action: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-stone-200 bg-white p-10 text-center dark:border-white/10 dark:bg-stone-900">
+      <h2 className="text-xl font-bold">{title}</h2>
+      <Link
+        href={href}
+        className="mt-5 inline-flex h-11 items-center rounded-xl bg-violet-600 px-5 font-semibold text-white"
+      >
+        {action}
+      </Link>
     </div>
   );
 }

@@ -2,9 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface FavoritesState {
-  ids: number[];
-  toggle: (id: number) => void;
-  isFavorite: (id: number) => boolean;
+  ids: string[];
+  toggle: (id: string | number) => void;
+  isFavorite: (id: string | number) => boolean;
 }
 
 /**
@@ -15,11 +15,13 @@ export const useFavoritesStore = create<FavoritesState>()(
   persist(
     (set, get) => ({
       ids: [],
-      toggle: (id) =>
+      toggle: (id) => {
+        const value = String(id);
         set((s) => ({
-          ids: s.ids.includes(id) ? s.ids.filter((x) => x !== id) : [...s.ids, id],
-        })),
-      isFavorite: (id) => get().ids.includes(id),
+          ids: s.ids.includes(value) ? s.ids.filter((x) => x !== value) : [...s.ids, value],
+        }));
+      },
+      isFavorite: (id) => get().ids.includes(String(id)),
     }),
     { name: 'averon-favorites' }
   )

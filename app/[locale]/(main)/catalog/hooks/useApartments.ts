@@ -23,7 +23,7 @@ export function useApartments(locale: string = 'ru', query?: string, filters: Fi
         const data = await getApartments(locale, query, filters);
         setApartments(data);
       } catch (err) {
-        setError('Не удалось загрузить объявления. Показаны примеры данных.');
+        setError('Не удалось загрузить каталог. Проверьте соединение и повторите попытку.');
         console.error('Error fetching apartments:', err);
       } finally {
         setIsLoading(false);

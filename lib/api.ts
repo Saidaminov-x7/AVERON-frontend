@@ -195,7 +195,7 @@ export const getApartments = async (
       }
     }
 
-    const params: Record<string, any> = {
+    const params: Record<string, string | number> = {
       page: filters.page || 1,
       limit: filters.limit || 50,
     };
@@ -252,7 +252,7 @@ export const getApartments = async (
     return [];
   } catch (error) {
     console.error('Error fetching apartments from API:', error);
-    return [];
+    throw error;
   }
 };
 
@@ -576,5 +576,4 @@ export const deleteChatMessage = async (messageId: string): Promise<boolean> => 
     return false;
   }
 };
-
 
