@@ -47,6 +47,20 @@ export const useCompareStore = create<CompareState>()(
         return get().ids.some((x) => String(x) === strId);
       },
     }),
-    { name: 'averon-compare' }
+    {
+      name: 'averon-compare',
+      version: 2,
+      migrate: (persistedState: unknown, version: number) => {
+        if (version < 2) {
+          return { ids: [] };
+        }
+        const state = persistedState as CompareState;
+        // Filter out legacy numeric apartment IDs
+        const validIds = Array.isArray(state?.ids)
+          ? state.ids.filter((id) => !/^\d+$/.test(String(id)))
+          : [];
+        return { ...state, ids: validIds };
+      },
+    }
   )
 );

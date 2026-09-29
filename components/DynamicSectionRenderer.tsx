@@ -65,15 +65,13 @@ interface DynamicSectionRendererProps {
   sections: DynamicSectionData[];
   locale: string;
   popularProducts?: StoreProduct[];
-  popularApartments?: StoreProduct[];
   platformStats?: PlatformStatsData;
 }
 
 export function DynamicSectionRenderer({
   sections,
   locale,
-  popularApartments = [],
-  popularProducts,
+  popularProducts = [],
   platformStats,
 }: DynamicSectionRendererProps) {
   const activeSections = (sections || [])
@@ -179,14 +177,14 @@ export function DynamicSectionRenderer({
                     {viewAllText} <Icons.ArrowRight size={16} />
                   </Link>
                 </div>
-                {(popularProducts || popularApartments).length === 0 ? (
+                {popularProducts.length === 0 ? (
                   <div className="rounded-2xl border border-dashed border-stone-300 dark:border-stone-800 p-12 text-center text-stone-500 dark:text-stone-400">
                     <Icons.Home size={36} className="mx-auto mb-3 text-stone-400" />
                     <p className="font-medium">Здесь появятся первые опубликованные товары</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {(popularProducts || popularApartments).slice(0, c.limit || 6).map((item) => (
+                    {popularProducts.slice(0, c.limit || 6).map((item) => (
                       <ProductCard key={item.id} product={item as StoreProduct} locale={locale} />
                     ))}
                   </div>
@@ -197,9 +195,9 @@ export function DynamicSectionRenderer({
 
           case 'CTA_BANNER': {
             const c = content as CtaBannerContent;
-            const title = c.title || section.title || 'Сдайте жильё быстро и безопасно';
-            const text = c.text || 'Разместите объявление бесплатно за пару минут';
-            const buttonText = c.buttonText || 'Разместить объявление';
+            const title = c.title || section.title || 'Покупайте выгодно и безопасно';
+            const text = c.text || 'Тысячи проверенных товаров с доставкой из Китая';
+            const buttonText = c.buttonText || 'Перейти в каталог';
             const buttonLink = c.buttonLink || '/catalog';
             return (
               <div
