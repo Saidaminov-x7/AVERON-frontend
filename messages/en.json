@@ -66,23 +66,39 @@
     "langAndTheme": "Language and theme"
   },
   "catalog": {
-    "title": "Real Estate Catalog",
-    "subtitle": "Find suitable housing using filters",
-    "searchPlaceholder": "Search the catalog...",
-    "searchResultsFor": "Search results for: {query}",
-    "filters": "Filters",
-    "resetFilters": "Reset filters",
-    "priceRange": "Price range",
-    "rooms": "Rooms",
-    "area": "Area",
-    "any": "Any",
-    "month": "month",
-    "nothingFound": "Nothing found for your search",
-    "nothingFoundDescription": "Try changing your search parameters or reset filters",
-    "resetSearch": "Reset search",
-    "noApartments": "No available apartments for your search",
-    "mapTitle": "Property map",
-    "mapSubtitle": "View property locations on the map"
+    "title": "Products from China",
+    "subtitle": "Clothing, shoes and accessories verified before publication.",
+    "eyebrow": "AVERON CATALOG",
+    "intro": "Clothing, shoes and accessories verified before publication.",
+    "filters": "Search filters",
+    "search": "Search",
+    "placeholder": "Product name",
+    "category": "Category",
+    "all": "All products",
+    "women": "Women",
+    "men": "Men",
+    "shoes": "Shoes",
+    "accessories": "Accessories",
+    "audience": "For whom",
+    "everyone": "Everyone",
+    "kids": "Kids",
+    "size": "Size",
+    "anySize": "Any size",
+    "color": "Color",
+    "anyColor": "Any color",
+    "price": "Price, UZS",
+    "from": "From",
+    "to": "To",
+    "sort": "Sort",
+    "newest": "Newest first",
+    "cheap": "Lowest price",
+    "expensive": "Highest price",
+    "show": "Show products",
+    "reset": "Reset",
+    "products": "Products",
+    "empty": "No matching products yet",
+    "emptyText": "Change the query or reset filters.",
+    "currency": "UZS"
   },
   "Apartment": {
     "notFound": "Apartment not found",
@@ -298,5 +314,87 @@
     "login": "Sign in",
     "register": "Register",
     "searchPlaceholder": "Search..."
+  },
+  "infoPages": {
+    "backToCatalog": "Go to catalog",
+    "delivery": {
+      "eyebrow": "Delivery",
+      "title": "Clear order tracking",
+      "description": "Follow the key stages of your delivery right in your profile.",
+      "items": [
+        { "title": "Confirmation", "text": "We verify your order details and contact information." },
+        { "title": "Procurement", "text": "We forward the confirmed order to the supplier." },
+        { "title": "Transit", "text": "We update tracking statuses as your package travels." },
+        { "title": "Pickup", "text": "We notify you as soon as your order is ready for pickup." }
+      ]
+    },
+    "returns": {
+      "eyebrow": "Returns",
+      "title": "If something is wrong with your order",
+      "description": "Keep original packaging and contact support immediately.",
+      "items": [
+        { "title": "Document condition", "text": "Take photos of the item, tags, and packaging." },
+        { "title": "Submit request", "text": "Provide order number and a brief description of the issue." },
+        { "title": "Review", "text": "Our team investigates the report and proposes a solution." },
+        { "title": "Follow guidelines", "text": "Terms depend on the item condition and reason for inquiry." }
+      ]
+    },
+    "sizeGuide": {
+      "eyebrow": "Size Guide",
+      "title": "How to choose the right size",
+      "description": "Compare card dimensions with your personal measurements, not just the size label.",
+      "items": [
+        { "title": "Take measurements", "text": "Measure chest, waist, hips, and foot length." },
+        { "title": "Check chart", "text": "Use the chart specifically attached to the selected product." },
+        { "title": "Consider fit", "text": "Pay attention to whether the cut is relaxed or slim-fit." },
+        { "title": "Ask support", "text": "If unsure between sizes, send your measurements to us." }
+      ]
+    },
+    "howToOrder": {
+      "eyebrow": "How to Order",
+      "title": "Four simple steps",
+      "description": "From finding an item to order confirmation — simple and straightforward.",
+      "items": [
+        { "title": "Find an item", "text": "Use our catalog, search bar, or AI assistant." },
+        { "title": "Select variant", "text": "Pick your preferred size, color, and quantity." },
+        { "title": "Provide contact", "text": "Log in with phone number and confirm details." },
+        { "title": "Track status", "text": "All updates will appear in your order history." }
+      ]
+    },
+    "support": {
+      "eyebrow": "AVERON Support",
+      "title": "We are here to help",
+      "description": "Customer support agents assist here. For product recommendations, please use the AI assistant.",
+      "cards": [
+        { "title": "Order status", "text": "Share your order number to check the current stage." },
+        { "title": "Product question", "text": "Clarify size, color variants, or item specifications." },
+        { "title": "Payment & delivery", "text": "Get answers about payment options, timelines, or delivery." }
+      ],
+      "formTitle": "New inquiry",
+      "namePlaceholder": "Name",
+      "phonePlaceholder": "Phone number",
+      "orderPlaceholder": "Order number (optional)",
+      "messagePlaceholder": "Describe your question",
+      "submitButton": "Submit inquiry"
+    },
+    "publicOffer": {
+      "eyebrow": "AVERON Documents",
+      "title": "Public Offer",
+      "sections": [
+        {
+          "title": "General Provisions",
+          "text": "This document specifies terms for orders, payments, deliveries, and communication through AVERON in the Republic of Uzbekistan."
+        },
+        {
+          "title": "Orders and Pricing",
+          "text": "Final price, specs, timeline, and delivery options are presented before order confirmation. Orders are accepted once confirmed by the service."
+        },
+        {
+          "title": "Returns and Inquiries",
+          "text": "Return conditions depend on item category and condition. Keep your order number and contact support."
+        }
+      ],
+      "footer": "Current revision: September 28, 2026. Support contact: @averon_fashion_admin."
+    }
   }
 }

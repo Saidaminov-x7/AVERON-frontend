@@ -66,23 +66,39 @@
     "langAndTheme": "Til va mavzu"
   },
   "catalog": {
-    "title": "Ko'chmas mulk katalogi",
-    "subtitle": "Filtrlar yordamida mos uy-joy toping",
-    "searchPlaceholder": "Katalogda qidirish...",
-    "searchResultsFor": "Qidiruv natijalari: {query}",
-    "filters": "Filtrlar",
-    "resetFilters": "Filtrlarni tiklash",
-    "priceRange": "Narx diapazoni",
-    "rooms": "Xonalar soni",
-    "area": "Maydon",
-    "any": "Istalgan",
-    "month": "oy",
-    "nothingFound": "Sizning so'rovingiz bo'yicha hech narsa topilmadi",
-    "nothingFoundDescription": "Qidiruv parametrlarini o'zgartirishni yoki filtrlarni tiklashni sinab ko'ring",
-    "resetSearch": "Qidiruvni tiklash",
-    "noApartments": "Sizning so'rovingiz bo'yicha mavjud kvartiralar yo'q",
-    "mapTitle": "Obyektlar xaritasi",
-    "mapSubtitle": "Obyektlarning joylashuvini xaritada ko'ring"
+    "title": "Xitoydan mahsulotlar",
+    "subtitle": "E’lon qilishdan oldin tekshirilgan kiyim, poyabzal va aksessuarlar.",
+    "eyebrow": "AVERON KATALOGI",
+    "intro": "E’lon qilishdan oldin tekshirilgan kiyim, poyabzal va aksessuarlar.",
+    "filters": "Qidiruv parametrlari",
+    "search": "Qidiruv",
+    "placeholder": "Mahsulot nomi",
+    "category": "Kategoriya",
+    "all": "Barcha mahsulotlar",
+    "women": "Ayollar",
+    "men": "Erkaklar",
+    "shoes": "Poyabzal",
+    "accessories": "Aksessuarlar",
+    "audience": "Kim uchun",
+    "everyone": "Barcha uchun",
+    "kids": "Bolalar",
+    "size": "O‘lcham",
+    "anySize": "Istalgan o‘lcham",
+    "color": "Rang",
+    "anyColor": "Istalgan rang",
+    "price": "Narx, so‘m",
+    "from": "Dan",
+    "to": "Gacha",
+    "sort": "Saralash",
+    "newest": "Avval yangilari",
+    "cheap": "Avval arzonlari",
+    "expensive": "Avval qimmatlari",
+    "show": "Mahsulotlarni ko‘rsatish",
+    "reset": "Tozalash",
+    "products": "Mahsulotlar",
+    "empty": "Mos mahsulotlar topilmadi",
+    "emptyText": "So‘rovni o‘zgartiring yoki filtrlarni tozalang.",
+    "currency": "so'm"
   },
   "Apartment": {
     "notFound": "Kvartira topilmadi",
@@ -313,5 +329,87 @@
     "login": "Kirish",
     "register": "Ro'yxatdan o'tish",
     "searchPlaceholder": "Qidirish..."
+  },
+  "infoPages": {
+    "backToCatalog": "Katalogga o'tish",
+    "delivery": {
+      "eyebrow": "Yetkazib berish",
+      "title": "Buyurtmaning aniq yo'li",
+      "description": "Yetkazib berishning asosiy bosqichlarini shaxsiy kabinetda kuzatib boring.",
+      "items": [
+        { "title": "Tasdiqlash", "text": "Buyurtma tarkibi va aloqa ma'lumotlarini tekshiramiz." },
+        { "title": "Xarid", "text": "Tasdiqlangan buyurtmani yetkazib beruvchiga yuboramiz." },
+        { "title": "Tashish", "text": "Buyurtma harakati bilan statusni yangilab boramiz." },
+        { "title": "Qabul qilish", "text": "Buyurtma berishga tayyor bo'lganda xabar beramiz." }
+      ]
+    },
+    "returns": {
+      "eyebrow": "Qaytarish",
+      "title": "Buyurtmada muammo bo'lsa",
+      "description": "Qadoqni saqlang va darhol qo'llab-quvvatlash xizmatiga murojaat qiling.",
+      "items": [
+        { "title": "Holatni qayd eting", "text": "Mahsulot, qadoq va yorliqni rasmga oling." },
+        { "title": "Murojaat qoldiring", "text": "Buyurtma raqamini ko'rsating va vaziyatni yozing." },
+        { "title": "Tekshiruvni kuting", "text": "Jamoamiz materiallarni o'rganib chiqadi va yechim taklif qiladi." },
+        { "title": "Ko'rsatmalarga rioya qiling", "text": "Shartlar murojaat sababi va mahsulot holatiga bog'liq." }
+      ]
+    },
+    "sizeGuide": {
+      "eyebrow": "O'lchamlar",
+      "title": "Mos o'lchamni qanday tanlash mumkin",
+      "description": "Faqat harfga emas, parametrlar va shaxsiy o'lchamlarga e'tibor bering.",
+      "items": [
+        { "title": "O'lchov oling", "text": "Ko'krak, bel, son va oyoq uzunligini o'lchang." },
+        { "title": "Jadvalni oching", "text": "Aynan tanlangan mahsulot jadvalidan foydalaning." },
+        { "title": "Kiyilishini inobatga oling", "text": "Erkin yoki tor turishi haqidagi tavsifga qarang." },
+        { "title": "Yordam so'rang", "text": "Agar ikkilansangiz, o'lchamlaringizni bizga yuboring." }
+      ]
+    },
+    "howToOrder": {
+      "eyebrow": "Qanday buyurtma beriladi",
+      "title": "To'rtta oddiy qadam",
+      "description": "Tanlashdan tasdiqlashgacha — ortiqcha shakllarsiz va oson.",
+      "items": [
+        { "title": "Mahsulotni toping", "text": "Katalog, qidiruv yoki AI-yordamchidan foydalaning." },
+        { "title": "Variantni tanlang", "text": "O'lcham, rang va sonini ko'rsating." },
+        { "title": "Kontakt qoldiring", "text": "Telefon raqami orqali kiring va ma'lumotlarni tasdiqlang." },
+        { "title": "Statusni kuzating", "text": "Barcha o'zgarishlar buyurtma tarixida ko'rinadi." }
+      ]
+    },
+    "support": {
+      "eyebrow": "AVERON qo'llab-quvvatlash",
+      "title": "Buyurtmangiz bilan yordam beramiz",
+      "description": "Bu yerda qo'llab-quvvatlash operatorlari ishlaydi. Mahsulot tanlash uchun AI-yordamchidan foydalaning.",
+      "cards": [
+        { "title": "Buyurtma holati", "text": "Buyurtma raqamini yozing — joriy bosqichni tekshiramiz." },
+        { "title": "Mahsulot bo'yicha savol", "text": "O'lcham, variant yoki komplektatsiyani aniqlashga yordam beramiz." },
+        { "title": "To'lov va yetkazib berish", "text": "To'lov, muddatlar va qabul qilish bo'yicha yordam beramiz." }
+      ],
+      "formTitle": "Yangi murojaat",
+      "namePlaceholder": "Ism",
+      "phonePlaceholder": "Telefon raqami",
+      "orderPlaceholder": "Buyurtma raqami (agar bo'lsa)",
+      "messagePlaceholder": "Savolingizni yozing",
+      "submitButton": "Murojaatni yuborish"
+    },
+    "publicOffer": {
+      "eyebrow": "AVERON hujjatlari",
+      "title": "Ommaviy oferta",
+      "sections": [
+        {
+          "title": "Umumiy qoidalar",
+          "text": "Ushbu hujjat O'zbekiston Respublikasi hududida AVERON orqali buyurtma berish, to'lov, yetkazib berish va tomonlarning hamkorlik shartlarini belgilaydi."
+        },
+        {
+          "title": "Buyurtma va narx",
+          "text": "Yakuniy narx, xususiyatlar, muddat va yetkazib berish usuli buyurtma tasdiqlangunga qadar xaridorga ko'rsatiladi."
+        },
+        {
+          "title": "Qaytarish va murojaatlar",
+          "text": "Qaytarish shartlari mahsulot toifasi va holatiga bog'liq. Murojaat uchun buyurtma raqamini saqlang va qo'llab-quvvatlash bilan bog'laning."
+        }
+      ],
+      "footer": "Amaldagi tahrir: 2026-yil 28-sentabr. Qo'llab-quvvatlash kontakti: @averon_fashion_admin."
+    }
   }
 }

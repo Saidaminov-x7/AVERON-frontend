@@ -1,3 +1,35 @@
+import { use } from 'react';
+import { useTranslations } from 'next-intl';
 import { InfoPage } from '@/components/content/InfoPage';
-export const metadata = { title: 'Возвраты' };
-export default async function Page({params}:{params:Promise<{locale:string}>}){const {locale}=await params;return <InfoPage locale={locale} eyebrow="Возвраты" title="Если с заказом что-то не так" description="Сохраните упаковку и сразу сообщите поддержке о проблеме." items={[{title:'Зафиксируйте состояние',text:'Сделайте фото товара, упаковки и этикетки.'},{title:'Создайте обращение',text:'Укажите номер заказа и кратко опишите ситуацию.'},{title:'Дождитесь проверки',text:'Команда изучит материалы и предложит решение.'},{title:'Следуйте инструкции',text:'Условия зависят от причины обращения и состояния товара.'}]}/>}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const titles: Record<string, string> = {
+    ru: 'Возвраты',
+    uz: 'Qaytarish',
+    en: 'Returns',
+  };
+  return { title: titles[locale] || 'Returns' };
+}
+
+export default function ReturnsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params);
+  const t = useTranslations('infoPages.returns');
+
+  const items = [
+    { title: t('items.0.title'), text: t('items.0.text') },
+    { title: t('items.1.title'), text: t('items.1.text') },
+    { title: t('items.2.title'), text: t('items.2.text') },
+    { title: t('items.3.title'), text: t('items.3.text') },
+  ];
+
+  return (
+    <InfoPage
+      locale={locale}
+      eyebrow={t('eyebrow')}
+      title={t('title')}
+      description={t('description')}
+      items={items}
+    />
+  );
+}

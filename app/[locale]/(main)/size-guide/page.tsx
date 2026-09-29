@@ -1,3 +1,35 @@
+import { use } from 'react';
+import { useTranslations } from 'next-intl';
 import { InfoPage } from '@/components/content/InfoPage';
-export const metadata = { title: 'Размеры' };
-export default async function Page({params}:{params:Promise<{locale:string}>}){const {locale}=await params;return <InfoPage locale={locale} eyebrow="Размеры" title="Как выбрать подходящий размер" description="Сверяйте параметры карточки с личными мерками, а не только с привычной буквой размера." items={[{title:'Снимите мерки',text:'Измерьте грудь, талию, бёдра и длину стопы.'},{title:'Откройте таблицу',text:'Используйте таблицу именно выбранного товара.'},{title:'Учитывайте посадку',text:'Обратите внимание на описание свободной или облегающей посадки.'},{title:'Спросите поддержку',text:'Если сомневаетесь между размерами, отправьте нам мерки.'}]}/>}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const titles: Record<string, string> = {
+    ru: 'Размеры',
+    uz: 'O‘lchamlar',
+    en: 'Size Guide',
+  };
+  return { title: titles[locale] || 'Size Guide' };
+}
+
+export default function SizeGuidePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params);
+  const t = useTranslations('infoPages.sizeGuide');
+
+  const items = [
+    { title: t('items.0.title'), text: t('items.0.text') },
+    { title: t('items.1.title'), text: t('items.1.text') },
+    { title: t('items.2.title'), text: t('items.2.text') },
+    { title: t('items.3.title'), text: t('items.3.text') },
+  ];
+
+  return (
+    <InfoPage
+      locale={locale}
+      eyebrow={t('eyebrow')}
+      title={t('title')}
+      description={t('description')}
+      items={items}
+    />
+  );
+}
