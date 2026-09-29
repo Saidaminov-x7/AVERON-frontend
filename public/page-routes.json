@@ -1,7 +1,6 @@
 [
   "/",
   "/about",
-  "/add-listing",
   "/ai",
   "/catalog",
   "/catalog/:id",

@@ -4,7 +4,7 @@ import * as Icons from 'lucide-react';
 import { externalBaseURL } from '@/lib/axios';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
-import { ApartmentCard } from '@/app/[locale]/(main)/catalog/components/ApartmentCard';
+import { ProductCard, type StoreProduct } from '@/components/commerce/ProductCard';
 import type {
   SectionType,
   HeroSearchContent,
@@ -184,8 +184,8 @@ export function DynamicSectionRenderer({
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {popularApartments.slice(0, c.limit || 6).map((apt) => (
-                      <ApartmentCard key={apt.id} apartment={apt} locale={locale} />
+                    {popularApartments.slice(0, c.limit || 6).map((item) => (
+                      <ProductCard key={item.id} product={item as StoreProduct} locale={locale} />
                     ))}
                   </div>
                 )}
