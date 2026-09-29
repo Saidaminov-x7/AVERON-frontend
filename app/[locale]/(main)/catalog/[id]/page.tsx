@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { externalBaseURL } from "@/lib/axios";
 import { ProductImage } from "@/components/commerce/ProductImage";
+import { OrderModal } from "@/components/commerce/OrderModal";
 import { productTitle, type StoreProduct } from "@/lib/products";
 
 async function loadProduct(slug: string) {
@@ -122,12 +123,7 @@ export default async function ProductPage({
                 </div>
               </div>
             ) : null}
-            <Link
-              href={`/${locale}/add-listing?url=${encodeURIComponent(product.sourceUrl || `${externalBaseURL}/products/${product.slug}`)}`}
-              className="mt-8 flex h-12 w-full items-center justify-center rounded-xl bg-violet-600 px-6 font-bold text-white transition-[transform,background-color] duration-200 ease-out active:scale-[0.98] hover:bg-violet-700"
-            >
-              Оформить заказ
-            </Link>
+            <OrderModal product={product} locale={locale} />
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="flex gap-3 rounded-xl border border-stone-200 p-4 dark:border-white/10">
                 <PackageCheck className="text-violet-600" />

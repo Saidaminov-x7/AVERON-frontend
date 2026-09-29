@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import type { NavLink } from '@/lib/siteSettings';
 import {
   Search, X, Heart, ChevronRight, LogIn, Menu, ArrowLeft, User, MessageSquare, Sparkles, Scale,
 } from 'lucide-react';
@@ -127,8 +128,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const configuredNavLinks = (() => {
     const saved = Array.isArray(settings?.navLinks)
       ? settings.navLinks
-          .filter((item: any) => item.position !== 'footer')
-          .map((item: any) => {
+          .filter((item: NavLink) => item && item.position !== 'footer')
+          .map((item: NavLink) => {
             const rawHref = String(item.url || item.href || '/');
             const href = rawHref === '/chat' ? '/ai' : rawHref;
             const rawLabel = typeof item.label === 'object'

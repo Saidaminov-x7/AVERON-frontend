@@ -11,7 +11,6 @@ const PAGE_ROUTES = [
   '/favorites',
   '/profile',
   '/chat',
-  '/add-listing',
   '/about',
   '/privacy',
   '/terms',

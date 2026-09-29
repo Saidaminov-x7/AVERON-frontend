@@ -12,7 +12,6 @@ const AUTH_AND_PROTECTED_ROUTES = [
   '/register',
   '/forgot-password',
   '/reset-password',
-  '/add-listing',
   '/profile',
 ];
 

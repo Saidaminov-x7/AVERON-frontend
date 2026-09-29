@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useLocale } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import type { NavLink } from "@/lib/siteSettings";
 const copy = {
   ru: {
     desc: "Товары из Китая с понятным выбором, ручной проверкой карточек и доставкой по Узбекистану.",
@@ -95,8 +96,8 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
   const { data: settings } = useSiteSettings();
   const configuredFooterLinks = Array.isArray(settings?.navLinks)
     ? settings.navLinks
-        .filter((item: any) => item.position === "footer" && item.label && (item.href || item.url))
-        .map((item: any) => [
+        .filter((item: NavLink) => item && item.position === "footer" && item.label && (item.href || item.url))
+        .map((item: NavLink) => [
           typeof item.label === "object"
             ? item.label[locale] || item.label.ru || item.label.uz || item.label.en
             : String(item.label),
