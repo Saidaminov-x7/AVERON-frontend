@@ -64,7 +64,8 @@ function DynamicIcon({ name, size = 24 }: { name?: string; size?: number }) {
 interface DynamicSectionRendererProps {
   sections: DynamicSectionData[];
   locale: string;
-  popularApartments?: any[];
+  popularProducts?: StoreProduct[];
+  popularApartments?: StoreProduct[];
   platformStats?: PlatformStatsData;
 }
 
@@ -72,6 +73,7 @@ export function DynamicSectionRenderer({
   sections,
   locale,
   popularApartments = [],
+  popularProducts,
   platformStats,
 }: DynamicSectionRendererProps) {
   const activeSections = (sections || [])
@@ -177,14 +179,14 @@ export function DynamicSectionRenderer({
                     {viewAllText} <Icons.ArrowRight size={16} />
                   </Link>
                 </div>
-                {popularApartments.length === 0 ? (
+                {(popularProducts || popularApartments).length === 0 ? (
                   <div className="rounded-2xl border border-dashed border-stone-300 dark:border-stone-800 p-12 text-center text-stone-500 dark:text-stone-400">
                     <Icons.Home size={36} className="mx-auto mb-3 text-stone-400" />
-                    <p className="font-medium">Здесь появятся первые опубликованные объявления</p>
+                    <p className="font-medium">Здесь появятся первые опубликованные товары</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {popularApartments.slice(0, c.limit || 6).map((item) => (
+                    {(popularProducts || popularApartments).slice(0, c.limit || 6).map((item) => (
                       <ProductCard key={item.id} product={item as StoreProduct} locale={locale} />
                     ))}
                   </div>

@@ -3,12 +3,19 @@
 
 import { api } from './api';
 
+export interface NavLink {
+  label: string | Record<string, string>;
+  url?: string;
+  href?: string;
+  position?: 'header' | 'footer' | string;
+}
+
 export interface PublicSiteSettings {
   siteName: string;
   contactEmail: string;
   contactPhone: string;
   logoUrl: string | null;
-  navLinks?: any[] | null;
+  navLinks?: NavLink[] | null;
   mobilePinchZoomEnabled?: boolean;
   googleAuthEnabled?: boolean;
   autoModerationEnabled?: boolean;
