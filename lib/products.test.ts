@@ -92,7 +92,7 @@ describe('categoryName', () => {
     const categories = parseStoreCategories({
       data: {
         items: [
-          { slug: 'outerwear', isActive: true },
+          { slug: 'outerwear', active: true },
           { slug: 'archived', isActive: false },
           { slug: 'missing-status' },
           { name: 'Invalid', isActive: true },
@@ -103,6 +103,9 @@ describe('categoryName', () => {
     expect(categories.map(({ slug }) => slug)).toEqual(['outerwear']);
     expect(parseStoreCategories([{ slug: 'direct', isActive: true }])).toEqual([
       { slug: 'direct', isActive: true },
+    ]);
+    expect(parseStoreCategories([{ slug: 'api-category', active: true }])).toEqual([
+      { slug: 'api-category', active: true },
     ]);
   });
 });

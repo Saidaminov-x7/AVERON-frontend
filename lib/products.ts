@@ -10,6 +10,7 @@ export type StoreCategory = {
   nameRu?: string;
   nameUz?: string;
   nameEn?: string;
+  active?: boolean;
   isActive?: boolean;
 };
 
@@ -80,8 +81,8 @@ export function parseStoreCategories(data: unknown): StoreCategory[] {
       category !== null &&
       'slug' in category &&
       typeof category.slug === 'string' &&
-      'isActive' in category &&
-      category.isActive === true,
+      (('active' in category && category.active === true) ||
+        ('isActive' in category && category.isActive === true)),
   );
 }
 
