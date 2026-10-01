@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
+import {LanguageFlag, type LocaleFlagCode} from '@/components/ui/LanguageFlag';
 
 const locales = [
   {code: 'ru', label: 'Русский'},
-  {code: 'uz', label: 'O\'zbek'}
-] as const;
+  {code: 'uz', label: 'O‘zbekcha'},
+  {code: 'en', label: 'English'}
+] satisfies Array<{code: LocaleFlagCode; label: string}>;
 
 export function LocaleSwitcher({currentLocale}: {currentLocale: string}) {
   const pathname = usePathname();
@@ -29,8 +31,9 @@ export function LocaleSwitcher({currentLocale}: {currentLocale: string}) {
                 : 'border-gray-300 bg-white text-gray-900'
             }`}
             aria-current={active ? 'page' : undefined}
+            aria-label={label}
           >
-            {label}
+            <LanguageFlag locale={code} />
           </Link>
         );
       })}

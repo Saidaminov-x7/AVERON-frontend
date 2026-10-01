@@ -29,7 +29,7 @@ export function ProductCard({
   const toggleCompare = useCompareStore((state) => state.toggle);
 
   return (
-    <article className="group relative max-w-sm overflow-hidden rounded-2xl border border-stone-200 bg-white transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:shadow-xl dark:border-white/10 dark:bg-stone-900">
+    <article className="group relative max-w-sm overflow-hidden rounded-2xl border border-stone-200/90 bg-white shadow-sm motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-200 motion-safe:ease-out motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-stone-300 motion-safe:hover:shadow-lg dark:border-white/10 dark:bg-stone-900 dark:motion-safe:hover:border-white/20">
       <Link
         href={`/${locale}/catalog/${product.slug}${catalogQuery ? `?${catalogQuery}` : ''}`}
         className="block"
@@ -41,12 +41,12 @@ export function ProductCard({
           <p className="line-clamp-2 min-h-10 text-sm font-semibold leading-5">{title}</p>
           <div className="mt-3 flex flex-wrap items-baseline gap-2">
             <strong>{price} {currency}</strong>
-            {product.compareAtPriceUzs ? <span className="text-xs text-stone-400 line-through">{Number(product.compareAtPriceUzs).toLocaleString('ru-RU')} {currency}</span> : null}
+            {product.compareAtPriceUzs ? <span className="text-xs text-stone-400 line-through">{Number(product.compareAtPriceUzs).toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')} {currency}</span> : null}
           </div>
         </div>
       </Link>
       <div className="absolute right-3 top-3 flex gap-2">
-        <button type="button" aria-label={isCompared ? 'Убрать из сравнения' : 'Добавить к сравнению'} onClick={() => toggleCompare(product.id)} className={`flex size-10 items-center justify-center rounded-full border border-white/60 bg-white/90 backdrop-blur ${isCompared ? 'text-violet-600' : 'text-stone-700'}`}><Scale size={17} /></button>
+        <button type="button" aria-label={isCompared ? 'Убрать из сравнения' : 'Добавить к сравнению'} onClick={() => toggleCompare(product.id)} className={`flex size-10 items-center justify-center rounded-full border border-white/60 bg-white/90 backdrop-blur ${isCompared ? 'text-primary-700' : 'text-stone-700'}`}><Scale size={17} /></button>
         <button type="button" aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'} onClick={() => toggleFavorite(product.id)} className={`flex size-10 items-center justify-center rounded-full border border-white/60 bg-white/90 backdrop-blur ${isFavorite ? 'text-rose-600' : 'text-stone-700'}`}><Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} /></button>
       </div>
     </article>

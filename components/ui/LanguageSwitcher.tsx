@@ -3,8 +3,9 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { Button } from '@/components/ui/Button';
+import { LanguageFlag, type LocaleFlagCode } from '@/components/ui/LanguageFlag';
 
-const locales = ['uz', 'en', 'ru'];
+const locales: LocaleFlagCode[] = ['uz', 'en', 'ru'];
 
 export function LanguageSwitcher({ locale }: { locale: string }) {
   const pathname = usePathname();
@@ -27,8 +28,9 @@ export function LanguageSwitcher({ locale }: { locale: string }) {
           variant={currentLocale === loc ? 'default' : 'ghost'}
           onClick={() => handleLocaleChange(loc)}
           className={`px-3 py-1 text-sm ${currentLocale === loc ? 'bg-white dark:bg-stone-700' : ''}`}
+          aria-label={{ru: 'Русский', uz: 'O‘zbekcha', en: 'English'}[loc]}
         >
-          {loc.toUpperCase()}
+          <LanguageFlag locale={loc} className="h-4 w-6" />
         </Button>
       ))}
     </div>

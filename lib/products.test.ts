@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import api from './axios';
 import {
+  buildCatalogPageSearchParams,
   buildCatalogSearchParams,
   buildProductSearchParams,
   categoryName,
@@ -93,19 +94,29 @@ describe('categoryName', () => {
       data: {
         items: [
           { slug: 'outerwear', active: true },
-          { slug: 'archived', isActive: false },
+          { slug: 'archived', active: false },
           { slug: 'missing-status' },
-          { name: 'Invalid', isActive: true },
+          { name: 'Invalid', active: true },
         ],
       },
     });
 
     expect(categories.map(({ slug }) => slug)).toEqual(['outerwear']);
-    expect(parseStoreCategories([{ slug: 'direct', isActive: true }])).toEqual([
-      { slug: 'direct', isActive: true },
+    expect(parseStoreCategories([{ slug: 'direct', active: true }])).toEqual([
+      { slug: 'direct', active: true },
     ]);
     expect(parseStoreCategories([{ slug: 'api-category', active: true }])).toEqual([
       { slug: 'api-category', active: true },
     ]);
+    expect(parseStoreCategories([{ slug: 'alternate-status', isActive: true }])).toEqual([]);
+  });
+
+  it('omits the first page from catalog links and retains active filters on later pages', () => {
+    const filters = { category: 'outerwear', country: 'CN', q: 'coat', page: '4' };
+
+    expect(buildCatalogPageSearchParams(filters, 1).toString())
+      .toBe('q=coat&country=CN&category=outerwear');
+    expect(buildCatalogPageSearchParams(filters, 3).toString())
+      .toBe('q=coat&country=CN&category=outerwear&page=3');
   });
 });

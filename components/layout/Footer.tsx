@@ -116,7 +116,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
         {links.map(([l, h]) => (
           <li key={h}>
             <Link
-              className="text-sm text-stone-500 hover:text-violet-600 dark:text-stone-400"
+              className="text-sm text-stone-500 transition-colors hover:text-primary-700 dark:text-stone-400 dark:hover:text-primary-300"
               href={`/${locale}${h}`}
             >
               {l}
@@ -127,13 +127,13 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
     </div>
   );
   return (
-    <footer className="w-full border-t border-stone-200 bg-white dark:border-white/10 dark:bg-stone-900">
-      <div className="mx-auto max-w-[1440px] px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.15fr_repeat(3,1fr)]">
+    <footer className="w-full border-t border-stone-200 bg-[#fcfbf8] dark:border-white/10 dark:bg-stone-950">
+      <div className="mx-auto max-w-[1440px] px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.25fr_repeat(3,1fr)]">
           <div>
             <Link
               href={`/${locale}`}
-              className="text-xl font-black tracking-[.18em]"
+              className="text-xl font-black tracking-[.18em] text-primary-800 dark:text-primary-300"
             >
               {settings?.siteName || "AVERON"}
             </Link>
@@ -156,7 +156,16 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
                 {t.support}
               </a>
             </div>
-            {(settings?.contactEmail || settings?.contactPhone) && <div className="mt-4 space-y-1 text-sm text-stone-500 dark:text-stone-400">{settings.contactEmail && <a className="block hover:text-violet-500" href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>}{settings.contactPhone && <a className="block hover:text-violet-500" href={`tel:${settings.contactPhone.replace(/[^+\d]/g, '')}`}>{settings.contactPhone}</a>}</div>}
+            {(settings?.contactEmail || settings?.contactPhone) && (
+              <div className="mt-4 space-y-1 text-sm text-stone-500 dark:text-stone-400">
+                {settings.contactEmail && (
+                  <a className="block hover:text-primary-700" href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>
+                )}
+                {settings.contactPhone && (
+                  <a className="block hover:text-primary-700" href={`tel:${settings.contactPhone.replace(/[^+\d]/g, '')}`}>{settings.contactPhone}</a>
+                )}
+              </div>
+            )}
           </div>
           {col(t.buyers, configuredFooterLinks.length ? configuredFooterLinks : t.links)}
           {col(t.help, t.helpLinks)}

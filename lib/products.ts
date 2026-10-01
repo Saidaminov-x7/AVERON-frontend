@@ -11,7 +11,6 @@ export type StoreCategory = {
   nameUz?: string;
   nameEn?: string;
   active?: boolean;
-  isActive?: boolean;
 };
 
 export type StoreProduct = {
@@ -81,8 +80,8 @@ export function parseStoreCategories(data: unknown): StoreCategory[] {
       category !== null &&
       'slug' in category &&
       typeof category.slug === 'string' &&
-      (('active' in category && category.active === true) ||
-        ('isActive' in category && category.isActive === true)),
+      'active' in category &&
+      category.active === true,
   );
 }
 
@@ -103,6 +102,16 @@ export function buildCatalogSearchParams(filters: Record<string, string | string
 export function buildProductSearchParams(filters: Record<string, string | string[] | undefined>, limit = 24) {
   const query = buildCatalogSearchParams(filters);
   query.set('limit', String(limit));
+  return query;
+}
+
+export function buildCatalogPageSearchParams(
+  filters: Record<string, string | string[] | undefined>,
+  page: number,
+) {
+  const query = buildCatalogSearchParams(filters);
+  if (page > 1) query.set('page', String(page));
+  else query.delete('page');
   return query;
 }
 

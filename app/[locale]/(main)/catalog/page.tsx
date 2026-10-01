@@ -1,61 +1,34 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Filter, Search, SlidersHorizontal } from "lucide-react";
-import { externalBaseURL } from "@/lib/axios";
 import {
   ProductCard,
   type StoreProduct,
 } from "@/components/commerce/ProductCard";
 import {
-  buildProductSearchParams,
+  buildCatalogPageSearchParams,
   buildCatalogSearchParams,
   categoryName,
-  parseStoreCategories,
   type StoreCategory,
 } from "@/lib/products";
+import { loadStoreCatalog, loadStoreCategories } from "@/lib/storefront-catalog";
 
 type Filters = Record<string, string | string[] | undefined>;
 
-async function loadCatalog(f: Filters) {
-  const q = buildProductSearchParams(f);
-  try {
-    const r = await fetch(`${externalBaseURL}/api/v1/products?${q}`, {
-      cache: "no-store",
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!r.ok) throw Error();
-    return r.json();
-  } catch {
-    return { items: [], pagination: { total: 0 } };
-  }
-}
-
-async function loadCategories(): Promise<StoreCategory[]> {
-  try {
-    const r = await fetch(`${externalBaseURL}/api/v1/categories`, {
-      cache: "no-store",
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!r.ok) throw Error();
-    const data: unknown = await r.json();
-    return parseStoreCategories(data);
-  } catch {
-    return [];
-  }
-}
-
 const input =
-  "h-11 w-full rounded-xl border border-stone-300 bg-transparent px-3 text-sm outline-none focus:border-violet-500 dark:border-white/15";
+  "h-11 w-full rounded-xl border border-stone-300 bg-transparent px-3 text-sm outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-600/15 dark:border-white/15";
 
 function Controls({
   f,
   t,
   categories,
+  categoriesError,
   locale,
 }: {
   f: Filters;
   t: (key: string) => string;
   categories: StoreCategory[];
+  categoriesError: boolean;
   locale: string;
 }) {
   const cats: Array<[string, string]> = [
@@ -78,8 +51,8 @@ function Controls({
       {typeof f.country === "string" && f.country.trim() ? (
         <input type="hidden" name="country" value={f.country} />
       ) : null}
-      {typeof f.page === "string" && f.page.trim() ? (
-        <input type="hidden" name="page" value={f.page} />
+      {categoriesError && typeof f.category === "string" && f.category.trim() ? (
+        <input type="hidden" name="category" value={f.category} />
       ) : null}
       <label className="text-xs font-bold uppercase text-stone-500">
         {t("search")}
@@ -93,11 +66,16 @@ function Controls({
       <p className="mt-5 text-xs font-bold uppercase text-stone-500">
         {t("category")}
       </p>
+      {categoriesError ? (
+        <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">
+          {locale === "uz" ? "Toifalarni yuklab bo‘lmadi." : locale === "en" ? "Categories could not be loaded." : "Не удалось загрузить категории."}
+        </p>
+      ) : null}
       <div className="mt-2 flex flex-wrap gap-2">
         {cats.map(([v, l]) => (
           <label
             key={v}
-            className={`cursor-pointer rounded-xl border px-3 py-2 text-sm ${(f.category ?? "") === v ? "border-violet-600 bg-violet-600 text-white" : "border-stone-300 dark:border-white/15"}`}
+            className={`cursor-pointer rounded-xl border px-3 py-2 text-sm transition-colors ${(f.category ?? "") === v ? "border-primary-700 bg-primary-700 text-white" : "border-stone-300 hover:border-primary-600 dark:border-white/15"}`}
           >
             <input
               className="sr-only"
@@ -117,7 +95,7 @@ function Controls({
         {audiences.map(([v, l]) => (
           <label
             key={v}
-            className={`cursor-pointer rounded-xl border px-3 py-2 text-sm ${(f.audience ?? "") === v ? "border-violet-600 bg-violet-600 text-white" : "border-stone-300 dark:border-white/15"}`}
+            className={`cursor-pointer rounded-xl border px-3 py-2 text-sm transition-colors ${(f.audience ?? "") === v ? "border-primary-700 bg-primary-700 text-white" : "border-stone-300 hover:border-primary-600 dark:border-white/15"}`}
           >
             <input
               className="sr-only"
@@ -200,7 +178,7 @@ function Controls({
           <option value="price_desc">{t("expensive")}</option>
         </select>
       </label>
-      <button className="mt-5 h-11 w-full rounded-xl bg-violet-600 text-sm font-bold text-white">
+      <button className="mt-5 h-11 w-full rounded-xl bg-primary-700 text-sm font-bold text-white shadow-sm transition-colors hover:bg-primary-800">
         {t("show")}
       </button>
     </>
@@ -215,15 +193,21 @@ export default async function CatalogPage({
   searchParams: Promise<Filters>;
 }) {
   const [{ locale }, f] = await Promise.all([params, searchParams]);
-  const [data, categories] = await Promise.all([loadCatalog(f), loadCategories()]);
-  const products: StoreProduct[] = data.items ?? [];
+  const [catalog, categoryResult] = await Promise.all([
+    loadStoreCatalog(f),
+    loadStoreCategories(),
+  ]);
+  const { data } = catalog;
+  const products: StoreProduct[] = data.items;
   return (
     <CatalogContent
       locale={locale}
       f={f}
       data={data}
       products={products}
-      categories={categories}
+      categories={categoryResult.categories}
+      catalogError={catalog.status === "error"}
+      categoriesError={categoryResult.status === "error"}
     />
   );
 }
@@ -234,21 +218,34 @@ function CatalogContent({
   data,
   products,
   categories,
+  catalogError,
+  categoriesError,
 }: {
   locale: string;
   f: Filters;
-  data: { pagination?: { total?: number } };
+  data: { pagination: { page: number; pages: number; total: number } };
   products: StoreProduct[];
   categories: StoreCategory[];
+  catalogError: boolean;
+  categoriesError: boolean;
 }) {
   const t = useTranslations("catalog");
   const catalogQuery = buildCatalogSearchParams(f).toString();
+  const requestedPage = Number(data.pagination.page ?? f.page ?? 1);
+  const page = Number.isFinite(requestedPage) && requestedPage > 0
+    ? Math.floor(requestedPage)
+    : 1;
+  const pageCount = Math.max(1, data.pagination.pages || 1);
+  const pageHref = (targetPage: number) => {
+    const query = buildCatalogPageSearchParams(f, targetPage).toString();
+    return `/${locale}/catalog${query ? `?${query}` : ""}`;
+  };
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
       <section className="border-b border-stone-200 bg-white dark:border-white/10 dark:bg-stone-900">
         <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
-          <p className="text-xs font-bold tracking-[.18em] text-violet-600">
+          <p className="text-xs font-bold tracking-[.18em] text-primary-700 dark:text-primary-300">
             {t("eyebrow")}
           </p>
           <h1 className="mt-2 text-4xl font-extrabold">{t("title")}</h1>
@@ -258,12 +255,12 @@ function CatalogContent({
       <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
         <form className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900 lg:hidden">
           <details>
-            <summary className="flex h-11 list-none items-center justify-center gap-2 rounded-xl bg-violet-600 font-bold text-white">
+            <summary className="flex h-11 list-none items-center justify-center gap-2 rounded-xl bg-primary-700 font-bold text-white">
               <SlidersHorizontal size={17} />
               {t("filters")}
             </summary>
             <div className="mt-4">
-              <Controls f={f} t={t} categories={categories} locale={locale} />
+              <Controls f={f} t={t} categories={categories} categoriesError={categoriesError} locale={locale} />
             </div>
           </details>
         </form>
@@ -271,10 +268,10 @@ function CatalogContent({
           <aside className="hidden lg:block">
             <form className="sticky top-24 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
               <div className="flex items-center gap-2 border-b pb-4 font-bold dark:border-white/10">
-                <Filter className="text-violet-600" size={18} />
+                <Filter className="text-primary-700 dark:text-primary-300" size={18} />
                 {t("filters")}
               </div>
-              <Controls f={f} t={t} categories={categories} locale={locale} />
+              <Controls f={f} t={t} categories={categories} categoriesError={categoriesError} locale={locale} />
               <Link
                 href={`/${locale}/catalog`}
                 className="mt-2 flex h-10 items-center justify-center text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
@@ -290,7 +287,19 @@ function CatalogContent({
                 ({data.pagination?.total ?? 0})
               </span>
             </h2>
-            {products.length ? (
+            {catalogError ? (
+              <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-6 py-14 text-center dark:border-amber-900/60 dark:bg-amber-950/20" role="alert">
+                <h2 className="text-xl font-bold">
+                  {locale === "uz" ? "Mahsulotlarni yuklab bo‘lmadi" : locale === "en" ? "Products could not be loaded" : "Не удалось загрузить товары"}
+                </h2>
+                <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
+                  {locale === "uz" ? "Iltimos, birozdan so‘ng qayta urinib ko‘ring." : locale === "en" ? "Please try again in a moment." : "Попробуйте обновить страницу чуть позже."}
+                </p>
+                <Link href={`/${locale}/catalog${catalogQuery ? `?${catalogQuery}` : ""}`} className="mt-5 inline-flex h-11 items-center justify-center rounded-xl bg-primary-700 px-5 text-sm font-bold text-white">
+                  {locale === "uz" ? "Qayta urinish" : locale === "en" ? "Try again" : "Повторить"}
+                </Link>
+              </div>
+            ) : products.length ? (
               <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
                 {products.map((p) => (
                   <ProductCard
@@ -303,11 +312,34 @@ function CatalogContent({
               </div>
             ) : (
               <div className="mt-5 rounded-2xl border border-dashed border-stone-300 bg-white px-6 py-16 text-center dark:border-white/15 dark:bg-stone-900">
-                <Search className="mx-auto text-violet-600" size={36} />
+                <Search className="mx-auto text-primary-700 dark:text-primary-300" size={36} />
                 <h2 className="mt-4 text-xl font-bold">{t("empty")}</h2>
                 <p className="mt-2 text-sm text-stone-500">{t("emptyText")}</p>
               </div>
             )}
+            {!catalogError && pageCount > 1 ? (
+              <nav className="mt-8 flex items-center justify-center gap-3" aria-label={locale === "en" ? "Catalog pages" : locale === "uz" ? "Katalog sahifalari" : "Страницы каталога"}>
+                <Link
+                  href={pageHref(page - 1)}
+                  aria-disabled={page <= 1}
+                  tabIndex={page <= 1 ? -1 : undefined}
+                  className={`inline-flex h-10 items-center rounded-xl border px-4 text-sm font-semibold ${page <= 1 ? "pointer-events-none opacity-40" : "hover:border-primary-600 hover:text-primary-700"} border-stone-300 dark:border-white/15`}
+                >
+                  {locale === "en" ? "Previous" : locale === "uz" ? "Oldingi" : "Назад"}
+                </Link>
+                <span className="min-w-16 text-center text-sm text-stone-500">
+                  {page} / {pageCount}
+                </span>
+                <Link
+                  href={pageHref(page + 1)}
+                  aria-disabled={page >= pageCount}
+                  tabIndex={page >= pageCount ? -1 : undefined}
+                  className={`inline-flex h-10 items-center rounded-xl border px-4 text-sm font-semibold ${page >= pageCount ? "pointer-events-none opacity-40" : "hover:border-primary-600 hover:text-primary-700"} border-stone-300 dark:border-white/15`}
+                >
+                  {locale === "en" ? "Next" : locale === "uz" ? "Keyingi" : "Дальше"}
+                </Link>
+              </nav>
+            ) : null}
           </section>
         </div>
       </div>

@@ -16,11 +16,12 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { getSearchSuggestions } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'framer-motion';
+import { LanguageFlag, type LocaleFlagCode } from '@/components/ui/LanguageFlag';
 
 const LOCALES = [
-  { code: 'ru', short: 'RU' },
-  { code: 'uz', short: 'UZ' },
-  { code: 'en', short: 'EN' },
+  { code: 'ru', short: 'RU', label: 'Русский' },
+  { code: 'uz', short: 'UZ', label: 'O‘zbekcha' },
+  { code: 'en', short: 'EN', label: 'English' },
 ] as const;
 
 const BTN_CLASS =
@@ -76,25 +77,32 @@ function LanguagePicker() {
       <button
         type="button"
         onClick={handleToggle}
-        className={BTN_CLASS + ' gap-1 !w-auto px-3 text-sm font-semibold ' + (open ? '!border-primary-500 !text-primary-600 dark:!text-primary-400' : '')}
+        className={BTN_CLASS + ' gap-2 !w-auto px-3 text-sm font-semibold ' + (open ? '!border-primary-500 !text-primary-600 dark:!text-primary-400' : '')}
+        aria-label="Change language"
+        aria-expanded={open}
+        aria-haspopup="menu"
       >
+        <LanguageFlag locale={current.code as LocaleFlagCode} className="h-4 w-6" />
         {current.short}
       </button>
       <div
+        role="menu"
         className={
-          'absolute right-0 z-50 w-28 overflow-hidden rounded-xl border border-stone-200/80 bg-white py-1 shadow-lg ' +
+          'absolute right-0 z-50 w-40 overflow-hidden rounded-xl border border-stone-200/80 bg-white py-1 shadow-lg ' +
           'dark:border-white/10 dark:bg-stone-900 ' +
           'transition-all duration-200 ' +
           (openUpward ? 'bottom-full mb-2 origin-bottom-right' : 'top-full mt-2 origin-top-right') + ' ' +
           (open ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0')
         }
       >
-        {LOCALES.map(({ code, short }) => {
+        {LOCALES.map(({ code, short, label }) => {
           const active = code === locale;
           return (
             <button
               key={code}
               type="button"
+              role="menuitemradio"
+              aria-checked={active}
               onClick={() => handleSelectLocale(code)}
               className={
                 'flex w-full items-center px-3 py-2 text-xs font-medium transition-colors text-left ' +
@@ -103,7 +111,9 @@ function LanguagePicker() {
                   : 'text-stone-600 hover:bg-stone-50 dark:text-stone-300 dark:hover:bg-white/5')
               }
             >
-              {short}
+              <LanguageFlag locale={code as LocaleFlagCode} className="h-4 w-6" />
+              <span className="ml-2 flex-1">{label}</span>
+              <span className="text-[10px] text-stone-400">{short}</span>
             </button>
           );
         })}
@@ -328,7 +338,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         className={cn(
           'sticky top-0 z-40 flex h-20 w-full items-center transition-[background-color,backdrop-filter] duration-300',
           scrolled
-            ? 'bg-white/90 backdrop-blur-2xl after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-violet-500/60 after:to-transparent dark:bg-[#111111]/90'
+            ? 'bg-white/90 backdrop-blur-2xl after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-primary-500/60 after:to-transparent dark:bg-[#111111]/90'
             : 'bg-white/95 dark:bg-[#111111]/95'
         )}
       >
@@ -591,7 +601,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         className={
-          'fixed left-0 top-0 z-50 flex h-full w-screen max-w-none flex-col bg-white shadow-2xl transition-transform duration-400 dark:bg-[#1A1A1A] md:hidden ' +
+          `fixed left-0 top-0 z-50 flex h-full w-screen max-w-none flex-col bg-white shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} dark:bg-[#1A1A1A] md:hidden ` +
           (mobileOpen ? 'translate-x-0' : '-translate-x-full')
         }
       >

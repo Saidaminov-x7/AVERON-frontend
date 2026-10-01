@@ -54,18 +54,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <section className="mx-auto max-w-[1440px] px-4 py-12 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600 dark:text-violet-400">Актуальное</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-700 dark:text-primary-300">Актуальное</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight">Популярные предложения</h2>
             </div>
-            <Link href={to('/catalog')} className="hidden items-center gap-2 text-sm font-semibold text-violet-600 hover:text-violet-700 sm:flex dark:text-violet-400">Смотреть все <ArrowRight size={16} /></Link>
+            <Link href={to('/catalog')} className="hidden items-center gap-2 text-sm font-semibold text-primary-700 hover:text-primary-800 sm:flex dark:text-primary-300">Смотреть все <ArrowRight size={16} /></Link>
           </div>
           {popularListings.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
               {(popularListings as StoreProduct[]).slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
             </div>
           ) : (
             <div className="rounded-3xl border border-dashed border-stone-300 bg-white px-6 py-16 text-center dark:border-stone-700 dark:bg-stone-900">
-              <Search className="mx-auto text-violet-500" size={34} />
+              <Search className="mx-auto text-primary-700" size={34} />
               <h3 className="mt-4 text-lg font-bold">Предложения скоро появятся</h3>
               <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">Загляните немного позже — каталог обновляется.</p>
             </div>
@@ -75,12 +75,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <section className="border-y border-stone-200 bg-white dark:border-white/5 dark:bg-stone-900/60">
           <div className="mx-auto grid max-w-[1440px] gap-8 px-4 py-14 sm:grid-cols-3 sm:px-6 lg:px-8">
             {[
-              [Sparkles, 'Простой поиск', 'Понятные фильтры помогают быстро сузить выбор.'],
-              [ShieldCheck, 'Уверенный выбор', 'Вся важная информация собрана в одной карточке.'],
-              [Zap, 'Быстрый доступ', 'Избранное, сравнение и история всегда под рукой.'],
-            ].map(([Icon, title, text]: any) => (
+              { Icon: Sparkles, title: 'Простой поиск', text: 'Понятные фильтры помогают быстро сузить выбор.' },
+              { Icon: ShieldCheck, title: 'Уверенный выбор', text: 'Вся важная информация собрана в одной карточке.' },
+              { Icon: Zap, title: 'Быстрый доступ', text: 'Избранное, сравнение и история всегда под рукой.' },
+            ].map(({ Icon, title, text }) => (
               <div key={title} className="flex gap-4">
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"><Icon size={21} /></div>
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-primary-800 dark:bg-primary-500/15 dark:text-primary-300"><Icon size={21} /></div>
                 <div><h3 className="font-bold">{title}</h3><p className="mt-1 text-sm leading-6 text-stone-500 dark:text-stone-400">{text}</p></div>
               </div>
             ))}
@@ -89,13 +89,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
         <section className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-3xl bg-violet-600 p-8 text-white sm:p-10"><Sparkles size={28} /><h2 className="mt-6 text-3xl font-extrabold">Опишите вещь своими словами</h2><p className="mt-3 max-w-lg leading-7 text-violet-100">AI-помощник поймёт запрос, предложит точные формулировки и найдёт подходящие товары в каталоге.</p><Link href={to('/ai')} className="mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-violet-700">Спросить AI <ArrowRight size={16} /></Link></div>
-            <div className="rounded-3xl border border-stone-200 bg-white p-8 dark:border-white/10 dark:bg-stone-900 sm:p-10"><Headphones size={28} className="text-violet-600" /><h2 className="mt-6 text-3xl font-extrabold">Поддержка отдельно от AI</h2><p className="mt-3 max-w-lg leading-7 text-stone-500 dark:text-stone-400">По вопросам оплаты, заказа и доставки отвечает команда поддержки. История обращения сохраняется в одном месте.</p><Link href={to('/support')} className="mt-7 inline-flex items-center gap-2 rounded-xl border border-stone-300 px-5 py-3 text-sm font-bold dark:border-white/15">Открыть поддержку <ArrowRight size={16} /></Link></div>
+            <div className="rounded-3xl bg-primary-800 p-8 text-white shadow-[0_24px_60px_-35px_rgba(15,118,110,.8)] sm:p-10"><Sparkles size={28} /><h2 className="mt-6 text-3xl font-extrabold">Опишите вещь своими словами</h2><p className="mt-3 max-w-lg leading-7 text-primary-100">AI-помощник поймёт запрос, предложит точные формулировки и найдёт подходящие товары в каталоге.</p><Link href={to('/ai')} className="mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-primary-800 transition-colors hover:bg-stone-100">Спросить AI <ArrowRight size={16} /></Link></div>
+            <div className="rounded-3xl border border-stone-200 bg-white p-8 dark:border-white/10 dark:bg-stone-900 sm:p-10"><Headphones size={28} className="text-primary-700" /><h2 className="mt-6 text-3xl font-extrabold">Поддержка отдельно от AI</h2><p className="mt-3 max-w-lg leading-7 text-stone-500 dark:text-stone-400">По вопросам оплаты, заказа и доставки отвечает команда поддержки. История обращения сохраняется в одном месте.</p><Link href={to('/support')} className="mt-7 inline-flex items-center gap-2 rounded-xl border border-stone-300 px-5 py-3 text-sm font-bold transition-colors hover:border-primary-600 hover:text-primary-700 dark:border-white/15">Открыть поддержку <ArrowRight size={16} /></Link></div>
           </div>
         </section>
 
         <section className="bg-[#f1eadf] dark:bg-stone-900">
-          <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8"><p className="text-xs font-bold uppercase tracking-[.18em] text-violet-600">Как это работает</p><h2 className="mt-2 text-3xl font-extrabold">От поиска до получения</h2><div className="mt-8 grid gap-5 md:grid-cols-3">{[['01', 'Выберите товар', 'Используйте категории, умный поиск или помощь AI.'], ['02', 'Подтвердите заказ', 'Проверьте вариант, размер, цену и контактные данные.'], ['03', 'Следите за доставкой', 'Получайте понятные обновления статуса заказа.']].map(([num, title, text]) => <div key={num} className="rounded-2xl bg-white p-6 dark:bg-stone-950"><span className="text-sm font-black text-violet-600">{num}</span><h3 className="mt-4 text-lg font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-stone-500">{text}</p></div>)}</div></div>
+          <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8"><p className="text-xs font-bold uppercase tracking-[.18em] text-primary-700">Как это работает</p><h2 className="mt-2 text-3xl font-extrabold">От поиска до получения</h2><div className="mt-8 grid gap-5 md:grid-cols-3">{[['01', 'Выберите товар', 'Используйте категории, умный поиск или помощь AI.'], ['02', 'Подтвердите заказ', 'Проверьте вариант, размер, цену и контактные данные.'], ['03', 'Следите за доставкой', 'Получайте понятные обновления статуса заказа.']].map(([num, title, text]) => <div key={num} className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-950"><span className="text-sm font-black text-primary-700">{num}</span><h3 className="mt-4 text-lg font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-stone-500">{text}</p></div>)}</div></div>
         </section>
       </main>
     </div>

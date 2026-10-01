@@ -25,14 +25,19 @@ function AuthLayoutInner({ children, params }: AuthLayoutProps) {
 
   useEffect(() => {
     const glow = glowRef.current;
-    if (!glow) return;
+    if (!glow || window.matchMedia('(pointer: coarse), (prefers-reduced-motion: reduce)').matches) return;
     let frame = 0;
+    let pointer: { x: number; y: number } | null = null;
     const move = (event: PointerEvent) => {
       if (event.pointerType === 'touch') return;
-      cancelAnimationFrame(frame);
+      const bounds = glow.getBoundingClientRect();
+      pointer = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+      if (frame) return;
       frame = requestAnimationFrame(() => {
-        glow.style.setProperty('--glow-x', `${event.clientX}px`);
-        glow.style.setProperty('--glow-y', `${event.clientY}px`);
+        frame = 0;
+        if (!pointer || !glow.isConnected) return;
+        glow.style.setProperty('--glow-x', `${pointer.x}px`);
+        glow.style.setProperty('--glow-y', `${pointer.y}px`);
       });
     };
     window.addEventListener('pointermove', move, { passive: true });
