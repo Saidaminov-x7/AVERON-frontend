@@ -118,7 +118,13 @@
     "visualSearchUnavailable": "Photo matching is not available right now.",
     "visualSearchNoResults": "No similar products were found. Try another photo.",
     "visualSearchResults": "Matching products",
-    "similarProductsTitle": "Similar products"
+    "similarProductsTitle": "Similar products",
+    "similarProductsAction": "Find Similar",
+    "similarProductsLoading": "Finding similar products…",
+    "similarProductsEmpty": "No similar products were found.",
+    "similarProductsUnavailable": "Similar products are not available for this item yet.",
+    "similarProductsError": "Could not find similar products. Please try again.",
+    "similarProductsRetry": "Try again"
   },
   "Apartment": {
     "notFound": "Apartment not found",

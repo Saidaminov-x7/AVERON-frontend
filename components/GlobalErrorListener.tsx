@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { externalBaseURL } from '@/lib/axios';
+import { getSafeErrorReportPath, sanitizeErrorReportText } from '@/lib/safe-error-report';
 
 export function GlobalErrorListener() {
   useEffect(() => {
@@ -13,9 +14,9 @@ export function GlobalErrorListener() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            message: payload.message.slice(0, 2000),
-            stack: payload.stack ? payload.stack.slice(0, 5000) : '',
-            url: window.location.href.slice(0, 500),
+            message: sanitizeErrorReportText(payload.message).slice(0, 2000),
+            stack: payload.stack ? sanitizeErrorReportText(payload.stack).slice(0, 5000) : '',
+            url: getSafeErrorReportPath(),
             userAgent: navigator.userAgent.slice(0, 500),
             severity: payload.severity || 'error',
           }),

@@ -97,14 +97,19 @@ export async function searchProductsByImage(
 ): Promise<ProductEnvelope> {
   const formData = new FormData();
   formData.append("image", image);
-  if (options.country) formData.append("country", options.country);
-  if (options.category) formData.append("category", options.category);
-  formData.append("limit", String(options.limit ?? 24));
+  const query = new URLSearchParams();
+  if (options.country) query.set("country", options.country);
+  if (options.category) query.set("category", options.category);
+  if (options.limit !== undefined) query.set("limit", String(options.limit));
+  const queryString = query.toString();
 
-  const response = await fetcher(`${apiBaseUrl}/api/v1/products/visual-search`, {
+  const response = await fetcher(
+    `${apiBaseUrl}/api/v1/products/visual-search${queryString ? `?${queryString}` : ""}`,
+    {
     method: "POST",
     body: formData,
-  });
+    },
+  );
   if (!response.ok) throw new CommerceApiError(await readErrorCode(response));
 
   const envelope = parseEnvelope(await response.json());

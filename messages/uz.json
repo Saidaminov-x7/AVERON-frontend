@@ -118,7 +118,13 @@
     "visualSearchUnavailable": "Rasm bo‘yicha o‘xshashlik qidiruvi hozir mavjud emas.",
     "visualSearchNoResults": "O‘xshash mahsulotlar topilmadi. Boshqa rasmni sinab ko‘ring.",
     "visualSearchResults": "Mos mahsulotlar",
-    "similarProductsTitle": "O‘xshash mahsulotlar"
+    "similarProductsTitle": "O‘xshash mahsulotlar",
+    "similarProductsAction": "O‘xshashlarini topish",
+    "similarProductsLoading": "O‘xshash mahsulotlar qidirilmoqda…",
+    "similarProductsEmpty": "O‘xshash mahsulotlar topilmadi.",
+    "similarProductsUnavailable": "Bu mahsulot uchun o‘xshashlari hozircha mavjud emas.",
+    "similarProductsError": "O‘xshash mahsulotlarni topib bo‘lmadi. Qayta urinib ko‘ring.",
+    "similarProductsRetry": "Qayta urinish"
   },
   "Apartment": {
     "notFound": "Kvartira topilmadi",

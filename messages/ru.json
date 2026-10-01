@@ -120,7 +120,13 @@
     "visualSearchUnavailable": "Поиск совпадений по фото сейчас недоступен.",
     "visualSearchNoResults": "Похожие товары не найдены. Попробуйте другое фото.",
     "visualSearchResults": "Подходящие товары",
-    "similarProductsTitle": "Похожие товары"
+    "similarProductsTitle": "Похожие товары",
+    "similarProductsAction": "Найти похожие",
+    "similarProductsLoading": "Ищем похожие товары…",
+    "similarProductsEmpty": "Похожие товары не найдены.",
+    "similarProductsUnavailable": "Для этого товара похожие товары пока недоступны.",
+    "similarProductsError": "Не удалось найти похожие товары. Попробуйте ещё раз.",
+    "similarProductsRetry": "Попробовать снова"
   },
   "Apartment": {
     "notFound": "Квартира не найдена",

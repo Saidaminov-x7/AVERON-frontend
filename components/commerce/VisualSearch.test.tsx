@@ -93,10 +93,9 @@ describe("VisualSearch", () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     const [url, options] = fetchMock.mock.calls[0] as [string, RequestInit];
-    expect(url).toMatch(/\/api\/v1\/products\/visual-search$/);
+    expect(url).toMatch(/\/api\/v1\/products\/visual-search\?country=CN&category=outerwear&limit=20$/);
     expect((options.body as FormData).get("image")).toBe(image);
-    expect((options.body as FormData).get("country")).toBe("CN");
-    expect((options.body as FormData).get("category")).toBe("outerwear");
+    expect([...(options.body as FormData).keys()]).toEqual(["image"]);
     await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("не найдены"));
 
     fireEvent.click(screen.getByRole("button", { name: "Удалить фото" }));

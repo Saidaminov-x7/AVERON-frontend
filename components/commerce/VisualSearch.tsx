@@ -136,7 +136,7 @@ export function VisualSearch({ locale, country, category }: Props) {
     try {
       const result = await searchProductsByImage(
         file,
-        { country, category, limit: 24 },
+        { country, category, limit: 20 },
         (input, init) => fetch(input, { ...init, signal: controller.signal }),
       );
       setItems(result.items);

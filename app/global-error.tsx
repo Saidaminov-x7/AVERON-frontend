@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { getSafeErrorReportPath, sanitizeErrorReportText } from '@/lib/safe-error-report';
 
 export default function GlobalError({
   error,
@@ -17,9 +18,9 @@ export default function GlobalError({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            message: error.message || 'Unknown global error',
-            stack: error.stack || '',
-            url: typeof window !== 'undefined' ? window.location.href : '',
+            message: sanitizeErrorReportText(error.message || 'Unknown global error'),
+            stack: sanitizeErrorReportText(error.stack || ''),
+            url: getSafeErrorReportPath(),
             userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
             severity: 'error',
           }),

@@ -36,7 +36,7 @@ describe("commerce visual-search API", () => {
     ).resolves.toEqual(NO_COMMERCE_CAPABILITIES);
   });
 
-  it("posts the selected image and optional catalog filters as multipart data", async () => {
+  it("sends catalog filters in the query string and only the image as multipart data", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ items: [], meta: { limit: 12 } }), {
         status: 200,
@@ -52,14 +52,29 @@ describe("commerce visual-search API", () => {
 
     expect(result).toEqual({ items: [], meta: { limit: 12 } });
     const [url, init] = fetcher.mock.calls[0] as [string, RequestInit];
-    expect(url).toMatch(/\/api\/v1\/products\/visual-search$/);
+    expect(url).toMatch(/\/api\/v1\/products\/visual-search\?country=CN&category=coats&limit=12$/);
     expect(init.method).toBe("POST");
     expect(init.body).toBeInstanceOf(FormData);
     const body = init.body as FormData;
     expect(body.get("image")).toBe(image);
-    expect(body.get("country")).toBe("CN");
-    expect(body.get("category")).toBe("coats");
-    expect(body.get("limit")).toBe("12");
+    expect([...body.keys()]).toEqual(["image"]);
+  });
+
+  it("uses documented backend defaults when filters are omitted", async () => {
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ items: [], meta: { limit: 20 } }), {
+        status: 200,
+      }),
+    );
+    const image = new File(["photo"], "coat.jpg", { type: "image/jpeg" });
+
+    await expect(searchProductsByImage(image, {}, fetcher)).resolves.toEqual({
+      items: [],
+      meta: { limit: 20 },
+    });
+    const [url, init] = fetcher.mock.calls[0] as [string, RequestInit];
+    expect(url).toMatch(/\/api\/v1\/products\/visual-search$/);
+    expect([...(init.body as FormData).keys()]).toEqual(["image"]);
   });
 
   it("surfaces controlled API error codes", async () => {
