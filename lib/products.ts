@@ -1,11 +1,16 @@
 import api from './axios';
 type Translation = { title?: string; name?: string } | string;
 type LocalizedName = string | Record<string, string | undefined>;
+type StoreLocale = 'ru' | 'uz' | 'en';
 
 export type StoreCategory = {
   slug: string;
   name?: LocalizedName;
   translations?: Record<string, Translation>;
+  nameRu?: string;
+  nameUz?: string;
+  nameEn?: string;
+  isActive?: boolean;
 };
 
 export type StoreProduct = {
@@ -30,13 +35,54 @@ export function productTitle(product: StoreProduct, locale = 'ru') {
 }
 
 export function categoryName(category: StoreCategory, locale = 'ru') {
-  if (typeof category.name === 'string') return category.name;
-  const localizedName = category.name?.[locale] ?? category.name?.ru;
-  if (localizedName) return localizedName;
+  const locales: StoreLocale[] = ['ru', 'uz', 'en'];
+  const fallbackLocales = [locale, ...locales.filter((item) => item !== locale)];
 
-  const translation = category.translations?.[locale] ?? category.translations?.ru;
-  if (typeof translation === 'string') return translation;
-  return translation?.name ?? translation?.title ?? category.slug.replaceAll('-', ' ');
+  for (const candidate of fallbackLocales) {
+    const localizedName = category.name && typeof category.name === 'object'
+      ? category.name[candidate]
+      : undefined;
+    const translation = category.translations?.[candidate];
+    const translatedName = typeof translation === 'string'
+      ? translation
+      : translation?.name ?? translation?.title;
+    const namedField = candidate === 'ru'
+      ? category.nameRu
+      : candidate === 'uz'
+        ? category.nameUz
+        : category.nameEn;
+    const value = localizedName || translatedName || namedField;
+    if (value) return value;
+  }
+
+  return (typeof category.name === 'string' ? category.name : undefined)
+    ?? category.slug.replaceAll('-', ' ');
+}
+
+export function parseStoreCategories(data: unknown): StoreCategory[] {
+  let categories: unknown = data;
+
+  for (let depth = 0; depth < 3 && !Array.isArray(categories); depth += 1) {
+    if (typeof categories !== 'object' || categories === null) return [];
+    const response = categories as Record<string, unknown>;
+    categories = Array.isArray(response.items)
+      ? response.items
+      : Array.isArray(response.categories)
+        ? response.categories
+        : response.data;
+  }
+
+  if (!Array.isArray(categories)) return [];
+
+  return categories.filter(
+    (category): category is StoreCategory =>
+      typeof category === 'object' &&
+      category !== null &&
+      'slug' in category &&
+      typeof category.slug === 'string' &&
+      'isActive' in category &&
+      category.isActive === true,
+  );
 }
 
 export interface ProductListResponse {
@@ -44,12 +90,17 @@ export interface ProductListResponse {
   pagination: { page: number; limit: number; total: number; pages: number };
 }
 
-export function buildProductSearchParams(filters: Record<string, string | string[] | undefined>, limit = 24) {
+export function buildCatalogSearchParams(filters: Record<string, string | string[] | undefined>) {
   const query = new URLSearchParams();
   for (const key of ['q', 'country', 'category', 'audience', 'size', 'color', 'minPrice', 'maxPrice', 'sort', 'page']) {
     const value = filters[key];
     if (typeof value === 'string' && value.trim()) query.set(key, value.trim());
   }
+  return query;
+}
+
+export function buildProductSearchParams(filters: Record<string, string | string[] | undefined>, limit = 24) {
+  const query = buildCatalogSearchParams(filters);
   query.set('limit', String(limit));
   return query;
 }

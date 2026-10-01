@@ -1,6 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
 import api from './axios';
-import { buildProductSearchParams, categoryName, getProduct, getProducts, type StoreCategory } from './products';
+import {
+  buildCatalogSearchParams,
+  buildProductSearchParams,
+  categoryName,
+  getProduct,
+  getProducts,
+  parseStoreCategories,
+  type StoreCategory,
+} from './products';
 
 vi.mock('./axios', () => ({ default: { get: vi.fn() } }));
 
@@ -46,11 +54,55 @@ describe('categoryName', () => {
       expect(query.get('q')).toBe('coat');
       expect(query.get('limit')).toBe('24');
     });
+
+    it('keeps category, country, search, and pagination in catalog return URLs', () => {
+      const query = buildCatalogSearchParams({
+        category: 'outerwear',
+        country: 'CN',
+        page: '2',
+        q: ' coat ',
+      });
+
+      expect(query.toString()).toBe('q=coat&country=CN&category=outerwear&page=2');
+      expect(query.has('limit')).toBe(false);
+    });
   });
 
   it('falls back to the existing category translations and slug', () => {
     expect(categoryName({ slug: 'outerwear', translations: { ru: { name: 'Верхняя одежда' } } }, 'uz'))
       .toBe('Верхняя одежда');
     expect(categoryName({ slug: 'outer-wear' }, 'en')).toBe('outer wear');
+  });
+
+  it('supports localized API name fields and uses available locale fallbacks', () => {
+    const category: StoreCategory = {
+      slug: 'outerwear',
+      name: 'Outerwear',
+      nameRu: 'Верхняя одежда',
+      nameUz: 'Ustki kiyim',
+      nameEn: 'Outerwear',
+    };
+
+    expect(categoryName(category, 'ru')).toBe('Верхняя одежда');
+    expect(categoryName(category, 'uz')).toBe('Ustki kiyim');
+    expect(categoryName(category, 'en')).toBe('Outerwear');
+  });
+
+  it('parses supported category response envelopes and only returns active categories', () => {
+    const categories = parseStoreCategories({
+      data: {
+        items: [
+          { slug: 'outerwear', isActive: true },
+          { slug: 'archived', isActive: false },
+          { slug: 'missing-status' },
+          { name: 'Invalid', isActive: true },
+        ],
+      },
+    });
+
+    expect(categories.map(({ slug }) => slug)).toEqual(['outerwear']);
+    expect(parseStoreCategories([{ slug: 'direct', isActive: true }])).toEqual([
+      { slug: 'direct', isActive: true },
+    ]);
   });
 });

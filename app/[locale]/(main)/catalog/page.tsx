@@ -6,7 +6,13 @@ import {
   ProductCard,
   type StoreProduct,
 } from "@/components/commerce/ProductCard";
-import { buildProductSearchParams, categoryName, type StoreCategory } from "@/lib/products";
+import {
+  buildProductSearchParams,
+  buildCatalogSearchParams,
+  categoryName,
+  parseStoreCategories,
+  type StoreCategory,
+} from "@/lib/products";
 
 type Filters = Record<string, string | string[] | undefined>;
 
@@ -32,20 +38,7 @@ async function loadCategories(): Promise<StoreCategory[]> {
     });
     if (!r.ok) throw Error();
     const data: unknown = await r.json();
-    const categories = Array.isArray(data)
-      ? data
-      : typeof data === "object" && data !== null && "items" in data && Array.isArray(data.items)
-        ? data.items
-        : typeof data === "object" && data !== null && "data" in data && Array.isArray(data.data)
-          ? data.data
-          : [];
-    return categories.filter(
-      (category): category is StoreCategory =>
-        typeof category === "object" &&
-        category !== null &&
-        "slug" in category &&
-        typeof category.slug === "string",
-    );
+    return parseStoreCategories(data);
   } catch {
     return [];
   }
@@ -84,6 +77,9 @@ function Controls({
     <>
       {typeof f.country === "string" && f.country.trim() ? (
         <input type="hidden" name="country" value={f.country} />
+      ) : null}
+      {typeof f.page === "string" && f.page.trim() ? (
+        <input type="hidden" name="page" value={f.page} />
       ) : null}
       <label className="text-xs font-bold uppercase text-stone-500">
         {t("search")}
@@ -246,6 +242,7 @@ function CatalogContent({
   categories: StoreCategory[];
 }) {
   const t = useTranslations("catalog");
+  const catalogQuery = buildCatalogSearchParams(f).toString();
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
@@ -296,7 +293,12 @@ function CatalogContent({
             {products.length ? (
               <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
                 {products.map((p) => (
-                  <ProductCard key={p.id} product={p} locale={locale} />
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    locale={locale}
+                    catalogQuery={catalogQuery}
+                  />
                 ))}
               </div>
             ) : (

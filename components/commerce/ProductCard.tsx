@@ -10,7 +10,15 @@ import { productTitle, type StoreProduct } from '@/lib/products';
 export type { StoreProduct } from '@/lib/products';
 export { productTitle } from '@/lib/products';
 
-export function ProductCard({ product, locale }: { product: StoreProduct; locale: string }) {
+export function ProductCard({
+  product,
+  locale,
+  catalogQuery = '',
+}: {
+  product: StoreProduct;
+  locale: string;
+  catalogQuery?: string;
+}) {
   const title = productTitle(product, locale);
   const image = product.images?.[0]?.url;
   const price = Number(product.salePriceUzs || 0).toLocaleString(locale === 'en' ? 'en-US' : 'ru-RU');
@@ -22,7 +30,10 @@ export function ProductCard({ product, locale }: { product: StoreProduct; locale
 
   return (
     <article className="group relative max-w-sm overflow-hidden rounded-2xl border border-stone-200 bg-white transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:shadow-xl dark:border-white/10 dark:bg-stone-900">
-      <Link href={`/${locale}/catalog/${product.slug}`} className="block">
+      <Link
+        href={`/${locale}/catalog/${product.slug}${catalogQuery ? `?${catalogQuery}` : ''}`}
+        className="block"
+      >
         <div className="relative h-52 overflow-hidden bg-stone-100 sm:h-56 dark:bg-stone-800">
           <ProductImage src={image} alt={title} />
         </div>

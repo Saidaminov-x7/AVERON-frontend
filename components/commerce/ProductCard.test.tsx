@@ -24,6 +24,21 @@ describe('ProductCard', () => {
     expect(screen.getByRole('button', { name: 'Убрать из избранного' })).toBeInTheDocument();
   });
 
+  it('preserves catalog filters when linking to a product', () => {
+    render(
+      <ProductCard
+        product={product}
+        locale="ru"
+        catalogQuery="q=coat&country=CN&category=outerwear&page=2"
+      />,
+    );
+
+    expect(screen.getByRole('link')).toHaveAttribute(
+      'href',
+      '/ru/catalog/red-dress?q=coat&country=CN&category=outerwear&page=2',
+    );
+  });
+
   it('toggles product comparison', () => {
     render(<ProductCard product={product} locale="ru" />);
     fireEvent.click(screen.getByRole('button', { name: 'Добавить к сравнению' }));

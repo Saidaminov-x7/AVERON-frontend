@@ -10,7 +10,13 @@ import {
 import { externalBaseURL } from "@/lib/axios";
 import { ProductImage } from "@/components/commerce/ProductImage";
 import { OrderModal } from "@/components/commerce/OrderModal";
-import { productTitle, type StoreProduct } from "@/lib/products";
+import {
+  buildCatalogSearchParams,
+  productTitle,
+  type StoreProduct,
+} from "@/lib/products";
+
+type Filters = Record<string, string | string[] | undefined>;
 
 async function loadProduct(slug: string) {
   try {
@@ -40,10 +46,12 @@ export async function generateMetadata({
 
 export default async function ProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string; locale: string }>;
+  searchParams: Promise<Filters>;
 }) {
-  const { id, locale } = await params;
+  const [{ id, locale }, filters] = await Promise.all([params, searchParams]);
   const product:
     | (StoreProduct & {
         description?: Record<string, string | { text?: string }>;
@@ -58,6 +66,8 @@ export default async function ProductPage({
     | null = await loadProduct(id);
   if (!product) notFound();
   const title = productTitle(product, locale);
+  const catalogQuery = buildCatalogSearchParams(filters).toString();
+  const catalogHref = `/${locale}/catalog${catalogQuery ? `?${catalogQuery}` : ""}`;
   const localizedDescription = product.description?.[locale] ?? product.description?.ru;
   const description =
     (typeof localizedDescription === "string"
@@ -67,7 +77,7 @@ export default async function ProductPage({
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
       <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 lg:px-8">
         <Link
-          href={`/${locale}/catalog`}
+          href={catalogHref}
           className="inline-flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-violet-600"
         >
           <ArrowLeft size={16} />
