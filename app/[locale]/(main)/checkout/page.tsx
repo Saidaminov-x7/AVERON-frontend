@@ -23,10 +23,13 @@ const copy = {
     errors: {
       CART_EMPTY: 'Корзина пуста.',
       PRODUCT_NOT_AVAILABLE: 'Один из товаров больше недоступен. Вернитесь в корзину.',
+      VARIANT_NOT_AVAILABLE: 'Выбранный вариант больше недоступен. Проверьте корзину.',
       INSUFFICIENT_STOCK: 'Количество товара изменилось. Проверьте корзину.',
       CHECKOUT_CONFLICT: 'Корзина изменилась во время оформления. Проверьте её и повторите попытку.',
       IDEMPOTENCY_CONFLICT: 'Этот ключ уже использован для другого запроса. Измените данные и попробуйте снова.',
       INVALID_QUANTITY: 'В корзине указано недопустимое количество.',
+      INVALID_CHECKOUT_DETAILS: 'Проверьте контактные данные и адрес доставки.',
+      INVALID_PRICE: 'Не удалось подтвердить цену товара. Обновите корзину.',
     },
   },
   uz: {
@@ -40,10 +43,13 @@ const copy = {
     errors: {
       CART_EMPTY: 'Savatcha bo‘sh.',
       PRODUCT_NOT_AVAILABLE: 'Mahsulotlardan biri endi mavjud emas. Savatchaga qayting.',
+      VARIANT_NOT_AVAILABLE: 'Tanlangan variant endi mavjud emas. Savatchani tekshiring.',
       INSUFFICIENT_STOCK: 'Mahsulot miqdori o‘zgardi. Savatchani tekshiring.',
       CHECKOUT_CONFLICT: 'Rasmiylashtirish vaqtida savatcha o‘zgardi. Tekshirib, qayta urinib ko‘ring.',
       IDEMPOTENCY_CONFLICT: 'Ushbu kalit boshqa so‘rov uchun ishlatilgan. Ma’lumotlarni o‘zgartirib, qayta urinib ko‘ring.',
       INVALID_QUANTITY: 'Savatchadagi miqdor noto‘g‘ri.',
+      INVALID_CHECKOUT_DETAILS: 'Aloqa ma’lumotlari va yetkazib berish manzilini tekshiring.',
+      INVALID_PRICE: 'Mahsulot narxini tasdiqlab bo‘lmadi. Savatchani yangilang.',
     },
   },
   en: {
@@ -57,10 +63,13 @@ const copy = {
     errors: {
       CART_EMPTY: 'Your cart is empty.',
       PRODUCT_NOT_AVAILABLE: 'A product is no longer available. Return to your cart.',
+      VARIANT_NOT_AVAILABLE: 'The selected option is no longer available. Review your cart.',
       INSUFFICIENT_STOCK: 'Stock changed. Please check your cart.',
       CHECKOUT_CONFLICT: 'Your cart changed during checkout. Review it and try again.',
       IDEMPOTENCY_CONFLICT: 'This key was already used for a different request. Update your details and retry.',
       INVALID_QUANTITY: 'The cart contains an invalid quantity.',
+      INVALID_CHECKOUT_DETAILS: 'Check your contact details and delivery address.',
+      INVALID_PRICE: 'The product price could not be confirmed. Refresh your cart.',
     },
   },
 } as const;

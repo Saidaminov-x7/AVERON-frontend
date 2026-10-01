@@ -20,8 +20,10 @@ const copy = {
     stock: 'Доступно сейчас', quantity: 'Количество', failed: 'Не удалось обновить корзину.',
     errors: {
       PRODUCT_NOT_AVAILABLE: 'Товар больше недоступен для покупки.',
+      VARIANT_NOT_AVAILABLE: 'Выбранный вариант больше недоступен.',
       INSUFFICIENT_STOCK: 'На складе недостаточно товара для этого количества.',
       INVALID_QUANTITY: 'Укажите допустимое количество.',
+      QUANTITY_LIMIT: 'Достигнуто максимальное количество товара.',
       CART_NOT_FOUND: 'Корзина не найдена. Обновите страницу.',
     },
   },
@@ -34,8 +36,10 @@ const copy = {
     stock: 'Hozir mavjud', quantity: 'Miqdor', failed: 'Savatchani yangilab bo‘lmadi.',
     errors: {
       PRODUCT_NOT_AVAILABLE: 'Mahsulot endi xarid uchun mavjud emas.',
+      VARIANT_NOT_AVAILABLE: 'Tanlangan variant endi mavjud emas.',
       INSUFFICIENT_STOCK: 'Omborda bu miqdor uchun mahsulot yetarli emas.',
       INVALID_QUANTITY: 'Ruxsat etilgan miqdorni kiriting.',
+      QUANTITY_LIMIT: 'Mahsulotning maksimal miqdoriga yetildi.',
       CART_NOT_FOUND: 'Savatcha topilmadi. Sahifani yangilang.',
     },
   },
@@ -48,8 +52,10 @@ const copy = {
     stock: 'Available now', quantity: 'Quantity', failed: 'Could not update your cart.',
     errors: {
       PRODUCT_NOT_AVAILABLE: 'This product is no longer available.',
+      VARIANT_NOT_AVAILABLE: 'This option is no longer available.',
       INSUFFICIENT_STOCK: 'There is not enough stock for that quantity.',
       INVALID_QUANTITY: 'Enter a valid quantity.',
+      QUANTITY_LIMIT: 'The maximum quantity for this item has been reached.',
       CART_NOT_FOUND: 'Cart not found. Refresh the page.',
     },
   },

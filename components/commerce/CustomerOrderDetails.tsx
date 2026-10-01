@@ -22,7 +22,7 @@ const statusCopy = {
   DELIVERED: { ru: 'Доставлен', uz: 'Yetkazildi', en: 'Delivered' },
 } as const;
 
-function formatUzs(amount: string, locale: string) {
+function formatUzs(amount: string | number, locale: string) {
   const value = Number(amount);
   return `${Number.isFinite(value) ? value.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU') : '0'} ${locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}`;
 }
