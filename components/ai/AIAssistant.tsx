@@ -106,12 +106,12 @@ export default function AIAssistant() {
     void submit();
   };
   if (authLoading || historyLoading) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white dark:bg-stone-900"><span className="text-sm text-stone-500">AVERON…</span></main>;
-  if (!canUseAI) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white p-6 dark:bg-stone-900"><div className="max-w-md text-center"><Bot className="mx-auto mb-4 text-violet-500" size={42}/><h1 className="text-xl font-bold text-stone-900 dark:text-white">AVERON AI</h1><p className="mt-2 text-sm text-stone-500">{locale === 'uz' ? 'AI bilan suhbatlashish va tarixni saqlash uchun telefon raqamingiz orqali kiring.' : locale === 'en' ? 'Sign in with your phone number to use AI and keep your conversation history.' : 'Войдите по номеру телефона, чтобы общаться с AI и сохранять историю.'}</p><Link href={`/${locale}/login`} className="mt-5 inline-flex h-11 items-center rounded-xl bg-violet-600 px-6 font-semibold text-white">{locale === 'uz' ? 'Kirish' : locale === 'en' ? 'Sign in' : 'Войти'}</Link></div></main>;
+  if (!canUseAI) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white p-6 dark:bg-stone-900"><div className="max-w-md text-center"><Bot className="mx-auto mb-4 text-primary-500" size={42}/><h1 className="text-xl font-bold text-stone-900 dark:text-white">AVERON AI</h1><p className="mt-2 text-sm text-stone-500">{locale === 'uz' ? 'AI bilan suhbatlashish va tarixni saqlash uchun telefon raqamingiz orqali kiring.' : locale === 'en' ? 'Sign in with your phone number to use AI and keep your conversation history.' : 'Войдите по номеру телефона, чтобы общаться с AI и сохранять историю.'}</p><Link href={`/${locale}/login`} className="mt-5 inline-flex h-11 items-center rounded-xl bg-primary-600 px-6 font-semibold text-white">{locale === 'uz' ? 'Kirish' : locale === 'en' ? 'Sign in' : 'Войти'}</Link></div></main>;
   return (
     <main className="flex h-[calc(100dvh-80px)] w-full overflow-hidden bg-white text-stone-950 dark:bg-stone-900 dark:text-white">
       <section className="flex h-full w-full flex-col">
         <header className="flex items-center gap-3 border-b border-stone-200 p-4 dark:border-white/10 sm:px-6">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-violet-600 text-white">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-primary-600 text-white">
             <Bot size={22} />
           </div>
           <div>
@@ -126,7 +126,7 @@ export default function AIAssistant() {
               className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-6 ${m.role === "user" ? "bg-violet-600 text-white" : "bg-stone-100 dark:bg-stone-800"}`}
+                className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-6 ${m.role === "user" ? "bg-primary-600 text-white" : "bg-stone-100 dark:bg-stone-800"}`}
               >
                 {m.content}
               </div>
@@ -153,11 +153,11 @@ export default function AIAssistant() {
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder={t.placeholder}
-              className="h-12 flex-1 rounded-xl border border-stone-300 bg-transparent px-4 text-sm outline-none focus:border-violet-500 dark:border-white/15"
+              className="h-12 flex-1 rounded-xl border border-stone-300 bg-transparent px-4 text-sm outline-none focus:border-primary-500 dark:border-white/15"
             />
             <button
               disabled={loading}
-              className="flex size-12 items-center justify-center rounded-xl bg-violet-600 text-white"
+              className="flex size-12 items-center justify-center rounded-xl bg-primary-600 text-white"
               aria-label={t.send}
             >
               <Send size={18} />

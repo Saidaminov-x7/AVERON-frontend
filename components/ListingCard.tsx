@@ -14,7 +14,7 @@ const gradients = [
   'from-amber-500 to-orange-700',
   'from-sky-500 to-blue-700',
   'from-rose-500 to-pink-700',
-  'from-violet-500 to-purple-700',
+  'from-primary-500 to-primary-800',
   'from-cyan-500 to-primary-700',
 ];
 

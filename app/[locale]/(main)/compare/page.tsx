@@ -53,14 +53,14 @@ export default function ComparePage() {
   if (!products.length)
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-        <Scale size={42} className="mx-auto text-violet-600" />
+        <Scale size={42} className="mx-auto text-primary-700" />
         <h1 className="mt-5 text-2xl font-bold">Список сравнения пуст</h1>
         <p className="mt-2 text-stone-500">
           Добавьте до четырёх товаров кнопкой сравнения на карточке.
         </p>
         <Link
           href={`/${locale}/catalog`}
-          className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-violet-600 px-5 font-semibold text-white"
+          className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-primary-700 px-5 font-semibold text-white"
         >
           Открыть каталог <ArrowRight size={16} />
         </Link>
@@ -100,7 +100,7 @@ export default function ComparePage() {
     <main className="mx-auto max-w-7xl px-4 py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[.18em] text-violet-600">
+          <p className="text-xs font-bold uppercase tracking-[.18em] text-primary-700">
             AVERON
           </p>
           <h1 className="mt-1 text-3xl font-bold">
@@ -153,7 +153,7 @@ export default function ComparePage() {
                 </h2>
                 <Link
                   href={`/${locale}/catalog/${product.slug}`}
-                  className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-violet-600"
+                  className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary-700"
                 >
                   Подробнее <ArrowRight size={14} />
                 </Link>

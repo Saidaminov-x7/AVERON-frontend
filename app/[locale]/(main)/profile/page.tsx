@@ -124,7 +124,7 @@ function ProfileContent() {
     <main className="mx-auto min-w-0 max-w-7xl overflow-hidden px-4 py-8 sm:px-6 lg:px-8">
       <section className="rounded-3xl border border-stone-200 bg-white p-5 sm:p-7 dark:border-white/10 dark:bg-stone-900">
         <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
-          <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-600">
+          <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-700">
             <User size={30} />
           </div>
           <div className="min-w-0 flex-1">
@@ -167,7 +167,7 @@ function ProfileContent() {
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`flex h-11 shrink-0 items-center gap-2 rounded-xl px-4 text-sm font-semibold ${tab === id ? "bg-violet-600 text-white" : "border border-stone-200 bg-white dark:border-white/10 dark:bg-stone-900"}`}
+            className={`flex h-11 shrink-0 items-center gap-2 rounded-xl px-4 text-sm font-semibold ${tab === id ? "bg-primary-700 text-white" : "border border-stone-200 bg-white dark:border-white/10 dark:bg-stone-900"}`}
           >
             <Icon size={16} />
             {label}
@@ -208,7 +208,7 @@ function ProfileContent() {
             <article key={order.id} className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div><p className="text-xs text-stone-500">Заказ</p><h2 className="font-bold">№ {order.orderNumber}</h2></div>
-                <span className="rounded-full bg-violet-500/10 px-3 py-1 text-xs font-bold text-violet-600">{order.status}</span>
+                <span className="rounded-full bg-primary-500/10 px-3 py-1 text-xs font-bold text-primary-700">{order.status}</span>
               </div>
               <div className="mt-4 space-y-2">{order.items.map((item) => <div key={item.id} className="flex justify-between gap-4 text-sm"><span className="min-w-0 truncate">{item.title}</span><span className="shrink-0">× {item.quantity}</span></div>)}</div>
               <div className="mt-4 flex justify-between border-t border-stone-200 pt-4 text-sm dark:border-white/10"><span className="text-stone-500">{new Date(order.createdAt).toLocaleDateString("ru-RU")}</span><strong>{Number(order.totalRevenue).toLocaleString("ru-RU")} {order.currency}</strong></div>
@@ -246,7 +246,7 @@ function ProfileContent() {
                 href={`/${locale}/ai?session=${session.id}`}
                 className="flex min-w-0 items-center gap-4 rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900"
               >
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-500/10 text-primary-700">
                   <Bot size={19} />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -279,7 +279,7 @@ function ProfileContent() {
                 key={session.id}
                 className="flex min-w-0 items-center gap-3 p-4"
               >
-                <MonitorSmartphone className="shrink-0 text-violet-600" />
+                <MonitorSmartphone className="shrink-0 text-primary-700" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">
                     {session.userAgent || "Неизвестное устройство"}{" "}
@@ -345,7 +345,7 @@ function Empty({
       <h2 className="text-xl font-bold">{title}</h2>
       <Link
         href={href}
-        className="mt-5 inline-flex h-11 items-center rounded-xl bg-violet-600 px-5 font-semibold text-white"
+        className="mt-5 inline-flex h-11 items-center rounded-xl bg-primary-700 px-5 font-semibold text-white"
       >
         {action}
       </Link>

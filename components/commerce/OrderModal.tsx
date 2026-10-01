@@ -118,7 +118,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
       <button
         type="button"
         onClick={handleOpen}
-        className="mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-6 font-bold text-white transition-[transform,background-color] duration-200 ease-out active:scale-[0.98] hover:bg-violet-700 cursor-pointer shadow-sm hover:shadow"
+        className="mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary-600 px-6 font-bold text-white transition-[transform,background-color] duration-200 ease-out active:scale-[0.98] hover:bg-primary-700 cursor-pointer shadow-sm hover:shadow"
       >
         <ShoppingBag size={18} />
         {locale === 'uz' ? 'Buyurtma berish' : locale === 'en' ? 'Place Order' : 'Оформить заказ'}
@@ -166,7 +166,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="w-full h-11 rounded-xl bg-violet-600 font-semibold text-white hover:bg-violet-700 transition-colors"
+                    className="w-full h-11 rounded-xl bg-primary-600 font-semibold text-white hover:bg-primary-700 transition-colors"
                   >
                     {locale === 'uz' ? 'Yaxshi' : locale === 'en' ? 'Got it' : 'Понятно'}
                   </button>
@@ -183,7 +183,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
                       : 'Заявка на заказ товара'}
                   </h3>
                   <p className="text-xs text-stone-500 mt-1 line-clamp-1">{title}</p>
-                  <p className="text-sm font-bold text-violet-600 dark:text-violet-400 mt-0.5">
+                  <p className="text-sm font-bold text-primary-600 dark:text-primary-400 mt-0.5">
                     {price} {currency}
                   </p>
                 </div>
@@ -202,7 +202,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
                     <select
                       value={selectedVariantId}
                       onChange={(e) => setSelectedVariantId(e.target.value)}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 focus:outline-hidden focus:ring-2 focus:ring-violet-500"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                     >
                       {product.variants.map((v) => (
                         <option key={v.id} value={v.id}>
@@ -225,7 +225,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
                       max={100}
                       value={quantity}
                       onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 focus:outline-hidden focus:ring-2 focus:ring-violet-500"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                   <div className="col-span-2">
@@ -238,7 +238,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
                       placeholder="+998 90 123 45 67"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 focus:outline-hidden focus:ring-2 focus:ring-violet-500"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
                     placeholder="Иван"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 focus:outline-hidden focus:ring-2 focus:ring-violet-500"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 
@@ -272,7 +272,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
                     }
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 focus:outline-hidden focus:ring-2 focus:ring-violet-500 resize-none"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 focus:outline-hidden focus:ring-2 focus:ring-primary-500 resize-none"
                   />
                 </div>
 
@@ -280,7 +280,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-violet-600 font-bold text-white hover:bg-violet-700 transition-colors disabled:opacity-50 cursor-pointer"
+                    className="w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-primary-600 font-bold text-white hover:bg-primary-700 transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     {submitting ? (
                       <>
