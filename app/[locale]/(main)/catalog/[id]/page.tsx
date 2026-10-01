@@ -10,6 +10,7 @@ import {
 import { externalBaseURL } from "@/lib/axios";
 import { ProductImage } from "@/components/commerce/ProductImage";
 import { OrderModal } from "@/components/commerce/OrderModal";
+import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import {
   buildCatalogSearchParams,
   productTitle,
@@ -221,6 +222,9 @@ export default async function ProductPage({
             </p>
           </section>
         </div>
+      </div>
+      <div className="mx-auto max-w-[1200px] px-4 pb-12 sm:px-6 lg:px-8">
+        <SimilarProducts slug={product.slug} locale={locale} />
       </div>
     </main>
   );

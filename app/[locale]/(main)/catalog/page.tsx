@@ -5,6 +5,7 @@ import {
   ProductCard,
   type StoreProduct,
 } from "@/components/commerce/ProductCard";
+import { VisualSearch } from "@/components/commerce/VisualSearch";
 import {
   buildCatalogPageSearchParams,
   buildCatalogSearchParams,
@@ -250,6 +251,11 @@ function CatalogContent({
           </p>
           <h1 className="mt-2 text-4xl font-extrabold">{t("title")}</h1>
           <p className="mt-2 text-sm text-stone-500">{t("intro")}</p>
+          <VisualSearch
+            locale={locale}
+            country={typeof f.country === "string" ? f.country : undefined}
+            category={typeof f.category === "string" ? f.category : undefined}
+          />
         </div>
       </section>
       <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
