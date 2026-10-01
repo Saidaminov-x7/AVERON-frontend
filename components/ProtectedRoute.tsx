@@ -6,6 +6,7 @@
 import React, { useEffect } from 'react';
 import { useRouter, usePathname, useParams } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
+import { getSafeInternalReturnTo } from '@/lib/safe-navigation';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -20,8 +21,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      const currentPath = pathname ? pathname.replace(new RegExp(`^/${locale}`), '') || '/' : '/';
-      const redirectUrl = `/${locale}/login?redirect=${encodeURIComponent(currentPath)}`;
+      const returnTo = getSafeInternalReturnTo(pathname, locale) ?? `/${locale}/profile`;
+      const redirectUrl = `/${locale}/login?returnTo=${encodeURIComponent(returnTo)}`;
       router.push(redirectUrl);
     }
   }, [isAuthenticated, isLoading, router, pathname, locale]);

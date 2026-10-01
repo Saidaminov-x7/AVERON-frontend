@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Minus, Plus, RefreshCw, ShoppingBag, Trash2 } from 'lucide-react';
+import { ArrowRight, RefreshCw, ShoppingBag, Trash2 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { ProductImage } from '@/components/commerce/ProductImage';
+import { QuantityStepper } from '@/components/commerce/QuantityStepper';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { getCommerceErrorCode } from '@/lib/commerce-orders';
 
@@ -17,7 +18,8 @@ const copy = {
     catalog: 'Перейти в каталог', subtotal: 'Итого', checkout: 'Перейти к оформлению',
     remove: 'Удалить товар', clear: 'Очистить корзину', retry: 'Повторить',
     unavailable: 'Товар больше недоступен для покупки. Удалите его из корзины.',
-    stock: 'Доступно сейчас', quantity: 'Количество', failed: 'Не удалось обновить корзину.',
+    stock: 'Доступно сейчас', quantity: 'Количество', decrease: 'Уменьшить количество', increase: 'Увеличить количество', failed: 'Не удалось обновить корзину.',
+    preorder: 'Предзаказ', preorderDate: 'Ожидаемая доступность: {date}',
     errors: {
       PRODUCT_NOT_AVAILABLE: 'Товар больше недоступен для покупки.',
       VARIANT_NOT_AVAILABLE: 'Выбранный вариант больше недоступен.',
@@ -33,7 +35,8 @@ const copy = {
     catalog: 'Katalogga o‘tish', subtotal: 'Jami', checkout: 'Rasmiylashtirish',
     remove: 'Mahsulotni olib tashlash', clear: 'Savatchani tozalash', retry: 'Qayta urinish',
     unavailable: 'Mahsulot endi xarid uchun mavjud emas. Uni savatchadan olib tashlang.',
-    stock: 'Hozir mavjud', quantity: 'Miqdor', failed: 'Savatchani yangilab bo‘lmadi.',
+    stock: 'Hozir mavjud', quantity: 'Miqdor', decrease: 'Miqdorni kamaytirish', increase: 'Miqdorni oshirish', failed: 'Savatchani yangilab bo‘lmadi.',
+    preorder: 'Oldindan buyurtma', preorderDate: 'Kutilayotgan mavjudlik: {date}',
     errors: {
       PRODUCT_NOT_AVAILABLE: 'Mahsulot endi xarid uchun mavjud emas.',
       VARIANT_NOT_AVAILABLE: 'Tanlangan variant endi mavjud emas.',
@@ -49,7 +52,8 @@ const copy = {
     catalog: 'Browse catalog', subtotal: 'Subtotal', checkout: 'Continue to checkout',
     remove: 'Remove item', clear: 'Clear cart', retry: 'Try again',
     unavailable: 'This product is no longer available. Remove it from your cart.',
-    stock: 'Available now', quantity: 'Quantity', failed: 'Could not update your cart.',
+    stock: 'Available now', quantity: 'Quantity', decrease: 'decrease', increase: 'increase', failed: 'Could not update your cart.',
+    preorder: 'Preorder', preorderDate: 'Estimated availability: {date}',
     errors: {
       PRODUCT_NOT_AVAILABLE: 'This product is no longer available.',
       VARIANT_NOT_AVAILABLE: 'This option is no longer available.',
@@ -64,6 +68,14 @@ const copy = {
 function formatUzs(amount: string | number, locale: string) {
   const number = Number(amount);
   return `${Number.isFinite(number) ? number.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU') : '0'} ${locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}`;
+}
+
+function formatDate(value: string | null | undefined, locale: string): string | null {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? null
+    : date.toLocaleDateString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU');
 }
 
 function CartContent() {
@@ -127,17 +139,28 @@ function CartContent() {
                       </p>
                     )}
                     <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">{formatUzs(item.unitPriceUzs, locale)}</p>
+                    {item.available && item.stock > 0 && (
+                      <p className="mt-1 text-xs text-stone-500">{text.stock}: {item.stock}</p>
+                    )}
+                    {item.available && item.fulfillmentType === 'PREORDER' && (
+                      <p className="mt-1 text-sm font-semibold text-primary-700 dark:text-primary-300">
+                        {text.preorder}
+                        {formatDate(item.estimatedAvailableAt, locale)
+                          ? ` · ${text.preorderDate.replace('{date}', formatDate(item.estimatedAvailableAt, locale)!)}` : ''}
+                      </p>
+                    )}
                     {!item.available && <p role="status" className="mt-2 text-sm font-medium text-rose-700 dark:text-rose-300">{text.unavailable}</p>}
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                      <div className="inline-flex h-10 items-center rounded-xl border border-stone-200 dark:border-white/15">
-                        <button type="button" aria-label={`${text.quantity}: ${item.quantity}, decrease`} disabled={isMutating || !item.available || item.quantity <= 1} onClick={() => changeQuantity(item.id, item.quantity - 1)} className="grid h-10 w-10 place-items-center rounded-l-xl hover:bg-stone-50 disabled:opacity-40 dark:hover:bg-white/5">
-                          <Minus size={15} />
-                        </button>
-                        <span aria-label={text.quantity} className="min-w-8 text-center text-sm font-semibold">{item.quantity}</span>
-                        <button type="button" aria-label={`${text.quantity}: ${item.quantity}, increase`} disabled={isMutating || !item.available || item.quantity >= Math.min(item.stock, 99)} onClick={() => changeQuantity(item.id, item.quantity + 1)} className="grid h-10 w-10 place-items-center rounded-r-xl hover:bg-stone-50 disabled:opacity-40 dark:hover:bg-white/5">
-                          <Plus size={15} />
-                        </button>
-                      </div>
+                      <QuantityStepper
+                        label={text.quantity}
+                        value={item.quantity}
+                        min={1}
+                        max={Math.min(Math.max(item.stock, item.preorderEligible ? item.preorderAvailable ?? 0 : 0), 99)}
+                        disabled={isMutating || !item.available}
+                        onChange={(quantity) => changeQuantity(item.id, quantity)}
+                        decreaseLabel={`${text.quantity}: ${item.quantity}, ${text.decrease}`}
+                        increaseLabel={`${text.quantity}: ${item.quantity}, ${text.increase}`}
+                      />
                       <p className="font-bold">{formatUzs(item.lineTotalUzs, locale)}</p>
                       <button type="button" aria-label={`${text.remove}: ${item.title}`} disabled={isMutating} onClick={() => mutation.mutate({ type: 'remove', itemId: item.id })} className="inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-medium text-rose-700 hover:bg-rose-50 disabled:opacity-50 dark:text-rose-300 dark:hover:bg-rose-950/30">
                         <Trash2 size={16} />{text.remove}

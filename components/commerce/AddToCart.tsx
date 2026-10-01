@@ -3,47 +3,119 @@
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
+import { QuantityStepper } from '@/components/commerce/QuantityStepper';
+import { ProductVariantSelector, isVariantUnavailable } from '@/components/commerce/ProductVariantSelector';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { getCommerceErrorCode } from '@/lib/commerce-orders';
+import { getSafeInternalReturnTo } from '@/lib/safe-navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 
 interface PurchaseVariant {
   id: string;
   color?: string | null;
   size?: string | null;
-  stock: number;
-  salePriceUzs: string | number;
+  stock?: number;
+  available?: boolean;
+  salePriceUzs?: string | number;
 }
 
 const labels = {
-  ru: { choose: 'Выберите вариант', quantity: 'Количество', add: 'Добавить в корзину', signIn: 'Войдите, чтобы добавить товар в корзину', added: 'Добавлено в корзину', goCart: 'Перейти в корзину', unavailable: 'Нет в наличии', generic: 'Не удалось добавить товар.', noStock: 'Этот товар сейчас недоступен.' },
-  uz: { choose: 'Variantni tanlang', quantity: 'Miqdor', add: 'Savatchaga qo‘shish', signIn: 'Savatchaga qo‘shish uchun tizimga kiring', added: 'Savatchaga qo‘shildi', goCart: 'Savatchaga o‘tish', unavailable: 'Mavjud emas', generic: 'Mahsulotni qo‘shib bo‘lmadi.', noStock: 'Bu mahsulot hozir mavjud emas.' },
-  en: { choose: 'Choose an option', quantity: 'Quantity', add: 'Add to cart', signIn: 'Sign in to add this product to your cart', added: 'Added to cart', goCart: 'View cart', unavailable: 'Out of stock', generic: 'Could not add this product.', noStock: 'This product is currently unavailable.' },
+  ru: {
+    choose: 'Выберите вариант', quantity: 'Количество', decrease: 'Уменьшить количество', increase: 'Увеличить количество',
+    add: 'Добавить в корзину', signIn: 'Войдите, чтобы добавить товар в корзину', added: 'Добавлено в корзину',
+    goCart: 'Перейти в корзину', unavailable: 'Нет в наличии', available: 'Доступен для заказа',
+    stock: 'В наличии: {count}', lowStock: 'Заканчивается: {count} шт.', generic: 'Не удалось добавить товар.', noStock: 'Этот товар сейчас недоступен.',
+    standard: 'Стандартный', currency: 'сум', preorder: 'Предзаказ', preorderDate: 'Ожидаемая доступность: {date}',
+  },
+  uz: {
+    choose: 'Variantni tanlang', quantity: 'Miqdor', decrease: 'Miqdorni kamaytirish', increase: 'Miqdorni oshirish',
+    add: 'Savatchaga qo‘shish', signIn: 'Savatchaga qo‘shish uchun tizimga kiring', added: 'Savatchaga qo‘shildi',
+    goCart: 'Savatchaga o‘tish', unavailable: 'Mavjud emas', available: 'Buyurtma berish mumkin',
+    stock: 'Mavjud: {count}', lowStock: 'Kam qoldi: {count} dona.', generic: 'Mahsulotni qo‘shib bo‘lmadi.', noStock: 'Bu mahsulot hozir mavjud emas.',
+    standard: 'Standart', currency: 'so‘m', preorder: 'Oldindan buyurtma', preorderDate: 'Kutilayotgan mavjudlik: {date}',
+  },
+  en: {
+    choose: 'Choose an option', quantity: 'Quantity', decrease: 'Decrease quantity', increase: 'Increase quantity',
+    add: 'Add to cart', signIn: 'Sign in to add this product to your cart', added: 'Added to cart',
+    goCart: 'View cart', unavailable: 'Out of stock', available: 'Available to order',
+    stock: 'In stock: {count}', lowStock: 'Low stock: {count} left.', generic: 'Could not add this product.', noStock: 'This product is currently unavailable.',
+    standard: 'Standard', currency: 'UZS', preorder: 'Preorder', preorderDate: 'Estimated availability: {date}',
+  },
 } as const;
+
+function formatUzs(amount: string | number, locale: string, currency: string) {
+  const value = Number(amount);
+  const formatted = Number.isFinite(value)
+    ? value.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')
+    : '0';
+  return `${formatted} ${currency}`;
+}
 
 export function AddToCart({
   productId,
+  productPrice,
   productStock,
+  productAvailable,
+  productAvailability,
   variants,
 }: {
   productId: string;
+  productPrice: string | number;
   productStock?: number;
+  productAvailable?: boolean;
+  productAvailability?: {
+    preorderEligible: boolean;
+    preorderAvailable: number;
+    estimatedAvailableAt: string | null;
+  };
   variants: PurchaseVariant[];
 }) {
   const locale = useLocale();
   const text = labels[locale as keyof typeof labels] ?? labels.ru;
-  const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, isLoading } = useAuthStore();
-  const { mutation } = useCommerceCart();
-  const [variantId, setVariantId] = useState(variants[0]?.id ?? '');
+  const [variantId, setVariantId] = useState(
+    () => (variants.find((variant) => !isVariantUnavailable(variant.available, variant.stock)) ?? variants[0])?.id ?? '',
+  );
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const { isAuthenticated, isLoading } = useAuthStore();
+  const { mutation } = useCommerceCart();
   const selectedVariant = variants.find((variant) => variant.id === variantId);
-  const stock = selectedVariant?.stock ?? productStock ?? 0;
-  const unavailable = stock < 1;
+  const availability = selectedVariant?.available ?? productAvailable;
+  const stock = selectedVariant?.stock ?? productStock;
+  const stockIsKnown = typeof stock === 'number' && Number.isSafeInteger(stock) && stock >= 0;
+  const preorderAvailable = productAvailability?.preorderEligible
+    ? Math.max(0, productAvailability.preorderAvailable)
+    : 0;
+  const canPreorder = preorderAvailable > 0;
+  const unavailable = (availability === false && !canPreorder) || (stockIsKnown && stock === 0 && !canPreorder);
+  const maxQuantity = stockIsKnown
+    ? Math.min(Math.max(stock!, canPreorder ? preorderAvailable : 0), 99)
+    : canPreorder
+      ? Math.min(preorderAvailable, 99)
+      : 99;
+  const isPreorder = canPreorder && (!stockIsKnown || quantity > stock!);
+  const lowStock = !unavailable && stockIsKnown && stock! > 0 && stock! <= 5;
+  const selectedPrice = selectedVariant?.salePriceUzs ?? productPrice;
+  const selectedName = selectedVariant
+    ? [selectedVariant.color, selectedVariant.size].filter(Boolean).join(' · ') || text.standard
+    : '';
+  const estimatedDate = productAvailability?.estimatedAvailableAt
+    ? new Date(productAvailability.estimatedAvailableAt).toLocaleDateString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')
+    : null;
+  const stockStatus = unavailable
+    ? text.unavailable
+    : isPreorder
+      ? `${text.preorder}${estimatedDate ? ` · ${text.preorderDate.replace('{date}', estimatedDate)}` : ''}`
+      : lowStock
+      ? text.lowStock.replace('{count}', String(stock))
+    : stockIsKnown && stock! > 0
+      ? text.stock.replace('{count}', String(stock))
+      : availability === true
+        ? text.available
+        : null;
   const errorCode = getCommerceErrorCode(mutation.error);
   const error = mutation.isError
     ? errorCode === 'PRODUCT_NOT_AVAILABLE' || errorCode === 'INSUFFICIENT_STOCK'
@@ -53,10 +125,6 @@ export function AddToCart({
 
   const handleAdd = () => {
     setAdded(false);
-    if (!isAuthenticated) {
-      router.push(`/${locale}/login?redirect=${encodeURIComponent(pathname)}`);
-      return;
-    }
     mutation.mutate(
       {
         type: 'add',
@@ -70,29 +138,56 @@ export function AddToCart({
 
   return (
     <div className="mt-6 space-y-3">
-      {variants.length > 0 && (
-        <label className="block text-sm font-semibold">
-          {text.choose}
-          <select value={variantId} onChange={(event) => { setVariantId(event.target.value); setAdded(false); }} className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-900">
-            {variants.map((variant) => (
-              <option key={variant.id} value={variant.id} disabled={variant.stock < 1}>
-                {[variant.color, variant.size].filter(Boolean).join(' · ') || '—'} · {variant.stock}
-              </option>
-            ))}
-          </select>
-        </label>
+      <p className="text-2xl font-black" aria-live="polite">
+        {formatUzs(selectedPrice, locale, text.currency)}
+      </p>
+      {selectedName && <p className="text-sm text-stone-600 dark:text-stone-300">{selectedName}</p>}
+      {stockStatus && (
+        <p
+          role={unavailable ? 'status' : undefined}
+          className={unavailable ? 'text-sm font-semibold text-rose-700 dark:text-rose-300' : 'text-sm text-stone-600 dark:text-stone-300'}
+        >
+          {stockStatus}
+        </p>
       )}
-      <div className="flex items-end gap-3">
-        <label className="block min-w-28 text-sm font-semibold">
-          {text.quantity}
-          <input type="number" min={1} max={Math.min(stock, 99)} step={1} value={quantity} onChange={(event) => setQuantity(Number(event.target.value))} className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-900" />
-        </label>
-        {isAuthenticated ? (
-          <button type="button" onClick={handleAdd} disabled={isLoading || mutation.isPending || unavailable || !Number.isInteger(quantity) || quantity < 1 || quantity > Math.min(stock, 99)} className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-stone-900 px-4 font-bold text-white transition-colors hover:bg-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-200">
+      {variants.length > 0 && (
+        <ProductVariantSelector
+          variants={variants}
+          value={variantId}
+          label={text.choose}
+          standardLabel={text.standard}
+          stockLabel={text.stock}
+          availabilityLabel={(available) => available ? text.available : text.unavailable}
+          onChange={(next) => { setVariantId(next); setQuantity(1); setAdded(false); }}
+        />
+      )}
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="space-y-1.5">
+          <p className="text-sm font-semibold">{text.quantity}</p>
+          <QuantityStepper
+            label={text.quantity}
+            value={quantity}
+            max={maxQuantity}
+            disabled={unavailable}
+            onChange={(next) => setQuantity(next)}
+            decreaseLabel={text.decrease}
+            increaseLabel={text.increase}
+          />
+        </div>
+        {isAuthenticated || unavailable ? (
+          <button
+            type="button"
+            onClick={handleAdd}
+            disabled={!isAuthenticated || isLoading || mutation.isPending || unavailable || quantity > maxQuantity}
+            className="inline-flex h-11 min-w-48 flex-1 items-center justify-center gap-2 rounded-xl bg-stone-900 px-4 font-bold text-white transition-colors hover:bg-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-200"
+          >
             <ShoppingCart size={17} />{unavailable ? text.unavailable : text.add}
           </button>
         ) : (
-          <Link href={`/${locale}/login?redirect=${encodeURIComponent(pathname)}`} className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-stone-300 px-4 text-center text-sm font-semibold hover:bg-stone-100 dark:border-white/15 dark:hover:bg-white/5">
+          <Link
+            href={`/${locale}/login?returnTo=${encodeURIComponent(getSafeInternalReturnTo(pathname, locale) ?? `/${locale}/catalog`)}`}
+            className="inline-flex min-h-11 min-w-48 flex-1 items-center justify-center rounded-xl border border-stone-300 px-4 text-center text-sm font-semibold hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:border-white/15 dark:hover:bg-white/5"
+          >
             {text.signIn}
           </Link>
         )}

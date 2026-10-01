@@ -6,6 +6,7 @@ import { login, getMe } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
 import { LoginFormValues } from '../schemas/loginSchema';
 import { getErrorDetails } from '@/lib/errorDetails';
+import { getSafeInternalReturnTo } from '@/lib/safe-navigation';
 
 export function useAuth(locale: string) {
   const router = useRouter();
@@ -33,9 +34,9 @@ export function useAuth(locale: string) {
         setAuth(user, token);
       }
 
-      const redirect = searchParams.get('redirect') || '/profile';
-      const destination = redirect.startsWith('/') ? `/${locale}${redirect}` : `/${locale}/${redirect}`;
-      router.push(destination);
+      const destination = getSafeInternalReturnTo(searchParams.get('returnTo'), locale)
+        ?? `/${locale}/profile`;
+      router.replace(destination);
     } catch (err: unknown) {
       console.error('Login error:', err);
       const { message: responseMessage, status } = getErrorDetails(err);

@@ -21,11 +21,26 @@ export type StoreProduct = {
   translations?: Record<string, Translation>;
   salePriceUzs: string | number;
   compareAtPriceUzs?: string | number | null;
+  stock?: number;
+  available?: boolean;
+  availability?: {
+    inStock: boolean;
+    preorderEligible: boolean;
+    preorderAvailable: number;
+    estimatedAvailableAt: string | null;
+  };
   images?: Array<{ id?: string; url: string; alt?: Record<string, string> }>;
   category?: StoreCategory | null;
   material?: string | null;
   attributes?: Record<string, unknown> | null;
-  variants?: Array<{ id: string; color?: string | null; size?: string | null; stock?: number }>;
+  variants?: Array<{
+    id: string;
+    color?: string | null;
+    size?: string | null;
+    stock?: number;
+    available?: boolean;
+    salePriceUzs?: string | number;
+  }>;
 };
 
 export function productTitle(product: StoreProduct, locale = 'ru') {

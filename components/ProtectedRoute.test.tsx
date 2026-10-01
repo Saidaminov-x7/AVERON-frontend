@@ -28,7 +28,7 @@ describe('ProtectedRoute', () => {
     expect(screen.queryByText('Секретный профиль')).not.toBeInTheDocument();
   });
 
-  it('redirects to login with return redirect if user is unauthenticated', () => {
+  it('redirects to login with a localized internal return target if unauthenticated', () => {
     useAuthStore.setState({ isLoading: false, isAuthenticated: false, user: null });
     render(
       <ProtectedRoute>
@@ -36,7 +36,7 @@ describe('ProtectedRoute', () => {
       </ProtectedRoute>
     );
 
-    expect(pushMock).toHaveBeenCalledWith('/ru/login?redirect=%2Fprofile');
+    expect(pushMock).toHaveBeenCalledWith('/ru/login?returnTo=%2Fru%2Fprofile');
     expect(screen.queryByText('Секретный профиль')).not.toBeInTheDocument();
   });
 

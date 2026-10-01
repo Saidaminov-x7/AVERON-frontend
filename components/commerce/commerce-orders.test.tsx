@@ -1,13 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactElement, ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import CartPage from '@/app/[locale]/(main)/cart/page';
 import CheckoutPage from '@/app/[locale]/(main)/checkout/page';
 import { CustomerOrderDetails } from './CustomerOrderDetails';
+import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { createCheckout, getCustomerOrder, type Cart } from '@/lib/commerce-orders';
 
-const nav = vi.hoisted(() => ({ push: vi.fn() }));
+const nav = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn(), pathname: '/en/orders/AV-TEST-123' }));
 const checkoutStore = vi.hoisted(() => ({ name: 'Test Customer', phone: '+998901234567' }));
 const cartMock = vi.hoisted(() => ({
   data: null as Cart | null,
@@ -23,6 +24,7 @@ vi.mock('next-intl', () => ({ useLocale: () => 'en' }));
 vi.mock('next/navigation', () => ({
   useRouter: () => nav,
   useParams: () => ({ orderNumber: 'AV-TEST-123' }),
+  usePathname: () => nav.pathname,
 }));
 vi.mock('@/components/ProtectedRoute', () => ({ default: ({ children }: { children: ReactNode }) => children }));
 vi.mock('@/hooks/useCommerceCart', () => ({ useCommerceCart: () => cartMock }));
@@ -78,6 +80,9 @@ afterEach(() => {
 describe('customer commerce flows', () => {
   beforeEach(() => {
     nav.push.mockReset();
+    nav.replace.mockReset();
+    nav.back.mockReset();
+    nav.pathname = '/en/orders/AV-TEST-123';
     cartMock.data = sampleCart;
     cartMock.isLoading = false;
     cartMock.isError = false;
@@ -93,6 +98,7 @@ describe('customer commerce flows', () => {
     render(<CartPage />);
 
     expect(screen.getByText('Blue dress')).toBeInTheDocument();
+    expect(screen.getByText('Available now: 8')).toBeInTheDocument();
     expect(screen.getAllByText('250,000 UZS')).toHaveLength(2);
     fireEvent.click(screen.getByRole('button', { name: 'Quantity: 2, increase' }));
 
@@ -144,6 +150,58 @@ describe('customer commerce flows', () => {
 
     expect(await screen.findByText('Order placed')).toBeInTheDocument();
     expect(screen.getAllByText('250,000 UZS').length).toBeGreaterThan(1);
+    const history = screen.getByRole('region', { name: 'Order history' });
+    expect(history).toBeInTheDocument();
+    expect(within(history).getByText('Created')).toBeInTheDocument();
+    expect(within(history).getByText('Created').closest('li')).toHaveAttribute('aria-current', 'step');
+    expect(screen.getByText('Order placed')).toBeInTheDocument();
     expect(getCustomerOrder).toHaveBeenCalledWith('AV-TEST-123');
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    expect(nav.replace).toHaveBeenCalledWith('/en/orders');
+  });
+
+  it('renders actual order status dates and shipment tracking fields from the API', async () => {
+    vi.mocked(getCustomerOrder).mockResolvedValue({
+      ...sampleOrder,
+      status: 'IN_TRANSIT_CHINA',
+      statusHistory: [
+        { status: 'IN_TRANSIT_CHINA', note: null, createdAt: '2026-10-03T10:00:00.000Z' },
+        { status: 'CREATED', note: 'Order received', createdAt: '2026-10-01T10:00:00.000Z' },
+        { status: 'CONFIRMED', note: null, createdAt: '2026-10-02T10:00:00.000Z' },
+      ],
+      shipments: [{
+        provider: 'Example Cargo',
+        trackingNumber: 'TRK-987654',
+        status: 'IN_TRANSIT',
+        sentAt: '2026-10-02T12:30:00.000Z',
+        arrivedAt: null,
+      }],
+    });
+    renderWithQueryClient(<CustomerOrderDetails />);
+
+    await screen.findByRole('region', { name: 'Order history' });
+    const history = screen.getByRole('region', { name: 'Order history' });
+    expect(within(history).getByText('In transit in China')).toBeInTheDocument();
+    const events = history.querySelectorAll('li');
+    expect(events).toHaveLength(3);
+    expect(events[0]).toHaveTextContent('Created');
+    expect(events[0].querySelector('time')).toHaveAttribute('dateTime', '2026-10-01T10:00:00.000Z');
+    expect(events[1]).toHaveTextContent('Confirmed');
+    expect(events[2]).toHaveTextContent('In transit in China');
+    expect(screen.getByText('Example Cargo')).toBeInTheDocument();
+    expect(screen.getByText('TRK-987654')).toBeInTheDocument();
+    expect(screen.getByText('IN_TRANSIT')).toBeInTheDocument();
+    expect(screen.getByText(/Sent:/)).toBeInTheDocument();
+    expect(screen.queryByText(/Arrived:/)).not.toBeInTheDocument();
+  });
+
+  it('sends auth back navigation to the safe localized home rather than a protected referrer', () => {
+    nav.pathname = '/en/login';
+    render(<SmartBackButton fallbackHref="/en/orders" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+
+    expect(nav.replace).toHaveBeenCalledWith('/en');
+    expect(nav.back).not.toHaveBeenCalled();
   });
 });

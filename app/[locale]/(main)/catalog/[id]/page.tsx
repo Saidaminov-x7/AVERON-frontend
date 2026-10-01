@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  CheckCircle2,
-  Headphones,
-  PackageCheck,
-} from "lucide-react";
+import { ArrowLeft, CheckCircle2, Headphones, PackageCheck } from "lucide-react";
 import { externalBaseURL } from "@/lib/axios";
-import { ProductImage } from "@/components/commerce/ProductImage";
-import { OrderModal } from "@/components/commerce/OrderModal";
 import { AddToCart } from "@/components/commerce/AddToCart";
+import { ProductGallery } from "@/components/commerce/ProductGallery";
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import {
   buildCatalogSearchParams,
@@ -62,8 +56,9 @@ export default async function ProductPage({
           id: string;
           color?: string | null;
           size?: string | null;
-          stock: number;
-          salePriceUzs: string | number;
+          stock?: number;
+          available?: boolean;
+          salePriceUzs?: string | number;
         }>;
       })
     | null = await loadProduct(id);
@@ -74,57 +69,53 @@ export default async function ProductPage({
       back: "Назад в каталог",
       verified: "AVERON · ПРОВЕРЕНО",
       descriptionFallback: "Проверенный товар из каталога AVERON.",
-      descriptionSupport: "Подробности товара доступны у поддержки.",
-      options: "Доступные варианты",
-      standard: "Стандартный",
+      descriptionUnavailable: "Подробности товара доступны у поддержки.",
+      gallery: "Фотографии товара",
+      imageLabel: (index: number) => `Показать фото ${index}`,
       delivery: "Доставка",
       orderStatus: "Статус заказа всегда под рукой",
       support: "Поддержка",
-      supportText: "Поможем с размером и заказом",
+      supportText: "Поможем с размером и товаром",
       confirmed: "Карточка подтверждена администратором",
-      currency: "сум",
     },
     uz: {
       back: "Katalogga qaytish",
       verified: "AVERON · TEKSHIRILGAN",
       descriptionFallback: "AVERON katalogidagi tekshirilgan mahsulot.",
-      descriptionSupport: "Mahsulot tafsilotlarini yordam xizmatidan bilib oling.",
-      options: "Mavjud variantlar",
-      standard: "Standart",
+      descriptionUnavailable: "Mahsulot tafsilotlarini yordam xizmatidan olishingiz mumkin.",
+      gallery: "Mahsulot rasmlari",
+      imageLabel: (index: number) => `${index}-rasmni ko‘rsatish`,
       delivery: "Yetkazib berish",
       orderStatus: "Buyurtma holati doimo yoningizda",
       support: "Yordam",
-      supportText: "O‘lcham va buyurtma bo‘yicha yordam beramiz",
+      supportText: "O‘lcham va mahsulot bo‘yicha yordam beramiz",
       confirmed: "Mahsulot sahifasi administrator tomonidan tasdiqlangan",
-      currency: "so‘m",
     },
     en: {
       back: "Back to catalog",
       verified: "AVERON · VERIFIED",
       descriptionFallback: "A verified product from the AVERON catalog.",
-      descriptionSupport: "Contact support for more product details.",
-      options: "Available options",
-      standard: "Standard",
+      descriptionUnavailable: "Contact support for more product details.",
+      gallery: "Product images",
+      imageLabel: (index: number) => `Show image ${index}`,
       delivery: "Delivery",
       orderStatus: "Keep your order status close at hand",
       support: "Support",
-      supportText: "We can help with sizing and orders",
+      supportText: "Get help with sizing and product details",
       confirmed: "Product listing verified by an administrator",
-      currency: "UZS",
     },
   }[locale as "ru" | "uz" | "en"] ?? {
     back: "Назад в каталог",
     verified: "AVERON · ПРОВЕРЕНО",
     descriptionFallback: "Проверенный товар из каталога AVERON.",
-    descriptionSupport: "Подробности товара доступны у поддержки.",
-    options: "Доступные варианты",
-    standard: "Стандартный",
+    descriptionUnavailable: "Подробности товара доступны у поддержки.",
+    gallery: "Фотографии товара",
+    imageLabel: (index: number) => `Показать фото ${index}`,
     delivery: "Доставка",
     orderStatus: "Статус заказа всегда под рукой",
     support: "Поддержка",
-    supportText: "Поможем с размером и заказом",
+    supportText: "Поможем с размером и товаром",
     confirmed: "Карточка подтверждена администратором",
-    currency: "сум",
   };
   const catalogQuery = buildCatalogSearchParams(filters).toString();
   const catalogHref = `/${locale}/catalog${catalogQuery ? `?${catalogQuery}` : ""}`;
@@ -133,7 +124,6 @@ export default async function ProductPage({
     (typeof localizedDescription === "string"
       ? localizedDescription
       : localizedDescription?.text) ?? copy.descriptionFallback;
-  const currencyLocale = locale === "en" ? "en-US" : locale === "uz" ? "uz-UZ" : "ru-RU";
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
       <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 lg:px-8">
@@ -145,22 +135,13 @@ export default async function ProductPage({
           {copy.back}
         </Link>
         <div className="mt-6 grid gap-8 lg:grid-cols-2">
-          <div className="grid grid-cols-2 gap-3">
-            {product.images?.length ? (
-              product.images.slice(0, 4).map((item, index) => (
-                <div
-                  key={item.id ?? item.url}
-                  className={`relative overflow-hidden rounded-3xl bg-stone-100 shadow-sm dark:bg-stone-800 ${index === 0 ? "col-span-2 aspect-[4/3]" : "aspect-square"}`}
-                >
-                  <ProductImage src={item.url} alt={title} />
-                </div>
-              ))
-            ) : (
-              <div className="col-span-2 flex aspect-[4/3] items-center justify-center rounded-2xl bg-stone-100 text-stone-400 dark:bg-stone-800">
-                AVERON
-              </div>
-            )}
-          </div>
+          <ProductGallery
+            images={product.images ?? []}
+            productTitle={title}
+            locale={locale}
+            label={copy.gallery}
+            imageLabel={copy.imageLabel}
+          />
           <section>
             <p className="text-xs font-bold uppercase tracking-[.18em] text-primary-700 dark:text-primary-300">
               {copy.verified}
@@ -168,38 +149,19 @@ export default async function ProductPage({
             <h1 className="mt-3 text-3xl font-extrabold sm:text-4xl">
               {title}
             </h1>
-            <p className="mt-5 text-2xl font-black">
-              {Number(product.salePriceUzs).toLocaleString(currencyLocale)} {copy.currency}
-            </p>
             <p className="mt-5 leading-7 text-stone-600 dark:text-stone-300">
               {typeof description === "string"
                 ? description
-                : "Подробности товара доступны у поддержки."}
+                : copy.descriptionUnavailable}
             </p>
-            {product.variants?.length ? (
-              <div className="mt-7">
-                <h2 className="text-sm font-bold">{copy.options}</h2>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {product.variants.map((variant) => (
-                    <span
-                      key={variant.id}
-                      className="rounded-xl border border-stone-300 px-3 py-2 text-sm dark:border-white/15"
-                    >
-                      {[variant.color, variant.size]
-                        .filter(Boolean)
-                        .join(" · ") || copy.standard}{" "}
-                      · {variant.stock} шт.
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ) : null}
             <AddToCart
               productId={product.id}
+              productPrice={product.salePriceUzs}
               productStock={product.stock}
+              productAvailable={product.available}
+              productAvailability={product.availability}
               variants={product.variants ?? []}
             />
-            <OrderModal product={product} locale={locale} />
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="flex gap-3 rounded-xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900">
                 <PackageCheck className="text-primary-700 dark:text-primary-300" />

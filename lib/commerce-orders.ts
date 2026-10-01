@@ -15,6 +15,10 @@ export interface CartItem {
   variant: CartVariant | null;
   quantity: number;
   stock: number;
+  preorderEligible?: boolean;
+  preorderAvailable?: number;
+  estimatedAvailableAt?: string | null;
+  fulfillmentType?: 'STOCK' | 'PREORDER' | null;
   available: boolean;
   availabilityCode?: string;
   unitPriceUzs: string;
@@ -49,6 +53,41 @@ export interface OrderItem {
   unitPrice: string | number;
   totalPrice: string | number;
   variantSnapshot?: { color: string | null; size: string | null; sku: string } | null;
+  isPreorder?: boolean;
+  estimatedAvailableAt?: string | null;
+}
+
+export interface OrderStatusHistoryEntry {
+  status: string;
+  note?: string | null;
+  createdAt: string;
+}
+
+export interface OrderShipment {
+  provider?: string | null;
+  trackingNumber?: string | null;
+  status?: string | null;
+  sentAt: string | null;
+  arrivedAt: string | null;
+}
+
+export interface OrderDeliveryHistoryEntry {
+  status: string;
+  createdAt: string;
+}
+
+export interface OrderDelivery {
+  method: 'COURIER' | 'PICKUP';
+  recipient: string;
+  phone: string;
+  destination: DeliveryDetails;
+  status: string;
+  trackingNumber: string | null;
+  provider: string | null;
+  estimatedDeliveryAt: string | null;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  history: OrderDeliveryHistoryEntry[];
 }
 
 export interface CustomerOrder {
@@ -65,6 +104,9 @@ export interface CustomerOrder {
   items: OrderItem[];
   createdAt: string;
   updatedAt?: string;
+  statusHistory?: OrderStatusHistoryEntry[];
+  shipments?: OrderShipment[];
+  delivery?: OrderDelivery | null;
 }
 
 export const commerceQueryKeys = {
@@ -122,6 +164,13 @@ export async function getCustomerOrders(): Promise<CustomerOrder[]> {
 export async function getCustomerOrder(orderNumber: string): Promise<CustomerOrder> {
   const { data } = await api.get<CustomerOrder>(
     `/api/v1/orders/me/${encodeURIComponent(orderNumber)}`,
+  );
+  return data;
+}
+
+export async function cancelCustomerOrder(orderNumber: string): Promise<CustomerOrder> {
+  const { data } = await api.post<CustomerOrder>(
+    `/api/v1/orders/me/${encodeURIComponent(orderNumber)}/cancel`,
   );
   return data;
 }

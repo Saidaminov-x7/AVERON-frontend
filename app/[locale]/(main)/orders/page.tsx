@@ -13,13 +13,21 @@ const copy = {
   en: { title: 'My orders', empty: 'You have no orders yet', emptyText: 'Your placed orders will appear here.', shop: 'Browse catalog', retry: 'Try again', error: 'Could not load your orders.', total: 'Total', status: 'Status', date: 'Date', open: 'View details' },
 } as const;
 
-const statusCopy = {
+const statusCopy: Record<string, Record<'ru' | 'uz' | 'en', string>> = {
   CREATED: { ru: 'Создан', uz: 'Yaratildi', en: 'Created' },
   CONFIRMED: { ru: 'Подтверждён', uz: 'Tasdiqlandi', en: 'Confirmed' },
-  CANCELLED: { ru: 'Отменён', uz: 'Bekor qilindi', en: 'Cancelled' },
   PAID: { ru: 'Оплачен', uz: 'To‘langan', en: 'Paid' },
+  ORDERED_FROM_SUPPLIER: { ru: 'Заказан у поставщика', uz: 'Yetkazib beruvchidan buyurtma qilindi', en: 'Ordered from supplier' },
+  SUPPLIER_CONFIRMED: { ru: 'Подтверждён поставщиком', uz: 'Yetkazib beruvchi tasdiqladi', en: 'Supplier confirmed' },
+  IN_TRANSIT_CHINA: { ru: 'В пути по Китаю', uz: 'Xitoy bo‘ylab yo‘lda', en: 'In transit in China' },
+  CARGO_WAREHOUSE: { ru: 'На складе карго', uz: 'Kargo omborida', en: 'At cargo warehouse' },
+  INTERNATIONAL_TRANSIT: { ru: 'Международная перевозка', uz: 'Xalqaro tashuvda', en: 'International transit' },
+  ARRIVED_UZBEKISTAN: { ru: 'Прибыл в Узбекистан', uz: 'O‘zbekistonga yetib keldi', en: 'Arrived in Uzbekistan' },
+  OUT_FOR_DELIVERY: { ru: 'Передан в доставку', uz: 'Yetkazib berishga topshirildi', en: 'Out for delivery' },
   DELIVERED: { ru: 'Доставлен', uz: 'Yetkazildi', en: 'Delivered' },
-} as const;
+  COMPLETED: { ru: 'Завершён', uz: 'Yakunlandi', en: 'Completed' },
+  CANCELLED: { ru: 'Отменён', uz: 'Bekor qilindi', en: 'Cancelled' },
+};
 
 function formatUzs(amount: string | number, locale: string) {
   const value = Number(amount);
