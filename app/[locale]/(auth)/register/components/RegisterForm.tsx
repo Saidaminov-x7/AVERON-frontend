@@ -47,7 +47,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
     },
   });
 
-  const onSubmit = async (data: RegisterFormValues) => {
+  const onSubmit = async () => {
     setIsLoading(true);
     try {
       // Simulate API call

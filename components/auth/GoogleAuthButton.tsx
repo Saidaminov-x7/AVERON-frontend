@@ -11,6 +11,7 @@ import {
 import { firebaseAuth } from '@/lib/firebase';
 import { googleAuth, getMe } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
+import { getErrorDetails } from '@/lib/errorDetails';
 import { ArrowRight, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface GoogleAuthButtonProps {
@@ -99,14 +100,13 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
     setStep('loading');
     try {
       await tryGoogleAuth({ idToken: token });
-    } catch (err: any) {
-      const code = err.response?.data?.code;
-      const status = err.response?.status;
-      if (status === 400 && (code === 'PHONE_REQUIRED' || String(err.response?.data?.message || '').includes('Phone'))) {
+    } catch (err: unknown) {
+      const { code, message, status } = getErrorDetails(err);
+      if (status === 400 && (code === 'PHONE_REQUIRED' || (message || '').includes('Phone'))) {
         setStep('phone');
       } else {
         setStep('idle');
-        setError(err.response?.data?.message || 'Не удалось войти через Google');
+        setError(message || 'Не удалось войти через Google');
       }
     }
   };
@@ -142,11 +142,12 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
       setConfirmation(result);
       setStep('otp');
       setCountdown(60);
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const { code } = getErrorDetails(e);
       const msg =
-        e.code === 'auth/invalid-phone-number'
+        code === 'auth/invalid-phone-number'
           ? 'Неверный формат номера телефона'
-          : e.code === 'auth/too-many-requests'
+          : code === 'auth/too-many-requests'
           ? 'Слишком много попыток. Подождите немного.'
           : 'Не удалось отправить SMS. Попробуйте ещё раз.';
       setError(msg);
@@ -164,11 +165,12 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
         idToken: tokenValue,
         phone: phone.trim(),
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const { code, message } = getErrorDetails(e);
       setStep('otp');
       setError(
-        e.response?.data?.message ||
-          (e.code === 'auth/invalid-verification-code' ? 'Неверный код из SMS' : 'Ошибка подтверждения'),
+        message ||
+          (code === 'auth/invalid-verification-code' ? 'Неверный код из SMS' : 'Ошибка подтверждения'),
       );
     }
   };

@@ -9,6 +9,7 @@ import * as z from 'zod';
 import { KeyRound, CheckCircle2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { resetPassword } from '@/lib/api';
+import { getErrorDetails } from '@/lib/errorDetails';
 
 const resetPasswordSchema = z
   .object({
@@ -54,8 +55,8 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
         password: data.password,
       });
       setIsSubmitted(true);
-    } catch (error: any) {
-      const msg = error?.response?.data?.message || 'Не удалось сбросить пароль. Возможно, срок действия ссылки истек.';
+    } catch (error: unknown) {
+      const msg = getErrorDetails(error).message || 'Не удалось сбросить пароль. Возможно, срок действия ссылки истек.';
       setServerError(msg);
     } finally {
       setIsLoading(false);

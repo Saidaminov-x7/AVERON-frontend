@@ -10,6 +10,7 @@ import {
 import { externalBaseURL } from "@/lib/axios";
 import { ProductImage } from "@/components/commerce/ProductImage";
 import { OrderModal } from "@/components/commerce/OrderModal";
+import { AddToCart } from "@/components/commerce/AddToCart";
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import {
   buildCatalogSearchParams,
@@ -55,11 +56,12 @@ export default async function ProductPage({
   const [{ id, locale }, filters] = await Promise.all([params, searchParams]);
   const product:
     | (StoreProduct & {
+        stock?: number;
         description?: Record<string, string | { text?: string }>;
         variants?: Array<{
           id: string;
-          color?: string;
-          size?: string;
+          color?: string | null;
+          size?: string | null;
           stock: number;
           salePriceUzs: string | number;
         }>;
@@ -192,6 +194,11 @@ export default async function ProductPage({
                 </div>
               </div>
             ) : null}
+            <AddToCart
+              productId={product.id}
+              productStock={product.stock}
+              variants={product.variants ?? []}
+            />
             <OrderModal product={product} locale={locale} />
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="flex gap-3 rounded-xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900">

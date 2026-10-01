@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import * as Icons from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { externalBaseURL } from '@/lib/axios';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
@@ -28,7 +29,7 @@ export interface DynamicSectionData {
   isUnderMaintenance?: boolean;
   layoutRow?: number;
   width?: number;
-  content: Record<string, any>;
+  content: unknown;
 }
 
 export interface PlatformStatsData {
@@ -57,8 +58,19 @@ export async function fetchDynamicPageSections(
 
 // Безопасно достаёт lucide-иконку по имени строки, с фолбэком.
 function DynamicIcon({ name, size = 24 }: { name?: string; size?: number }) {
-  const Cmp = (name && (Icons as any)[name]) || Icons.Circle;
+  const candidate: unknown = name && name in Icons
+    ? Icons[name as keyof typeof Icons]
+    : undefined;
+  const Cmp = isIconComponent(candidate) ? candidate : Icons.Circle;
   return <Cmp size={size} />;
+}
+
+function isIconComponent(value: unknown): value is LucideIcon {
+  return typeof value === 'object' && value !== null && '$$typeof' in value;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 interface DynamicSectionRendererProps {
@@ -85,10 +97,9 @@ export function DynamicSectionRenderer({
       {activeSections.map((section) => {
         // Контент уже приходит развёрнутым под нужный locale с бэкенда (?locale=ru),
         // но на всякий случай поддерживаем и старый формат { ru: {...}, uz: {...} }.
-        const content =
-          (section.content?.[locale] && typeof section.content[locale] === 'object'
-            ? section.content[locale]
-            : section.content) || {};
+        const sectionContent = isRecord(section.content) ? section.content : {};
+        const localizedContent = sectionContent[locale];
+        const content: unknown = isRecord(localizedContent) ? localizedContent : sectionContent;
 
         switch (section.sectionType as SectionType) {
           case 'HERO_SEARCH': {

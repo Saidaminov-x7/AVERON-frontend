@@ -15,7 +15,9 @@ export function getDefaultMarkerIcon() {
 
 export function patchLeafletDefaultIcon() {
   if (typeof window === 'undefined') return;
-  const proto = L.Icon.Default.prototype as any;
+  const proto = L.Icon.Default.prototype as typeof L.Icon.Default.prototype & {
+    _getIconUrl?: () => string;
+  };
   delete proto._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',

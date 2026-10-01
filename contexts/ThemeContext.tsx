@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useSyncExternalStore } from 'react';
 
 type Theme = 'light' | 'dark' | 'system';
 
@@ -18,51 +18,59 @@ const ThemeContext = createContext<ThemeContextType>({
 
 const STORAGE_KEY = 'ijara_theme_preference';
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('system');
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
+function subscribeToColorScheme(onChange: () => void) {
+  if (typeof window === 'undefined') return () => {};
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  mediaQuery.addEventListener('change', onChange);
+  return () => mediaQuery.removeEventListener('change', onChange);
+}
 
-  // Инициализация при монтировании из localStorage
-  useEffect(() => {
-    try {
-      const savedTheme = localStorage.getItem(STORAGE_KEY) as Theme | null;
-      if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
-        setThemeState(savedTheme);
-      }
-    } catch {
-      // Игнорируем ошибки доступа к localStorage
-    }
-  }, []);
+function getSystemPrefersDark() {
+  return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function getServerSystemPrefersDark() {
+  return false;
+}
+
+function subscribeToStoredTheme() {
+  return () => {};
+}
+
+function getStoredTheme(): Theme {
+  try {
+    const savedTheme = localStorage.getItem(STORAGE_KEY);
+    return savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system'
+      ? savedTheme
+      : 'system';
+  } catch {
+    return 'system';
+  }
+}
+
+function getServerStoredTheme(): Theme {
+  return 'system';
+}
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [themeOverride, setThemeState] = useState<Theme | null>(null);
+  const storedTheme = useSyncExternalStore(subscribeToStoredTheme, getStoredTheme, getServerStoredTheme);
+  const theme = themeOverride ?? storedTheme;
+  const systemPrefersDark = useSyncExternalStore(
+    subscribeToColorScheme,
+    getSystemPrefersDark,
+    getServerSystemPrefersDark,
+  );
+  const resolvedTheme = theme === 'system'
+    ? systemPrefersDark ? 'dark' : 'light'
+    : theme;
 
   // Применение темы к <html> и отслеживание системной темы
   useEffect(() => {
     const root = document.documentElement;
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-    const applyTheme = () => {
-      let isDark = false;
-      if (theme === 'system') {
-        isDark = mediaQuery.matches;
-      } else {
-        isDark = theme === 'dark';
-      }
-
-      root.classList.remove('light', 'dark');
-      root.classList.add(isDark ? 'dark' : 'light');
-      setResolvedTheme(isDark ? 'dark' : 'light');
-    };
-
-    applyTheme();
-
-    const listener = () => {
-      if (theme === 'system') {
-        applyTheme();
-      }
-    };
-
-    mediaQuery.addEventListener('change', listener);
-    return () => mediaQuery.removeEventListener('change', listener);
-  }, [theme]);
+    root.classList.remove('light', 'dark');
+    root.classList.add(resolvedTheme);
+  }, [resolvedTheme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

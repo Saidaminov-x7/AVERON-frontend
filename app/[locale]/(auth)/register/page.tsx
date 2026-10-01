@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import api from '@/lib/axios';
 import { useAuthStore, type AuthUser } from '@/store/useAuthStore';
+import { getErrorDetails } from '@/lib/errorDetails';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function RegisterPage() {
     try {
       if (step === 'form') { await api.post('/auth/register/phone/request-code', { name, phone, password }); setStep('code'); }
       else { const { data } = await api.post<{accessToken:string;user:AuthUser}>('/auth/register/phone/verify-code', { phone, code }); setAuth(data.user, data.accessToken); router.replace(`/${locale}/profile`); }
-    } catch (value:any) { setError(value?.response?.data?.message || 'Не удалось выполнить регистрацию.'); }
+    } catch (value: unknown) { setError(getErrorDetails(value).message || 'Не удалось выполнить регистрацию.'); }
     finally { setLoading(false); }
   };
   const field = 'h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-white outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20';

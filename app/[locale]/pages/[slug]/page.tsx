@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, User, FileText, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Calendar, User, AlertCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { DynamicSectionRenderer, type DynamicSectionData } from '@/components/DynamicSectionRenderer';
 import { externalBaseURL } from '@/lib/axios';
@@ -35,13 +35,18 @@ export default function DynamicPage() {
   const [sections, setSections] = useState<DynamicSectionData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [requestedSlug, setRequestedSlug] = useState(slug);
+
+  if (requestedSlug !== slug) {
+    setRequestedSlug(slug);
+    setLoading(true);
+    setError(null);
+  }
 
   useEffect(() => {
     if (!slug) return;
 
     let isMounted = true;
-    setLoading(true);
-    setError(null);
 
     Promise.all([
       fetch(`${API_BASE_URL}/pages/${slug}`).then(async (res) => {
@@ -162,4 +167,3 @@ export default function DynamicPage() {
     </div>
   );
 }
-

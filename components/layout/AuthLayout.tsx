@@ -2,12 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function AuthLayout({
   children,
-  locale
 }: {
   children: React.ReactNode;
   locale: string;
@@ -35,5 +32,4 @@ export default function AuthLayout({
     </div>
   );
 }
-
 

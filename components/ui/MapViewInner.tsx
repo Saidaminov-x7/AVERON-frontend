@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useTheme } from 'next-themes';
+import { useIsHydrated } from '@/hooks/useIsHydrated';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -41,13 +41,9 @@ const customListingMarker = L.divIcon({
 });
 
 export default function MapViewInner({ lat, lng, label }: MapViewInnerProps) {
-  const [ready, setReady] = useState(false);
+  const ready = useIsHydrated();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
-
-  useEffect(() => {
-    setReady(true);
-  }, []);
 
   if (!ready) {
     return (

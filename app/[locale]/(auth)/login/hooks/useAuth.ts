@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { login, getMe } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
 import { LoginFormValues } from '../schemas/loginSchema';
+import { getErrorDetails } from '@/lib/errorDetails';
 
 export function useAuth(locale: string) {
   const router = useRouter();
@@ -35,13 +36,13 @@ export function useAuth(locale: string) {
       const redirect = searchParams.get('redirect') || '/profile';
       const destination = redirect.startsWith('/') ? `/${locale}${redirect}` : `/${locale}/${redirect}`;
       router.push(destination);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Login error:', err);
-      const status = err.response?.status;
+      const { message: responseMessage, status } = getErrorDetails(err);
       // Never reveal if email exists — always show generic message
       const message = (status === 401 || status === 403 || status === 400)
         ? 'Неверный email или пароль'
-        : err.response?.data?.message || 'Ошибка входа. Попробуйте позже.';
+        : responseMessage || 'Ошибка входа. Попробуйте позже.';
       setError(message);
     } finally {
       setIsLoading(false);

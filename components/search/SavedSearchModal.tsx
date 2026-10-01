@@ -6,12 +6,11 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { toast } from 'sonner';
 
 interface SavedSearchModalProps {
-  currentFilters?: Record<string, any>;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function SavedSearchModal({ currentFilters, isOpen, onClose }: SavedSearchModalProps) {
+export function SavedSearchModal({ isOpen, onClose }: SavedSearchModalProps) {
   const [notifyEmail, setNotifyEmail] = useState('');
   const [notifyTelegram, setNotifyTelegram] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);

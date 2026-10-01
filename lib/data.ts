@@ -57,6 +57,7 @@ export interface GetListingsOptions {
 
 /** Legacy callers receive no local fixtures; listings are loaded from the API. */
 export function getListings(_opts?: GetListingsOptions): Listing[] {
+  void _opts;
   return [];
 }
 

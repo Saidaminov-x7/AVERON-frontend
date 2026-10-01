@@ -2,7 +2,7 @@
 
 import { useTheme } from '@/contexts/ThemeContext';
 import { Moon, Sun } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useIsHydrated } from '@/hooks/useIsHydrated';
 
 // Тот же самый единый стиль кнопок (40x40px, рамка, фон), что и в Header.tsx
 const BTN_CLASS =
@@ -15,11 +15,9 @@ const BTN_CLASS =
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const isHydrated = useIsHydrated();
 
-  useEffect(() => { setMounted(true); }, []);
-
-  if (!mounted) {
+  if (!isHydrated) {
     return <div className="h-10 w-10 shrink-0 rounded-xl border border-transparent" aria-hidden />;
   }
 

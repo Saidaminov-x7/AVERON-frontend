@@ -3,7 +3,6 @@
 import React, { useState, useRef } from 'react';
 import type { Listing } from '@/lib/data';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Heart, ShieldCheck, Scale, Users } from 'lucide-react';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
@@ -47,10 +46,13 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
   const allImages = React.useMemo(() => {
     const list: string[] = [];
     if (Array.isArray(item.images) && item.images.length > 0) {
-      item.images.forEach((img: any) => {
+      item.images.forEach((img: unknown) => {
         if (typeof img === 'string' && img.trim()) list.push(img);
-        else if (img?.url && typeof img.url === 'string') list.push(img.url);
-        else if (img?.secure_url && typeof img.secure_url === 'string') list.push(img.secure_url);
+        else if (typeof img === 'object' && img !== null) {
+          const image = img as Record<string, unknown>;
+          if (typeof image.url === 'string' && image.url) list.push(image.url);
+          else if (typeof image.secure_url === 'string' && image.secure_url) list.push(image.secure_url);
+        }
       });
     }
     if (list.length === 0 && item.image && typeof item.image === 'string') {
@@ -80,21 +82,6 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
   const handleMouseLeave = () => {
     setActiveImgIndex(0);
   };
-
-  // Sliding window для точек-индикаторов (максимум 6 видимых)
-  const MAX_VISIBLE_DOTS = 6;
-  const totalDots = allImages.length;
-  let startDot = 0;
-  if (totalDots > MAX_VISIBLE_DOTS) {
-    startDot = Math.min(
-      Math.max(0, activeImgIndex - Math.floor(MAX_VISIBLE_DOTS / 2)),
-      totalDots - MAX_VISIBLE_DOTS
-    );
-  }
-  const visibleIndices = Array.from(
-    { length: Math.min(totalDots, MAX_VISIBLE_DOTS) },
-    (_, i) => startDot + i
-  );
 
   return (
     <Link

@@ -1,10 +1,21 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 interface YandexMetrikaProps {
   counterId?: string;
+}
+
+declare global {
+  interface Window {
+    ym?: (
+      counterId: number,
+      action: 'hit',
+      url: string,
+      options: { title: string; referrer: string },
+    ) => void;
+  }
 }
 
 /**
@@ -15,9 +26,9 @@ export function YandexMetrika({ counterId = "112059980" }: YandexMetrikaProps) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).ym) {
+    if (typeof window !== 'undefined' && window.ym) {
       const url = window.location.href;
-      (window as any).ym(Number(counterId), 'hit', url, {
+      window.ym(Number(counterId), 'hit', url, {
         title: document.title,
         referrer: document.referrer,
       });

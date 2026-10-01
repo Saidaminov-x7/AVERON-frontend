@@ -5,6 +5,7 @@ import { CheckCircle2, Loader2, ShoppingBag, X } from 'lucide-react';
 import api from '@/lib/axios';
 import { type StoreProduct, productTitle } from '@/lib/products';
 import { useAuthStore } from '@/store/useAuthStore';
+import { getErrorDetails } from '@/lib/errorDetails';
 
 interface OrderModalProps {
   product: StoreProduct & {
@@ -18,6 +19,12 @@ interface OrderModalProps {
   };
   locale: string;
 }
+
+const requestLabels = {
+  ru: 'Уточнить заказ',
+  uz: 'Buyurtma haqida so‘rash',
+  en: 'Ask about this product',
+} as const;
 
 export function OrderModal({ product, locale }: OrderModalProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -81,7 +88,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
           : `https://averon.uz/catalog/${product.slug}`);
 
       await api.post('/api/v1/custom-orders', {
-        source: (product.source as any) || 'SOURCE_1688',
+        source: product.source || 'SOURCE_1688',
         sourceUrl,
         quantity,
         selectedVariant: selectedVariant
@@ -101,7 +108,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
       setSuccess(true);
     } catch (err: unknown) {
       const msg =
-        (err as any)?.response?.data?.message ||
+        getErrorDetails(err).message ||
         (locale === 'uz'
           ? 'Buyurtma yuborishda xatolik yuz berdi'
           : locale === 'en'
@@ -121,7 +128,7 @@ export function OrderModal({ product, locale }: OrderModalProps) {
         className="mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary-600 px-6 font-bold text-white transition-[transform,background-color] duration-200 ease-out active:scale-[0.98] hover:bg-primary-700 cursor-pointer shadow-sm hover:shadow"
       >
         <ShoppingBag size={18} />
-        {locale === 'uz' ? 'Buyurtma berish' : locale === 'en' ? 'Place Order' : 'Оформить заказ'}
+        {requestLabels[locale as keyof typeof requestLabels] ?? requestLabels.ru}
       </button>
 
       {isOpen && (

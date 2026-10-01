@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export function CityFilter({ locale }: { locale: string }) {
+export function CityFilter() {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
   // Список городов

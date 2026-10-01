@@ -11,6 +11,7 @@ import { GlobalErrorListener } from '@/components/GlobalErrorListener';
 import { NavigationHistoryTracker } from '@/components/NavigationHistoryTracker';
 import AuthInitializer from '@/components/AuthInitializer';
 import { SiteViewportSettings } from '@/components/SiteViewportSettings';
+import type { PublicSiteSettings } from '@/lib/siteSettings';
 import './globals.css';
 import React, { Suspense } from 'react';
 
@@ -25,7 +26,7 @@ export default function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
   messages: Record<string, string>;
-  initialSiteSettings?: any;
+  initialSiteSettings?: PublicSiteSettings;
 }) {
   const { locale } = params;
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { LanguageFlag, type LocaleFlagCode } from '@/components/ui/LanguageFlag';
 
@@ -10,11 +9,10 @@ const locales: LocaleFlagCode[] = ['uz', 'en', 'ru'];
 export function LanguageSwitcher({ locale }: { locale: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const currentLocale = useLocale();
 
   const handleLocaleChange = (newLocale: string) => {
     // Remove the current locale from the pathname
-    const pathWithoutLocale = pathname.replace(`/${currentLocale}`, '') || '/';
+    const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
 
     // Redirect to the new locale
     router.push(`/${newLocale}${pathWithoutLocale}`);
@@ -25,9 +23,9 @@ export function LanguageSwitcher({ locale }: { locale: string }) {
       {locales.map((loc) => (
         <Button
           key={loc}
-          variant={currentLocale === loc ? 'default' : 'ghost'}
+          variant={locale === loc ? 'default' : 'ghost'}
           onClick={() => handleLocaleChange(loc)}
-          className={`px-3 py-1 text-sm ${currentLocale === loc ? 'bg-white dark:bg-stone-700' : ''}`}
+          className={`px-3 py-1 text-sm ${locale === loc ? 'bg-white dark:bg-stone-700' : ''}`}
           aria-label={{ru: 'Русский', uz: 'O‘zbekcha', en: 'English'}[loc]}
         >
           <LanguageFlag locale={loc} className="h-4 w-6" />

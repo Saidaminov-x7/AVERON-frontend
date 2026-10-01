@@ -1,4 +1,3 @@
-import { use } from 'react';
 import { useTranslations } from 'next-intl';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -11,8 +10,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: titles[locale] || 'Public Offer' };
 }
 
-export default function PublicOfferPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = use(params);
+export default function PublicOfferPage() {
   const t = useTranslations('infoPages.publicOffer');
 
   return (

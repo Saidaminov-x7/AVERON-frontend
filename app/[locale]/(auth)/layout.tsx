@@ -1,26 +1,21 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
-import { use, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }
 
-export default function AuthLayout({ children, params }: AuthLayoutProps) {
+export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <AuthLayoutInner params={params}>
+    <AuthLayoutInner>
       {children}
     </AuthLayoutInner>
   );
 }
 
-function AuthLayoutInner({ children, params }: AuthLayoutProps) {
-  const router = useRouter();
-  const { locale } = use(params);
+function AuthLayoutInner({ children }: Pick<AuthLayoutProps, 'children'>) {
   const glowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

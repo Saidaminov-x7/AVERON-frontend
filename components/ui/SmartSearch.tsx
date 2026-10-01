@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, X } from 'lucide-react';
 import { Input } from './Input';
 import { useTranslations } from 'next-intl';
@@ -36,7 +36,6 @@ export function SmartSearch({
   isMobile = false
 }: SmartSearchProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const t = useTranslations('Search');
   const [query, setQuery] = useState(searchParams.get('q') || '');

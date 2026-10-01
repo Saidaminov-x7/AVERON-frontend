@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   User,
   X,
+  ArrowRight,
 } from "lucide-react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import {
@@ -211,7 +212,10 @@ function ProfileContent() {
                 <span className="rounded-full bg-primary-500/10 px-3 py-1 text-xs font-bold text-primary-700">{order.status}</span>
               </div>
               <div className="mt-4 space-y-2">{order.items.map((item) => <div key={item.id} className="flex justify-between gap-4 text-sm"><span className="min-w-0 truncate">{item.title}</span><span className="shrink-0">× {item.quantity}</span></div>)}</div>
-              <div className="mt-4 flex justify-between border-t border-stone-200 pt-4 text-sm dark:border-white/10"><span className="text-stone-500">{new Date(order.createdAt).toLocaleDateString("ru-RU")}</span><strong>{Number(order.totalRevenue).toLocaleString("ru-RU")} {order.currency}</strong></div>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-stone-200 pt-4 text-sm dark:border-white/10">
+                <span className="text-stone-500">{new Date(order.createdAt).toLocaleDateString("ru-RU")}</span>
+                <div className="flex items-center gap-4"><strong>{Number(order.totalRevenue).toLocaleString("ru-RU")} {order.currency}</strong><Link href={`/${locale}/orders/${encodeURIComponent(order.orderNumber)}`} className="inline-flex h-9 items-center gap-1 rounded-lg px-3 font-semibold text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-950/30">Подробнее<ArrowRight size={15} /></Link></div>
+              </div>
             </article>
           )) : <Empty title="Заказов пока нет" href={`/${locale}/catalog`} action="Перейти к товарам" />}
         </section>

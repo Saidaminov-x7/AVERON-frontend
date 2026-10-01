@@ -2,6 +2,7 @@
 
 import { Home } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 /**
  * Кастомная страница 404 для локализованного роутинга.
@@ -19,13 +20,13 @@ export default function NotFound() {
       <p className="mt-2 max-w-sm text-sm text-stone-500 dark:text-stone-400">
         {t('description')}
       </p>
-      <a
+      <Link
         href="/"
         className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
       >
         <Home size={16} />
         {t('backToHome')}
-      </a>
+      </Link>
     </div>
   );
 }

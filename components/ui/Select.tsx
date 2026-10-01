@@ -24,7 +24,7 @@ interface SelectProps {
   disabled?: boolean;
 }
 
-function Select({ children, value: controlledValue, defaultValue = '', onValueChange, disabled = false }: SelectProps) {
+function Select({ children, value: controlledValue, defaultValue = '', onValueChange }: SelectProps) {
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
   const [open, setOpen] = useState(false);
   const [labelMap, setLabelMap] = useState<Record<string, React.ReactNode>>({});

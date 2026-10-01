@@ -2,21 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import type { NavLink } from '@/lib/siteSettings';
 import {
-  Search, X, Heart, ChevronRight, LogIn, Menu, ArrowLeft, User, MessageSquare, Sparkles, Scale,
+  Search, X, Heart, ChevronRight, LogIn, Menu, ArrowLeft, User, Scale, ShoppingCart,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { getSearchSuggestions } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'framer-motion';
 import { LanguageFlag, type LocaleFlagCode } from '@/components/ui/LanguageFlag';
+import { useIsHydrated } from '@/hooks/useIsHydrated';
 
 const LOCALES = [
   { code: 'ru', short: 'RU', label: 'Русский' },
@@ -171,6 +173,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const favCount = useFavoritesStore((s) => s.ids.length);
   const compareCount = useCompareStore((s) => s.ids.length);
   const { user, isAuthenticated } = useAuthStore();
+  const { data: cart } = useCommerceCart();
+  const cartCount = cart?.items.reduce((total, item) => total + item.quantity, 0) ?? 0;
+  const cartLabel = locale === 'uz' ? 'Savatcha' : locale === 'en' ? 'Cart' : 'Корзина';
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -243,13 +248,11 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     (r) => pathname === `/${locale}${r}` || pathname.startsWith(`/${locale}${r}/`)
   );
 
-  const [smartBackInfo, setSmartBackInfo] = useState<{ isHome: boolean; text: string; href?: string }>({
-    isHome: true,
-    text: 'Вернуться домой',
-  });
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
+  const isHydrated = useIsHydrated();
+  const smartBackInfo = useMemo(() => {
+    void pathname;
+    const defaultInfo = { isHome: true, text: 'Вернуться домой', href: `/${locale}` };
+    if (!isHydrated) return defaultInfo;
     try {
       const prev = sessionStorage.getItem('averon_prev_page');
       const lastPublic = sessionStorage.getItem('averon_last_public_page');
@@ -276,29 +279,27 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           targetUrl === '';
 
         if (isTargetHome) {
-          setSmartBackInfo({
+          return {
             isHome: true,
             text: locale === 'uz' ? 'Bosh sahifaga qaytish' : locale === 'en' ? 'Back to home' : 'Вернуться домой',
-            href: to('/'),
-          });
-        } else {
-          setSmartBackInfo({
-            isHome: false,
-            text: locale === 'uz' ? 'Orqaga' : locale === 'en' ? 'Back' : 'Назад',
-            href: targetUrl,
-          });
+            href: `/${locale}`,
+          };
         }
-      } else {
-        setSmartBackInfo({
-          isHome: true,
-          text: locale === 'uz' ? 'Bosh sahifaga qaytish' : locale === 'en' ? 'Back to home' : 'Вернуться домой',
-          href: to('/'),
-        });
+        return {
+          isHome: false,
+          text: locale === 'uz' ? 'Orqaga' : locale === 'en' ? 'Back' : 'Назад',
+          href: targetUrl,
+        };
       }
+      return {
+        isHome: true,
+        text: locale === 'uz' ? 'Bosh sahifaga qaytish' : locale === 'en' ? 'Back to home' : 'Вернуться домой',
+        href: `/${locale}`,
+      };
     } catch {
-      // fallback
+      return defaultInfo;
     }
-  }, [pathname, locale]);
+  }, [isHydrated, locale, pathname]);
 
   if (isAuthPage) {
     const handleSmartBack = (e: React.MouseEvent) => {
@@ -443,6 +444,21 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               )}
             </Link>
 
+            <Link href={to('/cart')} aria-label={`${cartLabel}${cartCount ? `, ${cartCount}` : ''}`} className={`${BTN_CLASS} relative`}>
+              <ShoppingCart size={17} />
+              {cartCount > 0 && (
+                <motion.span
+                  key={cartCount}
+                  initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-bold text-white shadow"
+                >
+                  {cartCount}
+                </motion.span>
+              )}
+            </Link>
+
             <Link href={to('/compare')} aria-label="Сравнение" title="Сравнение товаров" className={`${BTN_CLASS} relative`}>
               <Scale size={17} />
               {compareCount > 0 && (
@@ -569,6 +585,21 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 text-[10px] font-bold text-white"
                 >
                   {favCount}
+                </motion.span>
+              )}
+            </Link>
+
+            <Link href={to('/cart')} aria-label={`${cartLabel}${cartCount ? `, ${cartCount}` : ''}`} className={`${BTN_CLASS} relative`}>
+              <ShoppingCart size={17} />
+              {cartCount > 0 && (
+                <motion.span
+                  key={cartCount}
+                  initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-bold text-white shadow"
+                >
+                  {cartCount}
                 </motion.span>
               )}
             </Link>

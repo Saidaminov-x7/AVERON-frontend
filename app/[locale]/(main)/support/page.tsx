@@ -1,4 +1,3 @@
-import { use } from 'react';
 import { useTranslations } from 'next-intl';
 import { Headphones, Mail, MessageCircle, PackageSearch } from 'lucide-react';
 
@@ -12,8 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: titles[locale] || 'Support' };
 }
 
-export default function SupportPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = use(params);
+export default function SupportPage() {
   const t = useTranslations('infoPages.support');
 
   const cardIcons = [PackageSearch, MessageCircle, Headphones];

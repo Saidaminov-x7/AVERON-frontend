@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { PublicSiteSettings } from '@/lib/siteSettings';
 
 export function QueryProvider({
   children,
   initialSiteSettings,
 }: {
   children: React.ReactNode;
-  initialSiteSettings?: any;
+  initialSiteSettings?: PublicSiteSettings;
 }) {
   // useState гарантирует, что QueryClient создаётся один раз на клиенте,
   // а не при каждом рендере/навигации.
