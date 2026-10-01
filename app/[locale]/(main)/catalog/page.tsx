@@ -6,26 +6,12 @@ import {
   ProductCard,
   type StoreProduct,
 } from "@/components/commerce/ProductCard";
+import { buildProductSearchParams, categoryName, type StoreCategory } from "@/lib/products";
 
 type Filters = Record<string, string | string[] | undefined>;
 
 async function loadCatalog(f: Filters) {
-  const q = new URLSearchParams();
-  for (const k of [
-    "q",
-    "category",
-    "audience",
-    "size",
-    "color",
-    "minPrice",
-    "maxPrice",
-    "sort",
-    "page",
-  ]) {
-    const v = f[k];
-    if (typeof v === "string" && v.trim()) q.set(k, v.trim());
-  }
-  q.set("limit", "24");
+  const q = buildProductSearchParams(f);
   try {
     const r = await fetch(`${externalBaseURL}/api/v1/products?${q}`, {
       cache: "no-store",
@@ -38,22 +24,55 @@ async function loadCatalog(f: Filters) {
   }
 }
 
+async function loadCategories(): Promise<StoreCategory[]> {
+  try {
+    const r = await fetch(`${externalBaseURL}/api/v1/categories`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!r.ok) throw Error();
+    const data: unknown = await r.json();
+    const categories = Array.isArray(data)
+      ? data
+      : typeof data === "object" && data !== null && "items" in data && Array.isArray(data.items)
+        ? data.items
+        : typeof data === "object" && data !== null && "data" in data && Array.isArray(data.data)
+          ? data.data
+          : [];
+    return categories.filter(
+      (category): category is StoreCategory =>
+        typeof category === "object" &&
+        category !== null &&
+        "slug" in category &&
+        typeof category.slug === "string",
+    );
+  } catch {
+    return [];
+  }
+}
+
 const input =
   "h-11 w-full rounded-xl border border-stone-300 bg-transparent px-3 text-sm outline-none focus:border-violet-500 dark:border-white/15";
 
 function Controls({
   f,
   t,
+  categories,
+  locale,
 }: {
   f: Filters;
   t: (key: string) => string;
+  categories: StoreCategory[];
+  locale: string;
 }) {
-  const cats = [
+  const cats: Array<[string, string]> = [
     ["", t("all")],
-    ["women", t("women")],
-    ["men", t("men")],
-    ["shoes", t("shoes")],
-    ["accessories", t("accessories")],
+    ...categories.map(
+      (category): [string, string] => [
+        category.slug,
+        categoryName(category, locale),
+      ],
+    ),
   ];
   const audiences = [
     ["", t("everyone")],
@@ -63,6 +82,9 @@ function Controls({
   ];
   return (
     <>
+      {typeof f.country === "string" && f.country.trim() ? (
+        <input type="hidden" name="country" value={f.country} />
+      ) : null}
       <label className="text-xs font-bold uppercase text-stone-500">
         {t("search")}
       </label>
@@ -197,9 +219,17 @@ export default async function CatalogPage({
   searchParams: Promise<Filters>;
 }) {
   const [{ locale }, f] = await Promise.all([params, searchParams]);
-  const data = await loadCatalog(f);
+  const [data, categories] = await Promise.all([loadCatalog(f), loadCategories()]);
   const products: StoreProduct[] = data.items ?? [];
-  return <CatalogContent locale={locale} f={f} data={data} products={products} />;
+  return (
+    <CatalogContent
+      locale={locale}
+      f={f}
+      data={data}
+      products={products}
+      categories={categories}
+    />
+  );
 }
 
 function CatalogContent({
@@ -207,11 +237,13 @@ function CatalogContent({
   f,
   data,
   products,
+  categories,
 }: {
   locale: string;
   f: Filters;
   data: { pagination?: { total?: number } };
   products: StoreProduct[];
+  categories: StoreCategory[];
 }) {
   const t = useTranslations("catalog");
 
@@ -234,7 +266,7 @@ function CatalogContent({
               {t("filters")}
             </summary>
             <div className="mt-4">
-              <Controls f={f} t={t} />
+              <Controls f={f} t={t} categories={categories} locale={locale} />
             </div>
           </details>
         </form>
@@ -245,7 +277,7 @@ function CatalogContent({
                 <Filter className="text-violet-600" size={18} />
                 {t("filters")}
               </div>
-              <Controls f={f} t={t} />
+              <Controls f={f} t={t} categories={categories} locale={locale} />
               <Link
                 href={`/${locale}/catalog`}
                 className="mt-2 flex h-10 items-center justify-center text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
