@@ -12,6 +12,9 @@ export type CommerceCapabilities = {
   aiSearch: boolean;
   styleAssistant: boolean;
   completeTheLook: boolean;
+  recommendations: boolean;
+  personalizedRecommendations: boolean;
+  recentlyViewed: boolean;
   aiProviderConfigured: boolean;
 };
 
@@ -22,6 +25,9 @@ export const NO_COMMERCE_CAPABILITIES: CommerceCapabilities = {
   aiSearch: false,
   styleAssistant: false,
   completeTheLook: false,
+  recommendations: false,
+  personalizedRecommendations: false,
+  recentlyViewed: false,
   aiProviderConfigured: false,
 };
 
@@ -72,6 +78,9 @@ export async function loadCommerceCapabilities(
       aiSearch: payload.aiSearch === true,
       styleAssistant: payload.styleAssistant === true,
       completeTheLook: payload.completeTheLook === true,
+      recommendations: payload.recommendations === true,
+      personalizedRecommendations: payload.personalizedRecommendations === true,
+      recentlyViewed: payload.recentlyViewed === true,
       aiProviderConfigured: payload.aiProviderConfigured === true,
     };
   } catch {

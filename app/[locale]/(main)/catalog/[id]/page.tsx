@@ -8,6 +8,7 @@ import { ProductGallery } from "@/components/commerce/ProductGallery";
 import { ProductReviews } from "@/components/commerce/ProductReviews";
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import { CompleteTheLook } from "@/components/commerce/CompleteTheLook";
+import { ProductRecommendations } from "@/components/commerce/ProductRecommendations";
 import {
   buildCatalogSearchParams,
   productTitle,
@@ -219,6 +220,7 @@ export default async function ProductPage({
         <ProductReviews slug={product.slug} locale={locale} initialOrderNumber={initialOrderNumber} />
         <SimilarProducts slug={product.slug} locale={locale} />
         <CompleteTheLook slug={product.slug} locale={locale} />
+        <ProductRecommendations slug={product.slug} locale={locale} />
       </div>
     </main>
   );

@@ -151,7 +151,13 @@
     "completeTheLookAction": "Find complementary items",
     "completeTheLookLoading": "Finding complementary products…",
     "completeTheLookEmpty": "No complementary products are available right now.",
-    "completeTheLookError": "Could not find complementary products. Please try again."
+    "completeTheLookError": "Could not find complementary products. Please try again.",
+    "relatedProductsTitle": "Pairs well with",
+    "youMayAlsoLikeTitle": "You may also like",
+    "personalizedProductsTitle": "For you",
+    "recentlyViewedTitle": "Recently viewed",
+    "recentlyViewedClear": "Clear history",
+    "recentlyViewedClearError": "Could not clear recently viewed history."
   },
   "Apartment": {
     "notFound": "Apartment not found",

@@ -151,7 +151,13 @@
     "completeTheLookAction": "Mos mahsulotlarni topish",
     "completeTheLookLoading": "Mos mahsulotlar qidirilmoqda…",
     "completeTheLookEmpty": "Hozircha mos mahsulotlar topilmadi.",
-    "completeTheLookError": "Mos mahsulotlarni topib bo‘lmadi. Keyinroq qayta urinib ko‘ring."
+    "completeTheLookError": "Mos mahsulotlarni topib bo‘lmadi. Keyinroq qayta urinib ko‘ring.",
+    "relatedProductsTitle": "Bu mahsulot bilan mos keladi",
+    "youMayAlsoLikeTitle": "Sizga yoqishi mumkin",
+    "personalizedProductsTitle": "Siz uchun",
+    "recentlyViewedTitle": "Yaqinda ko‘rganlaringiz",
+    "recentlyViewedClear": "Tarixni tozalash",
+    "recentlyViewedClearError": "Ko‘rishlar tarixini tozalab bo‘lmadi."
   },
   "Apartment": {
     "notFound": "Kvartira topilmadi",

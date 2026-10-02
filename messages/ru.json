@@ -153,7 +153,13 @@
     "completeTheLookAction": "Подобрать сочетания",
     "completeTheLookLoading": "Ищем дополняющие товары…",
     "completeTheLookEmpty": "Дополняющие товары сейчас не найдены.",
-    "completeTheLookError": "Не удалось подобрать товары. Попробуйте позже."
+    "completeTheLookError": "Не удалось подобрать товары. Попробуйте позже.",
+    "relatedProductsTitle": "С этим товаром сочетается",
+    "youMayAlsoLikeTitle": "Вам может понравиться",
+    "personalizedProductsTitle": "Для вас",
+    "recentlyViewedTitle": "Вы недавно смотрели",
+    "recentlyViewedClear": "Очистить историю",
+    "recentlyViewedClearError": "Не удалось очистить историю просмотров."
   },
   "Apartment": {
     "notFound": "Квартира не найдена",

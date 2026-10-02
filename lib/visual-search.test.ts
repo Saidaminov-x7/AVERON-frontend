@@ -17,6 +17,9 @@ describe("commerce visual-search API", () => {
           aiSearch: true,
           styleAssistant: false,
           completeTheLook: true,
+          recommendations: false,
+          personalizedRecommendations: false,
+          recentlyViewed: false,
           aiProviderConfigured: false,
         }),
         { status: 200 },
@@ -30,6 +33,9 @@ describe("commerce visual-search API", () => {
       aiSearch: true,
       styleAssistant: false,
       completeTheLook: true,
+      recommendations: false,
+      personalizedRecommendations: false,
+      recentlyViewed: false,
       aiProviderConfigured: false,
     });
     expect(fetcher).toHaveBeenCalledWith(
