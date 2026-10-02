@@ -15,6 +15,9 @@ describe('safe internal navigation', () => {
     '/en/%2f%2fevil.example',
     '/en\\@evil.example',
     'https://evil.example/en/profile',
+    'javascript:alert(1)',
+    'data:text/html,evil',
+    'http://evil.example/en/profile',
     '/ru/profile',
     '/en/login',
   ])('rejects unsafe or unsuitable return target %s', (target) => {

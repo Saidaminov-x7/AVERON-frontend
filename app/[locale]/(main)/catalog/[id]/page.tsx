@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CheckCircle2, Headphones, PackageCheck } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Headphones, MessageCircle, PackageCheck } from "lucide-react";
 import { externalBaseURL } from "@/lib/axios";
 import { AddToCart } from "@/components/commerce/AddToCart";
 import { ProductGallery } from "@/components/commerce/ProductGallery";
@@ -76,6 +76,8 @@ export default async function ProductPage({
       orderStatus: "Статус заказа всегда под рукой",
       support: "Поддержка",
       supportText: "Поможем с размером и товаром",
+      askProduct: "Задать вопрос о товаре",
+      askProductText: "Размер, цвет, наличие и доставка",
       confirmed: "Карточка подтверждена администратором",
     },
     uz: {
@@ -89,6 +91,8 @@ export default async function ProductPage({
       orderStatus: "Buyurtma holati doimo yoningizda",
       support: "Yordam",
       supportText: "O‘lcham va mahsulot bo‘yicha yordam beramiz",
+      askProduct: "Mahsulot haqida savol berish",
+      askProductText: "O‘lcham, rang, mavjudlik va yetkazib berish",
       confirmed: "Mahsulot sahifasi administrator tomonidan tasdiqlangan",
     },
     en: {
@@ -102,6 +106,8 @@ export default async function ProductPage({
       orderStatus: "Keep your order status close at hand",
       support: "Support",
       supportText: "Get help with sizing and product details",
+      askProduct: "Ask about this product",
+      askProductText: "Size, color, availability, and delivery",
       confirmed: "Product listing verified by an administrator",
     },
   }[locale as "ru" | "uz" | "en"] ?? {
@@ -115,6 +121,8 @@ export default async function ProductPage({
     orderStatus: "Статус заказа всегда под рукой",
     support: "Поддержка",
     supportText: "Поможем с размером и товаром",
+    askProduct: "Задать вопрос о товаре",
+    askProductText: "Размер, цвет, наличие и доставка",
     confirmed: "Карточка подтверждена администратором",
   };
   const catalogQuery = buildCatalogSearchParams(filters).toString();
@@ -182,6 +190,16 @@ export default async function ProductPage({
                   <p className="mt-1 text-xs text-stone-500">
                     {copy.supportText}
                   </p>
+                </div>
+              </Link>
+              <Link
+                href={`/${locale}/mini-app?product=${encodeURIComponent(product.slug)}#ask`}
+                className="flex gap-3 rounded-xl border border-stone-200 bg-white p-4 transition-colors hover:border-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:border-white/10 dark:bg-stone-900"
+              >
+                <MessageCircle className="text-primary-700 dark:text-primary-300" />
+                <div>
+                  <b className="text-sm">{copy.askProduct}</b>
+                  <p className="mt-1 text-xs text-stone-500">{copy.askProductText}</p>
                 </div>
               </Link>
             </div>

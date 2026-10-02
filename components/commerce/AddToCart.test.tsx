@@ -7,7 +7,11 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('next-intl', () => ({ useLocale: () => 'en' }));
-vi.mock('next/navigation', () => ({ usePathname: () => '/en/catalog/product-1' }));
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/en/catalog/product-1',
+  useSearchParams: () => new URLSearchParams(),
+  useRouter: () => ({ push: vi.fn() }),
+}));
 vi.mock('@/hooks/useCommerceCart', () => ({
   useCommerceCart: () => ({
     mutation: { mutate: mocks.mutate, isPending: false, isError: false, error: null },

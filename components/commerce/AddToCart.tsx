@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { QuantityStepper } from '@/components/commerce/QuantityStepper';
 import { ProductVariantSelector, isVariantUnavailable } from '@/components/commerce/ProductVariantSelector';
@@ -24,21 +24,21 @@ interface PurchaseVariant {
 const labels = {
   ru: {
     choose: 'Выберите вариант', quantity: 'Количество', decrease: 'Уменьшить количество', increase: 'Увеличить количество',
-    add: 'Добавить в корзину', signIn: 'Войдите, чтобы добавить товар в корзину', added: 'Добавлено в корзину',
+    add: 'Добавить в корзину', buy: 'Купить сейчас', signIn: 'Войдите, чтобы добавить товар в корзину', added: 'Добавлено в корзину',
     goCart: 'Перейти в корзину', unavailable: 'Нет в наличии', available: 'Доступен для заказа',
     stock: 'В наличии: {count}', lowStock: 'Заканчивается: {count} шт.', generic: 'Не удалось добавить товар.', noStock: 'Этот товар сейчас недоступен.',
     standard: 'Стандартный', currency: 'сум', preorder: 'Предзаказ', preorderDate: 'Ожидаемая доступность: {date}',
   },
   uz: {
     choose: 'Variantni tanlang', quantity: 'Miqdor', decrease: 'Miqdorni kamaytirish', increase: 'Miqdorni oshirish',
-    add: 'Savatchaga qo‘shish', signIn: 'Savatchaga qo‘shish uchun tizimga kiring', added: 'Savatchaga qo‘shildi',
+    add: 'Savatchaga qo‘shish', buy: 'Hozir xarid qilish', signIn: 'Savatchaga qo‘shish uchun tizimga kiring', added: 'Savatchaga qo‘shildi',
     goCart: 'Savatchaga o‘tish', unavailable: 'Mavjud emas', available: 'Buyurtma berish mumkin',
     stock: 'Mavjud: {count}', lowStock: 'Kam qoldi: {count} dona.', generic: 'Mahsulotni qo‘shib bo‘lmadi.', noStock: 'Bu mahsulot hozir mavjud emas.',
     standard: 'Standart', currency: 'so‘m', preorder: 'Oldindan buyurtma', preorderDate: 'Kutilayotgan mavjudlik: {date}',
   },
   en: {
     choose: 'Choose an option', quantity: 'Quantity', decrease: 'Decrease quantity', increase: 'Increase quantity',
-    add: 'Add to cart', signIn: 'Sign in to add this product to your cart', added: 'Added to cart',
+    add: 'Add to cart', buy: 'Buy now', signIn: 'Sign in to add this product to your cart', added: 'Added to cart',
     goCart: 'View cart', unavailable: 'Out of stock', available: 'Available to order',
     stock: 'In stock: {count}', lowStock: 'Low stock: {count} left.', generic: 'Could not add this product.', noStock: 'This product is currently unavailable.',
     standard: 'Standard', currency: 'UZS', preorder: 'Preorder', preorderDate: 'Estimated availability: {date}',
@@ -75,6 +75,8 @@ export function AddToCart({
   const locale = useLocale();
   const text = labels[locale as keyof typeof labels] ?? labels.ru;
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [variantId, setVariantId] = useState(
     () => (variants.find((variant) => !isVariantUnavailable(variant.available, variant.stock)) ?? variants[0])?.id ?? '',
   );
@@ -136,6 +138,13 @@ export function AddToCart({
     );
   };
 
+  const handleBuyNow = () => {
+    mutation.mutate(
+      { type: 'add', productId, variantId: selectedVariant?.id, quantity },
+      { onSuccess: () => router.push(`/${locale}/checkout`) },
+    );
+  };
+
   return (
     <div className="mt-6 space-y-3">
       <p className="text-2xl font-black" aria-live="polite">
@@ -185,13 +194,23 @@ export function AddToCart({
           </button>
         ) : (
           <Link
-            href={`/${locale}/login?returnTo=${encodeURIComponent(getSafeInternalReturnTo(pathname, locale) ?? `/${locale}/catalog`)}`}
+            href={`/${locale}/login?returnTo=${encodeURIComponent(getSafeInternalReturnTo(`${pathname}${searchParams.size ? `?${searchParams.toString()}` : ''}`, locale) ?? `/${locale}/catalog`)}`}
             className="inline-flex min-h-11 min-w-48 flex-1 items-center justify-center rounded-xl border border-stone-300 px-4 text-center text-sm font-semibold hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:border-white/15 dark:hover:bg-white/5"
           >
             {text.signIn}
           </Link>
         )}
       </div>
+      {isAuthenticated && !unavailable && (
+        <button
+          type="button"
+          onClick={handleBuyNow}
+          disabled={isLoading || mutation.isPending || quantity > maxQuantity}
+          className="inline-flex min-h-10 items-center justify-center rounded-xl border border-stone-300 px-4 text-sm font-semibold transition-colors hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/15 dark:hover:bg-white/5"
+        >
+          {text.buy}
+        </button>
+      )}
       {added && <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{text.added} · <Link href={`/${locale}/cart`} className="underline underline-offset-2">{text.goCart}</Link></p>}
       {error && <p role="alert" className="text-sm text-rose-700 dark:text-rose-300">{error}</p>}
     </div>

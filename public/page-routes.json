@@ -16,6 +16,7 @@
   "/how-to-order",
   "/login",
   "/maintenance",
+  "/mini-app",
   "/orders",
   "/orders/:orderNumber",
   "/pages/:slug",

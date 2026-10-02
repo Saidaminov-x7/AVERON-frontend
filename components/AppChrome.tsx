@@ -7,7 +7,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
-const NO_CHROME: string[] = [];
+const NO_CHROME = ['/mini-app'];
 const NO_FOOTER = ['/ai', '/chat', '/login', '/register', '/forgot-password', '/reset-password'];
 
 function Chrome({ children }: { children: React.ReactNode }) {

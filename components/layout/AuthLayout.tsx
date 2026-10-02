@@ -1,7 +1,9 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useLocale } from 'next-intl';
 import { ArrowLeft } from 'lucide-react';
+import { getAuthHomeHref } from '@/lib/safe-navigation';
 
 export default function AuthLayout({
   children,
@@ -9,20 +11,17 @@ export default function AuthLayout({
   children: React.ReactNode;
   locale: string;
 }) {
-  const router = useRouter();
+  const locale = useLocale();
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       <header className="sticky top-0 z-50 w-full border-b border-stone-200 bg-white/95 backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900/95">
         <div className="container mx-auto px-4">
           <div className="flex h-24 items-center justify-between">
-            <button
-              onClick={() => router.back()}
-              className="flex items-center gap-2 text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
-            >
+            <Link href={getAuthHomeHref(locale)} className="flex items-center gap-2 text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white">
               <ArrowLeft size={20} />
-              <span className="text-sm font-medium">Назад</span>
-            </button>
+              <span className="text-sm font-medium">{locale === 'uz' ? 'Bosh sahifaga' : locale === 'en' ? 'Go to home' : 'На главную'}</span>
+            </Link>
           </div>
         </div>
       </header>
@@ -32,4 +31,3 @@ export default function AuthLayout({
     </div>
   );
 }
-
