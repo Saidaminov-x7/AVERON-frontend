@@ -27,6 +27,11 @@ to disable Yandex.Metrika. Set `NEXT_PUBLIC_SITE_URL=https://averon.uz` in the
 production environment; preview hosts should not be used as production
 canonical URLs. Public configuration values are not secrets.
 
+Firebase authentication uses the `NEXT_PUBLIC_FIREBASE_*` values in
+`.env.local.example`. These are public browser configuration, not server
+secrets. Set them from the intended Firebase project for each environment;
+without the required Firebase values, phone verification is unavailable.
+
 ## Checks
 
 ```powershell

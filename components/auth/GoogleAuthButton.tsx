@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGoogleLogin } from '@react-oauth/google';
 import {
+  Auth,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   ConfirmationResult,
@@ -123,10 +124,10 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
     },
   });
 
-  const setupRecaptcha = () => {
+  const setupRecaptcha = (auth: Auth) => {
     if (recaptchaVerifierRef.current) return recaptchaVerifierRef.current;
     if (!recaptchaRef.current) throw new Error('reCAPTCHA container not ready');
-    const verifier = new RecaptchaVerifier(firebaseAuth, recaptchaRef.current, {
+    const verifier = new RecaptchaVerifier(auth, recaptchaRef.current, {
       size: 'invisible',
       callback: () => {},
     });
@@ -136,9 +137,14 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
 
   const sendOtp = async () => {
     setError(null);
+    const auth = firebaseAuth;
+    if (!auth) {
+      setError('Phone verification is not configured. Please contact support.');
+      return;
+    }
     try {
-      const verifier = setupRecaptcha();
-      const result = await signInWithPhoneNumber(firebaseAuth, phone, verifier);
+      const verifier = setupRecaptcha(auth);
+      const result = await signInWithPhoneNumber(auth, phone, verifier);
       setConfirmation(result);
       setStep('otp');
       setCountdown(60);
