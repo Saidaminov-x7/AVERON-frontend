@@ -49,6 +49,10 @@ export interface OrderContact {
 
 export interface OrderItem {
   title: string;
+  productSlug?: string;
+  reviewEligible?: boolean;
+  reviewToken?: string;
+  reviewStatus?: 'PENDING' | 'PUBLISHED' | 'REJECTED' | null;
   quantity: number;
   unitPrice: string | number;
   totalPrice: string | number;

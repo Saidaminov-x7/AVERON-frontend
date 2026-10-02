@@ -7,6 +7,7 @@ import { ArrowLeft, MessageCircle, Package, ShoppingBag } from 'lucide-react';
 import { AddToCart } from '@/components/commerce/AddToCart';
 import { ProductGallery } from '@/components/commerce/ProductGallery';
 import { ProductImage } from '@/components/commerce/ProductImage';
+import { ProductReviews } from '@/components/commerce/ProductReviews';
 import api from '@/lib/axios';
 import { getProduct, getProducts, productTitle, type StoreProduct } from '@/lib/products';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -299,6 +300,7 @@ export function TelegramMiniApp({
             : productQuery.isError ? <div role="alert" className="py-12 text-center"><p>{text.loadError}</p><button type="button" onClick={() => void productQuery.refetch()} className="mt-3 min-h-11 rounded-lg border px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500">{text.retry}</button></div>
               : !product ? <div className="py-12 text-center"><p role="status">{text.unavailable}</p><button type="button" onClick={() => { setProductSlug(null); setQuestion(null); }} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500"><ArrowLeft size={16} />{text.back}</button></div>
                 : (
+                  <>
                   <article className="mt-6 grid gap-6 lg:grid-cols-2">
                     <ProductGallery images={product.images ?? []} productTitle={title} locale={locale} label={text.gallery} imageLabel={text.image} />
                     <section>
@@ -330,6 +332,8 @@ export function TelegramMiniApp({
                       </section>
                     </section>
                   </article>
+                  <ProductReviews slug={product.slug} locale={locale} />
+                  </>
                 )
         ) : (
           <section className="mt-6">

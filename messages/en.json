@@ -422,5 +422,72 @@
       ],
       "footer": "Current revision: September 28, 2026. Support contact: @averon_fashion_admin."
     }
+  },
+  "productReviews": {
+    "eyebrow": "Customer feedback",
+    "title": "Product reviews",
+    "loading": "Loading reviews…",
+    "empty": "There are no published reviews yet.",
+    "anonymous": "AVERON customer",
+    "verified": "Verified purchase",
+    "fitLabel": "Fit",
+    "purchasedSize": "Purchased size",
+    "purchaseOrder": "Order #{number}",
+    "yourReview": "Your review",
+    "leaveReview": "Leave a review",
+    "editReview": "Your review · edit",
+    "eligibility": "You can leave a review after your order has been delivered.",
+    "signIn": "Sign in to review your purchase.",
+    "signInAction": "Sign in",
+    "reviewRating": "Rating: {value} out of 5",
+    "reviewImageAlt": "Customer photo {index}",
+    "summary": {
+      "label": "Average rating {average}, total reviews: {count}",
+      "count": "({count})"
+    },
+    "fit": {
+      "RUNS_SMALL": "Runs small",
+      "TRUE_TO_SIZE": "True to size",
+      "RUNS_LARGE": "Runs large"
+    },
+    "status": {
+      "PENDING": "Under moderation",
+      "PUBLISHED": "Published",
+      "REJECTED": "Rejected"
+    },
+    "form": {
+      "rating": "Rating",
+      "ratingOption": "{value} out of 5 stars",
+      "notRated": "Not selected",
+      "title": "Title · optional",
+      "comment": "Your review",
+      "fit": "How did the size fit?",
+      "optional": "Prefer not to say",
+      "addImages": "Add photos (up to 5)",
+      "removeImage": "Remove {name}",
+      "imageLimit": "You can add up to 5 photos.",
+      "invalidImage": "JPG, PNG, WebP, or GIF files up to 10 MB each are allowed.",
+      "submit": "Submit for moderation",
+      "submitting": "Submitting…",
+      "success": "Thank you! Your review was submitted for moderation.",
+      "deleted": "Review deleted.",
+      "delete": "Delete review",
+      "close": "Close",
+      "reModeration": "An edited published review will be checked by a moderator again."
+    },
+    "errors": {
+      "INVALID_REVIEW_INPUT": "Check your rating and review text.",
+      "PURCHASE_NOT_FOUND": "We could not verify the purchase for this review.",
+      "ORDER_NOT_DELIVERED": "You can review the item after it has been delivered.",
+      "REVIEW_ALREADY_EXISTS": "A review has already been submitted for this purchase.",
+      "INVALID_REVIEW_MEDIA": "One of the photos could not be verified.",
+      "generic": "The action could not be completed. Please try again."
+    },
+    "pagination": {
+      "label": "Review pages",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "{current} of {total}"
+    }
   }
 }

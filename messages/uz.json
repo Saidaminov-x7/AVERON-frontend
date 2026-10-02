@@ -437,5 +437,72 @@
       ],
       "footer": "Amaldagi tahrir: 2026-yil 28-sentabr. Qo'llab-quvvatlash kontakti: @averon_fashion_admin."
     }
+  },
+  "productReviews": {
+    "eyebrow": "Xaridorlar fikri",
+    "title": "Mahsulot sharhlari",
+    "loading": "Sharhlar yuklanmoqda…",
+    "empty": "Hozircha e'lon qilingan sharhlar yo'q.",
+    "anonymous": "AVERON xaridori",
+    "verified": "Xarid tasdiqlangan",
+    "fitLabel": "O'lcham mosligi",
+    "purchasedSize": "Xarid qilingan o'lcham",
+    "purchaseOrder": "Buyurtma №{number}",
+    "yourReview": "Sharhingiz",
+    "leaveReview": "Sharh qoldirish",
+    "editReview": "Sharhingiz · tahrirlash",
+    "eligibility": "Sharh qoldirish uchun buyurtmani qabul qilib olgan bo'lishingiz kerak.",
+    "signIn": "Xaridingiz haqida sharh qoldirish uchun tizimga kiring.",
+    "signInAction": "Kirish",
+    "reviewRating": "Baho: 5 dan {value}",
+    "reviewImageAlt": "Xaridorning {index}-surati",
+    "summary": {
+      "label": "O'rtacha baho {average}, jami sharhlar: {count}",
+      "count": "({count})"
+    },
+    "fit": {
+      "RUNS_SMALL": "Kichik keladi",
+      "TRUE_TO_SIZE": "O'lchamga mos",
+      "RUNS_LARGE": "Katta keladi"
+    },
+    "status": {
+      "PENDING": "Tekshiruvda",
+      "PUBLISHED": "E'lon qilingan",
+      "REJECTED": "Rad etilgan"
+    },
+    "form": {
+      "rating": "Baho",
+      "ratingOption": "5 yulduzdan {value}",
+      "notRated": "Tanlanmagan",
+      "title": "Sarlavha · ixtiyoriy",
+      "comment": "Sharhingiz",
+      "fit": "O'lcham qanday mos keldi?",
+      "optional": "Ko'rsatmaslik",
+      "addImages": "Rasm qo'shish (5 tagacha)",
+      "removeImage": "{name} rasmini o'chirish",
+      "imageLimit": "Ko'pi bilan 5 ta rasm qo'shish mumkin.",
+      "invalidImage": "Har biri 10 MB gacha JPG, PNG, WebP yoki GIF fayllari mumkin.",
+      "submit": "Tekshiruvga yuborish",
+      "submitting": "Yuborilmoqda…",
+      "success": "Rahmat! Sharh moderatsiyaga yuborildi.",
+      "deleted": "Sharh o'chirildi.",
+      "delete": "Sharhni o'chirish",
+      "close": "Yopish",
+      "reModeration": "O'zgartirilgan e'lon qilingan sharh qayta tekshiriladi."
+    },
+    "errors": {
+      "INVALID_REVIEW_INPUT": "Baho va sharh matnini tekshiring.",
+      "PURCHASE_NOT_FOUND": "Ushbu sharh uchun xaridni tasdiqlab bo'lmadi.",
+      "ORDER_NOT_DELIVERED": "Sharhni mahsulotni qabul qilib olgandan keyin qoldirish mumkin.",
+      "REVIEW_ALREADY_EXISTS": "Ushbu xarid uchun sharh allaqachon yuborilgan.",
+      "INVALID_REVIEW_MEDIA": "Rasmlardan birini tekshirib bo'lmadi.",
+      "generic": "Amalni bajarib bo'lmadi. Qayta urinib ko'ring."
+    },
+    "pagination": {
+      "label": "Sharhlar sahifalari",
+      "previous": "Oldingi",
+      "next": "Keyingi",
+      "page": "{current} / {total}"
+    }
   }
 }

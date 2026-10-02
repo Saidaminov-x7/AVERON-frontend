@@ -14,7 +14,9 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('@/lib/axios', () => ({ default: { get: mocks.get, post: mocks.post } }));
-vi.mock('@/store/useAuthStore', () => ({ useAuthStore: () => mocks.auth }));
+vi.mock('@/store/useAuthStore', () => ({
+  useAuthStore: (selector?: (state: typeof mocks.auth) => unknown) => selector ? selector(mocks.auth) : mocks.auth,
+}));
 vi.mock('@/components/commerce/AddToCart', () => ({
   AddToCart: () => <div data-testid="add-to-cart" />,
 }));
@@ -23,6 +25,9 @@ vi.mock('@/components/commerce/ProductGallery', () => ({
 }));
 vi.mock('@/components/commerce/ProductImage', () => ({
   ProductImage: ({ alt }: { alt: string }) => <div role="img" aria-label={alt} />,
+}));
+vi.mock('@/components/commerce/ProductReviews', () => ({
+  ProductReviews: () => <div data-testid="product-reviews" />,
 }));
 
 const product = {

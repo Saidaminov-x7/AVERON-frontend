@@ -5,6 +5,7 @@ import { ArrowLeft, CheckCircle2, Headphones, MessageCircle, PackageCheck } from
 import { externalBaseURL } from "@/lib/axios";
 import { AddToCart } from "@/components/commerce/AddToCart";
 import { ProductGallery } from "@/components/commerce/ProductGallery";
+import { ProductReviews } from "@/components/commerce/ProductReviews";
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import {
   buildCatalogSearchParams,
@@ -126,6 +127,9 @@ export default async function ProductPage({
     confirmed: "Карточка подтверждена администратором",
   };
   const catalogQuery = buildCatalogSearchParams(filters).toString();
+  const initialOrderNumber = typeof filters.reviewOrderNumber === "string"
+    ? filters.reviewOrderNumber
+    : undefined;
   const catalogHref = `/${locale}/catalog${catalogQuery ? `?${catalogQuery}` : ""}`;
   const localizedDescription = product.description?.[locale] ?? product.description?.ru;
   const description =
@@ -211,6 +215,7 @@ export default async function ProductPage({
         </div>
       </div>
       <div className="mx-auto max-w-[1200px] px-4 pb-12 sm:px-6 lg:px-8">
+        <ProductReviews slug={product.slug} locale={locale} initialOrderNumber={initialOrderNumber} />
         <SimilarProducts slug={product.slug} locale={locale} />
       </div>
     </main>
