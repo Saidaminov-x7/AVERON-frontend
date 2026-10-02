@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CheckCircle2, Headphones, MessageCircle, PackageCheck } from "lucide-react";
+import { CheckCircle2, Headphones, MessageCircle, PackageCheck } from "lucide-react";
 import { externalBaseURL } from "@/lib/axios";
 import { AddToCart } from "@/components/commerce/AddToCart";
 import { ProductGallery } from "@/components/commerce/ProductGallery";
@@ -9,6 +9,7 @@ import { ProductReviews } from "@/components/commerce/ProductReviews";
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import { CompleteTheLook } from "@/components/commerce/CompleteTheLook";
 import { ProductRecommendations } from "@/components/commerce/ProductRecommendations";
+import { SmartBackButton } from "@/components/navigation/SmartBackButton";
 import {
   buildCatalogSearchParams,
   productTitle,
@@ -141,13 +142,7 @@ export default async function ProductPage({
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
       <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 lg:px-8">
-        <Link
-          href={catalogHref}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-stone-500 transition-colors hover:text-primary-700"
-        >
-          <ArrowLeft size={16} />
-          {copy.back}
-        </Link>
+        <SmartBackButton fallbackHref={catalogHref} />
         <div className="mt-6 grid gap-8 lg:grid-cols-2">
           <ProductGallery
             images={product.images ?? []}

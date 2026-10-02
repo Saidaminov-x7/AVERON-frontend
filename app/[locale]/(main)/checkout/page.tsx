@@ -5,8 +5,9 @@ import { useLocale } from 'next-intl';
 import { FormEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { createCheckout, commerceQueryKeys, getCommerceErrorCode, validatePromoCode } from '@/lib/commerce-orders';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -172,9 +173,7 @@ function CheckoutContent() {
   return (
     <main className="min-h-[65vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-        <Link href={`/${locale}/cart`} className="inline-flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-primary-700">
-          <ArrowLeft size={16} />{text.back}
-        </Link>
+        <SmartBackButton fallbackHref={`/${locale}/cart`} />
         <h1 className="mt-4 text-3xl font-extrabold">{text.title}</h1>
 
         {isCartLoading ? <p role="status" className="mt-8">{text.loading}</p> : isCartError ? (

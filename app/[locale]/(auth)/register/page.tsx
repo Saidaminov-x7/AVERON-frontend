@@ -7,6 +7,7 @@ import { AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import api from '@/lib/axios';
 import { useAuthStore, type AuthUser } from '@/store/useAuthStore';
 import { getErrorDetails } from '@/lib/errorDetails';
+import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function RegisterPage() {
     finally { setLoading(false); }
   };
   const field = 'h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-white outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20';
-  return <div className="space-y-6"><div><h1 className="text-2xl font-bold text-white">Регистрация</h1><p className="mt-1.5 text-sm text-stone-400">{step === 'form' ? 'Создайте аккаунт по номеру телефона — без email.' : `Введите код из SMS, отправленный на ${phone}`}</p></div>
+  return <div className="space-y-6"><SmartBackButton fallbackHref={`/${locale}`} /><div><h1 className="text-2xl font-bold text-white">Регистрация</h1><p className="mt-1.5 text-sm text-stone-400">{step === 'form' ? 'Создайте аккаунт по номеру телефона — без email.' : `Введите код из SMS, отправленный на ${phone}`}</p></div>
     {error ? <div className="flex gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400"><AlertCircle size={16}/>{error}</div> : null}
     <form onSubmit={(event) => { event.preventDefault(); void submit(); }} className="space-y-4">{step === 'form' ? <>
       <label className="block space-y-2"><span className="text-xs font-semibold uppercase tracking-wider text-stone-400">Имя</span><input value={name} onChange={(e)=>setName(e.target.value)} autoComplete="name" className={field}/></label>

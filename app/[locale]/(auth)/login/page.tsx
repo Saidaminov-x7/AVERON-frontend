@@ -2,6 +2,7 @@
 
 import { use, Suspense } from 'react';
 import { LoginForm } from './components/LoginForm';
+import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 
 export default function LoginPage({
   params,
@@ -12,7 +13,10 @@ export default function LoginPage({
 
   return (
     <Suspense fallback={<div className="h-40 w-full animate-pulse" />}>
-      <LoginForm locale={locale} />
+      <div>
+        <SmartBackButton fallbackHref={`/${locale}`} />
+        <LoginForm locale={locale} />
+      </div>
     </Suspense>
   );
 }

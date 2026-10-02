@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, RefreshCw, ShoppingBag, Trash2 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { ProductImage } from '@/components/commerce/ProductImage';
 import { QuantityStepper } from '@/components/commerce/QuantityStepper';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
@@ -98,6 +99,7 @@ function CartContent() {
   return (
     <main className="min-h-[65vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+        <SmartBackButton fallbackHref={`/${locale}/catalog`} />
         <h1 className="text-3xl font-extrabold">{text.title}</h1>
 
         {isLoading ? (

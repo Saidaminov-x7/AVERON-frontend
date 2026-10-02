@@ -19,6 +19,7 @@
   "/mini-app",
   "/orders",
   "/orders/:orderNumber",
+  "/outfits",
   "/pages/:slug",
   "/privacy",
   "/profile",
@@ -28,5 +29,6 @@
   "/returns",
   "/size-guide",
   "/support",
-  "/terms"
+  "/terms",
+  "/wishlist/shared/:token"
 ]
