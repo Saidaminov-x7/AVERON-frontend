@@ -6,6 +6,7 @@ import { FormEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
@@ -18,7 +19,8 @@ const copy = {
     delivery: 'Адрес доставки', city: 'Город', address: 'Улица, дом', apartment: 'Квартира / офис (необязательно)',
     entrance: 'Подъезд (необязательно)', floor: 'Этаж (необязательно)', comment: 'Комментарий курьеру (необязательно)',
     total: 'Итого по корзине', submit: 'Подтвердить заказ', back: 'Вернуться в корзину',
-    subtotal: 'Сумма товаров', promo: 'Промокод', applyPromo: 'Применить', removePromo: 'Удалить',
+    subtotal: 'Сумма товаров', promo: 'Промокод', applyPromo: 'Применить', applyingPromo: 'Проверяем…', removePromo: 'Удалить',
+    placingOrder: 'Оформляем заказ…',
     discount: 'Скидка', finalTotal: 'Итого со скидкой', promoApplied: 'Скидка применена. Итог будет подтверждён сервером.',
     promoErrors: { PROMO_NOT_FOUND: 'Промокод не найден.', PROMO_NOT_ACTIVE: 'Промокод не активен.', PROMO_NOT_STARTED: 'Срок действия промокода ещё не начался.', PROMO_EXPIRED: 'Срок действия промокода истёк.', PROMO_LIMIT_REACHED: 'Лимит использований промокода исчерпан.', PROMO_ALREADY_USED: 'Вы уже использовали этот промокод.', PROMO_INVALID: 'Промокод недействителен.' },
     loading: 'Загружаем корзину…', empty: 'Корзина пуста или содержит недоступные товары.', retry: 'Повторить',
@@ -42,7 +44,8 @@ const copy = {
     delivery: 'Yetkazib berish manzili', city: 'Shahar', address: 'Ko‘cha, uy', apartment: 'Kvartira / ofis (ixtiyoriy)',
     entrance: 'Kirish yo‘lagi (ixtiyoriy)', floor: 'Qavat (ixtiyoriy)', comment: 'Kuryerga izoh (ixtiyoriy)',
     total: 'Savatcha jami', submit: 'Buyurtmani tasdiqlash', back: 'Savatchaga qaytish',
-    subtotal: 'Mahsulotlar summasi', promo: 'Promokod', applyPromo: 'Qo‘llash', removePromo: 'Olib tashlash',
+    subtotal: 'Mahsulotlar summasi', promo: 'Promokod', applyPromo: 'Qo‘llash', applyingPromo: 'Tekshirilmoqda…', removePromo: 'Olib tashlash',
+    placingOrder: 'Buyurtma rasmiylashtirilmoqda…',
     discount: 'Chegirma', finalTotal: 'Chegirmadan keyingi jami', promoApplied: 'Chegirma qo‘llandi. Yakuniy summa serverda tasdiqlanadi.',
     promoErrors: { PROMO_NOT_FOUND: 'Promokod topilmadi.', PROMO_NOT_ACTIVE: 'Promokod faol emas.', PROMO_NOT_STARTED: 'Promokod muddati hali boshlanmagan.', PROMO_EXPIRED: 'Promokod muddati tugagan.', PROMO_LIMIT_REACHED: 'Promokod foydalanish limiti tugagan.', PROMO_ALREADY_USED: 'Siz bu promokoddan avval foydalangansiz.', PROMO_INVALID: 'Promokod yaroqsiz.' },
     loading: 'Savatcha yuklanmoqda…', empty: 'Savatcha bo‘sh yoki xarid uchun mavjud bo‘lmagan mahsulotlar bor.', retry: 'Qayta urinish',
@@ -66,7 +69,8 @@ const copy = {
     delivery: 'Delivery address', city: 'City', address: 'Street and building',
     apartment: 'Apartment / office (optional)', entrance: 'Entrance (optional)', floor: 'Floor (optional)',
     comment: 'Delivery note (optional)', total: 'Cart total', submit: 'Place order', back: 'Back to cart',
-    subtotal: 'Subtotal', promo: 'Promo code', applyPromo: 'Apply', removePromo: 'Remove',
+    subtotal: 'Subtotal', promo: 'Promo code', applyPromo: 'Apply', applyingPromo: 'Checking…', removePromo: 'Remove',
+    placingOrder: 'Placing order…',
     discount: 'Discount', finalTotal: 'Total after discount', promoApplied: 'Discount applied. The server will confirm the final total.',
     promoErrors: { PROMO_NOT_FOUND: 'Promo code not found.', PROMO_NOT_ACTIVE: 'Promo code is inactive.', PROMO_NOT_STARTED: 'This promo code is not active yet.', PROMO_EXPIRED: 'This promo code has expired.', PROMO_LIMIT_REACHED: 'This promo code has reached its usage limit.', PROMO_ALREADY_USED: 'You have already used this promo code.', PROMO_INVALID: 'This promo code is invalid.' },
     loading: 'Loading your cart…', empty: 'Your cart is empty or contains unavailable products.', retry: 'Try again',
@@ -146,6 +150,7 @@ function CheckoutContent() {
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (checkout.isPending) return;
     if (!idempotencyKey.current) idempotencyKey.current = crypto.randomUUID();
     checkout.mutate({
       contact: { name: contact.name.trim(), phone: contact.phone.trim() },
@@ -227,16 +232,30 @@ function CheckoutContent() {
                 <input id="checkout-promo" maxLength={40} value={promoInput} onChange={(event) => { setPromoInput(event.target.value); setPromoError(''); if (appliedPromo) { setAppliedPromo(null); idempotencyKey.current = null; } }} className="min-h-10 min-w-0 flex-1 rounded-lg border border-stone-300 bg-white px-3 uppercase dark:border-white/15 dark:bg-stone-950" />
                 {appliedPromo
                   ? <button type="button" onClick={() => { setAppliedPromo(null); setPromoInput(''); setPromoError(''); idempotencyKey.current = null; }} className="min-h-10 rounded-lg border px-3 text-sm font-semibold">{text.removePromo}</button>
-                  : <button type="button" disabled={!promoInput.trim() || promoValidation.isPending} onClick={() => promoValidation.mutate(promoInput.trim())} className="min-h-10 rounded-lg border px-3 text-sm font-semibold disabled:opacity-50">{promoValidation.isPending ? '…' : text.applyPromo}</button>}
+                  : <Button
+                      type="button"
+                      variant="outline"
+                      loading={promoValidation.isPending}
+                      loadingLabel={text.applyingPromo}
+                      disabled={!promoInput.trim() || promoValidation.isPending}
+                      onClick={() => promoValidation.mutate(promoInput.trim())}
+                      className="min-h-10 rounded-lg px-3 text-sm font-semibold"
+                    >{text.applyPromo}</Button>}
               </div>
               {promoError && <p role="alert" className="mt-2 text-sm text-rose-700">{promoError}</p>}
               {appliedPromo && <p role="status" className="mt-2 text-xs text-emerald-700">{text.promoApplied}</p>}
               <p className="mt-4 text-2xl font-extrabold">{formatUzs(subtotal - discount, locale)}</p>
               <p className="mt-4 text-xs leading-5 text-stone-500">{text.payment}</p>
               {checkout.isError && <p role="alert" className="mt-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-800 dark:bg-rose-950/30 dark:text-rose-200">{errorMessage}</p>}
-              <button type="submit" disabled={checkout.isPending || !isCartEligible} className="mt-5 h-12 w-full rounded-xl bg-primary-700 px-4 font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50">
-                {checkout.isPending ? '…' : text.submit}
-              </button>
+              <Button
+                type="submit"
+                loading={checkout.isPending}
+                loadingLabel={text.placingOrder}
+                disabled={!isCartEligible}
+                className="mt-5 h-12 w-full rounded-xl bg-primary-700 px-4 font-bold text-white hover:bg-primary-800"
+              >
+                {text.submit}
+              </Button>
             </aside>
           </form>
         )}

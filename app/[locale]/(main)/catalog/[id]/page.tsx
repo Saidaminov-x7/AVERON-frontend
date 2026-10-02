@@ -9,6 +9,7 @@ import { ProductReviews } from "@/components/commerce/ProductReviews";
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import { CompleteTheLook } from "@/components/commerce/CompleteTheLook";
 import { ProductRecommendations } from "@/components/commerce/ProductRecommendations";
+import { ProductLoadFailure } from "@/components/commerce/ProductLoadFailure";
 import { SmartBackButton } from "@/components/navigation/SmartBackButton";
 import {
   buildCatalogSearchParams,
@@ -18,21 +19,69 @@ import {
 
 type Filters = Record<string, string | string[] | undefined>;
 
-async function loadProduct(slug: string) {
+class ProductRequestError extends Error {
+  constructor(public readonly kind: "network" | "server") {
+    super(kind);
+    this.name = "ProductRequestError";
+  }
+}
+
+type ProductDetail = StoreProduct & {
+  description?: Record<string, string | { text?: string }>;
+};
+
+function isStoreProduct(value: unknown): value is ProductDetail {
+  if (typeof value !== "object" || value === null) return false;
+  const product = value as Record<string, unknown>;
+  if (
+    typeof product.id !== "string" ||
+    typeof product.slug !== "string" ||
+    !["string", "number"].includes(typeof product.salePriceUzs)
+  ) return false;
+  if (product.images !== undefined && (
+    !Array.isArray(product.images) ||
+    product.images.some((image) =>
+      typeof image !== "object" || image === null || typeof (image as Record<string, unknown>).url !== "string",
+    )
+  )) return false;
+  if (product.variants !== undefined && (
+    !Array.isArray(product.variants) ||
+    product.variants.some((variant) =>
+      typeof variant !== "object" || variant === null || typeof (variant as Record<string, unknown>).id !== "string",
+    )
+  )) return false;
+  if (product.description !== undefined && product.description !== null && (
+    typeof product.description !== "object" || Array.isArray(product.description)
+  )) return false;
+  return true;
+}
+
+async function loadProduct(slug: string): Promise<ProductDetail | null> {
+  let identifier: string;
   try {
-    let identifier = slug;
-    try {
-      identifier = decodeURIComponent(slug);
-    } catch {}
-    const response = await fetch(
-      `${externalBaseURL}/api/v1/products/${encodeURIComponent(identifier)}`,
-      { cache: "no-store", signal: AbortSignal.timeout(15000) },
-    );
-    if (!response.ok) return null;
-    return response.json();
+    identifier = decodeURIComponent(slug);
   } catch {
     return null;
   }
+  let response: Response;
+  try {
+    response = await fetch(
+      `${externalBaseURL}/api/v1/products/${encodeURIComponent(identifier)}`,
+      { cache: "no-store", signal: AbortSignal.timeout(15000) },
+    );
+  } catch {
+    throw new ProductRequestError("network");
+  }
+  if (response.status === 404 || (response.status >= 400 && response.status < 500)) return null;
+  if (!response.ok) throw new ProductRequestError("server");
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch {
+    throw new ProductRequestError("server");
+  }
+  if (!isStoreProduct(payload)) throw new ProductRequestError("server");
+  return payload;
 }
 export async function generateMetadata({
   params,
@@ -40,7 +89,12 @@ export async function generateMetadata({
   params: Promise<{ id: string; locale: string }>;
 }): Promise<Metadata> {
   const { id, locale } = await params;
-  const product = await loadProduct(id);
+  let product: StoreProduct | null = null;
+  try {
+    product = await loadProduct(id);
+  } catch {
+    return { title: "AVERON" };
+  }
   return { title: product ? productTitle(product, locale) : "Товар" };
 }
 
@@ -52,20 +106,20 @@ export default async function ProductPage({
   searchParams: Promise<Filters>;
 }) {
   const [{ id, locale }, filters] = await Promise.all([params, searchParams]);
-  const product:
-    | (StoreProduct & {
-        stock?: number;
-        description?: Record<string, string | { text?: string }>;
-        variants?: Array<{
-          id: string;
-          color?: string | null;
-          size?: string | null;
-          stock?: number;
-          available?: boolean;
-          salePriceUzs?: string | number;
-        }>;
-      })
-    | null = await loadProduct(id);
+  let product: ProductDetail | null;
+  try {
+    product = await loadProduct(id);
+  } catch (error) {
+    const kind = error instanceof ProductRequestError ? error.kind : "server";
+    const catalogQuery = buildCatalogSearchParams(filters).toString();
+    return (
+      <ProductLoadFailure
+        locale={locale}
+        kind={kind}
+        catalogHref={`/${locale}/catalog${catalogQuery ? `?${catalogQuery}` : ""}`}
+      />
+    );
+  }
   if (!product) notFound();
   const title = productTitle(product, locale);
   const copy = {

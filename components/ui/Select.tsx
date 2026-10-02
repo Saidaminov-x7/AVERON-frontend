@@ -12,6 +12,8 @@ interface SelectContextType {
   setOpen: (open: boolean | ((prev: boolean) => boolean)) => void;
   labelMap: Record<string, React.ReactNode>;
   registerLabel: (val: string, label: React.ReactNode) => void;
+  selectId: string;
+  disabled: boolean;
 }
 
 const SelectContext = createContext<SelectContextType | null>(null);
@@ -24,7 +26,8 @@ interface SelectProps {
   disabled?: boolean;
 }
 
-function Select({ children, value: controlledValue, defaultValue = '', onValueChange }: SelectProps) {
+function Select({ children, value: controlledValue, defaultValue = '', onValueChange, disabled = false }: SelectProps) {
+  const selectId = React.useId();
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
   const [open, setOpen] = useState(false);
   const [labelMap, setLabelMap] = useState<Record<string, React.ReactNode>>({});
@@ -38,6 +41,7 @@ function Select({ children, value: controlledValue, defaultValue = '', onValueCh
     }
     onValueChange?.(val);
     setOpen(false);
+    document.getElementById(`${selectId}-trigger`)?.focus();
   };
 
   const registerLabel = (val: string, label: React.ReactNode) => {
@@ -53,6 +57,8 @@ function Select({ children, value: controlledValue, defaultValue = '', onValueCh
         setOpen,
         labelMap,
         registerLabel,
+        selectId,
+        disabled,
       }}
     >
       <div className="relative inline-block w-full">{children}</div>
@@ -91,8 +97,24 @@ const SelectTrigger = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<H
       <button
         ref={ref}
         type="button"
-        disabled={disabled}
+        id={context ? `${context.selectId}-trigger` : undefined}
+        role="combobox"
+        aria-haspopup="listbox"
+        aria-expanded={context?.open ?? false}
+        aria-controls={context ? `${context.selectId}-listbox` : undefined}
+        disabled={disabled || context?.disabled}
         onClick={() => !disabled && context?.setOpen((prev) => !prev)}
+        onKeyDown={(event) => {
+          if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && !context?.open) {
+            event.preventDefault();
+            const trigger = event.currentTarget;
+            context?.setOpen(true);
+            requestAnimationFrame(() => {
+              const options = trigger.parentElement?.querySelectorAll<HTMLButtonElement>('[role="option"]:not(:disabled)');
+              (event.key === 'ArrowUp' ? options?.[options.length - 1] : options?.[0])?.focus();
+            });
+          }
+        }}
         className={cn(
           'flex h-10 w-full items-center justify-between rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 shadow-sm transition-colors focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100',
           className
@@ -134,6 +156,32 @@ const SelectContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEle
     return (
       <div
         ref={containerRef}
+        id={`${context.selectId}-listbox`}
+        role="listbox"
+        aria-labelledby={`${context.selectId}-trigger`}
+        onKeyDown={(event) => {
+          const options = Array.from(containerRef.current?.querySelectorAll<HTMLButtonElement>('[role="option"]:not(:disabled)') ?? []);
+          const index = options.indexOf(document.activeElement as HTMLButtonElement);
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            context.setOpen(false);
+            document.getElementById(`${context.selectId}-trigger`)?.focus();
+            return;
+          }
+          const targetIndex = event.key === 'ArrowDown'
+            ? Math.min(index + 1, options.length - 1)
+            : event.key === 'ArrowUp'
+              ? Math.max(index - 1, 0)
+              : event.key === 'Home'
+                ? 0
+                : event.key === 'End'
+                  ? options.length - 1
+                  : -1;
+          if (targetIndex >= 0) {
+            event.preventDefault();
+            options[targetIndex]?.focus();
+          }
+        }}
         className={cn(
           'absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-lg border border-stone-200 bg-white p-1 shadow-lg shadow-stone-900/10 dark:border-stone-700 dark:bg-stone-800 dark:shadow-black/40',
           className
@@ -171,10 +219,13 @@ const SelectItem = forwardRef<HTMLButtonElement, SelectItemProps>(
       <button
         ref={ref}
         type="button"
-        onClick={() => context?.onValueChange(value)}
+        role="option"
+        aria-selected={isSelected}
+        onClick={() => !props.disabled && context?.onValueChange(value)}
         className={cn(
           'relative flex w-full cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm text-stone-700 transition-colors hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-700',
           isSelected && 'bg-primary-50 font-medium text-primary-700 dark:bg-primary-950/60 dark:text-primary-300',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
         {...props}

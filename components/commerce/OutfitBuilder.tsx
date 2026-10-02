@@ -5,6 +5,14 @@ import { useLocale } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getProduct, getProducts, productTitle, type StoreProduct } from '@/lib/products';
+import { Button } from '@/components/ui/Button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select';
 import {
   addOutfitToCart,
   commerceQueryKeys,
@@ -21,7 +29,7 @@ type DraftItem = { product: StoreProduct; variantId: string | null };
 const copy = {
   ru: {
     title: 'Конструктор образа', intro: 'Соберите образ вручную. Цены и наличие проверяются сервером.',
-    search: 'Найти товар по названию, артикулу или ссылке', find: 'Найти', add: 'Добавить',
+    search: 'Найти товар по названию, артикулу или ссылке', find: 'Найти', searching: 'Ищем…', saving: 'Сохраняем…', addingCart: 'Добавляем…', deleting: 'Удаляем…', loading: 'Загружаем…', add: 'Добавить',
     name: 'Название образа', save: 'Сохранить образ', update: 'Сохранить изменения', start: 'Новый образ',
     saved: 'Сохранённые образы', remove: 'Убрать', replace: 'Заменить найденным товаром',
     variant: 'Вариант', total: 'Предварительная сумма', cart: 'Добавить образ в корзину',
@@ -32,7 +40,7 @@ const copy = {
   },
   uz: {
     title: 'Obraz yaratuvchi', intro: 'Obrazni o‘zingiz tuzing. Narx va mavjudlik serverda tekshiriladi.',
-    search: 'Nom, artikul yoki havola bo‘yicha mahsulot qidirish', find: 'Qidirish', add: 'Qo‘shish',
+    search: 'Nom, artikul yoki havola bo‘yicha mahsulot qidirish', find: 'Qidirish', searching: 'Qidirilmoqda…', saving: 'Saqlanmoqda…', addingCart: 'Qo‘shilmoqda…', deleting: 'O‘chirilmoqda…', loading: 'Yuklanmoqda…', add: 'Qo‘shish',
     name: 'Obraz nomi', save: 'Obrazni saqlash', update: 'O‘zgarishlarni saqlash', start: 'Yangi obraz',
     saved: 'Saqlangan obrazlar', remove: 'Olib tashlash', replace: 'Topilgan mahsulot bilan almashtirish',
     variant: 'Variant', total: 'Taxminiy summa', cart: 'Obrazni savatchaga qo‘shish',
@@ -43,7 +51,7 @@ const copy = {
   },
   en: {
     title: 'Outfit builder', intro: 'Build an outfit yourself. Prices and availability are revalidated by the server.',
-    search: 'Find a product by name, SKU, or link', find: 'Search', add: 'Add',
+    search: 'Find a product by name, SKU, or link', find: 'Search', searching: 'Searching…', saving: 'Saving…', addingCart: 'Adding…', deleting: 'Deleting…', loading: 'Loading…', add: 'Add',
     name: 'Outfit name', save: 'Save outfit', update: 'Save changes', start: 'New outfit',
     saved: 'Saved outfits', remove: 'Remove', replace: 'Replace with found product',
     variant: 'Option', total: 'Estimated total', cart: 'Add outfit to cart',
@@ -80,6 +88,10 @@ function OutfitBuilderContent() {
   const [replaceAt, setReplaceAt] = useState<number | null>(null);
   const [message, setMessage] = useState('');
   const [rejected, setRejected] = useState<Array<{ productId: string; variantId: string | null; code: string }>>([]);
+  const [searchPending, setSearchPending] = useState(false);
+  const [cartPending, setCartPending] = useState(false);
+  const [deletePending, setDeletePending] = useState(false);
+  const [openingOutfit, setOpeningOutfit] = useState<string | null>(null);
 
   const savedQuery = useQuery({ queryKey: commerceQueryKeys.outfits, queryFn: getSavedOutfits });
 
@@ -114,6 +126,8 @@ function OutfitBuilderContent() {
   });
 
   const searchProducts = async () => {
+    if (searchPending) return;
+    setSearchPending(true);
     setMessage('');
     try {
       const query = search.trim();
@@ -131,6 +145,8 @@ function OutfitBuilderContent() {
       setResults(response.items);
     } catch {
       setMessage(text.error);
+    } finally {
+      setSearchPending(false);
     }
   };
 
@@ -149,6 +165,8 @@ function OutfitBuilderContent() {
   };
 
   const openOutfit = async (outfit: SavedOutfit) => {
+    if (openingOutfit) return;
+    setOpeningOutfit(outfit.id);
     try {
       const hydrated = await Promise.all(outfit.items.map(async (item) => {
         const product = await getProduct(item.product.slug);
@@ -160,10 +178,14 @@ function OutfitBuilderContent() {
       setMessage('');
     } catch {
       setMessage(text.error);
+    } finally {
+      setOpeningOutfit(null);
     }
   };
 
   const addToCart = async () => {
+    if (cartPending) return;
+    setCartPending(true);
     setMessage('');
     setRejected([]);
     try {
@@ -189,11 +211,14 @@ function OutfitBuilderContent() {
       await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.cart });
     } catch {
       setMessage(text.error);
+    } finally {
+      setCartPending(false);
     }
   };
 
   const removeSaved = async () => {
-    if (!outfitId) return;
+    if (!outfitId || deletePending) return;
+    setDeletePending(true);
     try {
       await deleteOutfit(outfitId);
       setOutfitId(null);
@@ -203,6 +228,8 @@ function OutfitBuilderContent() {
       setMessage(text.delete);
     } catch {
       setMessage(text.error);
+    } finally {
+      setDeletePending(false);
     }
   };
 
@@ -217,7 +244,7 @@ function OutfitBuilderContent() {
             <input id="outfit-product-search" value={search} onChange={(event) => setSearch(event.target.value)}
               onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); void searchProducts(); } }}
               placeholder={text.search} className="min-h-11 flex-1 rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-900" />
-            <button type="button" onClick={() => void searchProducts()} className="min-h-11 rounded-xl bg-primary-700 px-5 font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{text.find}</button>
+            <Button type="button" loading={searchPending} loadingLabel={text.searching} onClick={() => void searchProducts()} className="min-h-11 rounded-xl bg-primary-700 px-5 font-bold text-white focus-visible:ring-primary-500">{text.find}</Button>
           </div>
           {results.length > 0 && <div className="mt-4 rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900">
             <h2 className="font-bold">{text.result}</h2>
@@ -239,13 +266,19 @@ function OutfitBuilderContent() {
                   <div className="min-w-0 flex-1">
                     <a href={`/${locale}/catalog/${item.product.slug}`} className="font-bold hover:underline">{productTitle(item.product, locale)}</a>
                     <p className="mt-1 text-sm text-stone-500">{formatUzs(Number(item.product.variants?.find((variant) => variant.id === item.variantId)?.salePriceUzs ?? item.product.salePriceUzs ?? 0), locale)}</p>
-                    {(item.product.variants?.length ?? 0) > 0 && <label className="mt-2 block text-sm">{text.variant}
-                      <select value={item.variantId ?? ''} onChange={(event) => setItems((current) => current.map((entry, itemIndex) =>
-                        itemIndex === index ? { ...entry, variantId: event.target.value || null } : entry,
-                      ))} className="ml-2 min-h-9 rounded-lg border border-stone-300 bg-white px-2 dark:border-white/15 dark:bg-stone-950">
-                        {item.product.variants?.map((variant) => <option key={variant.id} value={variant.id}>{[variant.color, variant.size].filter(Boolean).join(' · ') || variant.id}</option>)}
-                      </select>
-                    </label>}
+                    {(item.product.variants?.length ?? 0) > 0 && <div className="mt-2 max-w-sm text-sm">
+                      <span>{text.variant}</span>
+                      <Select value={item.variantId ?? ''} onValueChange={(value) => setItems((current) => current.map((entry, itemIndex) =>
+                        itemIndex === index ? { ...entry, variantId: value || null } : entry,
+                      ))}>
+                        <SelectTrigger aria-label={`${text.variant}: ${productTitle(item.product, locale)}`} className="mt-1 min-h-9 rounded-lg">
+                          <SelectValue placeholder={text.variant} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {item.product.variants?.map((variant) => <SelectItem key={variant.id} value={variant.id}>{[variant.color, variant.size].filter(Boolean).join(' · ') || variant.id}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>}
                   </div>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => setReplaceAt(index)} className="min-h-10 rounded-lg border px-3 text-sm">{text.replace}</button>
@@ -262,14 +295,14 @@ function OutfitBuilderContent() {
           <input id="outfit-name" maxLength={80} value={name} onChange={(event) => setName(event.target.value)} className="mt-2 min-h-10 w-full rounded-lg border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-950" />
           <p className="mt-5 text-sm text-stone-500">{text.total}</p>
           <p className="mt-1 text-2xl font-extrabold">{formatUzs(total, locale)}</p>
-          <button type="button" disabled={!items.length || saveMutation.isPending} onClick={() => saveMutation.mutate()} className="mt-5 min-h-11 w-full rounded-xl border px-3 font-bold disabled:opacity-50">{outfitId ? text.update : text.save}</button>
-          <button type="button" disabled={!items.length} onClick={() => void addToCart()} className="mt-2 min-h-11 w-full rounded-xl bg-primary-700 px-3 font-bold text-white disabled:opacity-50">{text.cart}</button>
-          {outfitId && <button type="button" onClick={() => void removeSaved()} className="mt-2 min-h-10 w-full rounded-xl border border-rose-300 px-3 text-sm text-rose-700">{text.delete}</button>}
+          <Button type="button" loading={saveMutation.isPending} loadingLabel={text.saving} disabled={!items.length} onClick={() => saveMutation.mutate()} className="mt-5 min-h-11 w-full rounded-xl border px-3 font-bold text-stone-900 dark:text-stone-100">{outfitId ? text.update : text.save}</Button>
+          <Button type="button" loading={cartPending} loadingLabel={text.addingCart} disabled={!items.length || cartPending || saveMutation.isPending} onClick={() => void addToCart()} className="mt-2 min-h-11 w-full rounded-xl bg-primary-700 px-3 font-bold text-white">{text.cart}</Button>
+          {outfitId && <Button type="button" loading={deletePending} loadingLabel={text.deleting} disabled={deletePending} onClick={() => void removeSaved()} variant="outline" className="mt-2 min-h-10 w-full rounded-xl border-rose-300 px-3 text-sm text-rose-700">{text.delete}</Button>}
           {message && <p role="status" className="mt-4 text-sm">{message}</p>}
           {rejected.length > 0 && <ul className="mt-2 list-inside list-disc text-xs text-rose-700">{rejected.map((item) => <li key={`${item.productId}:${item.variantId}`}>{item.code}</li>)}</ul>}
           <h2 className="mt-7 font-bold">{text.saved}</h2>
           <div className="mt-2 space-y-2">{savedQuery.data?.map((outfit) =>
-            <button key={outfit.id} type="button" onClick={() => void openOutfit(outfit)} className="block min-h-10 w-full rounded-lg bg-stone-100 px-3 text-left text-sm dark:bg-white/5">{outfit.name}</button>,
+            <Button key={outfit.id} type="button" loading={openingOutfit === outfit.id} loadingLabel={text.loading} disabled={openingOutfit !== null} onClick={() => void openOutfit(outfit)} variant="ghost" className="block min-h-10 w-full rounded-lg bg-stone-100 px-3 text-left text-sm dark:bg-white/5">{outfit.name}</Button>,
           )}</div>
           <button type="button" onClick={() => { setOutfitId(null); setName(''); setItems([]); setMessage(''); }} className="mt-3 min-h-10 w-full rounded-lg border px-3 text-sm">{text.start}</button>
         </aside>

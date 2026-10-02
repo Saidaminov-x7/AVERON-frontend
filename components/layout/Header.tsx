@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import type { NavLink } from '@/lib/siteSettings';
 import {
-  Search, X, Heart, ChevronRight, LogIn, Menu, ArrowLeft, User, Scale, ShoppingCart,
+  Search, X, Heart, ChevronRight, LogIn, Menu, User, Scale, ShoppingCart,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
@@ -18,7 +18,7 @@ import { getSearchSuggestions } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'framer-motion';
 import { LanguageFlag, type LocaleFlagCode } from '@/components/ui/LanguageFlag';
-import { useIsHydrated } from '@/hooks/useIsHydrated';
+import { localizeHrefPreservingSafeQuery } from '@/lib/safe-navigation';
 
 const LOCALES = [
   { code: 'ru', short: 'RU', label: 'Русский' },
@@ -35,9 +35,7 @@ const BTN_CLASS =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50';
 
 function localeHref(pathname: string, code: string, search: string) {
-  const rest = pathname.replace(/^\/(ru|uz|en)(?=\/|$)/, '') || '/';
-  const path = `/${code}${rest === '/' ? '' : rest}`;
-  return search ? `${path}?${search}` : path;
+  return localizeHrefPreservingSafeQuery(pathname, search ? `?${search}` : '', code);
 }
 
 function LanguagePicker() {
@@ -182,7 +180,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
     const closeOnDesktop = () => {
-      if (window.innerWidth >= 768) {
+      if (window.innerWidth >= 1024) {
         setMobileOpen(false);
         document.body.style.overflow = '';
       }
@@ -248,86 +246,21 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     (r) => pathname === `/${locale}${r}` || pathname.startsWith(`/${locale}${r}/`)
   );
 
-  const isHydrated = useIsHydrated();
-  const smartBackInfo = useMemo(() => {
-    void pathname;
-    const defaultInfo = { isHome: true, text: 'Вернуться домой', href: `/${locale}` };
-    if (!isHydrated) return defaultInfo;
-    try {
-      const prev = sessionStorage.getItem('averon_prev_page');
-      const lastPublic = sessionStorage.getItem('averon_last_public_page');
-      
-      const isAuthOrProtected = (url: string | null) =>
-        !url ||
-        url.includes('/login') ||
-        url.includes('/register') ||
-        url.includes('/forgot-password') ||
-        url.includes('/reset-password') ||
-        url.includes('/add-listing') ||
-        url.includes('/profile');
-
-      let targetUrl = prev;
-      if (isAuthOrProtected(targetUrl)) {
-        targetUrl = lastPublic;
-      }
-
-      if (targetUrl) {
-        const isTargetHome =
-          targetUrl === `/${locale}` ||
-          targetUrl === `/${locale}/` ||
-          targetUrl === '/' ||
-          targetUrl === '';
-
-        if (isTargetHome) {
-          return {
-            isHome: true,
-            text: locale === 'uz' ? 'Bosh sahifaga qaytish' : locale === 'en' ? 'Back to home' : 'Вернуться домой',
-            href: `/${locale}`,
-          };
-        }
-        return {
-          isHome: false,
-          text: locale === 'uz' ? 'Orqaga' : locale === 'en' ? 'Back' : 'Назад',
-          href: targetUrl,
-        };
-      }
-      return {
-        isHome: true,
-        text: locale === 'uz' ? 'Bosh sahifaga qaytish' : locale === 'en' ? 'Back to home' : 'Вернуться домой',
-        href: `/${locale}`,
-      };
-    } catch {
-      return defaultInfo;
-    }
-  }, [isHydrated, locale, pathname]);
-
   if (isAuthPage) {
-    const handleSmartBack = (e: React.MouseEvent) => {
-      if (!smartBackInfo.isHome && smartBackInfo.href) {
-        e.preventDefault();
-        router.push(smartBackInfo.href);
-      }
-    };
-
     return (
       <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-white/95 dark:border-white/10 dark:bg-[#1A1A1A]/95 h-20 flex items-center">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
-            href={smartBackInfo.href || to('/')}
-            onClick={handleSmartBack}
-            className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 shadow-xs transition-colors"
-          >
-            <ArrowLeft size={15} />
-            <span>{smartBackInfo.text}</span>
-          </Link>
-
-          <Link
             href={to('/')}
-            className="flex items-center gap-1.5 text-sm text-stone-400 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-1.5 rounded-sm text-sm text-stone-400 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
             <div className="h-2 w-2 rounded-full bg-primary-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
             <span className="text-primary-400 font-semibold tracking-tight">{settings?.siteName || 'AVERON'}</span>
           </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <LanguagePicker />
+          </div>
         </div>
       </header>
     );
@@ -356,7 +289,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
             <nav
               className={
-                'hidden items-center gap-1.5 overflow-hidden transition-all duration-300 ease-out md:flex ' +
+                'hidden items-center gap-1.5 overflow-hidden transition-all duration-300 ease-out lg:flex ' +
                 (searchOpen ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-xl opacity-100')
               }
             >
@@ -378,7 +311,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </div>
 
           {/* Right Desktop items */}
-          <div className="hidden items-center gap-2 md:flex">
+          <div className="hidden items-center gap-2 lg:flex">
             <div ref={searchRef} className="relative flex items-center">
               {searchOpen ? (
                 <form
@@ -485,7 +418,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               rel="noopener noreferrer"
               className="hidden h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white transition hover:brightness-110 xl:inline-flex"
             >
-              Поддержка
+              {t('support')}
             </a>
 
             {isAuthenticated ? (
@@ -494,7 +427,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary-50 px-3.5 text-sm font-semibold text-primary-700 transition-colors hover:bg-primary-100 dark:bg-primary-950/50 dark:text-primary-300 dark:hover:bg-primary-900/50"
               >
                 <User size={16} />
-                <span className="max-w-[120px] truncate">{user?.name || 'Профиль'}</span>
+                <span className="max-w-[120px] truncate">{user?.name || t('profile')}</span>
               </Link>
             ) : (
               <>
@@ -508,14 +441,14 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   href={to('/register')}
                   className="inline-flex h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white transition hover:brightness-110"
                 >
-                  Регистрация
+                  {t('register')}
                 </Link>
               </>
             )}
           </div>
 
           {/* Mobile & Tablet Right items */}
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             {/* Кнопка поиска: скрыта на телефонах, видна на планшетах (hidden sm:flex) */}
             <div ref={searchRef} className="relative flex items-center">
               {searchOpen ? (
@@ -622,7 +555,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
       <div
         onClick={() => setMobileOpen(false)}
         className={
-          'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ' +
+          'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300 lg:hidden ' +
           (mobileOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0')
         }
       />
@@ -632,7 +565,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         className={
-          `fixed left-0 top-0 z-50 flex h-full w-screen max-w-none flex-col bg-white shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} dark:bg-[#1A1A1A] md:hidden ` +
+          `fixed left-0 top-0 z-50 flex h-full w-screen max-w-none flex-col bg-white shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} dark:bg-[#1A1A1A] lg:hidden ` +
           (mobileOpen ? 'translate-x-0' : '-translate-x-full')
         }
       >
@@ -714,7 +647,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             </div>
           </div>
           <a href="https://t.me/averon_fashion_admin" target="_blank" rel="noopener noreferrer" className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 text-sm font-semibold text-white">
-            Поддержка AVERON
+            {t('support')}
           </a>
           {isAuthenticated ? (
             <Link
@@ -723,7 +656,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               className="flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 text-sm font-semibold text-white w-full"
             >
               <User size={16} />
-              <span>{user?.name || 'Профиль'}</span>
+              <span>{user?.name || t('profile')}</span>
             </Link>
           ) : (
             <div className="grid grid-cols-2 gap-2">
@@ -740,7 +673,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 onClick={() => setMobileOpen(false)}
                 className="flex h-11 items-center justify-center rounded-xl bg-primary-600 text-sm font-semibold text-white"
               >
-                Регистрация
+                {t('register')}
               </Link>
             </div>
           )}

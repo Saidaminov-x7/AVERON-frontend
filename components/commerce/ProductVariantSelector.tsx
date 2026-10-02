@@ -32,14 +32,14 @@ export function ProductVariantSelector({
   if (variants.length === 0) return null;
 
   return (
-    <label className="block text-sm font-semibold">
-      {label}
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-900"
-      >
-        {variants.map((variant) => {
+    <div className="block text-sm font-semibold">
+      <span>{label}</span>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger aria-label={label} className="mt-1.5 h-11 rounded-xl">
+          <SelectValue placeholder={standardLabel} />
+        </SelectTrigger>
+        <SelectContent>
+          {variants.map((variant) => {
           const name = [variant.color, variant.size].filter(Boolean).join(' · ') || standardLabel;
           const unavailable = isVariantUnavailable(variant.available, variant.stock);
           const count = !unavailable && typeof variant.stock === 'number' && Number.isSafeInteger(variant.stock) && variant.stock > 0
@@ -52,12 +52,20 @@ export function ProductVariantSelector({
               : '';
 
           return (
-            <option key={variant.id} value={variant.id} disabled={unavailable}>
+            <SelectItem key={variant.id} value={variant.id} disabled={unavailable}>
               {[name, count, count ? '' : availability].filter(Boolean).join(' · ')}
-            </option>
+            </SelectItem>
           );
         })}
-      </select>
-    </label>
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select';

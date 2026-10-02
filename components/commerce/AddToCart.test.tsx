@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AddToCart } from './AddToCart';
 
@@ -70,6 +70,7 @@ describe('AddToCart availability', () => {
 
     expect(screen.getByText('In stock: 6')).toBeInTheDocument();
     expect(screen.getByText('125,000 UZS')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('combobox', { name: 'Choose an option' }));
     expect(screen.getByRole('option', { name: 'Red · M · Out of stock' })).toBeDisabled();
   });
 });

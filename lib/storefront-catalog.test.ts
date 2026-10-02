@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { loadStoreCatalog, loadStoreCategories } from './storefront-catalog';
+import { loadStoreCatalog, loadStoreCatalogFacets, loadStoreCategories } from './storefront-catalog';
 
 function jsonResponse(data: unknown, ok = true): Response {
   return {
@@ -61,5 +61,34 @@ describe('storefront catalog requests', () => {
 
     const failedFetcher = vi.fn<typeof fetch>().mockRejectedValue(new Error('offline'));
     await expect(loadStoreCategories(failedFetcher)).resolves.toEqual({ status: 'error', categories: [] });
+  });
+
+  it('loads canonical catalog facets and reports facet request failures', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(jsonResponse({
+      sizes: ['M', ' ', null, 'One size'],
+      colors: ['Black', 12, 'Navy'],
+    }));
+    await expect(loadStoreCatalogFacets(fetcher)).resolves.toEqual({
+      status: 'ready',
+      facets: { sizes: ['M', 'One size'], colors: ['Black', 'Navy'] },
+    });
+
+    const failedFetcher = vi.fn<typeof fetch>().mockRejectedValue(new Error('offline'));
+    await expect(loadStoreCatalogFacets(failedFetcher)).resolves.toEqual({
+      status: 'error',
+      facets: { sizes: [], colors: [] },
+    });
+  });
+
+  it('preserves explicit all-countries filter state for product return navigation', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(jsonResponse({
+      items: [],
+      pagination: { page: 1, limit: 24, total: 0, pages: 0 },
+    }));
+    await loadStoreCatalog({ country: '' }, fetcher);
+
+    const request = new URL(String(fetcher.mock.calls[0][0]));
+    expect(request.searchParams.has('country')).toBe(true);
+    expect(request.searchParams.get('country')).toBe('');
   });
 });

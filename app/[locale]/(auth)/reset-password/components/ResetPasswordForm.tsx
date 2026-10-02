@@ -1,15 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import type { FormEvent } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { KeyRound, CheckCircle2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
+import { Button } from '@/components/ui/Button';
 import { resetPassword } from '@/lib/api';
-import { getErrorDetails } from '@/lib/errorDetails';
+import { getLocalizedApiError } from '@/lib/localized-api-error';
 
 const resetPasswordSchema = z
   .object({
@@ -31,6 +33,7 @@ interface ResetPasswordFormProps {
 export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
   const t = useTranslations('ResetPassword');
   const router = useRouter();
+  const requestPending = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -56,11 +59,19 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
       });
       setIsSubmitted(true);
     } catch (error: unknown) {
-      const msg = getErrorDetails(error).message || 'Не удалось сбросить пароль. Возможно, срок действия ссылки истек.';
-      setServerError(msg);
+      setServerError(getLocalizedApiError(error, locale, 'passwordReset'));
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const submitForm = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (requestPending.current) return;
+    requestPending.current = true;
+    void form.handleSubmit(onSubmit)(event).finally(() => {
+      requestPending.current = false;
+    });
   };
 
   if (isSubmitted) {
@@ -106,7 +117,7 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={submitForm} className="space-y-4">
           <FormField
             control={form.control}
             name="password"
@@ -167,20 +178,15 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
             )}
           />
 
-          <button
+          <Button
             type="submit"
+            loading={isLoading}
+            loadingLabel={locale === 'uz' ? 'Saqlanmoqda…' : locale === 'en' ? 'Saving…' : 'Сохраняем…'}
             disabled={isLoading}
-            className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 font-semibold text-white shadow-lg shadow-primary-900/30 transition-all hover:bg-primary-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-11 w-full rounded-xl bg-primary-600 font-semibold text-white shadow-lg shadow-primary-900/30 transition-all hover:bg-primary-500 active:scale-[0.98]"
           >
-            {isLoading ? (
-              <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-            ) : (
-              t('submit')
-            )}
-          </button>
+            {t('submit')}
+          </Button>
         </form>
       </Form>
     </div>

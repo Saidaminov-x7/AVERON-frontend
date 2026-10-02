@@ -8,7 +8,7 @@ import { useCompareStore } from '@/store/useCompareStore';
 import { productTitle, type StoreProduct } from '@/lib/products';
 import { addWishlistItem, removeWishlistItem } from '@/lib/commerce-orders';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 export type { StoreProduct } from '@/lib/products';
 export { productTitle } from '@/lib/products';
@@ -46,8 +46,48 @@ export function ProductCard({
   const toggleFavorite = useFavoritesStore((state) => state.toggle);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [favoriteError, setFavoriteError] = useState(false);
+  const [favoritePending, setFavoritePending] = useState(false);
+  const [compareLimitError, setCompareLimitError] = useState(false);
+  const actionPending = useRef(false);
   const isCompared = useCompareStore((state) => state.isInCompare(product.id));
-  const toggleCompare = useCompareStore((state) => state.toggle);
+  const addCompare = useCompareStore((state) => state.add);
+  const removeCompare = useCompareStore((state) => state.remove);
+  const labels = {
+    ru: { compare: isCompared ? 'Убрать из сравнения' : 'Добавить к сравнению', favorite: isFavorite ? 'Убрать из избранного' : 'Добавить в избранное', compareLimit: 'Можно сравнить не более 4 товаров.' },
+    uz: { compare: isCompared ? 'Taqqoslashdan olib tashlash' : 'Taqqoslashga qo‘shish', favorite: isFavorite ? 'Sevimlilardan olib tashlash' : 'Sevimlilarga qo‘shish', compareLimit: 'Ko‘pi bilan 4 ta mahsulotni taqqoslash mumkin.' },
+    en: { compare: isCompared ? 'Remove from comparison' : 'Add to comparison', favorite: isFavorite ? 'Remove from favorites' : 'Add to favorites', compareLimit: 'You can compare up to 4 products.' },
+  }[locale === 'en' || locale === 'uz' ? locale : 'ru'];
+
+  const toggleFavoriteProduct = async () => {
+    if (actionPending.current || favoritePending) return;
+    setFavoriteError(false);
+    setCompareLimitError(false);
+    if (!isAuthenticated) {
+      toggleFavorite(product.id);
+      return;
+    }
+    actionPending.current = true;
+    setFavoritePending(true);
+    try {
+      if (isFavorite) await removeWishlistItem(product.id);
+      else await addWishlistItem(product.id);
+      toggleFavorite(product.id);
+    } catch {
+      setFavoriteError(true);
+    } finally {
+      actionPending.current = false;
+      setFavoritePending(false);
+    }
+  };
+
+  const toggleComparedProduct = () => {
+    setCompareLimitError(false);
+    if (isCompared) {
+      removeCompare(product.id);
+      return;
+    }
+    if (!addCompare(product.id)) setCompareLimitError(true);
+  };
 
   return (
     <article className="group relative max-w-sm overflow-hidden rounded-2xl border border-stone-200/90 bg-white shadow-sm motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-200 motion-safe:ease-out motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-stone-300 motion-safe:hover:shadow-lg dark:border-white/10 dark:bg-stone-900 dark:motion-safe:hover:border-white/20">
@@ -72,18 +112,11 @@ export function ProductCard({
         </div>
       </Link>
       <div className="absolute right-3 top-3 flex gap-2">
-        <button type="button" aria-label={isCompared ? 'Убрать из сравнения' : 'Добавить к сравнению'} onClick={() => toggleCompare(product.id)} className={`flex size-10 items-center justify-center rounded-full border border-white/60 bg-white/90 backdrop-blur ${isCompared ? 'text-primary-700' : 'text-stone-700'}`}><Scale size={17} /></button>
-        <button type="button" aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'} onClick={() => {
-          setFavoriteError(false);
-          if (!isAuthenticated) {
-            toggleFavorite(product.id);
-            return;
-          }
-          const action = isFavorite ? removeWishlistItem(product.id) : addWishlistItem(product.id);
-          void action.then(() => toggleFavorite(product.id)).catch(() => setFavoriteError(true));
-        }} className={`flex size-10 items-center justify-center rounded-full border border-white/60 bg-white/90 backdrop-blur ${isFavorite ? 'text-rose-600' : 'text-stone-700'}`}><Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} /></button>
+        <button type="button" aria-label={labels.compare} aria-pressed={isCompared} onClick={toggleComparedProduct} className={`flex size-10 items-center justify-center rounded-full border border-stone-300/80 bg-white/90 text-stone-700 shadow-sm backdrop-blur transition-colors hover:border-primary-500 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/20 dark:bg-stone-900/90 dark:text-stone-100 dark:hover:text-primary-300 ${isCompared ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-200' : ''}`}><Scale size={17} /></button>
+        <button type="button" aria-label={labels.favorite} aria-pressed={isFavorite} disabled={favoritePending} onClick={() => void toggleFavoriteProduct()} className={`flex size-10 items-center justify-center rounded-full border border-stone-300/80 bg-white/90 text-stone-700 shadow-sm backdrop-blur transition-colors hover:border-rose-500 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-wait disabled:opacity-60 dark:border-white/20 dark:bg-stone-900/90 dark:text-stone-100 dark:hover:text-rose-300 ${isFavorite ? 'border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-200' : ''}`}><Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} /></button>
       </div>
-      {favoriteError && <p role="alert" className="absolute bottom-2 left-2 rounded bg-white px-2 py-1 text-xs text-rose-700 shadow">{locale === 'uz' ? 'Tanlanganlarni yangilab bo‘lmadi.' : locale === 'en' ? 'Could not update wishlist.' : 'Не удалось обновить избранное.'}</p>}
+      {favoriteError && <p role="alert" className="absolute bottom-2 left-2 rounded bg-white px-2 py-1 text-xs text-rose-700 shadow dark:bg-stone-800 dark:text-rose-200">{locale === 'uz' ? 'Tanlanganlarni yangilab bo‘lmadi.' : locale === 'en' ? 'Could not update wishlist.' : 'Не удалось обновить избранное.'}</p>}
+      {compareLimitError && <p role="status" className="absolute bottom-2 left-2 rounded bg-white px-2 py-1 text-xs text-stone-700 shadow dark:bg-stone-800 dark:text-stone-200">{labels.compareLimit}</p>}
     </article>
   );
 }

@@ -5,6 +5,7 @@ import { useLocale } from 'next-intl';
 import { useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 import { QuantityStepper } from '@/components/commerce/QuantityStepper';
 import { ProductVariantSelector, isVariantUnavailable } from '@/components/commerce/ProductVariantSelector';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
@@ -24,21 +25,21 @@ interface PurchaseVariant {
 const labels = {
   ru: {
     choose: 'Выберите вариант', quantity: 'Количество', decrease: 'Уменьшить количество', increase: 'Увеличить количество',
-    add: 'Добавить в корзину', buy: 'Купить сейчас', signIn: 'Войдите, чтобы добавить товар в корзину', added: 'Добавлено в корзину',
+    add: 'Добавить в корзину', buy: 'Купить сейчас', adding: 'Добавляем…', buying: 'Оформляем…', signIn: 'Войдите, чтобы добавить товар в корзину', added: 'Добавлено в корзину',
     goCart: 'Перейти в корзину', unavailable: 'Нет в наличии', available: 'Доступен для заказа',
     stock: 'В наличии: {count}', lowStock: 'Заканчивается: {count} шт.', generic: 'Не удалось добавить товар.', noStock: 'Этот товар сейчас недоступен.',
     standard: 'Стандартный', currency: 'сум', preorder: 'Предзаказ', preorderDate: 'Ожидаемая доступность: {date}',
   },
   uz: {
     choose: 'Variantni tanlang', quantity: 'Miqdor', decrease: 'Miqdorni kamaytirish', increase: 'Miqdorni oshirish',
-    add: 'Savatchaga qo‘shish', buy: 'Hozir xarid qilish', signIn: 'Savatchaga qo‘shish uchun tizimga kiring', added: 'Savatchaga qo‘shildi',
+    add: 'Savatchaga qo‘shish', buy: 'Hozir xarid qilish', adding: 'Qo‘shilmoqda…', buying: 'Rasmiylashtirilmoqda…', signIn: 'Savatchaga qo‘shish uchun tizimga kiring', added: 'Savatchaga qo‘shildi',
     goCart: 'Savatchaga o‘tish', unavailable: 'Mavjud emas', available: 'Buyurtma berish mumkin',
     stock: 'Mavjud: {count}', lowStock: 'Kam qoldi: {count} dona.', generic: 'Mahsulotni qo‘shib bo‘lmadi.', noStock: 'Bu mahsulot hozir mavjud emas.',
     standard: 'Standart', currency: 'so‘m', preorder: 'Oldindan buyurtma', preorderDate: 'Kutilayotgan mavjudlik: {date}',
   },
   en: {
     choose: 'Choose an option', quantity: 'Quantity', decrease: 'Decrease quantity', increase: 'Increase quantity',
-    add: 'Add to cart', buy: 'Buy now', signIn: 'Sign in to add this product to your cart', added: 'Added to cart',
+    add: 'Add to cart', buy: 'Buy now', adding: 'Adding…', buying: 'Processing…', signIn: 'Sign in to add this product to your cart', added: 'Added to cart',
     goCart: 'View cart', unavailable: 'Out of stock', available: 'Available to order',
     stock: 'In stock: {count}', lowStock: 'Low stock: {count} left.', generic: 'Could not add this product.', noStock: 'This product is currently unavailable.',
     standard: 'Standard', currency: 'UZS', preorder: 'Preorder', preorderDate: 'Estimated availability: {date}',
@@ -82,6 +83,7 @@ export function AddToCart({
   );
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const [activeAction, setActiveAction] = useState<'add' | 'buy' | null>(null);
   const { isAuthenticated, isLoading } = useAuthStore();
   const { mutation } = useCommerceCart();
   const selectedVariant = variants.find((variant) => variant.id === variantId);
@@ -126,7 +128,9 @@ export function AddToCart({
     : null;
 
   const handleAdd = () => {
+    if (activeAction || mutation.isPending) return;
     setAdded(false);
+    setActiveAction('add');
     mutation.mutate(
       {
         type: 'add',
@@ -134,14 +138,16 @@ export function AddToCart({
         variantId: selectedVariant?.id,
         quantity,
       },
-      { onSuccess: () => setAdded(true) },
+      { onSuccess: () => setAdded(true), onSettled: () => setActiveAction(null) },
     );
   };
 
   const handleBuyNow = () => {
+    if (activeAction || mutation.isPending) return;
+    setActiveAction('buy');
     mutation.mutate(
       { type: 'add', productId, variantId: selectedVariant?.id, quantity },
-      { onSuccess: () => router.push(`/${locale}/checkout`) },
+      { onSuccess: () => router.push(`/${locale}/checkout`), onSettled: () => setActiveAction(null) },
     );
   };
 
@@ -184,14 +190,16 @@ export function AddToCart({
           />
         </div>
         {isAuthenticated || unavailable ? (
-          <button
+          <Button
             type="button"
             onClick={handleAdd}
-            disabled={!isAuthenticated || isLoading || mutation.isPending || unavailable || quantity > maxQuantity}
-            className="inline-flex h-11 min-w-48 flex-1 items-center justify-center gap-2 rounded-xl bg-stone-900 px-4 font-bold text-white transition-colors hover:bg-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-200"
+            loading={activeAction === 'add'}
+            loadingLabel={text.adding}
+            disabled={!isAuthenticated || isLoading || mutation.isPending || activeAction !== null || unavailable || quantity > maxQuantity}
+            className="h-11 min-w-48 flex-1 rounded-xl bg-stone-900 px-4 font-bold text-white hover:bg-stone-700 focus-visible:ring-stone-500 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-200"
           >
-            <ShoppingCart size={17} />{unavailable ? text.unavailable : text.add}
-          </button>
+            <ShoppingCart size={17} className="mr-2" aria-hidden="true" />{unavailable ? text.unavailable : text.add}
+          </Button>
         ) : (
           <Link
             href={`/${locale}/login?returnTo=${encodeURIComponent(getSafeInternalReturnTo(`${pathname}${searchParams.size ? `?${searchParams.toString()}` : ''}`, locale) ?? `/${locale}/catalog`)}`}
@@ -202,14 +210,17 @@ export function AddToCart({
         )}
       </div>
       {isAuthenticated && !unavailable && (
-        <button
+        <Button
           type="button"
           onClick={handleBuyNow}
-          disabled={isLoading || mutation.isPending || quantity > maxQuantity}
-          className="inline-flex min-h-10 items-center justify-center rounded-xl border border-stone-300 px-4 text-sm font-semibold transition-colors hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/15 dark:hover:bg-white/5"
+          loading={activeAction === 'buy'}
+          loadingLabel={text.buying}
+          disabled={isLoading || mutation.isPending || activeAction !== null || quantity > maxQuantity}
+          variant="outline"
+          className="min-h-10 rounded-xl px-4 text-sm font-semibold focus-visible:ring-stone-500"
         >
           {text.buy}
-        </button>
+        </Button>
       )}
       {added && <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{text.added} · <Link href={`/${locale}/cart`} className="underline underline-offset-2">{text.goCart}</Link></p>}
       {error && <p role="alert" className="text-sm text-rose-700 dark:text-rose-300">{error}</p>}

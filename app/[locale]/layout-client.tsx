@@ -41,7 +41,9 @@ export default function LocaleLayout({
         <NextIntlClientProvider locale={validLocale} messages={messages} timeZone="Asia/Tashkent">
           <QueryProvider initialSiteSettings={initialSiteSettings}>
             <SiteViewportSettings />
-            <NavigationHistoryTracker />
+            <Suspense fallback={null}>
+              <NavigationHistoryTracker />
+            </Suspense>
             <AuthInitializer />
             <GlobalErrorListener />
             <AnalyticsTracker />

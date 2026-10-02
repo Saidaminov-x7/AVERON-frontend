@@ -2,6 +2,7 @@
 
 import { forwardRef } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
@@ -31,17 +32,24 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  loading?: boolean;
+  loadingLabel?: string;
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, loading = false, loadingLabel, children, disabled, ...props }, ref) => {
     const Comp = asChild ? 'span' : 'button';
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
-      />
+        disabled={asChild ? undefined : disabled || loading}
+        aria-busy={loading || undefined}
+      >
+        {loading ? <LoaderCircle aria-hidden="true" className="mr-2 size-4 shrink-0 animate-spin motion-reduce:animate-none" /> : null}
+        {loading && loadingLabel ? loadingLabel : children}
+      </Comp>
     );
   }
 );

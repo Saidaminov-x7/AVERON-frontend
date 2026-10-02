@@ -15,6 +15,7 @@ import {
   User,
   X,
   ArrowRight,
+  Globe2,
 } from "lucide-react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import {
@@ -25,6 +26,13 @@ import { getProduct } from "@/lib/products";
 import api from "@/lib/axios";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useFavoritesStore } from "@/store/useFavoritesStore";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
 
 type AuthSession = {
   id: string;
@@ -63,6 +71,7 @@ function ProfileContent() {
   const { locale = "ru" } = useParams<{ locale: string }>();
   const router = useRouter();
   const { user, logout } = useAuthStore();
+  const setUser = useAuthStore((state) => state.setUser);
   const favoriteIds = useFavoritesStore((state) => state.ids);
   const [tab, setTab] = useState<Tab>("overview");
   const [favorites, setFavorites] = useState<StoreProduct[]>([]);
@@ -70,6 +79,8 @@ function ProfileContent() {
   const [aiSessions, setAiSessions] = useState<AiSession[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [savingCatalogCountry, setSavingCatalogCountry] = useState(false);
+  const [catalogCountryStatus, setCatalogCountryStatus] = useState<"saved" | "error" | "">("");
   const favoriteIdsKey = favoriteIds.join("|");
 
   const load = async () => {
@@ -102,6 +113,22 @@ function ProfileContent() {
     await logout();
     router.push(`/${locale}`);
     router.refresh();
+  };
+  const saveDefaultCatalogCountry = async (country: string) => {
+    setSavingCatalogCountry(true);
+    setCatalogCountryStatus("");
+    try {
+      const { data } = await api.patch<{ defaultCatalogCountry: "CN" | "US" | "TR" | "IT" | "GB" | null }>(
+        "/auth/me/catalog-country",
+        { country: country || null },
+      );
+      if (user) setUser({ ...user, defaultCatalogCountry: data.defaultCatalogCountry });
+      setCatalogCountryStatus("saved");
+    } catch {
+      setCatalogCountryStatus("error");
+    } finally {
+      setSavingCatalogCountry(false);
+    }
   };
   const tabs: Array<{
     id: Tab;
@@ -185,23 +212,70 @@ function ProfileContent() {
         </div>
       ) : null}
       {!loading && tab === "overview" ? (
-        <section className="mt-6 grid gap-4 md:grid-cols-3">
-          <Info
-            title="Избранные товары"
-            value={String(favorites.length)}
-            text="Сохранены на этом устройстве"
-          />
-          <Info
-            title="Диалоги с AI"
-            value={String(aiSessions.length)}
-            text="Хранятся в вашем аккаунте"
-          />
-          <Info
-            title="Активные сессии"
-            value={String(sessions.length)}
-            text="Устройства с выполненным входом"
-          />
-        </section>
+        <>
+          <section className="mt-6 grid gap-4 md:grid-cols-3">
+            <Info
+              title="Избранные товары"
+              value={String(favorites.length)}
+              text="Сохранены на этом устройстве"
+            />
+            <Info
+              title="Диалоги с AI"
+              value={String(aiSessions.length)}
+              text="Хранятся в вашем аккаунте"
+            />
+            <Info
+              title="Активные сессии"
+              value={String(sessions.length)}
+              text="Устройства с выполненным входом"
+            />
+          </section>
+          <section className="mt-5 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+            <div className="flex items-start gap-3">
+              <Globe2 className="mt-1 shrink-0 text-primary-700 dark:text-primary-300" size={19} />
+              <div className="min-w-0 flex-1">
+                <h2 className="font-bold">
+                  {locale === "uz" ? "Standart mahsulotlar mamlakati" : locale === "en" ? "Default product country" : "Страна товаров по умолчанию"}
+                </h2>
+                <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                  {locale === "uz" ? "Katalog ochilganda qo‘llanadi." : locale === "en" ? "Applied when you open the catalog." : "Применяется при открытии каталога."}
+                </p>
+                <Select
+                  value={user?.defaultCatalogCountry ?? ""}
+                  disabled={savingCatalogCountry}
+                  onValueChange={(country) => void saveDefaultCatalogCountry(country)}
+                >
+                  <SelectTrigger
+                    aria-label={locale === "en" ? "Default product country" : locale === "uz" ? "Standart mahsulotlar mamlakati" : "Страна товаров по умолчанию"}
+                    aria-busy={savingCatalogCountry}
+                    className="mt-3 max-w-sm"
+                  >
+                    <SelectValue placeholder={locale === "en" ? "All countries" : locale === "uz" ? "Barcha mamlakatlar" : "Все страны"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">{locale === "en" ? "All countries" : locale === "uz" ? "Barcha mamlakatlar" : "Все страны"}</SelectItem>
+                    <SelectItem value="CN">{locale === "en" ? "China" : locale === "uz" ? "Xitoy" : "Китай"}</SelectItem>
+                    <SelectItem value="US">{locale === "en" ? "United States" : locale === "uz" ? "AQSh" : "США"}</SelectItem>
+                    <SelectItem value="TR">{locale === "en" ? "Turkey" : locale === "uz" ? "Turkiya" : "Турция"}</SelectItem>
+                    <SelectItem value="IT">{locale === "en" ? "Italy" : locale === "uz" ? "Italiya" : "Италия"}</SelectItem>
+                    <SelectItem value="GB">{locale === "en" ? "United Kingdom" : locale === "uz" ? "Buyuk Britaniya" : "Великобритания"}</SelectItem>
+                  </SelectContent>
+                </Select>
+                {savingCatalogCountry ? (
+                  <p className="mt-2 text-sm text-stone-500" role="status">
+                    {locale === "en" ? "Saving…" : locale === "uz" ? "Saqlanmoqda…" : "Сохраняем…"}
+                  </p>
+                ) : catalogCountryStatus ? (
+                  <p className={`mt-2 text-sm ${catalogCountryStatus === "error" ? "text-red-600 dark:text-red-400" : "text-emerald-700 dark:text-emerald-400"}`} role={catalogCountryStatus === "error" ? "alert" : "status"}>
+                    {catalogCountryStatus === "error"
+                      ? locale === "en" ? "Could not save the preference. Try again." : locale === "uz" ? "Tanlov saqlanmadi. Qayta urinib ko‘ring." : "Не удалось сохранить выбор. Попробуйте ещё раз."
+                      : locale === "en" ? "Preference saved." : locale === "uz" ? "Tanlov saqlandi." : "Настройка сохранена."}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          </section>
+        </>
       ) : null}
       {!loading && tab === "orders" ? (
         <section className="mt-6 space-y-3">

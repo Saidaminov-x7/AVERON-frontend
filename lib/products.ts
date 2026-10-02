@@ -113,7 +113,9 @@ export function buildCatalogSearchParams(filters: Record<string, string | string
   const query = new URLSearchParams();
   for (const key of ['q', 'country', 'category', 'audience', 'size', 'color', 'minPrice', 'maxPrice', 'sort', 'page']) {
     const value = filters[key];
-    if (typeof value === 'string' && value.trim()) query.set(key, value.trim());
+    if (typeof value === 'string' && (value.trim() || (key === 'country' && value === ''))) {
+      query.set(key, value.trim());
+    }
   }
   return query;
 }

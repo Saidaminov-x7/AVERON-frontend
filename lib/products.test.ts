@@ -67,6 +67,11 @@ describe('categoryName', () => {
       expect(query.toString()).toBe('q=coat&country=CN&category=outerwear&page=2');
       expect(query.has('limit')).toBe(false);
     });
+
+    it('preserves an explicit all-countries choice in catalog return URLs', () => {
+      const query = buildCatalogSearchParams({ country: '' });
+      expect(query.toString()).toBe('country=');
+    });
   });
 
   it('falls back to the existing category translations and slug', () => {

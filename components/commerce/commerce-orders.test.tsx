@@ -86,6 +86,7 @@ afterEach(() => {
 
 describe('customer commerce flows', () => {
   beforeEach(() => {
+    sessionStorage.clear();
     nav.push.mockReset();
     nav.replace.mockReset();
     nav.back.mockReset();
@@ -164,7 +165,7 @@ describe('customer commerce flows', () => {
     expect(within(history).getByText('Created').closest('li')).toHaveAttribute('aria-current', 'step');
     expect(screen.getByText('Order placed')).toBeInTheDocument();
     expect(getCustomerOrder).toHaveBeenCalledWith('AV-TEST-123');
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back to orders' }));
     expect(nav.replace).toHaveBeenCalledWith('/en/orders');
   });
 
@@ -207,7 +208,7 @@ describe('customer commerce flows', () => {
     nav.pathname = '/en/login';
     render(<SmartBackButton fallbackHref="/en/orders" />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Home' }));
 
     expect(nav.replace).toHaveBeenCalledWith('/en');
     expect(nav.back).not.toHaveBeenCalled();
@@ -229,11 +230,22 @@ describe('customer commerce flows', () => {
     'data:text/html,unsafe',
     '/en/login',
   ])('rejects unsafe or auth-loop returnTo destinations: %s', (returnTo) => {
+    nav.pathname = '/en/login';
     nav.searchParams = new URLSearchParams({ returnTo });
     render(<SmartBackButton fallbackHref="/en/orders" />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Home' }));
 
-    expect(nav.replace).toHaveBeenCalledWith('/en/orders');
+    expect(nav.replace).toHaveBeenCalledWith('/en');
+  });
+
+  it('does not send an unauthenticated login back action into the protected cart loop', () => {
+    nav.pathname = '/en/login';
+    nav.searchParams = new URLSearchParams('returnTo=%2Fen%2Fcart');
+    render(<SmartBackButton fallbackHref="/en/orders" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Home' }));
+
+    expect(nav.replace).toHaveBeenCalledWith('/en');
   });
 });

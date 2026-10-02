@@ -3,11 +3,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BadgeCheck, ChevronDown, ImagePlus, Star, Trash2 } from 'lucide-react';
+import { BadgeCheck, ImagePlus, Star, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import api from '@/lib/axios';
 import { useAuthStore } from '@/store/useAuthStore';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select';
 
 type Locale = 'ru' | 'uz' | 'en';
 type Fit = 'RUNS_SMALL' | 'TRUE_TO_SIZE' | 'RUNS_LARGE';
@@ -273,14 +280,21 @@ export function ProductReviews({ slug, locale, initialOrderNumber }: {
         <form className="mt-5 space-y-4 rounded-2xl border border-stone-200 bg-white p-4 sm:p-6 dark:border-white/10 dark:bg-stone-900" onSubmit={(event) => { event.preventDefault(); submitReview.mutate(); }}>
           <h3 className="text-lg font-bold">{ownReview ? t('editReview') : t('leaveReview')}</h3>
           {!ownReview && purchases.filter((purchase) => !purchase.reviewId).length > 1 && (
-            <label className="block text-sm font-semibold">{t('purchase')}
-              <span className="relative mt-1 block">
-                <select value={selectedPurchase?.orderItemId ?? ''} onChange={(event) => setPurchaseId(event.target.value)} className="min-h-11 w-full appearance-none rounded-lg border border-stone-300 bg-transparent px-3 pr-10 dark:border-white/20">
-                  {purchases.filter((purchase) => !purchase.reviewId).map((purchase) => <option key={purchase.orderItemId} value={purchase.orderItemId}>{t('purchaseOrder', { number: purchase.orderNumber })}{purchase.purchasedVariant?.size ? ` · ${purchase.purchasedVariant.size}` : ''}</option>)}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-3 top-3" size={18} aria-hidden="true" />
-              </span>
-            </label>
+            <div className="block text-sm font-semibold">
+              <span>{t('purchase')}</span>
+              <Select value={selectedPurchase?.orderItemId ?? ''} onValueChange={setPurchaseId}>
+                <SelectTrigger aria-label={t('purchase')} className="mt-1 min-h-11 rounded-lg">
+                  <SelectValue placeholder={t('purchase')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {purchases.filter((purchase) => !purchase.reviewId).map((purchase) => (
+                    <SelectItem key={purchase.orderItemId} value={purchase.orderItemId}>
+                      {t('purchaseOrder', { number: purchase.orderNumber })}{purchase.purchasedVariant?.size ? ` · ${purchase.purchasedVariant.size}` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           )}
           <fieldset>
             <legend className="mb-2 text-sm font-semibold">{t('form.rating')}</legend>
@@ -299,12 +313,18 @@ export function ProductReviews({ slug, locale, initialOrderNumber }: {
             <textarea value={comment} onChange={(event) => setComment(event.target.value)} required minLength={3} maxLength={3000} rows={5} className="mt-1 w-full rounded-lg border border-stone-300 bg-transparent p-3 font-normal dark:border-white/20" />
             <span className="mt-1 block text-right text-xs font-normal text-stone-500">{comment.length}/3000</span>
           </label>
-          <label className="block text-sm font-semibold">{t('form.fit')}
-            <select value={fit} onChange={(event) => setFit(event.target.value as Fit | '')} className="mt-1 min-h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 font-normal dark:border-white/20">
-              <option value="">{t('form.optional')}</option>
-              {fitValues.map((value) => <option key={value} value={value}>{t(`fit.${value}`)}</option>)}
-            </select>
-          </label>
+          <div className="block text-sm font-semibold">
+            <span>{t('form.fit')}</span>
+            <Select value={fit} onValueChange={(value) => setFit(value as Fit | '')}>
+              <SelectTrigger aria-label={t('form.fit')} className="mt-1 min-h-11 rounded-lg font-normal">
+                <SelectValue placeholder={t('form.optional')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">{t('form.optional')}</SelectItem>
+                {fitValues.map((value) => <SelectItem key={value} value={value}>{t(`fit.${value}`)}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
           <div>
             <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-stone-300 px-3 text-sm font-semibold focus-within:ring-2 focus-within:ring-cyan-600 dark:border-white/20">
               <ImagePlus size={18} aria-hidden="true" />{t('form.addImages')}

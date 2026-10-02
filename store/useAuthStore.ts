@@ -9,6 +9,7 @@ export interface AuthUser {
   avatar?: string;
   role?: string;
   verified?: boolean;
+  defaultCatalogCountry?: 'CN' | 'US' | 'TR' | 'IT' | 'GB' | null;
 }
 
 interface AuthState {
@@ -80,4 +81,3 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 }));
-

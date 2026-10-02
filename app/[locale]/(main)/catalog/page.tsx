@@ -8,13 +8,17 @@ import {
 import { VisualSearch } from "@/components/commerce/VisualSearch";
 import { CatalogAiSearch } from "@/components/commerce/CatalogAiSearch";
 import { StyleAssistant } from "@/components/commerce/StyleAssistant";
+import { CatalogSelect } from "@/components/commerce/CatalogSelect";
+import { CatalogFilterLayout } from "@/components/commerce/CatalogFilterLayout";
+import { CatalogCountryDefaultResolver } from "@/components/commerce/CatalogCountryDefaultResolver";
+import type { CatalogFacets } from "@/lib/storefront-catalog";
 import {
   buildCatalogPageSearchParams,
   buildCatalogSearchParams,
   categoryName,
   type StoreCategory,
 } from "@/lib/products";
-import { loadStoreCatalog, loadStoreCategories } from "@/lib/storefront-catalog";
+import { loadStoreCatalog, loadStoreCategories, loadStoreCatalogFacets } from "@/lib/storefront-catalog";
 import { loadCommerceCapabilities } from "@/lib/visual-search";
 
 type Filters = Record<string, string | string[] | undefined>;
@@ -27,12 +31,16 @@ function Controls({
   t,
   categories,
   categoriesError,
+  facets,
+  facetsError,
   locale,
 }: {
   f: Filters;
   t: (key: string) => string;
   categories: StoreCategory[];
   categoriesError: boolean;
+  facets: CatalogFacets;
+  facetsError: boolean;
   locale: string;
 }) {
   const cats: Array<[string, string]> = [
@@ -50,11 +58,20 @@ function Controls({
     ["men", t("men")],
     ["kids", t("kids")],
   ];
+  const countries = [
+    ["", t("allCountries")],
+    ["CN", t("china")],
+    ["US", t("unitedStates")],
+    ["TR", t("turkey")],
+    ["IT", t("italy")],
+    ["GB", t("unitedKingdom")],
+  ];
+  const selectedSize = typeof f.size === "string" ? f.size : "";
+  const selectedColor = typeof f.color === "string" ? f.color : "";
+  const sizes = [...new Set([...(selectedSize ? [selectedSize] : []), ...facets.sizes])];
+  const colors = [...new Set([...(selectedColor ? [selectedColor] : []), ...facets.colors])];
   return (
     <>
-      {typeof f.country === "string" && f.country.trim() ? (
-        <input type="hidden" name="country" value={f.country} />
-      ) : null}
       {categoriesError && typeof f.category === "string" && f.category.trim() ? (
         <input type="hidden" name="category" value={f.category} />
       ) : null}
@@ -64,7 +81,7 @@ function Controls({
       <input
         className={`${input} mt-2`}
         name="q"
-        defaultValue={f.q as string}
+        defaultValue={typeof f.q === "string" ? f.q : ""}
         placeholder={t("placeholder")}
       />
       <p className="mt-5 text-xs font-bold uppercase text-stone-500">
@@ -112,45 +129,42 @@ function Controls({
           </label>
         ))}
       </div>
-      <div className="mt-5 grid grid-cols-2 gap-2">
-        <label className="text-xs font-bold uppercase text-stone-500">
-          {t("size")}
-          <select
-            name="size"
-            defaultValue={(f.size as string) || ""}
-            className={`${input} mt-2 normal-case`}
-          >
-            <option value="">{t("anySize")}</option>
-            {["XS", "S", "M", "L", "XL", "XXL", "One size"].map((x) => (
-              <option key={x}>{x}</option>
-            ))}
-          </select>
-        </label>
-        <label className="text-xs font-bold uppercase text-stone-500">
-          {t("color")}
-          <select
-            name="color"
-            defaultValue={(f.color as string) || ""}
-            className={`${input} mt-2 normal-case`}
-          >
-            <option value="">{t("anyColor")}</option>
-            {[
-              "black",
-              "white",
-              "beige",
-              "brown",
-              "blue",
-              "red",
-              "green",
-              "pink",
-            ].map((x) => (
-              <option key={x} value={x}>
-                {x}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="mt-5">
+        <CatalogSelect
+          name="country"
+          label={t("country")}
+          value={typeof f.country === "string" ? f.country : ""}
+          placeholder={t("allCountries")}
+          options={countries.map(([value, label]) => ({ value, label }))}
+        />
       </div>
+      <div className="mt-5 grid grid-cols-2 gap-2">
+        <CatalogSelect
+          name="size"
+          label={t("size")}
+          value={typeof f.size === "string" ? f.size : ""}
+          placeholder={t("anySize")}
+          options={[
+            { value: "", label: t("anySize") },
+            ...sizes.map((value) => ({ value, label: value })),
+          ]}
+        />
+        <CatalogSelect
+          name="color"
+          label={t("color")}
+          value={typeof f.color === "string" ? f.color : ""}
+          placeholder={t("anyColor")}
+          options={[
+            { value: "", label: t("anyColor") },
+            ...colors.map((value) => ({ value, label: value })),
+          ]}
+        />
+      </div>
+      {facetsError ? (
+        <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">
+          {locale === "uz" ? "O‘lcham va ranglar ro‘yxatini yuklab bo‘lmadi." : locale === "en" ? "Available sizes and colors could not be loaded." : "Не удалось загрузить доступные размеры и цвета."}
+        </p>
+      ) : null}
       <p className="mt-5 text-xs font-bold uppercase text-stone-500">
         {t("price")}
       </p>
@@ -158,30 +172,37 @@ function Controls({
         <input
           className={input}
           name="minPrice"
+          type="number"
+          min="0"
+          step="0.01"
           inputMode="numeric"
-          defaultValue={f.minPrice as string}
+          defaultValue={typeof f.minPrice === "string" ? f.minPrice : ""}
           placeholder={t("from")}
         />
         <input
           className={input}
           name="maxPrice"
+          type="number"
+          min="0"
+          step="0.01"
           inputMode="numeric"
-          defaultValue={f.maxPrice as string}
+          defaultValue={typeof f.maxPrice === "string" ? f.maxPrice : ""}
           placeholder={t("to")}
         />
       </div>
-      <label className="mt-5 block text-xs font-bold uppercase text-stone-500">
-        {t("sort")}
-        <select
+      <div className="mt-5">
+        <CatalogSelect
           name="sort"
-          defaultValue={(f.sort as string) || "newest"}
-          className={`${input} mt-2 normal-case`}
-        >
-          <option value="newest">{t("newest")}</option>
-          <option value="price_asc">{t("cheap")}</option>
-          <option value="price_desc">{t("expensive")}</option>
-        </select>
-      </label>
+          label={t("sort")}
+          value={typeof f.sort === "string" ? f.sort : "newest"}
+          placeholder={t("newest")}
+          options={[
+            { value: "newest", label: t("newest") },
+            { value: "price_asc", label: t("cheap") },
+            { value: "price_desc", label: t("expensive") },
+          ]}
+        />
+      </div>
       <button className="mt-5 h-11 w-full rounded-xl bg-primary-700 text-sm font-bold text-white shadow-sm transition-colors hover:bg-primary-800">
         {t("show")}
       </button>
@@ -197,9 +218,10 @@ export default async function CatalogPage({
   searchParams: Promise<Filters>;
 }) {
   const [{ locale }, f] = await Promise.all([params, searchParams]);
-  const [catalog, categoryResult, capabilities] = await Promise.all([
+  const [catalog, categoryResult, facetResult, capabilities] = await Promise.all([
     loadStoreCatalog(f),
     loadStoreCategories(),
+    loadStoreCatalogFacets(),
     loadCommerceCapabilities(),
   ]);
   const { data } = catalog;
@@ -214,6 +236,8 @@ export default async function CatalogPage({
       capabilities={capabilities}
       catalogError={catalog.status === "error"}
       categoriesError={categoryResult.status === "error"}
+      facets={facetResult.facets}
+      facetsError={facetResult.status === "error"}
     />
   );
 }
@@ -227,6 +251,8 @@ function CatalogContent({
   capabilities,
   catalogError,
   categoriesError,
+  facets,
+  facetsError,
 }: {
   locale: string;
   f: Filters;
@@ -236,6 +262,8 @@ function CatalogContent({
   capabilities: Awaited<ReturnType<typeof loadCommerceCapabilities>>;
   catalogError: boolean;
   categoriesError: boolean;
+  facets: CatalogFacets;
+  facetsError: boolean;
 }) {
   const t = useTranslations("catalog");
   const catalogQuery = buildCatalogSearchParams(f).toString();
@@ -251,46 +279,34 @@ function CatalogContent({
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <section className="border-b border-stone-200 bg-white dark:border-white/10 dark:bg-stone-900">
-        <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
-          <p className="text-xs font-bold tracking-[.18em] text-primary-700 dark:text-primary-300">
-            {t("eyebrow")}
-          </p>
-          <h1 className="mt-2 text-4xl font-extrabold">{t("title")}</h1>
-          <p className="mt-2 text-sm text-stone-500">{t("intro")}</p>
-          <VisualSearch
-            locale={locale}
-            country={typeof f.country === "string" ? f.country : undefined}
-            category={typeof f.category === "string" ? f.category : undefined}
-          />
-          <CatalogAiSearch
-            locale={locale}
-            enabled={capabilities.aiSearch}
-            providerConfigured={capabilities.aiProviderConfigured}
-          />
-          <StyleAssistant locale={locale} enabled={capabilities.styleAssistant} />
-        </div>
-      </section>
       <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
+        <CatalogCountryDefaultResolver
+          locale={locale}
+          hasExplicitCountry={Object.prototype.hasOwnProperty.call(f, "country")}
+        />
         <form className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900 lg:hidden">
           <details>
-            <summary className="flex h-11 list-none items-center justify-center gap-2 rounded-xl bg-primary-700 font-bold text-white">
+            <summary className="group flex h-11 list-none items-center justify-center gap-2 rounded-xl bg-primary-700 font-bold text-white">
               <SlidersHorizontal size={17} />
-              {t("filters")}
+              <span className="group-open:hidden">{t("showFilters")}</span>
+              <span className="hidden group-open:inline">{t("hideFilters")}</span>
             </summary>
             <div className="mt-4">
-              <Controls f={f} t={t} categories={categories} categoriesError={categoriesError} locale={locale} />
+              <Controls f={f} t={t} categories={categories} categoriesError={categoriesError} facets={facets} facetsError={facetsError} locale={locale} />
+              <Link href={`/${locale}/catalog`} className="mt-2 flex h-10 items-center justify-center text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300">
+                {t("reset")}
+              </Link>
             </div>
           </details>
         </form>
-        <div className="mt-6 grid gap-6 lg:mt-0 lg:grid-cols-[290px_1fr]">
-          <aside className="hidden lg:block">
+        <CatalogFilterLayout
+          filters={
             <form className="sticky top-24 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
               <div className="flex items-center gap-2 border-b pb-4 font-bold dark:border-white/10">
                 <Filter className="text-primary-700 dark:text-primary-300" size={18} />
                 {t("filters")}
               </div>
-              <Controls f={f} t={t} categories={categories} categoriesError={categoriesError} locale={locale} />
+              <Controls f={f} t={t} categories={categories} categoriesError={categoriesError} facets={facets} facetsError={facetsError} locale={locale} />
               <Link
                 href={`/${locale}/catalog`}
                 className="mt-2 flex h-10 items-center justify-center text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
@@ -298,8 +314,22 @@ function CatalogContent({
                 {t("reset")}
               </Link>
             </form>
-          </aside>
-          <section>
+          }
+        >
+          <>
+            <div className="mb-5 flex flex-wrap items-center gap-3">
+              <VisualSearch
+                locale={locale}
+                country={typeof f.country === "string" ? f.country : undefined}
+                category={typeof f.category === "string" ? f.category : undefined}
+              />
+              <CatalogAiSearch
+                locale={locale}
+                enabled={capabilities.aiSearch}
+                providerConfigured={capabilities.aiProviderConfigured}
+              />
+              <StyleAssistant locale={locale} enabled={capabilities.styleAssistant} />
+            </div>
             <h2 className="text-xl font-bold">
               {t("products")}{" "}
               <span className="text-stone-400">
@@ -359,8 +389,8 @@ function CatalogContent({
                 </Link>
               </nav>
             ) : null}
-          </section>
-        </div>
+          </>
+        </CatalogFilterLayout>
       </div>
     </main>
   );

@@ -1,9 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useEffect, useRef } from 'react';
-import { getAuthHomeHref } from '@/lib/safe-navigation';
+import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -45,9 +44,6 @@ function AuthLayoutInner({ children }: Pick<AuthLayoutProps, 'children'>) {
 
   return (
     <div className="auth-grid relative flex min-h-[calc(100dvh-80px)] flex-col items-center justify-center overflow-hidden bg-[#090a0f] px-4 py-8">
-      <Link href={getAuthHomeHref(locale)} className="absolute left-4 top-4 z-10 rounded-lg px-3 py-2 text-sm font-medium text-stone-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400">
-        {locale === 'uz' ? 'Bosh sahifaga' : locale === 'en' ? 'Go to home' : 'На главную'}
-      </Link>
       <div ref={glowRef} className="auth-pointer-glow pointer-events-none absolute inset-0" />
       
       {/* Decorative blobs */}
@@ -61,6 +57,9 @@ function AuthLayoutInner({ children }: Pick<AuthLayoutProps, 'children'>) {
 
           {/* Card inner container */}
           <div className="p-6 sm:p-8">
+            <div className="mb-4">
+              <SmartBackButton fallbackHref={`/${locale}/login`} />
+            </div>
             {children}
           </div>
 

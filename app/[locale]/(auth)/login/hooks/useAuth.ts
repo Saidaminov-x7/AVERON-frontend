@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { login, getMe } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
 import { LoginFormValues } from '../schemas/loginSchema';
-import { getErrorDetails } from '@/lib/errorDetails';
+import { getLocalizedApiError } from '@/lib/localized-api-error';
 import { getSafeInternalReturnTo } from '@/lib/safe-navigation';
 
 export function useAuth(locale: string) {
@@ -38,13 +38,7 @@ export function useAuth(locale: string) {
         ?? `/${locale}/profile`;
       router.replace(destination);
     } catch (err: unknown) {
-      console.error('Login error:', err);
-      const { message: responseMessage, status } = getErrorDetails(err);
-      // Never reveal if email exists — always show generic message
-      const message = (status === 401 || status === 403 || status === 400)
-        ? 'Неверный email или пароль'
-        : responseMessage || 'Ошибка входа. Попробуйте позже.';
-      setError(message);
+      setError(getLocalizedApiError(err, locale, 'login'));
     } finally {
       setIsLoading(false);
     }
