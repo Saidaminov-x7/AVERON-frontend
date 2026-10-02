@@ -6,6 +6,9 @@ import { ProductImage } from './ProductImage';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { productTitle, type StoreProduct } from '@/lib/products';
+import { addWishlistItem, removeWishlistItem } from '@/lib/commerce-orders';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useState } from 'react';
 
 export type { StoreProduct } from '@/lib/products';
 export { productTitle } from '@/lib/products';
@@ -41,6 +44,8 @@ export function ProductCard({
       : undefined;
   const isFavorite = useFavoritesStore((state) => state.isFavorite(product.id));
   const toggleFavorite = useFavoritesStore((state) => state.toggle);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const [favoriteError, setFavoriteError] = useState(false);
   const isCompared = useCompareStore((state) => state.isInCompare(product.id));
   const toggleCompare = useCompareStore((state) => state.toggle);
 
@@ -68,8 +73,17 @@ export function ProductCard({
       </Link>
       <div className="absolute right-3 top-3 flex gap-2">
         <button type="button" aria-label={isCompared ? 'Убрать из сравнения' : 'Добавить к сравнению'} onClick={() => toggleCompare(product.id)} className={`flex size-10 items-center justify-center rounded-full border border-white/60 bg-white/90 backdrop-blur ${isCompared ? 'text-primary-700' : 'text-stone-700'}`}><Scale size={17} /></button>
-        <button type="button" aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'} onClick={() => toggleFavorite(product.id)} className={`flex size-10 items-center justify-center rounded-full border border-white/60 bg-white/90 backdrop-blur ${isFavorite ? 'text-rose-600' : 'text-stone-700'}`}><Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} /></button>
+        <button type="button" aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'} onClick={() => {
+          setFavoriteError(false);
+          if (!isAuthenticated) {
+            toggleFavorite(product.id);
+            return;
+          }
+          const action = isFavorite ? removeWishlistItem(product.id) : addWishlistItem(product.id);
+          void action.then(() => toggleFavorite(product.id)).catch(() => setFavoriteError(true));
+        }} className={`flex size-10 items-center justify-center rounded-full border border-white/60 bg-white/90 backdrop-blur ${isFavorite ? 'text-rose-600' : 'text-stone-700'}`}><Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} /></button>
       </div>
+      {favoriteError && <p role="alert" className="absolute bottom-2 left-2 rounded bg-white px-2 py-1 text-xs text-rose-700 shadow">{locale === 'uz' ? 'Tanlanganlarni yangilab bo‘lmadi.' : locale === 'en' ? 'Could not update wishlist.' : 'Не удалось обновить избранное.'}</p>}
     </article>
   );
 }

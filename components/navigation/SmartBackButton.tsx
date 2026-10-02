@@ -2,7 +2,7 @@
 
 import { ArrowLeft } from 'lucide-react';
 import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getAuthHomeHref, getSafeInternalReferrer, getSafeInternalReturnTo, isAuthPathname } from '@/lib/safe-navigation';
 
 const labels = {
@@ -15,11 +15,17 @@ export function SmartBackButton({ fallbackHref }: { fallbackHref: string }) {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fallback = getSafeInternalReturnTo(fallbackHref, locale) ?? `/${locale}/catalog`;
 
   const goBack = () => {
     if (isAuthPathname(pathname, locale)) {
       router.replace(getAuthHomeHref(locale));
+      return;
+    }
+    const returnTo = getSafeInternalReturnTo(searchParams.get('returnTo'), locale);
+    if (returnTo && returnTo.split(/[?#]/, 1)[0] !== pathname) {
+      router.replace(returnTo);
       return;
     }
     const previousPage = getSafeInternalReferrer(

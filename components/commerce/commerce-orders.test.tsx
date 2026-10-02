@@ -8,7 +8,13 @@ import { CustomerOrderDetails } from './CustomerOrderDetails';
 import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { createCheckout, getCustomerOrder, type Cart } from '@/lib/commerce-orders';
 
-const nav = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn(), pathname: '/en/orders/AV-TEST-123' }));
+const nav = vi.hoisted(() => ({
+  push: vi.fn(),
+  replace: vi.fn(),
+  back: vi.fn(),
+  pathname: '/en/orders/AV-TEST-123',
+  searchParams: new URLSearchParams(),
+}));
 const checkoutStore = vi.hoisted(() => ({ name: 'Test Customer', phone: '+998901234567' }));
 const cartMock = vi.hoisted(() => ({
   data: null as Cart | null,
@@ -25,6 +31,7 @@ vi.mock('next/navigation', () => ({
   useRouter: () => nav,
   useParams: () => ({ orderNumber: 'AV-TEST-123' }),
   usePathname: () => nav.pathname,
+  useSearchParams: () => nav.searchParams,
 }));
 vi.mock('@/components/ProtectedRoute', () => ({ default: ({ children }: { children: ReactNode }) => children }));
 vi.mock('@/hooks/useCommerceCart', () => ({ useCommerceCart: () => cartMock }));
@@ -83,6 +90,7 @@ describe('customer commerce flows', () => {
     nav.replace.mockReset();
     nav.back.mockReset();
     nav.pathname = '/en/orders/AV-TEST-123';
+    nav.searchParams = new URLSearchParams();
     cartMock.data = sampleCart;
     cartMock.isLoading = false;
     cartMock.isError = false;
@@ -203,5 +211,29 @@ describe('customer commerce flows', () => {
 
     expect(nav.replace).toHaveBeenCalledWith('/en');
     expect(nav.back).not.toHaveBeenCalled();
+  });
+
+  it('uses a validated internal returnTo before the referrer and fallback', () => {
+    nav.searchParams = new URLSearchParams('returnTo=%2Fen%2Fcatalog%3Fcategory%3Dshoes%26page%3D2');
+    render(<SmartBackButton fallbackHref="/en/orders" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+
+    expect(nav.replace).toHaveBeenCalledWith('/en/catalog?category=shoes&page=2');
+  });
+
+  it.each([
+    'https://evil.example/',
+    '//evil.example/path',
+    'javascript:alert(1)',
+    'data:text/html,unsafe',
+    '/en/login',
+  ])('rejects unsafe or auth-loop returnTo destinations: %s', (returnTo) => {
+    nav.searchParams = new URLSearchParams({ returnTo });
+    render(<SmartBackButton fallbackHref="/en/orders" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+
+    expect(nav.replace).toHaveBeenCalledWith('/en/orders');
   });
 });

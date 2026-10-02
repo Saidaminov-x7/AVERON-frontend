@@ -176,6 +176,12 @@ export default async function ProductPage({
               productAvailability={product.availability}
               variants={product.variants ?? []}
             />
+            <Link
+              href={`/${locale}/outfits?product=${encodeURIComponent(product.slug)}`}
+              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl border border-primary-700 px-4 text-sm font-bold text-primary-800 transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-primary-200 dark:hover:bg-primary-950/30"
+            >
+              {locale === "uz" ? "Obrazga qo‘shish" : locale === "en" ? "Add to outfit" : "Добавить в образ"}
+            </Link>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="flex gap-3 rounded-xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900">
                 <PackageCheck className="text-primary-700 dark:text-primary-300" />

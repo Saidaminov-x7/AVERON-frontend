@@ -113,10 +113,44 @@ export interface CustomerOrder {
   delivery?: OrderDelivery | null;
 }
 
+export interface OutfitItemDto {
+  productId: string;
+  variantId: string | null;
+  sortOrder?: number;
+  product: {
+    slug: string;
+    title: string;
+    imageUrl: string | null;
+    priceUzs: string;
+    stock: number;
+    preorderAvailable: boolean;
+    variant: { id: string; color: string | null; size: string | null } | null;
+  };
+}
+
+export interface SavedOutfit {
+  id: string;
+  name: string;
+  updatedAt?: string;
+  items: OutfitItemDto[];
+  totalUzs?: string;
+}
+
+export interface WishlistItem {
+  id: string;
+  slug: string;
+  title: string;
+  imageUrl: string | null;
+  priceUzs: string;
+  available: boolean;
+}
+
 export const commerceQueryKeys = {
   cart: ['commerce', 'cart'] as const,
   orders: ['commerce', 'orders'] as const,
   order: (orderNumber: string) => ['commerce', 'orders', orderNumber] as const,
+  outfits: ['commerce', 'outfits'] as const,
+  wishlist: ['commerce', 'wishlist'] as const,
 };
 
 export async function getCart(): Promise<Cart> {
@@ -152,11 +186,77 @@ export async function createCheckout(input: {
   contact: OrderContact;
   deliveryAddress: DeliveryDetails;
   idempotencyKey: string;
+  promoCode?: string;
 }): Promise<CustomerOrder> {
   const { idempotencyKey, ...body } = input;
   const { data } = await api.post<CustomerOrder>('/api/v1/checkout', body, {
     headers: { 'Idempotency-Key': idempotencyKey },
   });
+  return data;
+}
+
+export async function getSavedOutfits(): Promise<SavedOutfit[]> {
+  const { data } = await api.get<SavedOutfit[]>('/api/v1/outfits');
+  return data;
+}
+
+export async function saveOutfit(input: { name: string; items: Array<{ productId: string; variantId?: string | null }> }) {
+  const { data } = await api.post<SavedOutfit>('/api/v1/outfits', input);
+  return data;
+}
+
+export async function updateOutfit(id: string, input: { name?: string; items?: Array<{ productId: string; variantId?: string | null }> }) {
+  const { data } = await api.patch<SavedOutfit>(`/api/v1/outfits/${encodeURIComponent(id)}`, input);
+  return data;
+}
+
+export async function deleteOutfit(id: string) {
+  await api.delete(`/api/v1/outfits/${encodeURIComponent(id)}`);
+}
+
+export async function addOutfitToCart(id: string): Promise<{
+  addedProductIds: string[];
+  rejectedItems: Array<{ productId: string; variantId: string | null; code: string }>;
+  message: string;
+}> {
+  const { data } = await api.post(`/api/v1/outfits/${encodeURIComponent(id)}/cart`);
+  return data;
+}
+
+export async function getWishlist(): Promise<{ items: WishlistItem[]; sharingEnabled: boolean; sharePath: string | null }> {
+  const { data } = await api.get('/api/v1/wishlist');
+  return data;
+}
+
+export async function addWishlistItem(productId: string) {
+  await api.post(`/api/v1/wishlist/${encodeURIComponent(productId)}`);
+}
+
+export async function removeWishlistItem(productId: string) {
+  await api.delete(`/api/v1/wishlist/${encodeURIComponent(productId)}`);
+}
+
+export async function enableWishlistSharing(): Promise<{ enabled: boolean; sharePath: string }> {
+  const { data } = await api.post('/api/v1/wishlist/sharing');
+  return data;
+}
+
+export async function regenerateWishlistShare(): Promise<{ enabled: boolean; sharePath: string }> {
+  const { data } = await api.post('/api/v1/wishlist/sharing/regenerate');
+  return data;
+}
+
+export async function disableWishlistSharing() {
+  await api.delete('/api/v1/wishlist/sharing');
+}
+
+export async function getSharedWishlist(token: string): Promise<{ items: WishlistItem[] }> {
+  const { data } = await api.get(`/api/v1/wishlists/shared/${encodeURIComponent(token)}`);
+  return data;
+}
+
+export async function validatePromoCode(code: string): Promise<{ valid: true; code: string; discountPercent: number; consumed: false }> {
+  const { data } = await api.post('/api/v1/promo-codes/validate', { code });
   return data;
 }
 
