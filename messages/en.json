@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "storeTitle": "Online store",
+    "storeDescription": "Clothing, shoes, and accessories with product prices shown in Uzbekistani soʻm."
+  },
   "home": {
     "title": "AVERON — products from around the world",
     "badge": "AVERON · GLOBAL CATALOG",
@@ -13,7 +17,7 @@
     "benefitSearchTitle": "Simple search",
     "benefitSearchBody": "Clear filters help narrow your choices quickly.",
     "benefitTrustTitle": "Shop with confidence",
-    "benefitTrustBody": "Important product information is collected on each listing.",
+    "benefitTrustBody": "Important product information is collected on each product page.",
     "benefitToolsTitle": "Everything close at hand",
     "benefitToolsBody": "Favorites, comparison, and history are easy to reach.",
     "aiTitle": "Describe what you are looking for",
@@ -32,57 +36,60 @@
     "step3Body": "Get clear updates about your order status.",
     "subtitle": "Find products that fit your needs in the AVERON catalog",
     "searchPlaceholder": "What are you looking for?",
-    "popularListings": "Popular products",
-    "viewAll": "View all",
-    "statListings": "listings",
-    "statCities": "cities",
-    "statUsers": "users",
-    "howTitle": "How it works",
-    "howSubtitle": "Three steps to your next home",
-    "how1Title": "Find a place",
-    "how1Text": "Filter by city, price, rooms, and map — without the noise.",
-    "how2Title": "Talk to the owner",
-    "how2Text": "Message landlords directly, with no hidden fees.",
-    "how3Title": "Move in with confidence",
-    "how3Text": "Up-to-date listings and clear rental terms.",
-    "citiesTitle": "Popular cities",
-    "citiesSubtitle": "Start with Uzbekistan's major cities",
-    "cityCta": "See listings",
-    "whyTitle": "Why averon",
-    "why1Title": "Nationwide housing",
-    "why1Text": "Apartments, rooms, and short stays in one catalog.",
-    "why2Title": "Clear terms",
-    "why2Text": "Price and contacts up front — no surprises after the call.",
-    "why3Title": "Fast search",
-    "why3Text": "Map, filters, and favorites to compare places in minutes.",
-    "ctaTitle": "Renting out a place?",
-    "ctaText": "Publish a listing for free and get requests from tenants.",
-    "ctaButton": "Add a listing",
-    "listing1Title": "Modern apartment in the center",
-    "listing1Location": "Tashkent, Yunusabad district",
-    "listing2Title": "Cozy studio near the metro",
-    "listing2Location": "Tashkent, Chilanzar district",
-    "listing3Title": "Spacious apartment with park view",
-    "listing3Location": "Tashkent, Mirabad district",
-    "rooms": "rooms",
-    "month": "month",
-    "details": "Details",
-    "addListingTitle": "Renting out a place?",
-    "addListingText": "Publish a listing for free and get requests from tenants.",
-    "addListingButton": "Add a listing",
-    "popularCities": "Popular cities",
-    "categoriesTitle": "Housing categories",
-    "newListings": "Latest listings",
-    "platformStats": "Platform in numbers",
-    "totalListings": "Active listings",
-    "activeUsers": "Active users",
-    "cities": "Cities covered",
-    "dailyViews": "Daily views"
+    "viewAll": "View all"
+  },
+  "footer": {
+    "description": "Clothing, shoes, and accessories with verified product details and delivery across Uzbekistan.",
+    "buyers": "For buyers",
+    "helpTitle": "Help",
+    "documentsTitle": "Documents",
+    "channel": "Our channel",
+    "support": "Support",
+    "rights": "All rights reserved.",
+    "country": "The service operates for buyers in the Republic of Uzbekistan.",
+    "links": {
+      "catalog": "All products",
+      "favorites": "Favorites",
+      "compare": "Compare",
+      "howToOrder": "How to order"
+    },
+    "help": {
+      "ai": "AI assistant",
+      "faq": "FAQ",
+      "about": "About us"
+    },
+    "documents": {
+      "terms": "Terms of use",
+      "privacy": "Privacy policy",
+      "offer": "Public offer",
+      "delivery": "Delivery and payment",
+      "returns": "Returns"
+    }
+  },
+  "aboutPage": {
+    "eyebrow": "About AVERON",
+    "title": "Choose products with confidence",
+    "intro": "AVERON brings products from supported markets into one catalog, with clear prices in UZS, manual product review, and support throughout the order.",
+    "step1Title": "Discover",
+    "step1Text": "Explore clothing, shoes, and accessories from the countries available in our catalog.",
+    "step2Title": "Review",
+    "step2Text": "Products are reviewed before publication, and current details are shown on each product page.",
+    "step3Title": "Order",
+    "step3Text": "Follow your order through the delivery stages in your account.",
+    "principle": "Our principle",
+    "principleTitle": "AI assists; people stay in control",
+    "principleText": "AI can help with search and product information. Publication and order decisions remain subject to the platform's human-reviewed processes.",
+    "benefit1": "Prices shown in UZS",
+    "benefit2": "Product review before publication",
+    "benefit3": "Support for orders",
+    "benefit4": "Order and delivery status updates",
+    "cta": "Ready to find a product?",
+    "ctaText": "Browse the catalog or ask the AI assistant.",
+    "catalog": "Catalog",
+    "ai": "AI assistant"
   },
   "nav": {
-    "catalog": "Listings",
-    "addListing": "List a place",
-    "chat": "Support",
+    "catalog": "Products",
     "about": "About",
     "favorites": "Favorites",
     "login": "Sign in",
@@ -94,10 +101,15 @@
     "language": "Language",
     "menu": "Menu",
     "close": "Close",
-    "langAndTheme": "Language and theme"
+    "langAndTheme": "Language and theme",
+    "compare": "Compare",
+    "cart": "Cart",
+    "orders": "Orders",
+    "settings": "Settings",
+    "logout": "Sign out"
   },
   "catalog": {
-    "title": "Products from China",
+    "title": "Product catalog",
     "subtitle": "Clothing, shoes and accessories verified before publication.",
     "eyebrow": "AVERON CATALOG",
     "intro": "Clothing, shoes and accessories verified before publication.",
@@ -199,32 +211,6 @@
     "recentlyViewedClear": "Clear history",
     "recentlyViewedClearError": "Could not clear recently viewed history."
   },
-  "Apartment": {
-    "notFound": "Apartment not found",
-    "month": "month",
-    "rooms": "rooms",
-    "area": "area",
-    "floor": "floor",
-    "amenities": "Amenities",
-    "contactOwner": "Contact owner"
-  },
-  "amenities": {
-    "title": "Amenities",
-    "wifi": "Wi-Fi",
-    "parking": "Parking",
-    "elevator": "Elevator",
-    "air_conditioning": "Air conditioning",
-    "heating": "Heating",
-    "balcony": "Balcony",
-    "pets_allowed": "Pets allowed",
-    "security": "Security",
-    "furniture": "Furniture",
-    "kitchen": "Kitchen",
-    "washing_machine": "Washing machine",
-    "gym": "Gym",
-    "pool": "Pool",
-    "sauna": "Sauna"
-  },
   "Login": {
     "title": "Sign in to your account",
     "subtitle": "Enter your credentials to access your account",
@@ -239,7 +225,7 @@
   },
   "Register": {
     "title": "Create an account",
-    "subtitle": "Create an account to post listings",
+    "subtitle": "Create an account to place orders and manage your purchases",
     "name": "Name",
     "namePlaceholder": "Your name",
     "email": "Email",
@@ -251,116 +237,98 @@
     "haveAccount": "Already have an account?",
     "login": "Sign in"
   },
-  "AddListing": {
-    "title": "Add listing",
-    "titlePlaceholder": "e.g. Modern apartment in the center",
-    "subtitle": "Fill in information about your property",
-    "type": "Property type",
-    "selectType": "Select type",
-    "apartment": "Apartment",
-    "house": "House",
-    "room": "Room",
-    "description": "Description",
-    "descriptionPlaceholder": "Describe your property...",
-    "price": "Price per month ($)",
-    "location": "Address",
-    "locationPlaceholder": "Specify exact address",
-    "rooms": "Number of rooms",
-    "area": "Area (m²)",
-    "floor": "Floor",
-    "totalFloors": "Total floors in building",
-    "amenities": "Amenities",
-    "uploadImages": "Upload photos",
-    "maxFiles": "Maximum {max} files",
-    "maxSize": "Maximum {size} MB",
-    "invalidFileType": "Invalid file type: {filename}",
-    "fileTooLarge": "File {filename} is too large (max. {size} MB)",
-    "maxFilesExceeded": "Maximum {max} files",
-    "submit": "Publish listing",
-    "loading": "Publishing..."
+  "productDetail": {
+    "back": "Back to catalog",
+    "verified": "AVERON · VERIFIED",
+    "descriptionFallback": "A verified product from the AVERON catalog.",
+    "seoDescriptionFallback": "View product details and the current price in the AVERON catalog.",
+    "gallery": "Product images",
+    "imageLabel": "Show image {index}",
+    "delivery": "Delivery",
+    "orderStatus": "Track your order status",
+    "support": "Support",
+    "supportText": "Get help with sizing and product details",
+    "askProduct": "Ask about this product",
+    "askProductText": "Size, color, availability, and delivery",
+    "confirmed": "Product page reviewed by an administrator",
+    "catalog": "Catalog",
+    "addToOutfit": "Add to outfit"
   },
-  "Profile": {
-    "settings": "Settings",
-    "logout": "Sign out",
-    "myListings": "My listings",
-    "favorites": "Favorites",
-    "addListing": "Add listing",
-    "noListingsTitle": "You don't have any listings yet",
-    "noListingsText": "Add your first listing to start receiving applications",
-    "addFirstListing": "Add first listing",
-    "noFavoritesTitle": "You don't have any favorites yet",
-    "noFavoritesText": "Add listings you like to favorites",
-    "browseCatalog": "Browse catalog"
+  "profile": {
+    "accountName": "AVERON customer",
+    "active": "Active",
+    "phoneMissing": "Add a phone number to access AI features",
+    "signOut": "Sign out",
+    "loading": "Loading profile…",
+    "tabs": {
+      "overview": "Profile",
+      "orders": "Orders",
+      "favorites": "Favorites",
+      "ai": "AI history",
+      "sessions": "Sessions"
+    },
+    "savedProducts": "Favorite products",
+    "savedProductsDescription": "Products in your favorites",
+    "aiConversations": "AI conversations",
+    "accountStoredDescription": "Stored in your account",
+    "activeSessions": "Active sessions",
+    "signedInDevicesDescription": "Devices signed in to your account",
+    "defaultCountry": "Default product country",
+    "defaultCountryDescription": "Applied when you open the catalog.",
+    "countries": {
+      "all": "All countries",
+      "CN": "China",
+      "US": "United States",
+      "TR": "Turkey",
+      "IT": "Italy",
+      "GB": "United Kingdom"
+    },
+    "saving": "Saving…",
+    "saveFailed": "Could not save the preference. Try again.",
+    "saved": "Preference saved.",
+    "order": "Order",
+    "details": "Details",
+    "noOrders": "No orders yet",
+    "browseProducts": "Browse products",
+    "noFavorites": "No favorite products yet",
+    "openCatalog": "Open catalog",
+    "aiConversation": "Conversation with AVERON AI",
+    "messageCount": "Messages: {count}",
+    "noAiHistory": "No AI history yet",
+    "openAi": "Open AI",
+    "unknownDevice": "Unknown device",
+    "currentSession": "Current",
+    "ipHidden": "IP hidden",
+    "endSession": "End session"
   },
   "Favorites": {
     "title": "Favorites",
     "noFavoritesTitle": "You don't have any favorites yet",
-    "noFavoritesText": "Add listings you like to favorites",
+    "noFavoritesText": "Save products you like to your favorites",
     "browseCatalog": "Browse catalog"
   },
   "about": {
     "title": "About AVERON",
-    "intro": "AVERON is a modern and reliable rental platform across Uzbekistan.",
+    "intro": "AVERON is an online catalog for clothing, shoes, and accessories, with prices in UZS and delivery across Uzbekistan.",
     "ourMission": "Our Mission",
-    "missionText": "We make the renting process transparent, simple, secure, and fast for both tenants and landlords.",
+    "missionText": "We help shoppers discover products, compare options, and place orders with support throughout the process.",
     "whyChooseUs": "Why Choose Us",
-    "why1": "Verified and up-to-date listings daily",
-    "why2": "Direct contact with landlords without hidden fees",
-    "why3": "Smart filters, fast search and interactive map",
-    "why4": "Special listings for students and daily rentals",
+    "why1": "A catalog of clothing, shoes, and accessories",
+    "why2": "Product prices shown in Uzbekistani soʻm",
+    "why3": "Search and filters help you find the right product",
+    "why4": "Support throughout ordering and delivery",
     "ourTeam": "Our Team",
     "teamText": "We are a dedicated team passionate about building exceptional digital experiences for Uzbekistan."
   },
   "Terms": {
-    "title": "User Agreement & Terms of Service",
-    "lastUpdated": "2026 Edition | In compliance with the Legislation of the Republic of Uzbekistan",
-    "section1Title": "1. General Provisions & Platform Legal Status",
-    "section1Text": "This User Agreement (the \"Agreement\") governs the access to and use of the AVERON information platform (the \"Platform / Service\"). In accordance with the Law of the Republic of Uzbekistan \"On Electronic Commerce\" (No. ZRU-792) and the Civil Code of Uzbekistan, the Platform operates solely as an information and technology intermediary (listing aggregator) and is not a party to real estate rental agreements, a landlord, a real estate agent, or a guarantor.",
-    "section2Title": "2. Acceptance of Terms & User Registration",
-    "section2Text": "Registering an account, signing in via third-party providers (Google, OneID), or accessing any catalog services constitutes full and unconditional acceptance of this Agreement and the Privacy Policy. Individuals under 18 years of age or those who disagree with these terms must cease using the Service immediately.",
-    "section3Title": "3. Listing Requirements & Prohibitions",
-    "section3Text": "Under the Law of Uzbekistan \"On Advertising\" (No. ZRU-776), users must publish only accurate, up-to-date information regarding rental prices, amenities, and location. Posting false listings, copyright-infringing photos, demanding illegal advance wire payments, or concealing unauthorized agent commissions is strictly prohibited. The administration reserves the right to suspend offending accounts and report fraudulent activities to law enforcement authorities.",
-    "section4Title": "4. Limitation of Liability",
-    "section4Text": "The Platform assumes no liability for the actual fulfillment of rental contracts, property preservation, or the legality of ownership titles. Users are personally responsible for verifying property documents and registering rental agreements with tax authorities (E-ijara / State Tax Committee).",
-    "section5Title": "5. Intellectual Property",
-    "section5Text": "All website assets, the AVERON trademark, source code, UI designs, and database structures are protected under Law No. ZRU-42 \"On Copyright and Neighboring Rights\". Automated data extraction, scraping, copying, or reverse engineering without prior written consent is strictly prohibited.",
-    "section6Title": "6. Yandex.Metrika Analytics Counter",
-    "section6Text": "To maintain fault tolerance, diagnose technical errors, and optimize usability, the website operates the Yandex.Metrika web analytics counter (ID 112059980). All collected telemetry is anonymized, used strictly for AVERON internal performance optimization, and is never sold, transferred, or disclosed to third parties.",
-    "section7Title": "7. Dispute Resolution & Governing Law",
-    "section7Text": "Any dispute arising under this Agreement shall first be addressed through constructive negotiation with customer support. If unresolved, disputes shall be settled in the competent judicial courts of Tashkent in accordance with the substantive and procedural laws of the Republic of Uzbekistan.",
-    "section8Title": "8. Amendments to the Agreement",
-    "section8Text": "The administration reserves the right to amend this Agreement unilaterally. The latest active revision is published continuously at /terms."
+    "title": "Terms of Use",
+    "lastUpdated": "Page under review",
+    "contentPending": "This page is being updated. If you have questions, contact AVERON support."
   },
   "Privacy": {
-    "title": "Privacy Policy & Personal Data Protection",
-    "lastUpdated": "2026 Edition | In compliance with Law of Uzbekistan No. ZRU-547 \"On Personal Data\"",
-    "section1Title": "1. Legal Basis & Data Collection",
-    "section1Text": "This Policy is drafted in strict compliance with the Law of the Republic of Uzbekistan \"On Personal Data\" (No. ZRU-547 dated July 2, 2019). Personal data (name, phone number, email, technical metrics) is processed solely upon the voluntary consent of the data subject during registration or authorization.",
-    "section2Title": "2. Purposes of Processing & Data Localization",
-    "section2Text": "Personal data is processed to create user profiles, facilitate communication between tenants and landlords, and moderate listings against fraud. In accordance with Article 27.1 of Law No. ZRU-547, our database infrastructure is localized and maintained within the territory of the Republic of Uzbekistan.",
-    "section3Title": "3. Yandex.Metrika Technical Telemetry",
-    "section3Text": "Our website operates the Yandex.Metrika analytics counter. All analytical logs (IP masking, click tracking, error diagnostics) are gathered in anonymized form to monitor system uptime and reliability.",
-    "section4Title": "4. Strict Confidentiality & Zero Third-Party Sharing",
-    "section4Text": "We guarantee that personal and analytical data is strictly restricted to internal AVERON platform operations and is never shared, transferred, or sold to third-party commercial entities or advertising brokers (except pursuant to official judicial orders).",
-    "section5Title": "5. Security Safeguards & User Rights",
-    "section5Text": "The platform applies robust SSL/TLS encryption, Argon2 password hashing algorithms, and role-based access controls. Every user has the legal right to inspect, update, restrict, or request the deletion of their personal information.",
-    "section6Title": "6. Data Operator Contacts",
-    "section6Text": "For inquiries concerning personal data rights and privacy safeguards, contact us at: support@averon.uz"
-  },
-  "Footer": {
-    "slogan": "Clothing, shoes and accessories from China, delivered across Uzbekistan.",
-    "company": "Company",
-    "about": "About us",
-    "terms": "Terms",
-    "privacy": "Privacy",
-    "support": "Help",
-    "allRightsReserved": "All rights reserved",
-    "explore": "Explore",
-    "allListings": "Catalog",
-    "favorites": "Favorites",
-    "landlords": "For landlords",
-    "addListing": "Add a listing",
-    "aboutService": "About the service"
+    "title": "Privacy Policy",
+    "lastUpdated": "Page under review",
+    "contentPending": "This page is being updated. If you have questions, contact AVERON support."
   },
   "Search": {
     "clearSearch": "Clear search"
@@ -399,21 +367,6 @@
     "description": "The requested page does not exist or has been removed",
     "backToHome": "Back to home"
   },
-  "MobileMenu": {
-    "openMenu": "Open menu",
-    "closeMenu": "Close menu",
-    "home": "Home",
-    "catalog": "Catalog",
-    "allListings": "All listings",
-    "apartments": "Apartments",
-    "houses": "Houses",
-    "about": "About us",
-    "favorites": "Favorites",
-    "profile": "Profile",
-    "login": "Sign in",
-    "register": "Register",
-    "searchPlaceholder": "Search..."
-  },
   "infoPages": {
     "backToCatalog": "Go to catalog",
     "delivery": {
@@ -421,10 +374,22 @@
       "title": "Clear order tracking",
       "description": "Follow the key stages of your delivery right in your profile.",
       "items": [
-        { "title": "Confirmation", "text": "We verify your order details and contact information." },
-        { "title": "Procurement", "text": "We forward the confirmed order to the supplier." },
-        { "title": "Transit", "text": "We update tracking statuses as your package travels." },
-        { "title": "Pickup", "text": "We notify you as soon as your order is ready for pickup." }
+        {
+          "title": "Confirmation",
+          "text": "We verify your order details and contact information."
+        },
+        {
+          "title": "Procurement",
+          "text": "We forward the confirmed order to the supplier."
+        },
+        {
+          "title": "Transit",
+          "text": "We update tracking statuses as your package travels."
+        },
+        {
+          "title": "Pickup",
+          "text": "We notify you as soon as your order is ready for pickup."
+        }
       ]
     },
     "returns": {
@@ -432,10 +397,22 @@
       "title": "If something is wrong with your order",
       "description": "Keep original packaging and contact support immediately.",
       "items": [
-        { "title": "Document condition", "text": "Take photos of the item, tags, and packaging." },
-        { "title": "Submit request", "text": "Provide order number and a brief description of the issue." },
-        { "title": "Review", "text": "Our team investigates the report and proposes a solution." },
-        { "title": "Follow guidelines", "text": "Terms depend on the item condition and reason for inquiry." }
+        {
+          "title": "Document condition",
+          "text": "Take photos of the item, tags, and packaging."
+        },
+        {
+          "title": "Submit request",
+          "text": "Provide order number and a brief description of the issue."
+        },
+        {
+          "title": "Review",
+          "text": "Our team investigates the report and proposes a solution."
+        },
+        {
+          "title": "Follow guidelines",
+          "text": "Terms depend on the item condition and reason for inquiry."
+        }
       ]
     },
     "sizeGuide": {
@@ -443,10 +420,22 @@
       "title": "How to choose the right size",
       "description": "Compare card dimensions with your personal measurements, not just the size label.",
       "items": [
-        { "title": "Take measurements", "text": "Measure chest, waist, hips, and foot length." },
-        { "title": "Check chart", "text": "Use the chart specifically attached to the selected product." },
-        { "title": "Consider fit", "text": "Pay attention to whether the cut is relaxed or slim-fit." },
-        { "title": "Ask support", "text": "If unsure between sizes, send your measurements to us." }
+        {
+          "title": "Take measurements",
+          "text": "Measure chest, waist, hips, and foot length."
+        },
+        {
+          "title": "Check chart",
+          "text": "Use the chart specifically attached to the selected product."
+        },
+        {
+          "title": "Consider fit",
+          "text": "Pay attention to whether the cut is relaxed or slim-fit."
+        },
+        {
+          "title": "Ask support",
+          "text": "If unsure between sizes, send your measurements to us."
+        }
       ]
     },
     "howToOrder": {
@@ -454,10 +443,22 @@
       "title": "Four simple steps",
       "description": "From finding an item to order confirmation — simple and straightforward.",
       "items": [
-        { "title": "Find an item", "text": "Use our catalog, search bar, or AI assistant." },
-        { "title": "Select variant", "text": "Pick your preferred size, color, and quantity." },
-        { "title": "Provide contact", "text": "Log in with phone number and confirm details." },
-        { "title": "Track status", "text": "All updates will appear in your order history." }
+        {
+          "title": "Find an item",
+          "text": "Use our catalog, search bar, or AI assistant."
+        },
+        {
+          "title": "Select variant",
+          "text": "Pick your preferred size, color, and quantity."
+        },
+        {
+          "title": "Provide contact",
+          "text": "Log in with phone number and confirm details."
+        },
+        {
+          "title": "Track status",
+          "text": "All updates will appear in your order history."
+        }
       ]
     },
     "support": {
@@ -465,9 +466,18 @@
       "title": "We are here to help",
       "description": "Customer support agents assist here. For product recommendations, please use the AI assistant.",
       "cards": [
-        { "title": "Order status", "text": "Share your order number to check the current stage." },
-        { "title": "Product question", "text": "Clarify size, color variants, or item specifications." },
-        { "title": "Payment & delivery", "text": "Get answers about payment options, timelines, or delivery." }
+        {
+          "title": "Order status",
+          "text": "Share your order number to check the current stage."
+        },
+        {
+          "title": "Product question",
+          "text": "Clarify size, color variants, or item specifications."
+        },
+        {
+          "title": "Payment & delivery",
+          "text": "Get answers about payment options, timelines, or delivery."
+        }
       ],
       "formTitle": "New inquiry",
       "namePlaceholder": "Name",

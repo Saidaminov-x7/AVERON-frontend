@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import type { NavLink } from '@/lib/siteSettings';
 import {
-  Search, X, Heart, ChevronRight, LogIn, Menu, User, Scale, ShoppingCart,
+  Search, X, Heart, ChevronRight, LogIn, LogOut, Menu, User, Scale, ShoppingCart,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
@@ -38,11 +38,13 @@ function localeHref(pathname: string, code: string, search: string) {
   return localizeHrefPreservingSafeQuery(pathname, search ? `?${search}` : '', code);
 }
 
-function LanguagePicker() {
+function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
+  const t = useTranslations('nav');
+  const prefersReducedMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [openUpward, setOpenUpward] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -68,6 +70,7 @@ function LanguagePicker() {
 
   const handleSelectLocale = (code: string) => {
     setOpen(false);
+    onSelect?.();
     const targetUrl = localeHref(pathname, code, search);
     router.push(targetUrl, { scroll: false });
   };
@@ -78,7 +81,7 @@ function LanguagePicker() {
         type="button"
         onClick={handleToggle}
         className={BTN_CLASS + ' gap-2 !w-auto px-3 text-sm font-semibold ' + (open ? '!border-primary-500 !text-primary-600 dark:!text-primary-400' : '')}
-        aria-label="Change language"
+        aria-label={t('language')}
         aria-expanded={open}
         aria-haspopup="menu"
       >
@@ -90,7 +93,7 @@ function LanguagePicker() {
         className={
           'absolute right-0 z-50 w-40 overflow-hidden rounded-xl border border-stone-200/80 bg-white py-1 shadow-lg ' +
           'dark:border-white/10 dark:bg-stone-900 ' +
-          'transition-all duration-200 ' +
+          (prefersReducedMotion ? 'transition-none ' : 'transition-all duration-200 ') +
           (openUpward ? 'bottom-full mb-2 origin-bottom-right' : 'top-full mt-2 origin-top-right') + ' ' +
           (open ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0')
         }
@@ -105,7 +108,8 @@ function LanguagePicker() {
               aria-checked={active}
               onClick={() => handleSelectLocale(code)}
               className={
-                'flex w-full items-center px-3 py-2 text-xs font-medium transition-colors text-left ' +
+                'flex min-h-11 w-full items-center px-3 py-2 text-xs font-medium text-left ' +
+                (prefersReducedMotion ? '' : 'transition-colors ') +
                 (active
                   ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/40 dark:text-primary-400'
                   : 'text-stone-600 hover:bg-stone-50 dark:text-stone-300 dark:hover:bg-white/5')
@@ -130,9 +134,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const { data: settings } = useSiteSettings();
 
   const navLinks = [
-    { href: '/catalog', label: locale === 'uz' ? 'Tovarlar' : locale === 'en' ? 'Products' : 'Товары' },
+    { href: '/catalog', label: t('catalog') },
     { href: '/ai', label: 'AI' },
-    { href: '/about', label: locale === 'uz' ? 'Biz haqimizda' : locale === 'en' ? 'About' : 'О нас' },
+    { href: '/about', label: t('about') },
   ];
   const labelForHref = (href: string, fallback: unknown) => navLinks.find((item) => item.href === href)?.label || String(fallback || '');
   const configuredNavLinks = (() => {
@@ -141,9 +145,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           .filter((item: NavLink) => item && item.position !== 'footer')
           .map((item: NavLink) => {
             const rawHref = String(item.url || item.href || '/');
-            const href = rawHref === '/chat' ? '/ai' : rawHref;
+            const href = rawHref === '/chat' ? '/support' : rawHref;
             const rawLabel = typeof item.label === 'object'
-              ? item.label[locale] || item.label.ru || item.label.uz || item.label.en
+              ? item.label[locale] || item.label.en || item.label.uz || item.label.ru
               : item.label;
             return { href, label: labelForHref(href, rawLabel) };
           })
@@ -170,26 +174,64 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
   const favCount = useFavoritesStore((s) => s.ids.length);
   const compareCount = useCompareStore((s) => s.ids.length);
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const { data: cart } = useCommerceCart();
   const cartCount = cart?.items.reduce((total, item) => total + item.quantity, 0) ?? 0;
-  const cartLabel = locale === 'uz' ? 'Savatcha' : locale === 'en' ? 'Cart' : 'Корзина';
+  const cartLabel = t('cart');
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileCloseButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileDrawerRef = useRef<HTMLDivElement>(null);
+  const wasMobileOpen = useRef(false);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    if (!mobileOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    mobileCloseButtonRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setMobileOpen(false);
+        return;
+      }
+      if (event.key !== 'Tab' || !mobileDrawerRef.current) return;
+      const focusable = Array.from(mobileDrawerRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])',
+      )).filter((element) => element.getClientRects().length > 0);
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
     const closeOnDesktop = () => {
       if (window.innerWidth >= 1024) {
         setMobileOpen(false);
-        document.body.style.overflow = '';
       }
     };
+    document.addEventListener('keydown', onKeyDown);
     window.addEventListener('resize', closeOnDesktop);
     return () => {
+      document.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('resize', closeOnDesktop);
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
     };
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      wasMobileOpen.current = true;
+    } else if (wasMobileOpen.current) {
+      wasMobileOpen.current = false;
+      mobileMenuButtonRef.current?.focus();
+    }
   }, [mobileOpen]);
 
   useEffect(() => {
@@ -241,6 +283,12 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     setQuery('');
     router.push(`/${locale}${href}`);
   };
+  const closeMobileMenu = () => setMobileOpen(false);
+  const handleLogout = async () => {
+    await logout();
+    closeMobileMenu();
+    router.push(to('/login'));
+  };
 
   const isAuthPage = ['/login', '/register', '/forgot-password', '/reset-password'].some(
     (r) => pathname === `/${locale}${r}` || pathname.startsWith(`/${locale}${r}/`)
@@ -248,7 +296,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
   if (isAuthPage) {
     return (
-      <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-white/95 dark:border-white/10 dark:bg-[#1A1A1A]/95 h-20 flex items-center">
+      <header className="sticky top-0 z-40 flex h-[calc(5rem+env(safe-area-inset-top))] w-full items-center border-b border-stone-200/80 bg-white/95 pt-[env(safe-area-inset-top)] dark:border-white/10 dark:bg-[#1A1A1A]/95 sm:h-20 sm:pt-0">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href={to('/')}
@@ -269,8 +317,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   return (
     <>
       <header
+        ref={searchRef}
         className={cn(
-          'sticky top-0 z-40 flex h-20 w-full items-center transition-[background-color,backdrop-filter] duration-300',
+          'sticky top-0 z-40 flex h-[calc(5rem+env(safe-area-inset-top))] w-full items-center pt-[env(safe-area-inset-top)] transition-[background-color,backdrop-filter] duration-300 sm:h-20 sm:pt-0',
           scrolled
             ? 'bg-white/90 backdrop-blur-2xl after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-primary-500/60 after:to-transparent dark:bg-[#111111]/90'
             : 'bg-white/95 dark:bg-[#111111]/95'
@@ -312,7 +361,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
           {/* Right Desktop items */}
           <div className="hidden items-center gap-2 lg:flex">
-            <div ref={searchRef} className="relative flex items-center">
+            <div className="relative flex items-center">
               {searchOpen ? (
                 <form
                   onSubmit={(e) => { e.preventDefault(); doSearch(query); }}
@@ -392,7 +441,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               )}
             </Link>
 
-            <Link href={to('/compare')} aria-label="Сравнение" title="Сравнение товаров" className={`${BTN_CLASS} relative`}>
+            <Link href={to('/compare')} aria-label={t('compare')} title={t('compare')} className={`${BTN_CLASS} relative`}>
               <Scale size={17} />
               {compareCount > 0 && (
                 <motion.span
@@ -447,80 +496,18 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             )}
           </div>
 
-          {/* Mobile & Tablet Right items */}
+          {/* Mobile & Tablet primary actions */}
           <div className="flex items-center gap-2 lg:hidden">
-            {/* Кнопка поиска: скрыта на телефонах, видна на планшетах (hidden sm:flex) */}
-            <div ref={searchRef} className="relative flex items-center">
-              {searchOpen ? (
-                <form
-                  onSubmit={(e) => { e.preventDefault(); doSearch(query); }}
-                  className="relative flex items-center animate-in fade-in zoom-in-95 duration-200"
-                >
-                  <div className="absolute left-3.5 flex items-center pointer-events-none text-stone-400">
-                    <Search size={16} />
-                  </div>
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={query}
-                    onChange={(e) => handleQuery(e.target.value)}
-                    placeholder={t('searchPlaceholder')}
-                    className="h-10 w-52 sm:w-60 rounded-xl border border-stone-200 bg-white py-0 pl-10 pr-9 text-sm text-stone-900 placeholder:text-stone-400 shadow-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500 transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setSearchOpen(false)}
-                    className="absolute right-3 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
-                  >
-                    <X size={15} />
-                  </button>
-                  {suggestions.length > 0 && (
-                    <div className="absolute right-0 top-full z-50 mt-2 w-52 sm:w-60 overflow-hidden rounded-xl border border-stone-200 bg-white shadow-lg dark:border-stone-800 dark:bg-stone-900">
-                      {suggestions.map((item, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => navTo(item.href)}
-                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs hover:bg-stone-50 dark:hover:bg-stone-850"
-                        >
-                          <span>{item.icon}</span>
-                          <span className="truncate text-stone-800 dark:text-stone-200">{item.text}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </form>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setSearchOpen(true)}
-                  aria-label={t('search')}
-                  className={`${BTN_CLASS} hidden sm:flex`}
-                >
-                  <Search size={17} />
-                </button>
-              )}
-            </div>
-
-            {/* Избранное */}
-            <Link
-              href={to('/favorites')}
-              aria-label={t('favorites')}
-              className={`${BTN_CLASS} relative`}
+            <button
+              type="button"
+              onClick={() => setSearchOpen((open) => !open)}
+              aria-label={t('search')}
+              aria-expanded={searchOpen}
+              aria-controls="mobile-header-search"
+              className={BTN_CLASS}
             >
-              <Heart size={17} />
-              {favCount > 0 && (
-                <motion.span
-                  key={favCount}
-                  initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 text-[10px] font-bold text-white"
-                >
-                  {favCount}
-                </motion.span>
-              )}
-            </Link>
+              {searchOpen ? <X size={18} /> : <Search size={18} />}
+            </button>
 
             <Link href={to('/cart')} aria-label={`${cartLabel}${cartCount ? `, ${cartCount}` : ''}`} className={`${BTN_CLASS} relative`}>
               <ShoppingCart size={17} />
@@ -542,30 +529,74 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               type="button"
               aria-label={t('menu')}
               aria-expanded={mobileOpen}
-              onClick={() => setMobileOpen(true)}
+              aria-controls="mobile-navigation"
+              ref={mobileMenuButtonRef}
+              onClick={() => { setSearchOpen(false); setMobileOpen(true); }}
               className={BTN_CLASS}
             >
               <Menu size={18} />
             </button>
           </div>
         </div>
+        {searchOpen && (
+          <div id="mobile-header-search" className="absolute inset-x-4 top-full z-50 rounded-xl border border-stone-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-stone-900 lg:hidden">
+            <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
+              <Search size={16} className="pointer-events-none absolute left-3 text-stone-400" />
+              <input
+                ref={inputRef}
+                type="search"
+                value={query}
+                onChange={(e) => handleQuery(e.target.value)}
+                placeholder={t('searchPlaceholder')}
+                aria-label={t('search')}
+                className="h-11 w-full rounded-lg border border-stone-300 bg-stone-50 pl-10 pr-3 text-sm text-stone-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-white"
+              />
+            </form>
+            {suggestions.length > 0 && (
+              <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-stone-200 dark:border-white/10">
+                {suggestions.map((item, i) => (
+                  <button
+                    key={`${item.href}-${i}`}
+                    type="button"
+                    onClick={() => navTo(item.href)}
+                    className="flex min-h-11 w-full items-center gap-3 px-3 text-left text-sm hover:bg-stone-50 dark:hover:bg-white/5"
+                  >
+                    <span>{item.icon}</span>
+                    <span className="truncate">{item.text}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </header>
 
-      {/* Mobile Drawer с премиальной плавной анимацией */}
-      <div
-        onClick={() => setMobileOpen(false)}
+      <button
+        type="button"
+        aria-label={t('close')}
+        tabIndex={mobileOpen ? 0 : -1}
+        aria-hidden={!mobileOpen}
+        inert={!mobileOpen}
+        onClick={closeMobileMenu}
         className={
-          'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300 lg:hidden ' +
+          `fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
           (mobileOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0')
         }
       />
 
       <div
+        id="mobile-navigation"
+        ref={mobileDrawerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('menu')}
+        aria-hidden={!mobileOpen}
+        inert={!mobileOpen}
         style={{
           transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         className={
-          `fixed left-0 top-0 z-50 flex h-full w-screen max-w-none flex-col bg-white shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} dark:bg-[#1A1A1A] lg:hidden ` +
+          `fixed inset-y-0 left-0 z-50 flex h-dvh w-full max-w-none flex-col bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} dark:bg-[#1A1A1A] lg:hidden ` +
           (mobileOpen ? 'translate-x-0' : '-translate-x-full')
         }
       >
@@ -573,7 +604,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           <Link href={to('/')} onClick={() => setMobileOpen(false)} className="flex items-center text-xl font-black text-stone-900 dark:text-white">
             <span className="max-w-52 truncate tracking-[0.2em]">{settings?.siteName || 'AVERON'}</span>
           </Link>
-          <button type="button" aria-label={t('close')} onClick={() => setMobileOpen(false)} className={BTN_CLASS}>
+          <button ref={mobileCloseButtonRef} type="button" aria-label={t('close')} onClick={closeMobileMenu} className={BTN_CLASS}>
             <X size={18} />
           </button>
         </div>
@@ -589,6 +620,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               value={query}
               onChange={(e) => handleMobileQuery(e.target.value)}
               placeholder={t('searchPlaceholder')}
+              aria-label={t('search')}
               className="h-10 w-full rounded-xl border border-stone-200 bg-stone-50 pl-10 pr-8 text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-primary-500 focus:bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500"
             />
             {query && (
@@ -608,7 +640,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   key={i}
                   type="button"
                   onClick={() => navTo(item.href)}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs hover:bg-stone-50 dark:hover:bg-stone-750"
+                  className="flex min-h-11 w-full items-center gap-2 px-3 py-2 text-left text-xs hover:bg-stone-50 dark:hover:bg-stone-750"
                 >
                   <span>{item.icon}</span>
                   <span className="truncate text-stone-800 dark:text-stone-200">{item.text}</span>
@@ -620,11 +652,16 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
         {/* Навигационные ссылки */}
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3">
-          {configuredNavLinks.map(({ href, label }) => (
+          {[...configuredNavLinks, ...[
+            { href: '/favorites', label: t('favorites') },
+            { href: '/compare', label: t('compare') },
+            { href: '/cart', label: t('cart') },
+            { href: '/support', label: t('support') },
+          ].filter(({ href }) => !configuredNavLinks.some((item) => item.href === href))].map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href.startsWith('http') ? href : to(href)}
-                  onClick={() => setMobileOpen(false)}
+                  onClick={closeMobileMenu}
                   className={
                     'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ' +
                     (isActive(href)
@@ -642,22 +679,36 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           <div className="flex items-center justify-between px-1">
             <span className="text-xs font-medium text-stone-500">{t('langAndTheme')}</span>
             <div className="flex items-center gap-2">
-              <LanguagePicker />
+              <LanguagePicker onSelect={closeMobileMenu} />
               <ThemeToggle />
             </div>
           </div>
-          <a href="https://t.me/averon_fashion_admin" target="_blank" rel="noopener noreferrer" className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 text-sm font-semibold text-white">
-            {t('support')}
-          </a>
           {isAuthenticated ? (
-            <Link
-              href={to('/profile')}
-              onClick={() => setMobileOpen(false)}
-              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 text-sm font-semibold text-white w-full"
-            >
-              <User size={16} />
-              <span>{user?.name || t('profile')}</span>
-            </Link>
+            <>
+              <Link
+                href={to('/profile')}
+                onClick={closeMobileMenu}
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary-600 text-sm font-semibold text-white"
+              >
+                <User size={16} />
+                <span>{user?.name || t('profile')}</span>
+              </Link>
+              <Link
+                href={to('/orders')}
+                onClick={closeMobileMenu}
+                className="flex h-11 w-full items-center justify-center rounded-xl border border-stone-300 bg-white text-sm font-semibold text-stone-800 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
+              >
+                {t('orders')}
+              </Link>
+              <button
+                type="button"
+                onClick={() => { void handleLogout(); }}
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-stone-300 text-sm font-semibold dark:border-stone-700"
+              >
+                <LogOut size={16} />
+                {t('logout')}
+              </button>
+            </>
           ) : (
             <div className="grid grid-cols-2 gap-2">
               <Link

@@ -6,7 +6,9 @@ import { SearchInput } from '@/components/ui/SearchInput';
 import { ProductCard, type StoreProduct } from '@/components/commerce/ProductCard';
 import { externalBaseURL } from '@/lib/axios';
 
-async function getPopularListings() {
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://averon.uz';
+
+async function getPopularProducts() {
   try {
     const response = await fetch(
       `${externalBaseURL}/api/v1/products?limit=8`,
@@ -32,14 +34,31 @@ export async function generateMetadata({
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const [popularListings, t] = await Promise.all([
-    getPopularListings(),
+  const [popularProducts, t] = await Promise.all([
+    getPopularProducts(),
     getTranslations({ locale, namespace: 'home' }),
   ]);
   const to = (path: string) => `/${locale}${path}`;
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              { '@type': 'Organization', name: 'AVERON', url: SITE_URL },
+              {
+                '@type': 'WebSite',
+                name: 'AVERON',
+                url: `${SITE_URL}/${locale}`,
+                inLanguage: locale,
+              },
+            ],
+          }).replace(/</g, '\\u003c'),
+        }}
+      />
       <main>
         <section className="mx-auto max-w-[1440px] px-4 pb-10 pt-8 sm:px-6 sm:pt-12 lg:px-8">
           <div className="relative overflow-hidden rounded-3xl border border-stone-200 bg-[#f1eadf] px-6 py-16 text-stone-950 shadow-[0_30px_80px_-45px_rgba(41,37,36,0.55)] dark:border-white/10 dark:bg-[#171714] dark:text-white sm:px-12 lg:px-16 lg:py-24">
@@ -71,9 +90,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </div>
             <Link href={to('/catalog')} className="hidden items-center gap-2 text-sm font-semibold text-primary-700 hover:text-primary-800 sm:flex dark:text-primary-300">{t('viewAll')} <ArrowRight size={16} /></Link>
           </div>
-          {popularListings.length > 0 ? (
+          {popularProducts.length > 0 ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-              {(popularListings as StoreProduct[]).slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
+              {(popularProducts as StoreProduct[]).slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
             </div>
           ) : (
             <div className="rounded-3xl border border-dashed border-stone-300 bg-white px-6 py-16 text-center dark:border-stone-700 dark:bg-stone-900">

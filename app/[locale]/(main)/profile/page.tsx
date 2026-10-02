@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import {
   Bot,
@@ -69,6 +70,7 @@ export default function ProfilePage() {
 
 function ProfileContent() {
   const { locale = "ru" } = useParams<{ locale: string }>();
+  const t = useTranslations("profile");
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const setUser = useAuthStore((state) => state.setUser);
@@ -82,6 +84,8 @@ function ProfileContent() {
   const [savingCatalogCountry, setSavingCatalogCountry] = useState(false);
   const [catalogCountryStatus, setCatalogCountryStatus] = useState<"saved" | "error" | "">("");
   const favoriteIdsKey = favoriteIds.join("|");
+  const formatLocale =
+    locale === "uz" ? "uz-UZ" : locale === "en" ? "en-US" : "ru-RU";
 
   const load = async () => {
     setLoading(true);
@@ -136,13 +140,13 @@ function ProfileContent() {
     icon: typeof User;
     count?: number;
   }> = [
-    { id: "overview", label: "Профиль", icon: User },
-    { id: "orders", label: "Заказы", icon: PackageCheck, count: orders.length },
-    { id: "favorites", label: "Товары", icon: Heart, count: favorites.length },
-    { id: "ai", label: "История AI", icon: Bot, count: aiSessions.length },
+    { id: "overview", label: t("tabs.overview"), icon: User },
+    { id: "orders", label: t("tabs.orders"), icon: PackageCheck, count: orders.length },
+    { id: "favorites", label: t("tabs.favorites"), icon: Heart, count: favorites.length },
+    { id: "ai", label: t("tabs.ai"), icon: Bot, count: aiSessions.length },
     {
       id: "sessions",
-      label: "Сессии",
+      label: t("tabs.sessions"),
       icon: MonitorSmartphone,
       count: sessions.length,
     },
@@ -158,11 +162,11 @@ function ProfileContent() {
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="max-w-full break-words text-2xl font-bold">
-                {user?.name || "Пользователь AVERON"}
+                {user?.name || t("accountName")}
               </h1>
               <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-600">
                 <ShieldCheck className="mr-1 inline" size={13} />
-                Активен
+                {t("active")}
               </span>
             </div>
             <div className="mt-2 flex min-w-0 flex-col gap-2 text-sm text-stone-500 sm:flex-row sm:flex-wrap sm:gap-4">
@@ -173,7 +177,7 @@ function ProfileContent() {
                 </span>
               ) : (
                 <span className="text-amber-600">
-                  Добавьте номер телефона для доступа к AI
+                  {t("phoneMissing")}
                 </span>
               )}
               {user?.email ? (
@@ -186,7 +190,7 @@ function ProfileContent() {
             className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-red-500/20 px-4 text-sm font-semibold text-red-500"
           >
             <LogOut size={16} />
-            Выйти
+            {t("signOut")}
           </button>
         </div>
       </section>
@@ -208,26 +212,26 @@ function ProfileContent() {
       {loading ? (
         <div className="flex items-center justify-center gap-3 py-24 text-stone-500">
           <LoaderCircle className="animate-spin" />
-          Загружаем профиль…
+          {t("loading")}
         </div>
       ) : null}
       {!loading && tab === "overview" ? (
         <>
           <section className="mt-6 grid gap-4 md:grid-cols-3">
             <Info
-              title="Избранные товары"
+              title={t("savedProducts")}
               value={String(favorites.length)}
-              text="Сохранены на этом устройстве"
+              text={t("savedProductsDescription")}
             />
             <Info
-              title="Диалоги с AI"
+              title={t("aiConversations")}
               value={String(aiSessions.length)}
-              text="Хранятся в вашем аккаунте"
+              text={t("accountStoredDescription")}
             />
             <Info
-              title="Активные сессии"
+              title={t("activeSessions")}
               value={String(sessions.length)}
-              text="Устройства с выполненным входом"
+              text={t("signedInDevicesDescription")}
             />
           </section>
           <section className="mt-5 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
@@ -235,10 +239,10 @@ function ProfileContent() {
               <Globe2 className="mt-1 shrink-0 text-primary-700 dark:text-primary-300" size={19} />
               <div className="min-w-0 flex-1">
                 <h2 className="font-bold">
-                  {locale === "uz" ? "Standart mahsulotlar mamlakati" : locale === "en" ? "Default product country" : "Страна товаров по умолчанию"}
+                  {t("defaultCountry")}
                 </h2>
                 <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                  {locale === "uz" ? "Katalog ochilganda qo‘llanadi." : locale === "en" ? "Applied when you open the catalog." : "Применяется при открытии каталога."}
+                  {t("defaultCountryDescription")}
                 </p>
                 <Select
                   value={user?.defaultCatalogCountry ?? ""}
@@ -246,30 +250,30 @@ function ProfileContent() {
                   onValueChange={(country) => void saveDefaultCatalogCountry(country)}
                 >
                   <SelectTrigger
-                    aria-label={locale === "en" ? "Default product country" : locale === "uz" ? "Standart mahsulotlar mamlakati" : "Страна товаров по умолчанию"}
+                    aria-label={t("defaultCountry")}
                     aria-busy={savingCatalogCountry}
                     className="mt-3 max-w-sm"
                   >
-                    <SelectValue placeholder={locale === "en" ? "All countries" : locale === "uz" ? "Barcha mamlakatlar" : "Все страны"} />
+                    <SelectValue placeholder={t("countries.all")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">{locale === "en" ? "All countries" : locale === "uz" ? "Barcha mamlakatlar" : "Все страны"}</SelectItem>
-                    <SelectItem value="CN">{locale === "en" ? "China" : locale === "uz" ? "Xitoy" : "Китай"}</SelectItem>
-                    <SelectItem value="US">{locale === "en" ? "United States" : locale === "uz" ? "AQSh" : "США"}</SelectItem>
-                    <SelectItem value="TR">{locale === "en" ? "Turkey" : locale === "uz" ? "Turkiya" : "Турция"}</SelectItem>
-                    <SelectItem value="IT">{locale === "en" ? "Italy" : locale === "uz" ? "Italiya" : "Италия"}</SelectItem>
-                    <SelectItem value="GB">{locale === "en" ? "United Kingdom" : locale === "uz" ? "Buyuk Britaniya" : "Великобритания"}</SelectItem>
+                    <SelectItem value="">{t("countries.all")}</SelectItem>
+                    <SelectItem value="CN">{t("countries.CN")}</SelectItem>
+                    <SelectItem value="US">{t("countries.US")}</SelectItem>
+                    <SelectItem value="TR">{t("countries.TR")}</SelectItem>
+                    <SelectItem value="IT">{t("countries.IT")}</SelectItem>
+                    <SelectItem value="GB">{t("countries.GB")}</SelectItem>
                   </SelectContent>
                 </Select>
                 {savingCatalogCountry ? (
                   <p className="mt-2 text-sm text-stone-500" role="status">
-                    {locale === "en" ? "Saving…" : locale === "uz" ? "Saqlanmoqda…" : "Сохраняем…"}
+                    {t("saving")}
                   </p>
                 ) : catalogCountryStatus ? (
                   <p className={`mt-2 text-sm ${catalogCountryStatus === "error" ? "text-red-600 dark:text-red-400" : "text-emerald-700 dark:text-emerald-400"}`} role={catalogCountryStatus === "error" ? "alert" : "status"}>
                     {catalogCountryStatus === "error"
-                      ? locale === "en" ? "Could not save the preference. Try again." : locale === "uz" ? "Tanlov saqlanmadi. Qayta urinib ko‘ring." : "Не удалось сохранить выбор. Попробуйте ещё раз."
-                      : locale === "en" ? "Preference saved." : locale === "uz" ? "Tanlov saqlandi." : "Настройка сохранена."}
+                      ? t("saveFailed")
+                      : t("saved")}
                   </p>
                 ) : null}
               </div>
@@ -282,16 +286,16 @@ function ProfileContent() {
           {orders.length ? orders.map((order) => (
             <article key={order.id} className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><p className="text-xs text-stone-500">Заказ</p><h2 className="font-bold">№ {order.orderNumber}</h2></div>
+                <div><p className="text-xs text-stone-500">{t("order")}</p><h2 className="font-bold">№ {order.orderNumber}</h2></div>
                 <span className="rounded-full bg-primary-500/10 px-3 py-1 text-xs font-bold text-primary-700">{order.status}</span>
               </div>
               <div className="mt-4 space-y-2">{order.items.map((item) => <div key={item.id} className="flex justify-between gap-4 text-sm"><span className="min-w-0 truncate">{item.title}</span><span className="shrink-0">× {item.quantity}</span></div>)}</div>
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-stone-200 pt-4 text-sm dark:border-white/10">
-                <span className="text-stone-500">{new Date(order.createdAt).toLocaleDateString("ru-RU")}</span>
-                <div className="flex items-center gap-4"><strong>{Number(order.totalRevenue).toLocaleString("ru-RU")} {order.currency}</strong><Link href={`/${locale}/orders/${encodeURIComponent(order.orderNumber)}`} className="inline-flex h-9 items-center gap-1 rounded-lg px-3 font-semibold text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-950/30">Подробнее<ArrowRight size={15} /></Link></div>
+                <span className="text-stone-500">{new Date(order.createdAt).toLocaleDateString(formatLocale)}</span>
+                <div className="flex items-center gap-4"><strong>{Number(order.totalRevenue).toLocaleString(formatLocale)} {order.currency}</strong><Link href={`/${locale}/orders/${encodeURIComponent(order.orderNumber)}`} className="inline-flex h-11 items-center gap-1 rounded-lg px-3 font-semibold text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-950/30">{t("details")}<ArrowRight size={15} /></Link></div>
               </div>
             </article>
-          )) : <Empty title="Заказов пока нет" href={`/${locale}/catalog`} action="Перейти к товарам" />}
+          )) : <Empty title={t("noOrders")} href={`/${locale}/catalog`} action={t("browseProducts")} />}
         </section>
       ) : null}
       {!loading && tab === "favorites" ? (
@@ -308,9 +312,9 @@ function ProfileContent() {
             </div>
           ) : (
             <Empty
-              title="Сохранённых товаров нет"
+              title={t("noFavorites")}
               href={`/${locale}/catalog`}
-              action="Открыть каталог"
+              action={t("openCatalog")}
             />
           )}
         </section>
@@ -329,22 +333,22 @@ function ProfileContent() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">
-                    {session.title || "Диалог с AVERON AI"}
+                    {session.title || t("aiConversation")}
                   </p>
                   <p className="mt-1 text-xs text-stone-500">
                     {new Date(
                       session.updatedAt || session.createdAt,
-                    ).toLocaleString("ru-RU")}{" "}
-                    · {session._count?.messages ?? 0} сообщений
+                    ).toLocaleString(formatLocale)}{" "}
+                    · {t("messageCount", { count: session._count?.messages ?? 0 })}
                   </p>
                 </div>
               </Link>
             ))
           ) : (
             <Empty
-              title="История AI пока пуста"
+              title={t("noAiHistory")}
               href={`/${locale}/ai`}
-              action="Открыть AI"
+              action={t("openAi")}
             />
           )}
         </section>
@@ -360,20 +364,20 @@ function ProfileContent() {
                 <MonitorSmartphone className="shrink-0 text-primary-700" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">
-                    {session.userAgent || "Неизвестное устройство"}{" "}
+                    {session.userAgent || t("unknownDevice")}{" "}
                     {session.current ? (
                       <span className="ml-2 text-xs text-emerald-600">
-                        Текущая
+                        {t("currentSession")}
                       </span>
                     ) : null}
                   </p>
                   <p className="mt-1 break-words text-xs text-stone-500">
-                    {session.ipAddress || "IP скрыт"} ·{" "}
-                    {new Date(session.lastSeenAt).toLocaleString("ru-RU")}
+                    {session.ipAddress || t("ipHidden")} ·{" "}
+                    {new Date(session.lastSeenAt).toLocaleString(formatLocale)}
                   </p>
                 </div>
                 <button
-                  aria-label="Завершить сессию"
+                  aria-label={t("endSession")}
                   onClick={async () => {
                     await api.delete(`/auth/sessions/${session.id}`);
                     if (session.current) await signOut();

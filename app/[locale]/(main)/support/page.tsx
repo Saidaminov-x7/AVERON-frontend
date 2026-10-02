@@ -1,14 +1,11 @@
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Headphones, Mail, MessageCircle, PackageSearch } from 'lucide-react';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const titles: Record<string, string> = {
-    ru: 'Поддержка',
-    uz: 'Yordam',
-    en: 'Support',
-  };
-  return { title: titles[locale] || 'Support' };
+  const t = await getTranslations({ locale, namespace: 'infoPages.support' });
+  return { title: t('title') };
 }
 
 export default function SupportPage() {

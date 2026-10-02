@@ -1,13 +1,10 @@
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const titles: Record<string, string> = {
-    ru: 'Публичная оферта',
-    uz: 'Ommaviy oferta',
-    en: 'Public Offer',
-  };
-  return { title: titles[locale] || 'Public Offer' };
+  const t = await getTranslations({ locale, namespace: 'infoPages.publicOffer' });
+  return { title: t('title'), robots: { index: false, follow: true } };
 }
 
 export default function PublicOfferPage() {

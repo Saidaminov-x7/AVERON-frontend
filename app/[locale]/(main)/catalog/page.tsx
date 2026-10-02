@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 import { Filter, Search, SlidersHorizontal } from "lucide-react";
 import {
   ProductCard,
@@ -25,6 +27,39 @@ type Filters = Record<string, string | string[] | undefined>;
 
 const input =
   "h-11 w-full rounded-xl border border-stone-300 bg-transparent px-3 text-sm outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-600/15 dark:border-white/15";
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<Filters>;
+}): Promise<Metadata> {
+  const [{ locale }, filters] = await Promise.all([params, searchParams]);
+  const t = await getTranslations({ locale, namespace: "catalog" });
+  const hasQueryFilters = Object.values(filters).some((value) =>
+    Array.isArray(value) ? value.some((entry) => entry.trim()) : Boolean(value?.trim()),
+  );
+  const canonical = `/${locale}/catalog`;
+  const languages = {
+    ru: "/ru/catalog",
+    uz: "/uz/catalog",
+    en: "/en/catalog",
+    "x-default": "/ru/catalog",
+  };
+  return {
+    title: t("title"),
+    description: t("subtitle"),
+    alternates: { canonical, languages },
+    robots: hasQueryFilters ? { index: false, follow: true } : { index: true, follow: true },
+    openGraph: {
+      type: "website",
+      title: t("title"),
+      description: t("subtitle"),
+      url: canonical,
+    },
+  };
+}
 
 function Controls({
   f,

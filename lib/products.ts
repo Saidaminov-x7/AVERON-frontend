@@ -19,6 +19,7 @@ export type StoreProduct = {
   source?: string | null;
   sourceUrl?: string | null;
   translations?: Record<string, Translation>;
+  description?: Record<string, string | { text?: string }> | null;
   salePriceUzs: string | number;
   compareAtPriceUzs?: string | number | null;
   stock?: number;
@@ -48,9 +49,11 @@ export type StoreProduct = {
 };
 
 export function productTitle(product: StoreProduct, locale = 'ru') {
-  const value = product.translations?.[locale] ?? product.translations?.ru;
-  if (typeof value === 'string') return value;
-  return value?.title ?? value?.name ?? product.slug.replaceAll('-', ' ');
+  const value = product.translations?.[locale]
+    ?? (locale === 'ru' ? product.translations?.ru : undefined);
+  const title = typeof value === 'string' ? value : value?.title ?? value?.name;
+  if (title && (locale === 'ru' || !/\p{Script=Cyrillic}/u.test(title))) return title;
+  return product.slug.replaceAll('-', ' ');
 }
 
 export function categoryName(category: StoreCategory, locale = 'ru') {

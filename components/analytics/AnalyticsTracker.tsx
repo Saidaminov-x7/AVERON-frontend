@@ -10,30 +10,29 @@ export function AnalyticsTracker() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Игнорируем внутренние служебные пути
-    if (pathname.startsWith('/admin') || pathname.startsWith('/api') || pathname.startsWith('/_next')) {
-      return;
-    }
+    const privateRoute = /^\/(?:ru|uz|en)\/(?:login|register|forgot-password|reset-password|profile|cart|checkout|orders(?:\/|$)|favorites|compare|outfits|wishlist\/shared(?:\/|$)|mini-app)(?:\/|$)/;
+    if (
+      !/^\/(?:ru|uz|en)(?:\/|$)/.test(pathname) ||
+      privateRoute.test(pathname) ||
+      pathname.startsWith('/admin/') ||
+      pathname.startsWith('/api/') ||
+      pathname.startsWith('/_next/')
+    ) return;
 
     try {
-      // 1. Получаем или генерируем персистентный анонимный device ID (UUID)
       let deviceId = localStorage.getItem('averon_device_id');
-      if (!deviceId) {
-        deviceId = 'dev_' + Math.random().toString(36).substring(2, 15) + '_' + Date.now().toString(36);
+      if (!deviceId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(deviceId)) {
+        deviceId = window.crypto.randomUUID();
         localStorage.setItem('averon_device_id', deviceId);
       }
 
-      // 2. Отправляем неблокирующий запрос (fire-and-forget)
-      const apiUrl = externalBaseURL;
-      fetch(`${apiUrl}/analytics/visit`, {
+      void fetch(`${externalBaseURL}/analytics/visit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ deviceId, path: pathname }),
-        keepalive: true, // Позволяет запросу завершиться даже при быстрой навигации
+        keepalive: true,
       }).catch(() => {});
-    } catch {
-      // Игнорируем возможные ошибки localStorage в приватном режиме
-    }
+    } catch { /* Analytics is optional and must never block page rendering. */ }
   }, [pathname]);
 
   return null;

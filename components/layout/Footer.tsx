@@ -1,181 +1,124 @@
 "use client";
+
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import type { NavLink } from "@/lib/siteSettings";
-const copy = {
-  ru: {
-    desc: "Товары из Китая с понятным выбором, ручной проверкой карточек и доставкой по Узбекистану.",
-    buyers: "Покупателям",
-    help: "Помощь",
-    docs: "Документы",
-    channel: "Наш канал",
-    support: "Поддержка",
-    rights: "Все права защищены.",
-    country: "Сервис работает для покупателей в Республике Узбекистан.",
-    links: [
-      ["Все товары", "/catalog"],
-      ["Избранное", "/favorites"],
-      ["Сравнение", "/compare"],
-      ["Как заказать", "/how-to-order"],
-    ],
-    helpLinks: [
-      ["AI-помощник", "/ai"],
-      ["Вопросы и ответы", "/faq"],
-      ["О компании", "/about"],
-    ],
-    docLinks: [
-      ["Пользовательское соглашение", "/terms"],
-      ["Политика конфиденциальности", "/privacy"],
-      ["Публичная оферта", "/public-offer"],
-      ["Доставка и оплата", "/delivery"],
-      ["Возврат товара", "/returns"],
-    ],
-  },
-  uz: {
-    desc: "Xitoydan mahsulotlar: tushunarli tanlov, qo‘lda tekshiruv va O‘zbekiston bo‘ylab yetkazib berish.",
-    buyers: "Xaridorlarga",
-    help: "Yordam",
-    docs: "Hujjatlar",
-    channel: "Kanalimiz",
-    support: "Yordam",
-    rights: "Barcha huquqlar himoyalangan.",
-    country: "Xizmat O‘zbekiston Respublikasi xaridorlari uchun ishlaydi.",
-    links: [
-      ["Barcha mahsulotlar", "/catalog"],
-      ["Sevimlilar", "/favorites"],
-      ["Taqqoslash", "/compare"],
-      ["Qanday buyurtma beriladi", "/how-to-order"],
-    ],
-    helpLinks: [
-      ["AI-yordamchi", "/ai"],
-      ["Savol-javoblar", "/faq"],
-      ["Kompaniya haqida", "/about"],
-    ],
-    docLinks: [
-      ["Foydalanuvchi kelishuvi", "/terms"],
-      ["Maxfiylik siyosati", "/privacy"],
-      ["Ommaviy oferta", "/public-offer"],
-      ["Yetkazib berish va to‘lov", "/delivery"],
-      ["Tovarni qaytarish", "/returns"],
-    ],
-  },
-  en: {
-    desc: "Products from China with clear choices, manual verification and delivery across Uzbekistan.",
-    buyers: "For buyers",
-    help: "Help",
-    docs: "Documents",
-    channel: "Our channel",
-    support: "Support",
-    rights: "All rights reserved.",
-    country: "The service operates for buyers in the Republic of Uzbekistan.",
-    links: [
-      ["All products", "/catalog"],
-      ["Favorites", "/favorites"],
-      ["Compare", "/compare"],
-      ["How to order", "/how-to-order"],
-    ],
-    helpLinks: [
-      ["AI assistant", "/ai"],
-      ["FAQ", "/faq"],
-      ["About us", "/about"],
-    ],
-    docLinks: [
-      ["Terms of use", "/terms"],
-      ["Privacy policy", "/privacy"],
-      ["Public offer", "/public-offer"],
-      ["Delivery and payment", "/delivery"],
-      ["Returns", "/returns"],
-    ],
-  },
-} as const;
+
+const BUYER_LINKS = [
+  ["links.catalog", "/catalog"],
+  ["links.favorites", "/favorites"],
+  ["links.compare", "/compare"],
+  ["links.howToOrder", "/how-to-order"],
+] as const;
+const HELP_LINKS = [
+  ["help.ai", "/ai"],
+  ["help.faq", "/faq"],
+  ["help.about", "/about"],
+] as const;
+const DOCUMENT_LINKS = [
+  ["documents.terms", "/terms"],
+  ["documents.privacy", "/privacy"],
+  ["documents.offer", "/public-offer"],
+  ["documents.delivery", "/delivery"],
+  ["documents.returns", "/returns"],
+] as const;
+
 export function Footer({ locale: localeProp }: { locale?: string } = {}) {
-  const locale = (useLocale() || localeProp || 'ru') as keyof typeof copy;
-  const t = copy[locale] ?? copy.ru;
+  const locale = useLocale() || localeProp || "ru";
+  const t = useTranslations("footer");
   const { data: settings } = useSiteSettings();
   const configuredFooterLinks = Array.isArray(settings?.navLinks)
     ? settings.navLinks
         .filter((item: NavLink) => item && item.position === "footer" && item.label && (item.href || item.url))
         .map((item: NavLink) => [
           typeof item.label === "object"
-            ? item.label[locale] || item.label.ru || item.label.uz || item.label.en
+            ? item.label[locale] || item.label.en || item.label.uz || item.label.ru
             : String(item.label),
           String(item.href || item.url),
         ] as const)
     : [];
+
   const col = (
     title: string,
     links: readonly (readonly [string, string])[],
   ) => (
-    <div>
-      <h2 className="mb-4 text-xs font-bold uppercase tracking-[.14em]">
+    <div className="min-w-0">
+      <h2 className="mb-2 text-xs font-bold uppercase tracking-[.14em] sm:mb-3">
         {title}
       </h2>
-      <ul className="space-y-3">
-        {links.map(([l, h]) => (
-          <li key={h}>
+      <ul className="space-y-1">
+        {links.map(([key, href]) => (
+          <li key={href}>
             <Link
-              className="text-sm text-stone-500 transition-colors hover:text-primary-700 dark:text-stone-400 dark:hover:text-primary-300"
-              href={`/${locale}${h}`}
+              className="flex min-h-11 items-center py-2 text-sm text-stone-600 transition-colors hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-stone-400 dark:hover:text-primary-300"
+              href={href.startsWith("http") ? href : `/${locale}${href}`}
             >
-              {l}
+              {key}
             </Link>
           </li>
         ))}
       </ul>
     </div>
   );
+
+  const buyerLinks = configuredFooterLinks.length
+    ? configuredFooterLinks.map(([label, href]) => [label, href] as const)
+    : BUYER_LINKS.map(([key, href]) => [t(key), href] as const);
+  const helpLinks = HELP_LINKS.map(([key, href]) => [t(key), href] as const);
+  const documentLinks = DOCUMENT_LINKS.map(([key, href]) => [t(key), href] as const);
+
   return (
     <footer className="w-full border-t border-stone-200 bg-[#fcfbf8] dark:border-white/10 dark:bg-stone-950">
-      <div className="mx-auto max-w-[1440px] px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.25fr_repeat(3,1fr)]">
-          <div>
+      <div className="mx-auto max-w-[1440px] px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-12 sm:pb-[calc(3rem+env(safe-area-inset-bottom))] lg:px-8">
+        <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-[1.25fr_repeat(3,1fr)] lg:gap-10">
+          <div className="min-w-0">
             <Link
               href={`/${locale}`}
-              className="text-xl font-black tracking-[.18em] text-primary-800 dark:text-primary-300"
+              className="inline-flex min-h-11 items-center text-xl font-black tracking-[.18em] text-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-primary-300"
             >
               {settings?.siteName || "AVERON"}
             </Link>
-            <p className="mt-4 max-w-xs text-sm leading-6 text-stone-500">
-              {t.desc}
+            <p className="mt-2 max-w-xs text-sm leading-6 text-stone-600 dark:text-stone-400">
+              {t("description")}
             </p>
-            <div className="mt-5 flex gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               <a
                 href="https://t.me/averon_fashion"
-                className="rounded-xl border px-3 py-2 text-sm font-semibold dark:border-white/10"
+                className="inline-flex min-h-11 items-center rounded-xl border border-stone-300 px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/10"
               >
-                <Send className="mr-2 inline" size={15} />
-                {t.channel}
+                <Send className="mr-2 shrink-0" size={15} />
+                {t("channel")}
               </a>
               <a
                 href="https://t.me/averon_fashion_admin"
-                className="rounded-xl border px-3 py-2 text-sm font-semibold dark:border-white/10"
+                className="inline-flex min-h-11 items-center rounded-xl border border-stone-300 px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/10"
               >
-                <MessageCircle className="mr-2 inline" size={15} />
-                {t.support}
+                <MessageCircle className="mr-2 shrink-0" size={15} />
+                {t("support")}
               </a>
             </div>
             {(settings?.contactEmail || settings?.contactPhone) && (
-              <div className="mt-4 space-y-1 text-sm text-stone-500 dark:text-stone-400">
+              <div className="mt-3 space-y-1 text-sm text-stone-600 dark:text-stone-400">
                 {settings.contactEmail && (
-                  <a className="block hover:text-primary-700" href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>
+                  <a className="flex min-h-11 items-center break-all hover:text-primary-700" href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>
                 )}
                 {settings.contactPhone && (
-                  <a className="block hover:text-primary-700" href={`tel:${settings.contactPhone.replace(/[^+\d]/g, '')}`}>{settings.contactPhone}</a>
+                  <a className="flex min-h-11 items-center hover:text-primary-700" href={`tel:${settings.contactPhone.replace(/[^+\d]/g, '')}`}>{settings.contactPhone}</a>
                 )}
               </div>
             )}
           </div>
-          {col(t.buyers, configuredFooterLinks.length ? configuredFooterLinks : t.links)}
-          {col(t.help, t.helpLinks)}
-          {col(t.docs, t.docLinks)}
+          {col(t("buyers"), buyerLinks)}
+          {col(t("helpTitle"), helpLinks)}
+          {col(t("documentsTitle"), documentLinks)}
         </div>
-        <div className="mt-10 flex flex-col justify-between gap-3 border-t pt-6 text-xs text-stone-400 dark:border-white/10 sm:flex-row">
+        <div className="mt-6 flex flex-col justify-between gap-2 border-t border-stone-200 pt-4 text-xs leading-5 text-stone-500 dark:border-white/10 dark:text-stone-400 sm:mt-8 sm:flex-row sm:gap-4 sm:pt-5">
           <p>
-            © {new Date().getFullYear()} {settings?.siteName || "AVERON"}. {t.rights}
+            © {new Date().getFullYear()} {settings?.siteName || "AVERON"}. {t("rights")}
           </p>
-          <p>{t.country}</p>
+          <p>{t("country")}</p>
         </div>
       </div>
     </footer>

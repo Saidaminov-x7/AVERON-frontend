@@ -9,6 +9,8 @@ import {
   getProducts,
   parseStoreCategories,
   type StoreCategory,
+  productTitle,
+  type StoreProduct,
 } from './products';
 
 vi.mock('./axios', () => ({ default: { get: vi.fn() } }));
@@ -123,5 +125,37 @@ describe('categoryName', () => {
       .toBe('q=coat&country=CN&category=outerwear');
     expect(buildCatalogPageSearchParams(filters, 3).toString())
       .toBe('q=coat&country=CN&category=outerwear&page=3');
+  });
+});
+
+describe('productTitle', () => {
+  const product = {
+    id: 'product-1',
+    slug: 'linen-summer-shirt',
+    salePriceUzs: 100000,
+    translations: { ru: 'Льняная летняя рубашка' },
+  } satisfies StoreProduct;
+
+  it('uses the requested translation when available', () => {
+    expect(productTitle({
+      ...product,
+      translations: { ru: 'Рубашка', en: { title: 'Shirt' }, uz: { name: 'Ko‘ylak' } },
+    }, 'en')).toBe('Shirt');
+  });
+
+  it('does not expose Russian product copy as a translation fallback', () => {
+    expect(productTitle(product, 'en')).toBe('linen summer shirt');
+    expect(productTitle(product, 'uz')).toBe('linen summer shirt');
+    expect(productTitle(product, 'ru')).toBe('Льняная летняя рубашка');
+  });
+
+  it('uses the stable slug when a Latin-locale translation is still Cyrillic', () => {
+    const staleTranslations = {
+      ...product,
+      translations: { ru: { title: 'Test' }, en: { title: 'Тест' }, uz: { title: 'Тест' } },
+    };
+
+    expect(productTitle(staleTranslations, 'en')).toBe('linen summer shirt');
+    expect(productTitle(staleTranslations, 'uz')).toBe('linen summer shirt');
   });
 });

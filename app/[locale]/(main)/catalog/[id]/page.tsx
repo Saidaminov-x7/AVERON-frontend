@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckCircle2, Headphones, MessageCircle, PackageCheck } from "lucide-react";
@@ -18,6 +19,7 @@ import {
 } from "@/lib/products";
 
 type Filters = Record<string, string | string[] | undefined>;
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://averon.uz").replace(/\/+$/, "");
 
 class ProductRequestError extends Error {
   constructor(public readonly kind: "network" | "server") {
@@ -26,9 +28,7 @@ class ProductRequestError extends Error {
   }
 }
 
-type ProductDetail = StoreProduct & {
-  description?: Record<string, string | { text?: string }>;
-};
+type ProductDetail = StoreProduct;
 
 function isStoreProduct(value: unknown): value is ProductDetail {
   if (typeof value !== "object" || value === null) return false;
@@ -83,19 +83,74 @@ async function loadProduct(slug: string): Promise<ProductDetail | null> {
   if (!isStoreProduct(payload)) throw new ProductRequestError("server");
   return payload;
 }
+
+function getProductDescription(product: StoreProduct, locale: string) {
+  const localizedDescription = product.description?.[locale];
+  const description = typeof localizedDescription === "string"
+    ? localizedDescription
+    : localizedDescription?.text;
+  return description?.trim() || null;
+}
+
+function getStructuredAvailability(product: StoreProduct) {
+  if (product.availability) {
+    if (product.availability.inStock) return "https://schema.org/InStock";
+    if (product.availability.preorderEligible && product.availability.preorderAvailable > 0) {
+      return "https://schema.org/PreOrder";
+    }
+    return "https://schema.org/OutOfStock";
+  }
+  if (product.available === false) return "https://schema.org/OutOfStock";
+  if (product.available === true && typeof product.stock === "number" && product.stock > 0) {
+    return "https://schema.org/InStock";
+  }
+  return undefined;
+}
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ id: string; locale: string }>;
 }): Promise<Metadata> {
   const { id, locale } = await params;
+  const t = await getTranslations({ locale, namespace: "productDetail" });
   let product: StoreProduct | null = null;
   try {
     product = await loadProduct(id);
   } catch {
-    return { title: "AVERON" };
+    return { title: "AVERON", robots: { index: false, follow: true } };
   }
-  return { title: product ? productTitle(product, locale) : "Товар" };
+  if (!product) return { title: "AVERON", robots: { index: false, follow: true } };
+  const title = productTitle(product, locale);
+  const description = getProductDescription(product, locale) ?? t("seoDescriptionFallback");
+  const canonical = `/${locale}/catalog/${encodeURIComponent(product.slug)}`;
+  const image = product.images?.[0]?.url;
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+      languages: {
+        ru: `/ru/catalog/${encodeURIComponent(product.slug)}`,
+        uz: `/uz/catalog/${encodeURIComponent(product.slug)}`,
+        en: `/en/catalog/${encodeURIComponent(product.slug)}`,
+        'x-default': `/ru/catalog/${encodeURIComponent(product.slug)}`,
+      },
+    },
+    openGraph: {
+      type: 'website',
+      title,
+      description,
+      url: canonical,
+      ...(image ? { images: [{ url: image, alt: title }] } : {}),
+    },
+    twitter: {
+      card: image ? 'summary_large_image' : 'summary',
+      title,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
+  };
 }
 
 export default async function ProductPage({
@@ -106,6 +161,7 @@ export default async function ProductPage({
   searchParams: Promise<Filters>;
 }) {
   const [{ id, locale }, filters] = await Promise.all([params, searchParams]);
+  const t = await getTranslations({ locale, namespace: "productDetail" });
   let product: ProductDetail | null;
   try {
     product = await loadProduct(id);
@@ -123,78 +179,69 @@ export default async function ProductPage({
   if (!product) notFound();
   const title = productTitle(product, locale);
   const copy = {
-    ru: {
-      back: "Назад в каталог",
-      verified: "AVERON · ПРОВЕРЕНО",
-      descriptionFallback: "Проверенный товар из каталога AVERON.",
-      descriptionUnavailable: "Подробности товара доступны у поддержки.",
-      gallery: "Фотографии товара",
-      imageLabel: (index: number) => `Показать фото ${index}`,
-      delivery: "Доставка",
-      orderStatus: "Статус заказа всегда под рукой",
-      support: "Поддержка",
-      supportText: "Поможем с размером и товаром",
-      askProduct: "Задать вопрос о товаре",
-      askProductText: "Размер, цвет, наличие и доставка",
-      confirmed: "Карточка подтверждена администратором",
-    },
-    uz: {
-      back: "Katalogga qaytish",
-      verified: "AVERON · TEKSHIRILGAN",
-      descriptionFallback: "AVERON katalogidagi tekshirilgan mahsulot.",
-      descriptionUnavailable: "Mahsulot tafsilotlarini yordam xizmatidan olishingiz mumkin.",
-      gallery: "Mahsulot rasmlari",
-      imageLabel: (index: number) => `${index}-rasmni ko‘rsatish`,
-      delivery: "Yetkazib berish",
-      orderStatus: "Buyurtma holati doimo yoningizda",
-      support: "Yordam",
-      supportText: "O‘lcham va mahsulot bo‘yicha yordam beramiz",
-      askProduct: "Mahsulot haqida savol berish",
-      askProductText: "O‘lcham, rang, mavjudlik va yetkazib berish",
-      confirmed: "Mahsulot sahifasi administrator tomonidan tasdiqlangan",
-    },
-    en: {
-      back: "Back to catalog",
-      verified: "AVERON · VERIFIED",
-      descriptionFallback: "A verified product from the AVERON catalog.",
-      descriptionUnavailable: "Contact support for more product details.",
-      gallery: "Product images",
-      imageLabel: (index: number) => `Show image ${index}`,
-      delivery: "Delivery",
-      orderStatus: "Keep your order status close at hand",
-      support: "Support",
-      supportText: "Get help with sizing and product details",
-      askProduct: "Ask about this product",
-      askProductText: "Size, color, availability, and delivery",
-      confirmed: "Product listing verified by an administrator",
-    },
-  }[locale as "ru" | "uz" | "en"] ?? {
-    back: "Назад в каталог",
-    verified: "AVERON · ПРОВЕРЕНО",
-    descriptionFallback: "Проверенный товар из каталога AVERON.",
-    descriptionUnavailable: "Подробности товара доступны у поддержки.",
-    gallery: "Фотографии товара",
-    imageLabel: (index: number) => `Показать фото ${index}`,
-    delivery: "Доставка",
-    orderStatus: "Статус заказа всегда под рукой",
-    support: "Поддержка",
-    supportText: "Поможем с размером и товаром",
-    askProduct: "Задать вопрос о товаре",
-    askProductText: "Размер, цвет, наличие и доставка",
-    confirmed: "Карточка подтверждена администратором",
+    back: t("back"),
+    verified: t("verified"),
+    descriptionFallback: t("descriptionFallback"),
+    gallery: t("gallery"),
+    imageLabel: (index: number) => t("imageLabel", { index }),
+    delivery: t("delivery"),
+    orderStatus: t("orderStatus"),
+    support: t("support"),
+    supportText: t("supportText"),
+    askProduct: t("askProduct"),
+    askProductText: t("askProductText"),
+    confirmed: t("confirmed"),
   };
   const catalogQuery = buildCatalogSearchParams(filters).toString();
   const initialOrderNumber = typeof filters.reviewOrderNumber === "string"
     ? filters.reviewOrderNumber
     : undefined;
   const catalogHref = `/${locale}/catalog${catalogQuery ? `?${catalogQuery}` : ""}`;
-  const localizedDescription = product.description?.[locale] ?? product.description?.ru;
-  const description =
-    (typeof localizedDescription === "string"
-      ? localizedDescription
-      : localizedDescription?.text) ?? copy.descriptionFallback;
+  const localizedDescription = product.description?.[locale];
+  const description = getProductDescription(product, locale) ?? copy.descriptionFallback;
+  const productUrl = `${SITE_URL}/${locale}/catalog/${encodeURIComponent(product.slug)}`;
+  const canonicalPrice = String(product.salePriceUzs);
+  const hasCanonicalPrice = /^\d+(?:\.\d+)?$/.test(canonicalPrice) && Number(canonicalPrice) >= 0;
+  const availability = getStructuredAvailability(product);
+  const productImages = product.images?.map(({ url }) => url);
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: title,
+    ...(typeof localizedDescription === 'string'
+      ? { description: localizedDescription }
+      : localizedDescription?.text
+        ? { description: localizedDescription.text }
+        : {}),
+    ...(productImages?.length ? { image: productImages } : {}),
+    sku: product.slug,
+    ...(hasCanonicalPrice ? { offers: {
+      '@type': 'Offer',
+      url: productUrl,
+      priceCurrency: 'UZS',
+      price: canonicalPrice,
+      ...(availability ? { availability } : {}),
+    } } : {}),
+  };
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'AVERON', item: `${SITE_URL}/${locale}` },
+      { '@type': 'ListItem', position: 2, name: t("catalog"), item: `${SITE_URL}/${locale}/catalog` },
+      { '@type': 'ListItem', position: 3, name: title, item: productUrl },
+    ],
+  };
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd).replace(/</g, '\\u003c') }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, '\\u003c') }}
+      />
       <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 lg:px-8">
         <SmartBackButton fallbackHref={catalogHref} />
         <div className="mt-6 grid gap-8 lg:grid-cols-2">
@@ -213,9 +260,7 @@ export default async function ProductPage({
               {title}
             </h1>
             <p className="mt-5 leading-7 text-stone-600 dark:text-stone-300">
-              {typeof description === "string"
-                ? description
-                : copy.descriptionUnavailable}
+              {description}
             </p>
             <AddToCart
               productId={product.id}
@@ -229,7 +274,7 @@ export default async function ProductPage({
               href={`/${locale}/outfits?product=${encodeURIComponent(product.slug)}`}
               className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl border border-primary-700 px-4 text-sm font-bold text-primary-800 transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-primary-200 dark:hover:bg-primary-950/30"
             >
-              {locale === "uz" ? "Obrazga qo‘shish" : locale === "en" ? "Add to outfit" : "Добавить в образ"}
+              {t("addToOutfit")}
             </Link>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <div className="flex gap-3 rounded-xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900">

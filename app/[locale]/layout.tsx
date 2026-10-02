@@ -1,20 +1,6 @@
 import LayoutServer from './layout-server'
 import type { Metadata } from 'next';
-
-const localeMetadata = {
-  ru: {
-    title: 'Магазин',
-    description: 'Одежда, обувь и аксессуары из Китая с доставкой по Узбекистану.',
-  },
-  uz: {
-    title: "Do'kon",
-    description: "Xitoydan kiyim, poyabzal va aksessuarlar — O'zbekiston bo'ylab yetkazib berish bilan.",
-  },
-  en: {
-    title: 'Store',
-    description: 'Clothing, shoes, and accessories from China, delivered across Uzbekistan.',
-  },
-} as const;
+import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({
   params,
@@ -22,11 +8,36 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const copy = localeMetadata[locale as keyof typeof localeMetadata] ?? localeMetadata.ru;
+  const t = await getTranslations({ locale, namespace: 'metadata' });
+  const title = t('storeTitle');
+  const description = t('storeDescription');
 
   return {
-    title: copy.title,
-    description: copy.description,
+    title: { default: title, template: '%s | AVERON' },
+    description,
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://averon.uz'),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        ru: '/ru',
+        uz: '/uz',
+        en: '/en',
+        'x-default': '/ru',
+      },
+    },
+    openGraph: {
+      type: 'website',
+      siteName: 'AVERON',
+      locale: locale === 'uz' ? 'uz_UZ' : locale === 'en' ? 'en_US' : 'ru_RU',
+      title,
+      description,
+      url: `/${locale}`,
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
   };
 }
 

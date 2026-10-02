@@ -47,9 +47,11 @@ export default function LocaleLayout({
             <AuthInitializer />
             <GlobalErrorListener />
             <AnalyticsTracker />
-            <Suspense fallback={null}>
-              <YandexMetrika counterId="112059980" />
-            </Suspense>
+            {process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID && /^[1-9]\d*$/.test(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID) && (
+              <Suspense fallback={null}>
+                <YandexMetrika counterId={process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID} />
+              </Suspense>
+            )}
             <div className="flex min-h-screen flex-col">
               <AppChrome>{children}</AppChrome>
             </div>

@@ -1,8 +1,27 @@
 import type { Metadata, Viewport } from 'next';
 
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://averon.uz').replace(/\/+$/, '');
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${SITE_URL}/#organization`,
+  name: 'AVERON',
+  url: SITE_URL,
+  logo: `${SITE_URL}/logotip.png`,
+  sameAs: ['https://t.me/averon_fashion'],
+};
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${SITE_URL}/#website`,
+  name: 'AVERON',
+  url: SITE_URL,
+  inLanguage: ['ru', 'uz', 'en'],
+};
+
 export const metadata: Metadata = {
-  title: { default: 'AVERON | Главная', template: 'AVERON | %s' },
-  description: 'Одежда, обувь и аксессуары из Китая с доставкой по Узбекистану.',
+  title: { default: 'AVERON', template: '%s | AVERON' },
+  description: 'Shop clothing, shoes, and accessories with delivery across Uzbekistan.',
 };
 
 async function getServerSettings() {
@@ -33,13 +52,23 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const configuredMetrikaId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID;
+  const metrikaId = configuredMetrikaId && /^[1-9]\d*$/.test(configuredMetrikaId)
+    ? configuredMetrikaId
+    : null;
   return (
     <html suppressHydrationWarning>
       <head>
         <link rel="icon" href="/logotip.png" />
-        {/* Yandex.Metrika counter */}
         <script
-          type="text/javascript"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        {metrikaId && <script
           dangerouslySetInnerHTML={{
             __html: `
               (function(m,e,t,r,i,k,a){
@@ -47,24 +76,13 @@ export default async function RootLayout({
                   m[i].l=1*new Date();
                   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
                   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-              })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112059980', 'ym');
+              })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=${metrikaId}', 'ym');
 
-              ym(112059980, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
             `,
           }}
-        />
-        {/* /Yandex.Metrika counter */}
+        />}
       </head>
       <body>
-        <noscript>
-          <div>
-            <img
-              src="https://mc.yandex.ru/watch/112059980"
-              style={{ position: 'absolute', left: '-9999px' }}
-              alt=""
-            />
-          </div>
-        </noscript>
         {children}
       </body>
     </html>

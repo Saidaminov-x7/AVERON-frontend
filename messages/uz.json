@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "storeTitle": "Onlayn do‘kon",
+    "storeDescription": "Kiyim, poyabzal va aksessuarlar narxi o‘zbek so‘mida ko‘rsatilgan."
+  },
   "home": {
     "title": "AVERON — butun dunyo mahsulotlari",
     "badge": "AVERON · JAHON KATALOGI",
@@ -32,57 +36,60 @@
     "step3Body": "Buyurtma holati haqida aniq yangiliklarni oling.",
     "subtitle": "AVERON katalogidan mos mahsulotlarni toping",
     "searchPlaceholder": "Nimani topmoqchisiz?",
-    "popularListings": "Mashhur mahsulotlar",
-    "viewAll": "Barchasini ko‘rish",
-    "statListings": "e'lonlar",
-    "statCities": "shaharlar",
-    "statUsers": "foydalanuvchilar",
-    "howTitle": "Qanday ishlaydi",
-    "howSubtitle": "Kalitlargacha uch qadam",
-    "how1Title": "Uy toping",
-    "how1Text": "Shahar, narx, xonalar va xarita bo'yicha qidiring.",
-    "how2Title": "Egasi bilan gaplashing",
-    "how2Text": "Vositasiz, yashirin to'lovlarsiz bog'laning.",
-    "how3Title": "Xotirjam ko'ching",
-    "how3Text": "Dolzar e'lonlar va tushunarli shartlar.",
-    "citiesTitle": "Mashhur shaharlar",
-    "citiesSubtitle": "Yirik shaharlardan boshlang",
-    "cityCta": "E'lonlarni ko'rish",
-    "whyTitle": "Nega averon",
-    "why1Title": "Butun mamlakat bo'ylab",
-    "why1Text": "Kvartiralar, xonalar va kunlik ijaralar bitta katalogda.",
-    "why2Title": "Ochiq shartlar",
-    "why2Text": "Narx va kontaktlar darhol ko'rinadi.",
-    "why3Title": "Tezkor qidiruv",
-    "why3Text": "Xarita, filtrlar va saqlanganlar — daqiqalar ichida solishtiring.",
-    "ctaTitle": "Kvartira ijaraga beryapsizmi?",
-    "ctaText": "E'lonni bepul joylashtiring va ijarachilardan so'rovlar oling.",
-    "ctaButton": "E'lon joylash",
-    "listing1Title": "Markazda zamonaviy kvartira",
-    "listing1Location": "Toshkent, Yunusobod tumani",
-    "listing2Title": "Metrga yaqin qulay studiya",
-    "listing2Location": "Toshkent, Chilonzor tumani",
-    "listing3Title": "Park manzarali keng kvartira",
-    "listing3Location": "Toshkent, Mirobod tumani",
-    "rooms": "xon.",
-    "month": "oy",
-    "details": "Batafsil",
-    "addListingTitle": "Kvartira ijaraga beryapsizmi?",
-    "addListingText": "E'lonni bepul joylashtiring va ijarachilardan so'rovlar oling.",
-    "addListingButton": "E'lon joylash",
-    "popularCities": "Mashhur shaharlar",
-    "categoriesTitle": "Uy-joy toifalari",
-    "newListings": "Yangi e'lonlar",
-    "platformStats": "Platforma raqamlarda",
-    "totalListings": "Faol e'lonlar",
-    "activeUsers": "Foydalanuvchilar",
-    "cities": "Shaharlar",
-    "dailyViews": "Kunlik ko'rishlar"
+    "viewAll": "Barchasini ko‘rish"
+  },
+  "footer": {
+    "description": "Kiyim, poyabzal va aksessuarlar: tekshirilgan mahsulot ma’lumotlari va O‘zbekiston bo‘ylab yetkazib berish.",
+    "buyers": "Xaridorlarga",
+    "helpTitle": "Yordam",
+    "documentsTitle": "Hujjatlar",
+    "channel": "Kanalimiz",
+    "support": "Yordam",
+    "rights": "Barcha huquqlar himoyalangan.",
+    "country": "Xizmat O‘zbekiston Respublikasi xaridorlari uchun ishlaydi.",
+    "links": {
+      "catalog": "Barcha mahsulotlar",
+      "favorites": "Sevimlilar",
+      "compare": "Taqqoslash",
+      "howToOrder": "Qanday buyurtma beriladi"
+    },
+    "help": {
+      "ai": "AI-yordamchi",
+      "faq": "Savol-javoblar",
+      "about": "Kompaniya haqida"
+    },
+    "documents": {
+      "terms": "Foydalanuvchi kelishuvi",
+      "privacy": "Maxfiylik siyosati",
+      "offer": "Ommaviy oferta",
+      "delivery": "Yetkazib berish va to‘lov",
+      "returns": "Tovarni qaytarish"
+    }
+  },
+  "aboutPage": {
+    "eyebrow": "AVERON haqida",
+    "title": "Mahsulotlarni ishonch bilan tanlang",
+    "intro": "AVERON katalogda mavjud mamlakatlardan mahsulotlarni bir joyga jamlaydi: narxlar so‘mda ko‘rsatiladi, mahsulot sahifalari qo‘lda tekshiriladi va buyurtma davomida yordam beriladi.",
+    "step1Title": "Tanlang",
+    "step1Text": "Katalogdagi mamlakatlardan kiyim, poyabzal va aksessuarlarni ko‘rib chiqing.",
+    "step2Title": "Tekshiring",
+    "step2Text": "Mahsulotlar e’lon qilinishidan oldin tekshiriladi; dolzarb ma’lumotlar mahsulot sahifasida ko‘rsatiladi.",
+    "step3Title": "Buyurtma bering",
+    "step3Text": "Hisobingizda buyurtmaning yetkazib berish bosqichlarini kuzating.",
+    "principle": "Bizning tamoyil",
+    "principleTitle": "AI yordam beradi, inson nazorati saqlanadi",
+    "principleText": "AI qidiruv va mahsulot ma’lumotlari bilan yordam beradi. Mahsulotni e’lon qilish va buyurtmalar platformaning inson ishtirokidagi jarayonlari asosida amalga oshiriladi.",
+    "benefit1": "Narxlar so‘mda",
+    "benefit2": "E’lon qilishdan oldin mahsulot tekshiruvi",
+    "benefit3": "Buyurtmalar bo‘yicha yordam",
+    "benefit4": "Buyurtma va yetkazib berish holati yangiliklari",
+    "cta": "Mahsulot tanlashga tayyormisiz?",
+    "ctaText": "Katalogni oching yoki AI yordamchidan so‘rang.",
+    "catalog": "Katalog",
+    "ai": "AI-yordamchi"
   },
   "nav": {
-    "catalog": "E'lonlar",
-    "addListing": "Joylashtirish",
-    "chat": "Yordam",
+    "catalog": "Mahsulotlar",
     "about": "Biz haqimizda",
     "favorites": "Saqlanganlar",
     "login": "Kirish",
@@ -94,10 +101,15 @@
     "language": "Til",
     "menu": "Menyu",
     "close": "Yopish",
-    "langAndTheme": "Til va mavzu"
+    "langAndTheme": "Til va mavzu",
+    "compare": "Taqqoslash",
+    "cart": "Savatcha",
+    "orders": "Buyurtmalar",
+    "settings": "Sozlamalar",
+    "logout": "Chiqish"
   },
   "catalog": {
-    "title": "Xitoydan mahsulotlar",
+    "title": "Mahsulotlar katalogi",
     "subtitle": "E’lon qilishdan oldin tekshirilgan kiyim, poyabzal va aksessuarlar.",
     "eyebrow": "AVERON KATALOGI",
     "intro": "E’lon qilishdan oldin tekshirilgan kiyim, poyabzal va aksessuarlar.",
@@ -199,32 +211,6 @@
     "recentlyViewedClear": "Tarixni tozalash",
     "recentlyViewedClearError": "Ko‘rishlar tarixini tozalab bo‘lmadi."
   },
-  "Apartment": {
-    "notFound": "Kvartira topilmadi",
-    "month": "oy",
-    "rooms": "xon.",
-    "area": "maydoni",
-    "floor": "qavat",
-    "amenities": "Qulayliklar",
-    "contactOwner": "Egasi bilan bog'lanish"
-  },
-  "amenities": {
-    "title": "Qulayliklar",
-    "wifi": "Wi-Fi",
-    "parking": "Avtoturargoh",
-    "elevator": "Lift",
-    "air_conditioning": "Konditsioner",
-    "heating": "Isitish tizimi",
-    "balcony": "Balkon",
-    "pets_allowed": "Uy hayvonlariga ruxsat",
-    "security": "Xavfsizlik / Qo'riqlash",
-    "furniture": "Mebel",
-    "kitchen": "Oshxona",
-    "washing_machine": "Kir yuvish mashinasi",
-    "gym": "Sportzal",
-    "pool": "Basseyn",
-    "sauna": "Sauna"
-  },
   "Login": {
     "title": "Hisobga kirish",
     "subtitle": "Kirish uchun ma'lumotlaringizni kiriting",
@@ -239,7 +225,7 @@
   },
   "Register": {
     "title": "Ro'yxatdan o'tish",
-    "subtitle": "E'lon joylashtirish uchun hisob yarating",
+    "subtitle": "Buyurtma berish va xaridlaringizni boshqarish uchun hisob yarating",
     "name": "Ism",
     "namePlaceholder": "Ismingiz",
     "email": "Email",
@@ -251,46 +237,69 @@
     "haveAccount": "Hisobingiz bormi?",
     "login": "Kirish"
   },
-  "AddListing": {
-    "title": "E'lon qo'shish",
-    "titlePlaceholder": "Masalan, Markazda zamonaviy kvartira",
-    "subtitle": "Ko'chmas mulk haqida ma'lumotni to'ldiring",
-    "type": "Mulk turi",
-    "selectType": "Turini tanlang",
-    "apartment": "Kvartira",
-    "house": "Uy",
-    "room": "Xona",
-    "description": "Tavsif",
-    "descriptionPlaceholder": "Mulkingizni tavsiflang...",
-    "price": "Oylik narx ($)",
-    "location": "Manzil",
-    "locationPlaceholder": "Aniq manzilni ko'rsating",
-    "rooms": "Xonalar soni",
-    "area": "Maydon (m²)",
-    "floor": "Qavat",
-    "totalFloors": "Uyda jami qavatlar",
-    "amenities": "Qulayliklar",
-    "uploadImages": "Rasmlarni yuklash",
-    "maxFiles": "Maksimal {max} ta fayl",
-    "maxSize": "Maksimal {size} MB",
-    "invalidFileType": "Fayl turi mos emas: {filename}",
-    "fileTooLarge": "Fayl {filename} juda katta (maks. {size} MB)",
-    "maxFilesExceeded": "Maksimal {max} ta fayl",
-    "submit": "E'lonni joylashtirish",
-    "loading": "Joylashtirilmoqda..."
+  "productDetail": {
+    "back": "Katalogga qaytish",
+    "verified": "AVERON · TEKSHIRILGAN",
+    "descriptionFallback": "AVERON katalogidagi tekshirilgan mahsulot.",
+    "seoDescriptionFallback": "AVERON katalogida mahsulot tafsilotlari va joriy narxini ko‘ring.",
+    "gallery": "Mahsulot rasmlari",
+    "imageLabel": "{index}-rasmni ko‘rsatish",
+    "delivery": "Yetkazib berish",
+    "orderStatus": "Buyurtma holatini kuzatib boring",
+    "support": "Yordam",
+    "supportText": "O‘lcham va mahsulot bo‘yicha yordam beramiz",
+    "askProduct": "Mahsulot haqida savol berish",
+    "askProductText": "O‘lcham, rang, mavjudlik va yetkazib berish",
+    "confirmed": "Mahsulot sahifasi administrator tomonidan tasdiqlangan",
+    "catalog": "Katalog",
+    "addToOutfit": "Obrazga qo‘shish"
   },
-  "Profile": {
-    "settings": "Sozlamalar",
-    "logout": "Chiqish",
-    "myListings": "Mening e'lonlarim",
-    "favorites": "Saqlanganlar",
-    "addListing": "E'lon qo'shish",
-    "noListingsTitle": "Sizda hali e'lonlar yo'q",
-    "noListingsText": "Birinchi e'loningizni qo'shing va murojaatlar ola boshlang",
-    "addFirstListing": "Birinchi e'lonni qo'shish",
-    "noFavoritesTitle": "Sizda hali saqlanganlar yo'q",
-    "noFavoritesText": "Yoqtirgan e'lonlaringizni saqlang",
-    "browseCatalog": "Katalogga o'tish"
+  "profile": {
+    "accountName": "AVERON xaridori",
+    "active": "Faol",
+    "phoneMissing": "AI funksiyalaridan foydalanish uchun telefon raqamingizni qo‘shing",
+    "signOut": "Chiqish",
+    "loading": "Profil yuklanmoqda…",
+    "tabs": {
+      "overview": "Profil",
+      "orders": "Buyurtmalar",
+      "favorites": "Sevimlilar",
+      "ai": "AI tarixi",
+      "sessions": "Seanslar"
+    },
+    "savedProducts": "Sevimli mahsulotlar",
+    "savedProductsDescription": "Sevimlilar ro‘yxatidagi mahsulotlar",
+    "aiConversations": "AI suhbatlari",
+    "accountStoredDescription": "Hisobingizda saqlanadi",
+    "activeSessions": "Faol seanslar",
+    "signedInDevicesDescription": "Hisobingizga kirgan qurilmalar",
+    "defaultCountry": "Standart mahsulot mamlakati",
+    "defaultCountryDescription": "Katalogni ochganingizda qo‘llanadi.",
+    "countries": {
+      "all": "Barcha mamlakatlar",
+      "CN": "Xitoy",
+      "US": "AQSh",
+      "TR": "Turkiya",
+      "IT": "Italiya",
+      "GB": "Buyuk Britaniya"
+    },
+    "saving": "Saqlanmoqda…",
+    "saveFailed": "Tanlovni saqlab bo‘lmadi. Qayta urinib ko‘ring.",
+    "saved": "Tanlov saqlandi.",
+    "order": "Buyurtma",
+    "details": "Batafsil",
+    "noOrders": "Hozircha buyurtmalar yo‘q",
+    "browseProducts": "Mahsulotlarni ko‘rish",
+    "noFavorites": "Hozircha sevimli mahsulotlar yo‘q",
+    "openCatalog": "Katalogni ochish",
+    "aiConversation": "AVERON AI bilan suhbat",
+    "messageCount": "Xabarlar: {count}",
+    "noAiHistory": "AI tarixi hozircha bo‘sh",
+    "openAi": "AI’ni ochish",
+    "unknownDevice": "Noma’lum qurilma",
+    "currentSession": "Joriy",
+    "ipHidden": "IP yashirilgan",
+    "endSession": "Seansni yakunlash"
   },
   "Favorites": {
     "title": "Saqlanganlar",
@@ -300,82 +309,26 @@
   },
   "about": {
     "title": "AVERON loyihasi haqida",
-    "intro": "AVERON — O'zbekiston bo'ylab uy-joylarni qidirish va ijaraga berish uchun zamonaviy va qulay platforma.",
+    "intro": "AVERON — O'zbekiston bo'ylab yetkazib beriladigan kiyim, poyabzal va aksessuarlar katalogi. Narxlar so'mda ko'rsatiladi.",
     "ourMission": "Bizning maqsadimiz",
-    "missionText": "Biz ko'chmas mulk ijarasi jarayonini ijarachilar va mulk egalari uchun sodda, shaffof, xavfsiz va tezkor qilamiz.",
+    "missionText": "Mahsulotlarni topish, variantlarni solishtirish va buyurtma berishni qulay qilishga yordam beramiz.",
     "whyChooseUs": "Nima uchun bizni tanlashadi",
-    "why1": "Har kuni tekshirilgan va dolzarb e'lonlar",
-    "why2": "Mulk egalari bilan vositachilarsiz to'g'ridan-to'g'ri aloqa",
-    "why3": "Qulay filtrlar, tezkor qidiruv va interaktiv xarita",
-    "why4": "Talabalar va kunlik ijara uchun maxsus takliflar",
+    "why1": "Kiyim, poyabzal va aksessuarlar katalogi",
+    "why2": "Mahsulot narxlari o'zbek so'mida",
+    "why3": "Qidiruv va filtrlar kerakli mahsulotni topishga yordam beradi",
+    "why4": "Buyurtma va yetkazib berish davomida yordam",
     "ourTeam": "Bizning jamoa",
     "teamText": "Biz — O'zbekiston aholisi va mehmonlari uchun qulay raqamli xizmatlarni yaratishga intiluvchi mutaxassislar jamoasimiz."
   },
   "Terms": {
-    "title": "Foydalanuvchi shartnomasi va Foydalanish shartlari",
-    "lastUpdated": "2026-yilgi tahrir | O'zbekiston Respublikasi qonunchiligiga muvofiq",
-    "section1Title": "1. Umumiy qoidalar va Platforma maqomi",
-    "section1Text": "Ushbu Foydalanuvchi shartnomasi (keyingi o'rinlarda — «Shartnoma») AVERON axborot platformasidan (keyingi o'rinlarda — «Platforma / Xizmat») foydalanish tartibini belgilaydi. O'zbekiston Respublikasining «Elektron tijorat to'g'risida»gi Qonuni (O'RQ-792) hamda Fuqarolik kodeksiga binoan, Platforma faqat axborot-texnologik vositachi (e'lonlar agregatori) hisoblanadi va ko'chmas mulk ijarasi bitimi tarafi, ijaraga beruvchi, rieltor yoki kafil sifatida ishtirok etmaydi.",
-    "section2Title": "2. Shartnomani qabul qilish (Aksept) va Ro'yxatdan o'tish",
-    "section2Text": "Platformada ro'yxatdan o'tish, uchinchi tomon xizmatlari (Google, OneID) orqali kirish yoki sayt xizmatlaridan foydalanish ushbu Shartnoma va Maxfiylik siyosatining to'liq va so'zsiz qabul qilinganligini (aksept) bildiradi. 18 yoshga to'lmagan yoki shartlarga rozi bo'lmagan shaxslar servisdan foydalanishni darhol to'xtatishi shart.",
-    "section3Title": "3. E'lonlarga qo'yiladigan talablar va Cheklovlar",
-    "section3Text": "O'zbekiston Respublikasining «Reklama to'g'risida»gi Qonuniga (O'RQ-776) muvofiq, foydalanuvchilar faqat haqqoniy narxlar, manzil va uy-joy holati haqida ma'lumot joylashtirish majburiyatini oladi. Soxta e'lonlar, begona fotosuratlar, noqonuniy oldindan to'lov talab qilish va yashirin rieltorlik to'lovlarini yashirish qat'iyan taqiqlanadi. Ma'muriyat qoidabuzarlarni bloklash va firibgarlik holatlarida ma'lumotlarni huquqni muhofaza qiluvchi organlarga topshirish huquqini o'zida saqlab qoladi.",
-    "section4Title": "4. Platforma javobgarligining cheklanishi",
-    "section4Text": "Platforma ijara shartnomalarining amalda bajarilishi, mulkning saqlanishi, mulkka egalik huquqining qonuniyligi uchun javobgar emas. Foydalanuvchilar ko'chmas mulk hujjatlarini tekshirish va ijara shartnomasini soliq organlarida (E-ijara / DSQ) ro'yxatdan o'tkazish uchun shaxsan javobgardir.",
-    "section5Title": "5. Intellektual mulk",
-    "section5Text": "Saytning barcha elementlari, AVERON tovar belgisi, dasturiy kod, dizayn va ma'lumotlar bazasi O'RQ-42-sonli «Mualliflik huquqi va turdosh huquqlar to'g'risida»gi Qonun bilan himoyalangan. Muallifning yozma roziligisiz ma'lumotlarni ko'chirish yoki avtomatlashtirilgan yig'ish (parsing) qat'iyan taqiqlanadi.",
-    "section6Title": "6. «Yandex.Metrika» veb-analitikasi",
-    "section6Text": "Texnik barqarorlikni ta'minlash, xatoliklarni aniqlash va platforma qulayligini oshirish maqsadida saytda «Yandex.Metrika» (hisoblagich 112059980) tizimi ishlaydi. To'plangan ma'lumotlar anonimlashtiriladi, faqat AVERON ichki tahlili uchun ishlatiladi va hech qachon uchinchi shaxslarga berilmaydi yoki sotilmaydi.",
-    "section7Title": "7. Nizolarni hal etish va Qo'llaniladigan huquq",
-    "section7Text": "Ushbu Shartnomadan kelib chiqadigan barcha nizolar qo'llab-quvvatlash xizmati orqali hal qilinadi. Kelishuvga erishilmagan taqdirda nizolar O'zbekiston Respublikasining moddiy va protsessual huquqiga muvofiq Toshkent shahri sudlarida ko'rib chiqiladi.",
-    "section8Title": "8. Shartnoma shartlarining o'zgarishi",
-    "section8Text": "Ma'muriyat Shartnoma matniga bir tomonlama o'zgartirish kiritish huquqiga ega. Amaldagi versiya doimiy ravishda /terms sahifasida e'lon qilinadi."
+    "title": "Foydalanish shartlari",
+    "lastUpdated": "Sahifa yangilanmoqda",
+    "contentPending": "Ushbu sahifa yangilanmoqda. Savollaringiz bo‘lsa, AVERON qo‘llab-quvvatlash xizmatiga murojaat qiling."
   },
   "Privacy": {
-    "title": "Maxfiylik siyosati va Shaxsiy ma'lumotlarni himoya qilish",
-    "lastUpdated": "2026-yilgi tahrir | O'RQ-547-sonli «Shaxsiy ma'lumotlar to'g'risida»gi Qonunga muvofiq",
-    "section1Title": "1. Qonuniy asoslar va Shaxsiy ma'lumotlarni yig'ish",
-    "section1Text": "Ushbu Siyosat O'zbekiston Respublikasining 2019-yil 2-iyuldagi «Shaxsiy ma'lumotlar to'g'risida»gi O'RQ-547-son Qonuniga to'liq muvofiq tuzilgan. Shaxsiy ma'lumotlar (ism, telefon raqami, email, texnik parametrlar) faqat foydalanuvchining ixtiyoriy roziligi bilan yig'iladi va qayta ishlanadi.",
-    "section2Title": "2. Qayta ishlash maqsadlari va Ma'lumotlar bazasini lokalizatsiya qilish",
-    "section2Text": "Shaxsiy ma'lumotlar foydalanuvchi hisobini yaratish, ijarachi va mulk egasi o'rtasida aloqani ta'minlash, e'lonlarni moderatsiya qilish maqsadida ishlatiladi. O'RQ-547-son Qonunning 27.1-moddasiga muvofiq, ma'lumotlar bazalari O'zbekiston Respublikasi hududida lokalizatsiya qilingan serverlarda saqlanadi.",
-    "section3Title": "3. «Yandex.Metrika» xizmatidan foydalanish",
-    "section3Text": "Saytimizda Yandex.Metrika hisoblagichi ishlaydi. Ma'lumotlar anonim holda (IP-manzil niqoblanadi, texnik harakatlar qayd etiladi) faqat server infratuzilmasi faoliyatini tahlil qilish uchun yig'iladi.",
-    "section4Title": "4. Qat'iy maxfiylik va Uchinchi shaxslarga bermaslik",
-    "section4Text": "Biz to'plangan barcha shaxsiy va analitik ma'lumotlar faqat AVERON ichida ishlatilishini hamda uchinchi shaxslarga, tijorat tashkilotlariga yoki reklama vositachilariga hech qachon berilmasligini (qonuniy sud/tergov so'rovlari bundan mustasno) kafolatlaymiz.",
-    "section5Title": "5. Xavfsizlik choralari va Foydalanuvchi huquqlari",
-    "section5Text": "Platforma SSL/TLS shifrlash, ko'p bosqichli xavfsizlik va Argon2 algoritmlaridan foydalanadi. Har bir foydalanuvchi o'z shaxsiy ma'lumotlarini o'zgartirish, bloklash yoki to'liq o'chirishni talab qilish huquqiga ega.",
-    "section6Title": "6. Ma'lumotlar operatorining aloqa ma'lumotlari",
-    "section6Text": "Shaxsiy ma'lumotlarni qayta ishlash bo'yicha murojaatlar uchun: support@averon.uz"
-  },
-  "footer": {
-    "slogan": "Xitoydan kiyim, poyabzal va aksessuarlar — O'zbekiston bo'ylab yetkazib berish bilan.",
-    "company": "Kompaniya",
-    "about": "Biz haqimizda",
-    "terms": "Shartlar",
-    "privacy": "Maxfiylik",
-    "support": "Yordam",
-    "allRightsReserved": "Barcha huquqlar himoyalangan",
-    "explore": "Qidiruv",
-    "allListings": "Katalog",
-    "favorites": "Saqlanganlar",
-    "landlords": "Egalariga",
-    "addListing": "Obyekt joylash",
-    "aboutService": "Servis haqida"
-  },
-  "Footer": {
-    "slogan": "Xitoydan kiyim, poyabzal va aksessuarlar — O'zbekiston bo'ylab yetkazib berish bilan.",
-    "company": "Kompaniya",
-    "about": "Biz haqimizda",
-    "terms": "Shartlar",
-    "privacy": "Maxfiylik",
-    "support": "Yordam",
-    "allRightsReserved": "Barcha huquqlar himoyalangan",
-    "explore": "Qidiruv",
-    "allListings": "Katalog",
-    "favorites": "Saqlanganlar",
-    "landlords": "Egalariga",
-    "addListing": "Obyekt joylash",
-    "aboutService": "Servis haqida"
+    "title": "Maxfiylik siyosati",
+    "lastUpdated": "Sahifa yangilanmoqda",
+    "contentPending": "Ushbu sahifa yangilanmoqda. Savollaringiz bo‘lsa, AVERON qo‘llab-quvvatlash xizmatiga murojaat qiling."
   },
   "Search": {
     "clearSearch": "Qidiruvni tozalash"
@@ -414,21 +367,6 @@
     "description": "So'ralgan sahifa mavjud emas yoki o'chirilgan",
     "backToHome": "Bosh sahifaga qaytish"
   },
-  "MobileMenu": {
-    "openMenu": "Menyuni ochish",
-    "closeMenu": "Menyuni yopish",
-    "home": "Bosh sahifa",
-    "catalog": "Katalog",
-    "allListings": "Barcha e'lonlar",
-    "apartments": "Kvartiralar",
-    "houses": "Uylar",
-    "about": "Biz haqimizda",
-    "favorites": "Saqlanganlar",
-    "profile": "Profil",
-    "login": "Kirish",
-    "register": "Ro'yxatdan o'tish",
-    "searchPlaceholder": "Qidirish..."
-  },
   "infoPages": {
     "backToCatalog": "Katalogga o'tish",
     "delivery": {
@@ -436,10 +374,22 @@
       "title": "Buyurtmaning aniq yo'li",
       "description": "Yetkazib berishning asosiy bosqichlarini shaxsiy kabinetda kuzatib boring.",
       "items": [
-        { "title": "Tasdiqlash", "text": "Buyurtma tarkibi va aloqa ma'lumotlarini tekshiramiz." },
-        { "title": "Xarid", "text": "Tasdiqlangan buyurtmani yetkazib beruvchiga yuboramiz." },
-        { "title": "Tashish", "text": "Buyurtma harakati bilan statusni yangilab boramiz." },
-        { "title": "Qabul qilish", "text": "Buyurtma berishga tayyor bo'lganda xabar beramiz." }
+        {
+          "title": "Tasdiqlash",
+          "text": "Buyurtma tarkibi va aloqa ma'lumotlarini tekshiramiz."
+        },
+        {
+          "title": "Xarid",
+          "text": "Tasdiqlangan buyurtmani yetkazib beruvchiga yuboramiz."
+        },
+        {
+          "title": "Tashish",
+          "text": "Buyurtma harakati bilan statusni yangilab boramiz."
+        },
+        {
+          "title": "Qabul qilish",
+          "text": "Buyurtma berishga tayyor bo'lganda xabar beramiz."
+        }
       ]
     },
     "returns": {
@@ -447,10 +397,22 @@
       "title": "Buyurtmada muammo bo'lsa",
       "description": "Qadoqni saqlang va darhol qo'llab-quvvatlash xizmatiga murojaat qiling.",
       "items": [
-        { "title": "Holatni qayd eting", "text": "Mahsulot, qadoq va yorliqni rasmga oling." },
-        { "title": "Murojaat qoldiring", "text": "Buyurtma raqamini ko'rsating va vaziyatni yozing." },
-        { "title": "Tekshiruvni kuting", "text": "Jamoamiz materiallarni o'rganib chiqadi va yechim taklif qiladi." },
-        { "title": "Ko'rsatmalarga rioya qiling", "text": "Shartlar murojaat sababi va mahsulot holatiga bog'liq." }
+        {
+          "title": "Holatni qayd eting",
+          "text": "Mahsulot, qadoq va yorliqni rasmga oling."
+        },
+        {
+          "title": "Murojaat qoldiring",
+          "text": "Buyurtma raqamini ko'rsating va vaziyatni yozing."
+        },
+        {
+          "title": "Tekshiruvni kuting",
+          "text": "Jamoamiz materiallarni o'rganib chiqadi va yechim taklif qiladi."
+        },
+        {
+          "title": "Ko'rsatmalarga rioya qiling",
+          "text": "Shartlar murojaat sababi va mahsulot holatiga bog'liq."
+        }
       ]
     },
     "sizeGuide": {
@@ -458,10 +420,22 @@
       "title": "Mos o'lchamni qanday tanlash mumkin",
       "description": "Faqat harfga emas, parametrlar va shaxsiy o'lchamlarga e'tibor bering.",
       "items": [
-        { "title": "O'lchov oling", "text": "Ko'krak, bel, son va oyoq uzunligini o'lchang." },
-        { "title": "Jadvalni oching", "text": "Aynan tanlangan mahsulot jadvalidan foydalaning." },
-        { "title": "Kiyilishini inobatga oling", "text": "Erkin yoki tor turishi haqidagi tavsifga qarang." },
-        { "title": "Yordam so'rang", "text": "Agar ikkilansangiz, o'lchamlaringizni bizga yuboring." }
+        {
+          "title": "O'lchov oling",
+          "text": "Ko'krak, bel, son va oyoq uzunligini o'lchang."
+        },
+        {
+          "title": "Jadvalni oching",
+          "text": "Aynan tanlangan mahsulot jadvalidan foydalaning."
+        },
+        {
+          "title": "Kiyilishini inobatga oling",
+          "text": "Erkin yoki tor turishi haqidagi tavsifga qarang."
+        },
+        {
+          "title": "Yordam so'rang",
+          "text": "Agar ikkilansangiz, o'lchamlaringizni bizga yuboring."
+        }
       ]
     },
     "howToOrder": {
@@ -469,10 +443,22 @@
       "title": "To'rtta oddiy qadam",
       "description": "Tanlashdan tasdiqlashgacha — ortiqcha shakllarsiz va oson.",
       "items": [
-        { "title": "Mahsulotni toping", "text": "Katalog, qidiruv yoki AI-yordamchidan foydalaning." },
-        { "title": "Variantni tanlang", "text": "O'lcham, rang va sonini ko'rsating." },
-        { "title": "Kontakt qoldiring", "text": "Telefon raqami orqali kiring va ma'lumotlarni tasdiqlang." },
-        { "title": "Statusni kuzating", "text": "Barcha o'zgarishlar buyurtma tarixida ko'rinadi." }
+        {
+          "title": "Mahsulotni toping",
+          "text": "Katalog, qidiruv yoki AI-yordamchidan foydalaning."
+        },
+        {
+          "title": "Variantni tanlang",
+          "text": "O'lcham, rang va sonini ko'rsating."
+        },
+        {
+          "title": "Kontakt qoldiring",
+          "text": "Telefon raqami orqali kiring va ma'lumotlarni tasdiqlang."
+        },
+        {
+          "title": "Statusni kuzating",
+          "text": "Barcha o'zgarishlar buyurtma tarixida ko'rinadi."
+        }
       ]
     },
     "support": {
@@ -480,9 +466,18 @@
       "title": "Buyurtmangiz bilan yordam beramiz",
       "description": "Bu yerda qo'llab-quvvatlash operatorlari ishlaydi. Mahsulot tanlash uchun AI-yordamchidan foydalaning.",
       "cards": [
-        { "title": "Buyurtma holati", "text": "Buyurtma raqamini yozing — joriy bosqichni tekshiramiz." },
-        { "title": "Mahsulot bo'yicha savol", "text": "O'lcham, variant yoki komplektatsiyani aniqlashga yordam beramiz." },
-        { "title": "To'lov va yetkazib berish", "text": "To'lov, muddatlar va qabul qilish bo'yicha yordam beramiz." }
+        {
+          "title": "Buyurtma holati",
+          "text": "Buyurtma raqamini yozing — joriy bosqichni tekshiramiz."
+        },
+        {
+          "title": "Mahsulot bo'yicha savol",
+          "text": "O'lcham, variant yoki komplektatsiyani aniqlashga yordam beramiz."
+        },
+        {
+          "title": "To'lov va yetkazib berish",
+          "text": "To'lov, muddatlar va qabul qilish bo'yicha yordam beramiz."
+        }
       ],
       "formTitle": "Yangi murojaat",
       "namePlaceholder": "Ism",
