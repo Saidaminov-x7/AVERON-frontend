@@ -29,6 +29,10 @@ export type StoreProduct = {
     preorderAvailable: number;
     estimatedAvailableAt: string | null;
   };
+  recommendationAvailability?: {
+    available: boolean;
+    preorder: boolean;
+  };
   images?: Array<{ id?: string; url: string; alt?: Record<string, string> }>;
   category?: StoreCategory | null;
   material?: string | null;

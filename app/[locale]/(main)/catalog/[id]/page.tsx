@@ -7,6 +7,7 @@ import { AddToCart } from "@/components/commerce/AddToCart";
 import { ProductGallery } from "@/components/commerce/ProductGallery";
 import { ProductReviews } from "@/components/commerce/ProductReviews";
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
+import { CompleteTheLook } from "@/components/commerce/CompleteTheLook";
 import {
   buildCatalogSearchParams,
   productTitle,
@@ -217,6 +218,7 @@ export default async function ProductPage({
       <div className="mx-auto max-w-[1200px] px-4 pb-12 sm:px-6 lg:px-8">
         <ProductReviews slug={product.slug} locale={locale} initialOrderNumber={initialOrderNumber} />
         <SimilarProducts slug={product.slug} locale={locale} />
+        <CompleteTheLook slug={product.slug} locale={locale} />
       </div>
     </main>
   );

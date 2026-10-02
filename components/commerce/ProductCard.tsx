@@ -23,6 +23,22 @@ export function ProductCard({
   const image = product.images?.[0]?.url;
   const price = Number(product.salePriceUzs || 0).toLocaleString(locale === 'en' ? 'en-US' : 'ru-RU');
   const currency = locale === 'en' ? 'UZS' : locale === 'uz' ? "so'm" : 'сум';
+  const preorderOnly = product.recommendationAvailability
+    ? product.recommendationAvailability.preorder
+    : Boolean(product.availability?.preorderEligible && !product.availability.inStock);
+  const unavailable = product.recommendationAvailability
+    ? !product.recommendationAvailability.available
+    : Boolean(product.availability && !product.availability.inStock && !product.availability.preorderEligible);
+  const localizedAvailability = {
+    en: { preorder: 'Preorder', unavailable: 'Out of stock' },
+    uz: { preorder: 'Oldindan buyurtma', unavailable: 'Mavjud emas' },
+    ru: { preorder: 'Предзаказ', unavailable: 'Нет в наличии' },
+  }[locale === 'en' || locale === 'uz' ? locale : 'ru'];
+  const availabilityLabel = preorderOnly
+    ? localizedAvailability.preorder
+    : unavailable
+      ? localizedAvailability.unavailable
+      : undefined;
   const isFavorite = useFavoritesStore((state) => state.isFavorite(product.id));
   const toggleFavorite = useFavoritesStore((state) => state.toggle);
   const isCompared = useCompareStore((state) => state.isInCompare(product.id));
@@ -36,6 +52,11 @@ export function ProductCard({
       >
         <div className="relative h-52 overflow-hidden bg-stone-100 sm:h-56 dark:bg-stone-800">
           <ProductImage src={image} alt={title} />
+          {availabilityLabel ? (
+            <span className={`absolute bottom-3 left-3 rounded-full px-3 py-1 text-xs font-bold shadow-sm ${preorderOnly ? 'bg-amber-100 text-amber-900' : 'bg-stone-800/90 text-white'}`}>
+              {availabilityLabel}
+            </span>
+          ) : null}
         </div>
         <div className="p-4">
           <p className="line-clamp-2 min-h-10 text-sm font-semibold leading-5">{title}</p>

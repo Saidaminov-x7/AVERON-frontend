@@ -14,6 +14,10 @@ describe("commerce visual-search API", () => {
           visualSearch: true,
           similarProducts: false,
           imageEmbeddings: true,
+          aiSearch: true,
+          styleAssistant: false,
+          completeTheLook: true,
+          aiProviderConfigured: false,
         }),
         { status: 200 },
       ),
@@ -23,6 +27,10 @@ describe("commerce visual-search API", () => {
       visualSearch: true,
       similarProducts: false,
       imageEmbeddings: true,
+      aiSearch: true,
+      styleAssistant: false,
+      completeTheLook: true,
+      aiProviderConfigured: false,
     });
     expect(fetcher).toHaveBeenCalledWith(
       expect.stringMatching(/\/api\/v1\/capabilities$/),

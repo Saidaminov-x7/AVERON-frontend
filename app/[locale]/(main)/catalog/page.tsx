@@ -6,6 +6,8 @@ import {
   type StoreProduct,
 } from "@/components/commerce/ProductCard";
 import { VisualSearch } from "@/components/commerce/VisualSearch";
+import { CatalogAiSearch } from "@/components/commerce/CatalogAiSearch";
+import { StyleAssistant } from "@/components/commerce/StyleAssistant";
 import {
   buildCatalogPageSearchParams,
   buildCatalogSearchParams,
@@ -13,6 +15,7 @@ import {
   type StoreCategory,
 } from "@/lib/products";
 import { loadStoreCatalog, loadStoreCategories } from "@/lib/storefront-catalog";
+import { loadCommerceCapabilities } from "@/lib/visual-search";
 
 type Filters = Record<string, string | string[] | undefined>;
 
@@ -194,9 +197,10 @@ export default async function CatalogPage({
   searchParams: Promise<Filters>;
 }) {
   const [{ locale }, f] = await Promise.all([params, searchParams]);
-  const [catalog, categoryResult] = await Promise.all([
+  const [catalog, categoryResult, capabilities] = await Promise.all([
     loadStoreCatalog(f),
     loadStoreCategories(),
+    loadCommerceCapabilities(),
   ]);
   const { data } = catalog;
   const products: StoreProduct[] = data.items;
@@ -207,6 +211,7 @@ export default async function CatalogPage({
       data={data}
       products={products}
       categories={categoryResult.categories}
+      capabilities={capabilities}
       catalogError={catalog.status === "error"}
       categoriesError={categoryResult.status === "error"}
     />
@@ -219,6 +224,7 @@ function CatalogContent({
   data,
   products,
   categories,
+  capabilities,
   catalogError,
   categoriesError,
 }: {
@@ -227,6 +233,7 @@ function CatalogContent({
   data: { pagination: { page: number; pages: number; total: number } };
   products: StoreProduct[];
   categories: StoreCategory[];
+  capabilities: Awaited<ReturnType<typeof loadCommerceCapabilities>>;
   catalogError: boolean;
   categoriesError: boolean;
 }) {
@@ -256,6 +263,12 @@ function CatalogContent({
             country={typeof f.country === "string" ? f.country : undefined}
             category={typeof f.category === "string" ? f.category : undefined}
           />
+          <CatalogAiSearch
+            locale={locale}
+            enabled={capabilities.aiSearch}
+            providerConfigured={capabilities.aiProviderConfigured}
+          />
+          <StyleAssistant locale={locale} enabled={capabilities.styleAssistant} />
         </div>
       </section>
       <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">

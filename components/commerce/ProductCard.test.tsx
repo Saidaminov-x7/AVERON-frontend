@@ -44,4 +44,30 @@ describe('ProductCard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Добавить к сравнению' }));
     expect(useCompareStore.getState().ids).toEqual(['product-1']);
   });
+
+  it('labels preorder and unavailable products from backend availability only', () => {
+    const { rerender } = render(
+      <ProductCard
+        product={{
+          ...product,
+          availability: { inStock: false, preorderEligible: true, preorderAvailable: 2, estimatedAvailableAt: null },
+          recommendationAvailability: { available: true, preorder: true },
+        }}
+        locale="ru"
+      />,
+    );
+    expect(screen.getByText('Предзаказ')).toBeInTheDocument();
+
+    rerender(
+      <ProductCard
+        product={{
+          ...product,
+          availability: { inStock: false, preorderEligible: false, preorderAvailable: 0, estimatedAvailableAt: null },
+          recommendationAvailability: { available: false, preorder: false },
+        }}
+        locale="ru"
+      />,
+    );
+    expect(screen.getByText('Нет в наличии')).toBeInTheDocument();
+  });
 });

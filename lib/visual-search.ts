@@ -9,12 +9,20 @@ export type CommerceCapabilities = {
   visualSearch: boolean;
   similarProducts: boolean;
   imageEmbeddings: boolean;
+  aiSearch: boolean;
+  styleAssistant: boolean;
+  completeTheLook: boolean;
+  aiProviderConfigured: boolean;
 };
 
 export const NO_COMMERCE_CAPABILITIES: CommerceCapabilities = {
   visualSearch: false,
   similarProducts: false,
   imageEmbeddings: false,
+  aiSearch: false,
+  styleAssistant: false,
+  completeTheLook: false,
+  aiProviderConfigured: false,
 };
 
 export type ProductEnvelope = {
@@ -61,6 +69,10 @@ export async function loadCommerceCapabilities(
       visualSearch: payload.visualSearch === true,
       similarProducts: payload.similarProducts === true,
       imageEmbeddings: payload.imageEmbeddings === true,
+      aiSearch: payload.aiSearch === true,
+      styleAssistant: payload.styleAssistant === true,
+      completeTheLook: payload.completeTheLook === true,
+      aiProviderConfigured: payload.aiProviderConfigured === true,
     };
   } catch {
     return NO_COMMERCE_CAPABILITIES;
