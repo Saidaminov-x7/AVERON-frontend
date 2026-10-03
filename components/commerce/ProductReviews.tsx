@@ -7,6 +7,7 @@ import { BadgeCheck, ImagePlus, Star, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import api from '@/lib/axios';
+import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
 import {
   Select,
@@ -156,6 +157,7 @@ export function ProductReviews({ slug, locale, initialOrderNumber }: {
       }
     },
     onSuccess: async () => {
+      trackCommerceEvent({ eventName: 'review_submit' });
       setFormError('');
       setFormNotice(t('form.success'));
       setActiveReviewId(null);

@@ -16,6 +16,7 @@ import {
   getWishlist,
   regenerateWishlistShare,
 } from '@/lib/commerce-orders';
+import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 
 const sharingCopy = {
   ru: { title: 'Поделиться избранным', enable: 'Включить доступ по ссылке', copy: 'Скопировать ссылку', regenerate: 'Создать новую ссылку', disable: 'Отключить доступ', copied: 'Ссылка скопирована.', error: 'Не удалось обновить настройки общего доступа.' },
@@ -42,17 +43,17 @@ function FavoritesContent() {
   const [shareMessage, setShareMessage] = useState('');
   const sharingMutation = useMutation({
     mutationFn: enableWishlistSharing,
-    onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.wishlist }); setShareMessage(''); },
+    onSuccess: async () => { trackCommerceEvent({ eventName: 'wishlist_share_enable' }); await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.wishlist }); setShareMessage(''); },
     onError: () => setShareMessage(text.error),
   });
   const regenerateMutation = useMutation({
     mutationFn: regenerateWishlistShare,
-    onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.wishlist }); setShareMessage(''); },
+    onSuccess: async () => { trackCommerceEvent({ eventName: 'wishlist_share_enable' }); await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.wishlist }); setShareMessage(''); },
     onError: () => setShareMessage(text.error),
   });
   const disableMutation = useMutation({
     mutationFn: disableWishlistSharing,
-    onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.wishlist }); setShareMessage(''); },
+    onSuccess: async () => { trackCommerceEvent({ eventName: 'wishlist_share_disable' }); await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.wishlist }); setShareMessage(''); },
     onError: () => setShareMessage(text.error),
   });
 

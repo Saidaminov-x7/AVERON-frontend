@@ -10,6 +10,7 @@ import {
   removeCartItem,
   updateCartItem,
 } from '@/lib/commerce-orders';
+import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 
 export function useCommerceCart() {
   const queryClient = useQueryClient();
@@ -40,7 +41,17 @@ export function useCommerceCart() {
       if (action.type === 'remove') return removeCartItem(action.itemId);
       return clearCart();
     },
-    onSuccess: (cart) => queryClient.setQueryData(commerceQueryKeys.cart, cart),
+    onSuccess: (cart, action) => {
+      queryClient.setQueryData(commerceQueryKeys.cart, cart);
+      if (action.type === 'add') {
+        trackCommerceEvent({
+          eventName: 'cart_add',
+          metadata: { productId: action.productId, quantity: action.quantity },
+        });
+      } else if (action.type === 'remove') {
+        trackCommerceEvent({ eventName: 'cart_remove' });
+      }
+    },
   });
 
   return {

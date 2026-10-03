@@ -89,6 +89,7 @@
     "ai": "AI-yordamchi"
   },
   "nav": {
+    "home": "Bosh sahifa",
     "catalog": "Mahsulotlar",
     "about": "Biz haqimizda",
     "favorites": "Saqlanganlar",
@@ -142,6 +143,8 @@
     "from": "Dan",
     "to": "Gacha",
     "sort": "Saralash",
+    "popular": "Mashhurlar",
+    "activeFilters": "Faol filtrlar",
     "newest": "Avval yangilari",
     "cheap": "Avval arzonlari",
     "expensive": "Avval qimmatlari",
@@ -253,6 +256,10 @@
     "confirmed": "Mahsulot sahifasi administrator tomonidan tasdiqlangan",
     "catalog": "Katalog",
     "addToOutfit": "Obrazga qo‘shish"
+  },
+  "aiAssistant": {
+    "signInPrompt": "AI bilan suhbatlashish uchun telefon raqamingiz orqali kiring.",
+    "signIn": "Kirish"
   },
   "profile": {
     "accountName": "AVERON xaridori",

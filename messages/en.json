@@ -89,6 +89,7 @@
     "ai": "AI assistant"
   },
   "nav": {
+    "home": "Home",
     "catalog": "Products",
     "about": "About",
     "favorites": "Favorites",
@@ -142,6 +143,8 @@
     "from": "From",
     "to": "To",
     "sort": "Sort",
+    "popular": "Popular",
+    "activeFilters": "Active filters",
     "newest": "Newest first",
     "cheap": "Lowest price",
     "expensive": "Highest price",
@@ -253,6 +256,10 @@
     "confirmed": "Product page reviewed by an administrator",
     "catalog": "Catalog",
     "addToOutfit": "Add to outfit"
+  },
+  "aiAssistant": {
+    "signInPrompt": "Sign in with your phone number to chat with AI.",
+    "signIn": "Sign in"
   },
   "profile": {
     "accountName": "AVERON customer",

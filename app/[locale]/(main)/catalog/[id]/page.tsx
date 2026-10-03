@@ -22,7 +22,7 @@ import {
 type Filters = Record<string, string | string[] | undefined>;
 
 class ProductRequestError extends Error {
-  constructor(public readonly kind: "network" | "server") {
+  constructor(public readonly kind: "network" | "server" | "malformed") {
     super(kind);
     this.name = "ProductRequestError";
   }
@@ -72,15 +72,15 @@ async function loadProduct(slug: string): Promise<ProductDetail | null> {
   } catch {
     throw new ProductRequestError("network");
   }
-  if (response.status === 404 || (response.status >= 400 && response.status < 500)) return null;
+  if (response.status === 404) return null;
   if (!response.ok) throw new ProductRequestError("server");
   let payload: unknown;
   try {
     payload = await response.json();
   } catch {
-    throw new ProductRequestError("server");
+    throw new ProductRequestError("malformed");
   }
-  if (!isStoreProduct(payload)) throw new ProductRequestError("server");
+  if (!isStoreProduct(payload)) throw new ProductRequestError("malformed");
   return payload;
 }
 

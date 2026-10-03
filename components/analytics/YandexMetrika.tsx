@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 interface YandexMetrikaProps {
@@ -14,12 +14,21 @@ declare global {
       (counterId: number, action: 'hit', url: string, options: { title: string; referrer: string }): void;
     };
     averonYandexInitialized?: boolean;
+    averonYandexReady?: boolean;
   }
 }
 
 export function YandexMetrika({ counterId }: YandexMetrikaProps) {
   const pathname = usePathname();
   const previousPath = useRef<string | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const updateReady = () => setReady(window.averonYandexReady === true && Boolean(window.ym));
+    updateReady();
+    window.addEventListener('averon-yandex-ready', updateReady);
+    return () => window.removeEventListener('averon-yandex-ready', updateReady);
+  }, []);
 
   useEffect(() => {
     const privateRoute = /^\/(?:ru|uz|en)\/(?:login|register|forgot-password|reset-password|profile|cart|checkout|orders(?:\/|$)|favorites|compare|outfits|wishlist\/shared(?:\/|$)|mini-app)(?:\/|$)/;
@@ -36,7 +45,7 @@ export function YandexMetrika({ counterId }: YandexMetrikaProps) {
       previousPath.current = null;
       return;
     }
-    if (!window.ym) return;
+    if (!ready || !window.averonYandexReady || !window.ym) return;
 
     try {
       if (!window.averonYandexInitialized) {
@@ -56,7 +65,7 @@ export function YandexMetrika({ counterId }: YandexMetrikaProps) {
     } catch {
       // Analytics failures must not interrupt navigation or rendering.
     }
-  }, [pathname, counterId]);
+  }, [pathname, counterId, ready]);
 
   return null;
 }

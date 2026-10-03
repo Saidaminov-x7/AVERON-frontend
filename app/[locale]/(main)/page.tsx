@@ -10,7 +10,7 @@ import { SITE_URL } from '@/lib/siteUrl';
 async function getPopularProducts() {
   try {
     const response = await fetch(
-      `${externalBaseURL}/api/v1/products?limit=8`,
+      `${externalBaseURL}/api/v1/products?sort=popular&limit=8`,
       { next: { revalidate: 60 }, signal: AbortSignal.timeout(3000) },
     );
     if (!response.ok) return [];
@@ -60,16 +60,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       />
       <main>
         <section className="mx-auto max-w-[1440px] px-4 pb-10 pt-8 sm:px-6 sm:pt-12 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl border border-stone-200 bg-[#f1eadf] px-6 py-16 text-stone-950 shadow-[0_30px_80px_-45px_rgba(41,37,36,0.55)] dark:border-white/10 dark:bg-[#171714] dark:text-white sm:px-12 lg:px-16 lg:py-24">
-            <div className="absolute -right-24 -top-24 size-80 rounded-full bg-amber-300/30 blur-3xl dark:bg-amber-500/10" />
+          <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-100 px-6 py-16 text-slate-950 shadow-[0_30px_80px_-45px_rgba(15,23,42,0.55)] dark:border-white/10 dark:bg-[#111827] dark:text-white sm:px-12 lg:px-16 lg:py-24">
+            <div className="absolute -right-24 -top-24 size-80 rounded-full bg-cyan-300/25 blur-3xl dark:bg-cyan-500/10" />
             <div className="relative max-w-3xl">
               <span className="inline-flex rounded-full border border-stone-900/10 bg-white/55 px-3 py-1 text-xs font-semibold tracking-wide dark:border-white/15 dark:bg-white/5">{t('badge')}</span>
               <h1 className="mt-6 text-4xl font-extrabold tracking-tight sm:text-6xl">{t('heroTitle')}</h1>
               <p className="mt-5 max-w-2xl text-base leading-7 text-stone-600 dark:text-stone-300 sm:text-lg">
                 {t('heroBody')}
               </p>
-              <div className="mt-8 max-w-2xl rounded-2xl bg-white p-2 shadow-2xl shadow-black/20">
-                <SearchInput locale={locale} placeholder={t('searchPlaceholder')} className="h-12 text-stone-900" />
+              <div className="mt-8 max-w-2xl">
+                <SearchInput locale={locale} placeholder={t('searchPlaceholder')} className="h-12 border-slate-300 bg-white/80 text-stone-900 shadow-xl shadow-black/15 backdrop-blur dark:border-white/15 dark:bg-white/5 dark:text-white" />
               </div>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link href={to('/catalog')} className="inline-flex h-11 items-center gap-2 rounded-xl bg-stone-950 px-5 text-sm font-bold text-white transition hover:bg-stone-800 dark:bg-white dark:text-stone-950 dark:hover:bg-stone-100">

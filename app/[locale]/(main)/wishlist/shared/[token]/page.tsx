@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { getSharedWishlist } from '@/lib/commerce-orders';
+import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { ProductImage } from '@/components/commerce/ProductImage';
 
 const copy = {
@@ -15,6 +17,11 @@ const copy = {
 export default function SharedWishlistPage() {
   const { locale = 'ru', token } = useParams<{ locale: string; token: string }>();
   const text = copy[locale as keyof typeof copy] ?? copy.ru;
+  useEffect(() => {
+    if (locale === 'ru' || locale === 'uz' || locale === 'en') {
+      trackCommerceEvent({ eventName: 'wishlist_share_open' }, `/${locale}/wishlist/shared`);
+    }
+  }, [locale]);
   const wishlist = useQuery({
     queryKey: ['commerce', 'shared-wishlist', token],
     queryFn: () => getSharedWishlist(token),

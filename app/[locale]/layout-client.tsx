@@ -46,7 +46,9 @@ export default function LocaleLayout({
             </Suspense>
             <AuthInitializer />
             <GlobalErrorListener />
-            <AnalyticsTracker />
+            <Suspense fallback={null}>
+              <AnalyticsTracker />
+            </Suspense>
             {process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID && /^[1-9]\d*$/.test(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID) && (
               <Suspense fallback={null}>
                 <YandexMetrika counterId={process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID} />

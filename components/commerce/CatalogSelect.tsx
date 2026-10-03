@@ -24,7 +24,13 @@ export function CatalogSelect({
   options: Array<{ value: string; label: string }>;
 }) {
   const [selected, setSelected] = useState(value);
+  const [previousValue, setPreviousValue] = useState(value);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  if (value !== previousValue) {
+    setPreviousValue(value);
+    setSelected(value);
+  }
 
   const updateValue = (nextValue: string) => {
     setSelected(nextValue);

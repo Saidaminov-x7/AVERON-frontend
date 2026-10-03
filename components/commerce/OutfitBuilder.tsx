@@ -22,6 +22,7 @@ import {
   updateOutfit,
   type SavedOutfit,
 } from '@/lib/commerce-orders';
+import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 type DraftItem = { product: StoreProduct; variantId: string | null };
@@ -117,6 +118,7 @@ function OutfitBuilderContent() {
       return outfitId ? updateOutfit(outfitId, payload) : saveOutfit(payload);
     },
     onSuccess: (outfit) => {
+      trackCommerceEvent({ eventName: 'outfit_save' });
       setOutfitId(outfit.id);
       setName(outfit.name);
       setMessage(text.update);
@@ -206,6 +208,7 @@ function OutfitBuilderContent() {
         });
       }
       const result = await addOutfitToCart(id);
+      trackCommerceEvent({ eventName: 'outfit_add_to_cart' });
       setRejected(result.rejectedItems);
       setMessage(result.rejectedItems.length ? text.partial : text.added);
       await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.cart });

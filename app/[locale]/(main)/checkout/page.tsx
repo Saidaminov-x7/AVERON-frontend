@@ -11,6 +11,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { createCheckout, commerceQueryKeys, getCommerceErrorCode, validatePromoCode } from '@/lib/commerce-orders';
+import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
 
 const copy = {
@@ -112,12 +113,14 @@ function CheckoutContent() {
   const promoValidation = useMutation({
     mutationFn: validatePromoCode,
     onSuccess: (promo) => {
+      trackCommerceEvent({ eventName: 'promo_apply' });
       setAppliedPromo({ code: promo.code, discountPercent: promo.discountPercent });
       setPromoInput(promo.code);
       setPromoError('');
       idempotencyKey.current = null;
     },
     onError: (error) => {
+      trackCommerceEvent({ eventName: 'promo_reject' });
       const code = getCommerceErrorCode(error);
       setPromoError(code && code in text.promoErrors
         ? text.promoErrors[code as keyof typeof text.promoErrors]
@@ -129,6 +132,7 @@ function CheckoutContent() {
   const checkout = useMutation({
     mutationFn: createCheckout,
     onSuccess: async (order) => {
+      if (order.id) trackCommerceEvent({ eventName: 'purchase', orderId: order.id });
       queryClient.setQueryData(commerceQueryKeys.order(order.orderNumber), order);
       await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.cart });
       router.push(`/${locale}/checkout/success/${encodeURIComponent(order.orderNumber)}`);
@@ -151,6 +155,8 @@ function CheckoutContent() {
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (checkout.isPending) return;
+    const quantity = cart?.items.reduce((total, item) => total + item.quantity, 0) ?? 0;
+    trackCommerceEvent({ eventName: 'begin_checkout', ...(quantity > 0 ? { metadata: { quantity } } : {}) });
     if (!idempotencyKey.current) idempotencyKey.current = crypto.randomUUID();
     checkout.mutate({
       contact: { name: contact.name.trim(), phone: contact.phone.trim() },

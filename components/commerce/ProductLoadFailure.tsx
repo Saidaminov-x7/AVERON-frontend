@@ -11,6 +11,8 @@ const copy = {
     networkDescription: 'Проверьте подключение к интернету и попробуйте загрузить товар ещё раз.',
     serverTitle: 'Не удалось загрузить товар',
     serverDescription: 'Сервис каталога временно недоступен. Попробуйте ещё раз.',
+    malformedTitle: 'Некорректный ответ каталога',
+    malformedDescription: 'Не удалось обработать данные товара. Попробуйте загрузить его ещё раз.',
     retry: 'Повторить загрузку',
     waiting: 'Загружаем…',
     back: 'Вернуться в каталог',
@@ -20,6 +22,8 @@ const copy = {
     networkDescription: 'Internetga ulanishni tekshiring va mahsulotni qayta yuklang.',
     serverTitle: 'Mahsulotni yuklab bo‘lmadi',
     serverDescription: 'Katalog xizmati vaqtincha ishlamayapti. Qayta urinib ko‘ring.',
+    malformedTitle: 'Katalog javobi noto‘g‘ri',
+    malformedDescription: 'Mahsulot ma’lumotlarini qayta ishlab bo‘lmadi. Qayta yuklab ko‘ring.',
     retry: 'Qayta yuklash',
     waiting: 'Yuklanmoqda…',
     back: 'Katalogga qaytish',
@@ -29,6 +33,8 @@ const copy = {
     networkDescription: 'Check your internet connection and try loading the product again.',
     serverTitle: 'Product could not be loaded',
     serverDescription: 'The catalog service is temporarily unavailable. Please try again.',
+    malformedTitle: 'Invalid catalog response',
+    malformedDescription: 'The product data could not be processed. Please try loading it again.',
     retry: 'Retry loading',
     waiting: 'Loading…',
     back: 'Back to catalog',
@@ -41,7 +47,7 @@ export function ProductLoadFailure({
   catalogHref,
 }: {
   locale: string;
-  kind: 'network' | 'server';
+  kind: 'network' | 'server' | 'malformed';
   catalogHref: string;
 }) {
   const router = useRouter();
@@ -53,9 +59,9 @@ export function ProductLoadFailure({
       <div className="mb-5 flex size-16 items-center justify-center rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200">
         {kind === 'network' ? <WifiOff aria-hidden="true" /> : <RotateCcw aria-hidden="true" />}
       </div>
-      <h1 className="text-xl font-bold">{kind === 'network' ? t.networkTitle : t.serverTitle}</h1>
+      <h1 className="text-xl font-bold">{kind === 'network' ? t.networkTitle : kind === 'malformed' ? t.malformedTitle : t.serverTitle}</h1>
       <p className="mt-2 max-w-md text-sm text-stone-600 dark:text-stone-300">
-        {kind === 'network' ? t.networkDescription : t.serverDescription}
+        {kind === 'network' ? t.networkDescription : kind === 'malformed' ? t.malformedDescription : t.serverDescription}
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Button

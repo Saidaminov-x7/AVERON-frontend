@@ -134,6 +134,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const { data: settings } = useSiteSettings();
 
   const navLinks = [
+    { href: '/', label: t('home') },
     { href: '/catalog', label: t('catalog') },
     { href: '/ai', label: 'AI' },
     { href: '/about', label: t('about') },
@@ -153,7 +154,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           })
           .filter((item: { href: string }) => !item.href.includes('/add-listing'))
       : [];
-    const source = saved.length > 0 ? saved : navLinks;
+    const source = [...navLinks, ...saved];
     const unique = source.filter((item: { href: string }, index: number, items: Array<{ href: string }>) =>
       items.findIndex((candidate) => candidate.href === item.href) === index,
     );
@@ -163,6 +164,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     }
     return unique;
   })();
+  const visibleNavLinks = [
+    navLinks[0],
+    ...configuredNavLinks.filter((item: { href: string }) => item.href !== '/'),
+  ];
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -342,7 +347,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 (searchOpen ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-xl opacity-100')
               }
             >
-              {configuredNavLinks.map(({ href, label }) => (
+              {visibleNavLinks.map(({ href, label }) => (
                   <Link
                     key={href}
                     href={href.startsWith('http') ? href : to(href)}
@@ -579,7 +584,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         inert={!mobileOpen}
         onClick={closeMobileMenu}
         className={
-          `fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
+          `fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
           (mobileOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0')
         }
       />
@@ -596,7 +601,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         className={
-          `fixed inset-y-0 left-0 z-50 flex h-dvh w-full max-w-none flex-col bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} dark:bg-[#1A1A1A] lg:hidden ` +
+          `fixed inset-y-0 left-0 z-[61] flex h-dvh w-full max-w-none flex-col bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} dark:bg-[#1A1A1A] lg:hidden ` +
           (mobileOpen ? 'translate-x-0' : '-translate-x-full')
         }
       >
@@ -652,12 +657,12 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
         {/* Навигационные ссылки */}
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3">
-          {[...configuredNavLinks, ...[
+          {[...visibleNavLinks, ...[
             { href: '/favorites', label: t('favorites') },
             { href: '/compare', label: t('compare') },
             { href: '/cart', label: t('cart') },
             { href: '/support', label: t('support') },
-          ].filter(({ href }) => !configuredNavLinks.some((item) => item.href === href))].map(({ href, label }) => (
+          ].filter(({ href }) => !visibleNavLinks.some((item) => item.href === href))].map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href.startsWith('http') ? href : to(href)}

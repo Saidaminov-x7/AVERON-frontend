@@ -7,6 +7,7 @@ import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { productTitle, type StoreProduct } from '@/lib/products';
 import { addWishlistItem, removeWishlistItem } from '@/lib/commerce-orders';
+import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useRef, useState } from 'react';
 
@@ -64,6 +65,7 @@ export function ProductCard({
     setCompareLimitError(false);
     if (!isAuthenticated) {
       toggleFavorite(product.id);
+      trackCommerceEvent({ eventName: isFavorite ? 'favorite_remove' : 'favorite_add', metadata: { productId: product.id } });
       return;
     }
     actionPending.current = true;
@@ -72,6 +74,7 @@ export function ProductCard({
       if (isFavorite) await removeWishlistItem(product.id);
       else await addWishlistItem(product.id);
       toggleFavorite(product.id);
+      trackCommerceEvent({ eventName: isFavorite ? 'favorite_remove' : 'favorite_add', metadata: { productId: product.id } });
     } catch {
       setFavoriteError(true);
     } finally {
@@ -84,13 +87,15 @@ export function ProductCard({
     setCompareLimitError(false);
     if (isCompared) {
       removeCompare(product.id);
+      trackCommerceEvent({ eventName: 'compare_remove', metadata: { productId: product.id } });
       return;
     }
     if (!addCompare(product.id)) setCompareLimitError(true);
+    else trackCommerceEvent({ eventName: 'compare_add', metadata: { productId: product.id } });
   };
 
   return (
-    <article className="group relative max-w-sm overflow-hidden rounded-2xl border border-stone-200/90 bg-white shadow-sm motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-200 motion-safe:ease-out motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-stone-300 motion-safe:hover:shadow-lg dark:border-white/10 dark:bg-stone-900 dark:motion-safe:hover:border-white/20">
+    <article className="group relative h-full min-w-0 overflow-hidden rounded-2xl border border-stone-200/90 bg-white shadow-sm motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-200 motion-safe:ease-out motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-stone-300 motion-safe:hover:shadow-lg dark:border-white/10 dark:bg-stone-900 dark:motion-safe:hover:border-white/20">
       <Link
         href={`/${locale}/catalog/${product.slug}${catalogQuery ? `?${catalogQuery}` : ''}`}
         className="block"

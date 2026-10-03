@@ -235,6 +235,7 @@ function Controls({
             { value: "newest", label: t("newest") },
             { value: "price_asc", label: t("cheap") },
             { value: "price_desc", label: t("expensive") },
+            { value: "popular", label: t("popular") },
           ]}
         />
       </div>
@@ -311,6 +312,24 @@ function CatalogContent({
     const query = buildCatalogPageSearchParams(f, targetPage).toString();
     return `/${locale}/catalog${query ? `?${query}` : ""}`;
   };
+  const activeFilters = [
+    ...(typeof f.q === "string" && f.q.trim() ? [[t("search"), f.q.trim()]] : []),
+    ...(typeof f.category === "string" && f.category
+      ? [[t("category"), categoryName(categories.find((category) => category.slug === f.category) ?? { slug: f.category }, locale)]]
+      : []),
+    ...(typeof f.audience === "string" && f.audience
+      ? [[t("audience"), t(f.audience as "women" | "men" | "kids")]]
+      : []),
+    ...(typeof f.country === "string" && f.country ? [[t("country"), f.country]] : []),
+    ...(typeof f.size === "string" && f.size ? [[t("size"), f.size]] : []),
+    ...(typeof f.color === "string" && f.color ? [[t("color"), f.color]] : []),
+    ...(typeof f.minPrice === "string" || typeof f.maxPrice === "string"
+      ? [[t("price"), `${typeof f.minPrice === "string" ? f.minPrice : "0"}–${typeof f.maxPrice === "string" ? f.maxPrice : "∞"} UZS`]]
+      : []),
+    ...(f.sort === "popular" ? [[t("sort"), t("popular")]] : []),
+    ...(f.sort === "price_asc" ? [[t("sort"), t("cheap")]] : []),
+    ...(f.sort === "price_desc" ? [[t("sort"), t("expensive")]] : []),
+  ];
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
@@ -365,12 +384,27 @@ function CatalogContent({
               />
               <StyleAssistant locale={locale} enabled={capabilities.styleAssistant} />
             </div>
-            <h2 className="text-xl font-bold">
-              {t("products")}{" "}
-              <span className="text-stone-400">
-                ({data.pagination?.total ?? 0})
-              </span>
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-xl font-bold">
+                {t("products")}{" "}
+                <span className="text-stone-400">
+                  ({data.pagination?.total ?? 0})
+                </span>
+              </h2>
+              <Link href={`/${locale}/catalog`} className="text-sm font-semibold text-primary-700 hover:underline dark:text-primary-300">
+                {t("reset")}
+              </Link>
+            </div>
+            {activeFilters.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-2" aria-label={t("activeFilters")}>
+                {activeFilters.map(([label, value], index) => (
+                  <span key={`${label}-${index}`} className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 dark:border-white/10 dark:bg-slate-800 dark:text-slate-200">
+                    <span className="text-slate-500 dark:text-slate-400">{label}:</span>
+                    <span className="truncate">{value}</span>
+                  </span>
+                ))}
+              </div>
+            ) : null}
             {catalogError ? (
               <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-6 py-14 text-center dark:border-amber-900/60 dark:bg-amber-950/20" role="alert">
                 <h2 className="text-xl font-bold">

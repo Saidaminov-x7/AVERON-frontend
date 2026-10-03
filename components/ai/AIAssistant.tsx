@@ -2,6 +2,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Bot, Send, Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import api from "@/lib/axios";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -55,6 +56,7 @@ const dict = {
 } as const;
 export default function AIAssistant() {
   const locale = useLocale();
+  const tSignedOut = useTranslations("aiAssistant");
   const t = dict[locale as keyof typeof dict] ?? dict.ru;
   const { isAuthenticated, isLoading: authLoading, user } = useAuthStore();
   const canUseAI = isAuthenticated && Boolean(user?.phone);
@@ -106,7 +108,7 @@ export default function AIAssistant() {
     void submit();
   };
   if (authLoading || (canUseAI && historyLoading)) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white dark:bg-stone-900"><span className="text-sm text-stone-500">AVERON…</span></main>;
-  if (!canUseAI) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white p-6 dark:bg-stone-900"><div className="max-w-md text-center"><Bot className="mx-auto mb-4 text-primary-500" size={42}/><h1 className="text-xl font-bold text-stone-900 dark:text-white">AVERON AI</h1><p className="mt-2 text-sm text-stone-500">{locale === 'uz' ? 'AI bilan suhbatlashish va tarixni saqlash uchun telefon raqamingiz orqali kiring.' : locale === 'en' ? 'Sign in with your phone number to use AI and keep your conversation history.' : 'Войдите по номеру телефона, чтобы общаться с AI и сохранять историю.'}</p><Link href={`/${locale}/login`} className="mt-5 inline-flex h-11 items-center rounded-xl bg-primary-600 px-6 font-semibold text-white">{locale === 'uz' ? 'Kirish' : locale === 'en' ? 'Sign in' : 'Войти'}</Link></div></main>;
+  if (!canUseAI) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white p-6 dark:bg-stone-900"><div className="max-w-md text-center"><Bot className="mx-auto mb-4 text-primary-500" size={42}/><h1 className="text-xl font-bold text-stone-900 dark:text-white">AVERON AI</h1><p className="mt-2 text-sm text-stone-500">{tSignedOut("signInPrompt")}</p><Link href={`/${locale}/login`} className="mt-5 inline-flex h-11 items-center rounded-xl bg-primary-600 px-6 font-semibold text-white">{tSignedOut("signIn")}</Link></div></main>;
   return (
     <main className="flex h-[calc(100dvh-80px)] w-full overflow-hidden bg-white text-stone-950 dark:bg-stone-900 dark:text-white">
       <section className="flex h-full w-full flex-col">
