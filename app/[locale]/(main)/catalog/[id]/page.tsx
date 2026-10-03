@@ -181,7 +181,6 @@ export default async function ProductPage({
   const title = productTitle(product, locale);
   const copy = {
     back: t("back"),
-    verified: t("verified"),
     descriptionFallback: t("descriptionFallback"),
     gallery: t("gallery"),
     delivery: t("delivery"),
@@ -254,9 +253,6 @@ export default async function ProductPage({
             imageLabels={(product.images ?? []).map((_, index) => t("imageLabel", { index: index + 1 }))}
           />
           <section>
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-primary-700 dark:text-primary-300">
-              {copy.verified}
-            </p>
             <h1 className="mt-3 text-3xl font-extrabold sm:text-4xl">
               {title}
             </h1>

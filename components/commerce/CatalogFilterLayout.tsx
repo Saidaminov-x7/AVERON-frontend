@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -17,8 +18,23 @@ export function CatalogFilterLayout({
   children: React.ReactNode;
 }) {
   const t = useTranslations('catalog');
+  const router = useRouter();
   const [filtersVisible, setFiltersVisible] = useState(true);
   const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    let refreshTimer: number | undefined;
+    const refreshCatalogOnHistoryNavigation = () => {
+      if (refreshTimer !== undefined) window.clearTimeout(refreshTimer);
+      refreshTimer = window.setTimeout(() => router.refresh(), 0);
+    };
+    window.addEventListener('popstate', refreshCatalogOnHistoryNavigation);
+    return () => {
+      window.removeEventListener('popstate', refreshCatalogOnHistoryNavigation);
+      if (refreshTimer !== undefined) window.clearTimeout(refreshTimer);
+    };
+  }, [router]);
+
   const toggle = (
     <button
       type="button"
