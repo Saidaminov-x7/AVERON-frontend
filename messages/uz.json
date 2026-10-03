@@ -109,6 +109,25 @@
     "settings": "Sozlamalar",
     "logout": "Chiqish"
   },
+  "comparePage": {
+    "loading": "Taqqoslash yuklanmoqda…",
+    "loadError": "Taqqoslash uchun mahsulotlarni yuklab bo‘lmadi.",
+    "retry": "Qayta urinish",
+    "emptyTitle": "Taqqoslash ro‘yxati bo‘sh",
+    "emptyBody": "Mahsulot kartasidagi taqqoslash tugmasi orqali to‘rttagacha mahsulot qo‘shing.",
+    "catalog": "Katalogni ochish",
+    "price": "Narx",
+    "category": "Turkum",
+    "material": "Material",
+    "colors": "Ranglar",
+    "sizes": "O‘lchamlar",
+    "stock": "Mavjud",
+    "title": "Mahsulotlarni taqqoslash ({{count}})",
+    "clear": "Tozalash",
+    "product": "Mahsulot",
+    "remove": "Taqqoslashdan olib tashlash",
+    "details": "Batafsil"
+  },
   "catalog": {
     "title": "Mahsulotlar katalogi",
     "subtitle": "E’lon qilishdan oldin tekshirilgan kiyim, poyabzal va aksessuarlar.",

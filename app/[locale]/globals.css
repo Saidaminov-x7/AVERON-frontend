@@ -165,3 +165,8 @@
 @media (pointer: coarse), (prefers-reduced-motion: reduce) {
   .auth-pointer-glow { display: none; }
 }
+@media (min-width: 1536px) {
+  [data-catalog-filters-visible="false"] .catalog-product-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}

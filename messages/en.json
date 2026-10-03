@@ -109,6 +109,25 @@
     "settings": "Settings",
     "logout": "Sign out"
   },
+  "comparePage": {
+    "loading": "Loading comparison…",
+    "loadError": "Could not load products for comparison.",
+    "retry": "Try again",
+    "emptyTitle": "Your comparison is empty",
+    "emptyBody": "Add up to four products using the compare button on a product card.",
+    "catalog": "Open catalog",
+    "price": "Price",
+    "category": "Category",
+    "material": "Material",
+    "colors": "Colors",
+    "sizes": "Sizes",
+    "stock": "In stock",
+    "title": "Product comparison ({{count}})",
+    "clear": "Clear",
+    "product": "Product",
+    "remove": "Remove from comparison",
+    "details": "Details"
+  },
   "catalog": {
     "title": "Product catalog",
     "subtitle": "Clothing, shoes and accessories verified before publication.",

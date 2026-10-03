@@ -34,6 +34,7 @@ export type StoreProduct = {
     available: boolean;
     preorder: boolean;
   };
+  country?: string | null;
   images?: Array<{ id?: string; url: string; alt?: Record<string, string> }>;
   category?: StoreCategory | null;
   material?: string | null;

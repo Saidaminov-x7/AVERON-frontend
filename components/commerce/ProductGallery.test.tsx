@@ -13,7 +13,7 @@ describe('ProductGallery', () => {
         productTitle="Coat"
         locale="en"
         label="Product images"
-        imageLabel={(index) => `Show image ${index}`}
+        imageLabels={['Show image 1', 'Show image 2']}
       />,
     );
 

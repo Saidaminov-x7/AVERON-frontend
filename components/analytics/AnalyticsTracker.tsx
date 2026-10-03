@@ -24,9 +24,6 @@ export function AnalyticsTracker() {
     ) return;
 
     trackCommerceEvent({ eventName: 'page_view' });
-    const productMatch = pathname.match(/^\/(?:ru|uz|en)\/catalog\/[^/]+$/);
-    if (productMatch) trackCommerceEvent({ eventName: 'product_view' });
-
     if (/^\/(?:ru|uz|en)\/catalog\/?$/.test(pathname)) {
       const current = new URLSearchParams(queryString);
       const previous = previousCatalogQuery.current === null
@@ -47,10 +44,16 @@ export function AnalyticsTracker() {
       if (size) metadata.size = size.slice(0, 40);
       const color = current.get('color');
       if (color) metadata.color = color.slice(0, 40);
-      const minPrice = Number(current.get('minPrice'));
-      if (Number.isSafeInteger(minPrice) && minPrice >= 0) metadata.minPrice = minPrice;
-      const maxPrice = Number(current.get('maxPrice'));
-      if (Number.isSafeInteger(maxPrice) && maxPrice >= 0) metadata.maxPrice = maxPrice;
+      const minPriceValue = current.get('minPrice')?.trim();
+      if (minPriceValue && /^\d+$/.test(minPriceValue)) {
+        const minPrice = Number(minPriceValue);
+        if (Number.isSafeInteger(minPrice) && minPrice >= 0) metadata.minPrice = minPrice;
+      }
+      const maxPriceValue = current.get('maxPrice')?.trim();
+      if (maxPriceValue && /^\d+$/.test(maxPriceValue)) {
+        const maxPrice = Number(maxPriceValue);
+        if (Number.isSafeInteger(maxPrice) && maxPrice >= 0) metadata.maxPrice = maxPrice;
+      }
       if (!previous || previousSearch !== currentSearch) {
         if (currentSearch || previousSearch) {
           trackCommerceEvent({ eventName: 'catalog_search', metadata: { ...metadata, queryLength: currentSearch.length } });

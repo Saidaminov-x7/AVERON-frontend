@@ -14,7 +14,7 @@ interface ProductGalleryProps {
   productTitle: string;
   locale: string;
   label: string;
-  imageLabel: (index: number) => string;
+  imageLabels: string[];
 }
 
 export function ProductGallery({
@@ -22,7 +22,7 @@ export function ProductGallery({
   productTitle,
   locale,
   label,
-  imageLabel,
+  imageLabels,
 }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedImage = images[selectedIndex];
@@ -51,7 +51,7 @@ export function ProductGallery({
             <button
               key={image.id ?? `${image.url}-${index}`}
               type="button"
-              aria-label={imageLabel(index + 1)}
+              aria-label={imageLabels[index] ?? `${label} ${index + 1}`}
               aria-pressed={index === selectedIndex}
               onClick={() => setSelectedIndex(index)}
               className={`group relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-2 dark:bg-stone-800 dark:focus-visible:ring-offset-stone-950 ${

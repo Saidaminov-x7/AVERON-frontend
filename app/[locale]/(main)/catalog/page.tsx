@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
-import { Filter, Search, SlidersHorizontal } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 import {
   ProductCard,
   type StoreProduct,
@@ -10,8 +10,8 @@ import {
 import { VisualSearch } from "@/components/commerce/VisualSearch";
 import { CatalogAiSearch } from "@/components/commerce/CatalogAiSearch";
 import { StyleAssistant } from "@/components/commerce/StyleAssistant";
-import { CatalogSelect } from "@/components/commerce/CatalogSelect";
 import { CatalogFilterLayout } from "@/components/commerce/CatalogFilterLayout";
+import { CatalogFilterControls } from "@/components/commerce/CatalogFilterControls";
 import { CatalogCountryDefaultResolver } from "@/components/commerce/CatalogCountryDefaultResolver";
 import type { CatalogFacets } from "@/lib/storefront-catalog";
 import {
@@ -24,9 +24,6 @@ import { loadStoreCatalog, loadStoreCategories, loadStoreCatalogFacets } from "@
 import { loadCommerceCapabilities } from "@/lib/visual-search";
 
 type Filters = Record<string, string | string[] | undefined>;
-
-const input =
-  "h-11 w-full rounded-xl border border-stone-300 bg-transparent px-3 text-sm outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-600/15 dark:border-white/15";
 
 export async function generateMetadata({
   params,
@@ -59,191 +56,6 @@ export async function generateMetadata({
       url: canonical,
     },
   };
-}
-
-function Controls({
-  f,
-  t,
-  categories,
-  categoriesError,
-  facets,
-  facetsError,
-  locale,
-}: {
-  f: Filters;
-  t: (key: string) => string;
-  categories: StoreCategory[];
-  categoriesError: boolean;
-  facets: CatalogFacets;
-  facetsError: boolean;
-  locale: string;
-}) {
-  const cats: Array<[string, string]> = [
-    ["", t("all")],
-    ...categories.map(
-      (category): [string, string] => [
-        category.slug,
-        categoryName(category, locale),
-      ],
-    ),
-  ];
-  const audiences = [
-    ["", t("everyone")],
-    ["women", t("women")],
-    ["men", t("men")],
-    ["kids", t("kids")],
-  ];
-  const countries = [
-    ["", t("allCountries")],
-    ["CN", t("china")],
-    ["US", t("unitedStates")],
-    ["TR", t("turkey")],
-    ["IT", t("italy")],
-    ["GB", t("unitedKingdom")],
-  ];
-  const selectedSize = typeof f.size === "string" ? f.size : "";
-  const selectedColor = typeof f.color === "string" ? f.color : "";
-  const sizes = [...new Set([...(selectedSize ? [selectedSize] : []), ...facets.sizes])];
-  const colors = [...new Set([...(selectedColor ? [selectedColor] : []), ...facets.colors])];
-  return (
-    <>
-      {categoriesError && typeof f.category === "string" && f.category.trim() ? (
-        <input type="hidden" name="category" value={f.category} />
-      ) : null}
-      <label className="text-xs font-bold uppercase text-stone-500">
-        {t("search")}
-      </label>
-      <input
-        className={`${input} mt-2`}
-        name="q"
-        defaultValue={typeof f.q === "string" ? f.q : ""}
-        placeholder={t("placeholder")}
-      />
-      <p className="mt-5 text-xs font-bold uppercase text-stone-500">
-        {t("category")}
-      </p>
-      {categoriesError ? (
-        <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">
-          {locale === "uz" ? "Toifalarni yuklab bo‘lmadi." : locale === "en" ? "Categories could not be loaded." : "Не удалось загрузить категории."}
-        </p>
-      ) : null}
-      <div className="mt-2 flex flex-wrap gap-2">
-        {cats.map(([v, l]) => (
-          <label
-            key={v}
-            className={`cursor-pointer rounded-xl border px-3 py-2 text-sm transition-colors ${(f.category ?? "") === v ? "border-primary-700 bg-primary-700 text-white" : "border-stone-300 hover:border-primary-600 dark:border-white/15"}`}
-          >
-            <input
-              className="sr-only"
-              type="radio"
-              name="category"
-              value={v}
-              defaultChecked={(f.category ?? "") === v}
-            />
-            {l}
-          </label>
-        ))}
-      </div>
-      <p className="mt-5 text-xs font-bold uppercase text-stone-500">
-        {t("audience")}
-      </p>
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        {audiences.map(([v, l]) => (
-          <label
-            key={v}
-            className={`cursor-pointer rounded-xl border px-3 py-2 text-sm transition-colors ${(f.audience ?? "") === v ? "border-primary-700 bg-primary-700 text-white" : "border-stone-300 hover:border-primary-600 dark:border-white/15"}`}
-          >
-            <input
-              className="sr-only"
-              type="radio"
-              name="audience"
-              value={v}
-              defaultChecked={(f.audience ?? "") === v}
-            />
-            {l}
-          </label>
-        ))}
-      </div>
-      <div className="mt-5">
-        <CatalogSelect
-          name="country"
-          label={t("country")}
-          value={typeof f.country === "string" ? f.country : ""}
-          placeholder={t("allCountries")}
-          options={countries.map(([value, label]) => ({ value, label }))}
-        />
-      </div>
-      <div className="mt-5 grid grid-cols-2 gap-2">
-        <CatalogSelect
-          name="size"
-          label={t("size")}
-          value={typeof f.size === "string" ? f.size : ""}
-          placeholder={t("anySize")}
-          options={[
-            { value: "", label: t("anySize") },
-            ...sizes.map((value) => ({ value, label: value })),
-          ]}
-        />
-        <CatalogSelect
-          name="color"
-          label={t("color")}
-          value={typeof f.color === "string" ? f.color : ""}
-          placeholder={t("anyColor")}
-          options={[
-            { value: "", label: t("anyColor") },
-            ...colors.map((value) => ({ value, label: value })),
-          ]}
-        />
-      </div>
-      {facetsError ? (
-        <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">
-          {locale === "uz" ? "O‘lcham va ranglar ro‘yxatini yuklab bo‘lmadi." : locale === "en" ? "Available sizes and colors could not be loaded." : "Не удалось загрузить доступные размеры и цвета."}
-        </p>
-      ) : null}
-      <p className="mt-5 text-xs font-bold uppercase text-stone-500">
-        {t("price")}
-      </p>
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        <input
-          className={input}
-          name="minPrice"
-          type="number"
-          min="0"
-          step="0.01"
-          inputMode="numeric"
-          defaultValue={typeof f.minPrice === "string" ? f.minPrice : ""}
-          placeholder={t("from")}
-        />
-        <input
-          className={input}
-          name="maxPrice"
-          type="number"
-          min="0"
-          step="0.01"
-          inputMode="numeric"
-          defaultValue={typeof f.maxPrice === "string" ? f.maxPrice : ""}
-          placeholder={t("to")}
-        />
-      </div>
-      <div className="mt-5">
-        <CatalogSelect
-          name="sort"
-          label={t("sort")}
-          value={typeof f.sort === "string" ? f.sort : "newest"}
-          placeholder={t("newest")}
-          options={[
-            { value: "newest", label: t("newest") },
-            { value: "price_asc", label: t("cheap") },
-            { value: "price_desc", label: t("expensive") },
-            { value: "popular", label: t("popular") },
-          ]}
-        />
-      </div>
-      <button className="mt-5 h-11 w-full rounded-xl bg-primary-700 text-sm font-bold text-white shadow-sm transition-colors hover:bg-primary-800">
-        {t("show")}
-      </button>
-    </>
-  );
 }
 
 export default async function CatalogPage({
@@ -323,8 +135,8 @@ function CatalogContent({
     ...(typeof f.country === "string" && f.country ? [[t("country"), f.country]] : []),
     ...(typeof f.size === "string" && f.size ? [[t("size"), f.size]] : []),
     ...(typeof f.color === "string" && f.color ? [[t("color"), f.color]] : []),
-    ...(typeof f.minPrice === "string" || typeof f.maxPrice === "string"
-      ? [[t("price"), `${typeof f.minPrice === "string" ? f.minPrice : "0"}–${typeof f.maxPrice === "string" ? f.maxPrice : "∞"} UZS`]]
+    ...(Boolean(typeof f.minPrice === "string" && f.minPrice.trim()) || Boolean(typeof f.maxPrice === "string" && f.maxPrice.trim())
+      ? [[t("price"), `${typeof f.minPrice === "string" && f.minPrice.trim() ? f.minPrice : "–"}–${typeof f.maxPrice === "string" && f.maxPrice.trim() ? f.maxPrice : "∞"} UZS`]]
       : []),
     ...(f.sort === "popular" ? [[t("sort"), t("popular")]] : []),
     ...(f.sort === "price_asc" ? [[t("sort"), t("cheap")]] : []),
@@ -338,37 +150,18 @@ function CatalogContent({
           locale={locale}
           hasExplicitCountry={Object.prototype.hasOwnProperty.call(f, "country")}
         />
-        <form className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900 lg:hidden">
-          <details>
-            <summary className="group flex h-11 list-none items-center justify-center gap-2 rounded-xl bg-primary-700 font-bold text-white">
-              <SlidersHorizontal size={17} />
-              <span className="group-open:hidden">{t("showFilters")}</span>
-              <span className="hidden group-open:inline">{t("hideFilters")}</span>
-            </summary>
-            <div className="mt-4">
-              <Controls f={f} t={t} categories={categories} categoriesError={categoriesError} facets={facets} facetsError={facetsError} locale={locale} />
-              <Link href={`/${locale}/catalog`} className="mt-2 flex h-10 items-center justify-center text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300">
-                {t("reset")}
-              </Link>
-            </div>
-          </details>
-        </form>
         <CatalogFilterLayout
           filters={
-            <form className="sticky top-24 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+            <div className="sticky top-24 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
               <div className="flex items-center gap-2 border-b pb-4 font-bold dark:border-white/10">
                 <Filter className="text-primary-700 dark:text-primary-300" size={18} />
                 {t("filters")}
               </div>
-              <Controls f={f} t={t} categories={categories} categoriesError={categoriesError} facets={facets} facetsError={facetsError} locale={locale} />
-              <Link
-                href={`/${locale}/catalog`}
-                className="mt-2 flex h-10 items-center justify-center text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
-              >
-                {t("reset")}
-              </Link>
-            </form>
+              <CatalogFilterControls locale={locale} categories={categories} categoriesError={categoriesError} facets={facets} facetsError={facetsError} />
+            </div>
           }
+          mobileFilters={<CatalogFilterControls locale={locale} categories={categories} categoriesError={categoriesError} facets={facets} facetsError={facetsError} />}
+          resultCount={data.pagination?.total ?? 0}
         >
           <>
             <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -383,17 +176,6 @@ function CatalogContent({
                 providerConfigured={capabilities.aiProviderConfigured}
               />
               <StyleAssistant locale={locale} enabled={capabilities.styleAssistant} />
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-xl font-bold">
-                {t("products")}{" "}
-                <span className="text-stone-400">
-                  ({data.pagination?.total ?? 0})
-                </span>
-              </h2>
-              <Link href={`/${locale}/catalog`} className="text-sm font-semibold text-primary-700 hover:underline dark:text-primary-300">
-                {t("reset")}
-              </Link>
             </div>
             {activeFilters.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-2" aria-label={t("activeFilters")}>
@@ -418,7 +200,7 @@ function CatalogContent({
                 </Link>
               </div>
             ) : products.length ? (
-              <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+              <div className="catalog-product-grid mt-5 grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 {products.map((p) => (
                   <ProductCard
                     key={p.id}

@@ -11,6 +11,7 @@ import { ProductReviews } from "@/components/commerce/ProductReviews";
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import { CompleteTheLook } from "@/components/commerce/CompleteTheLook";
 import { ProductRecommendations } from "@/components/commerce/ProductRecommendations";
+import { ProductViewTracker } from "@/components/analytics/ProductViewTracker";
 import { ProductLoadFailure } from "@/components/commerce/ProductLoadFailure";
 import { SmartBackButton } from "@/components/navigation/SmartBackButton";
 import {
@@ -183,7 +184,6 @@ export default async function ProductPage({
     verified: t("verified"),
     descriptionFallback: t("descriptionFallback"),
     gallery: t("gallery"),
-    imageLabel: (index: number) => t("imageLabel", { index }),
     delivery: t("delivery"),
     orderStatus: t("orderStatus"),
     support: t("support"),
@@ -234,6 +234,7 @@ export default async function ProductPage({
   };
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
+      <ProductViewTracker productId={product.id} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd).replace(/</g, '\\u003c') }}
@@ -250,7 +251,7 @@ export default async function ProductPage({
             productTitle={title}
             locale={locale}
             label={copy.gallery}
-            imageLabel={copy.imageLabel}
+            imageLabels={(product.images ?? []).map((_, index) => t("imageLabel", { index: index + 1 }))}
           />
           <section>
             <p className="text-xs font-bold uppercase tracking-[.18em] text-primary-700 dark:text-primary-300">

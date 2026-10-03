@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Select,
   SelectContent,
@@ -16,24 +15,19 @@ export function CatalogSelect({
   value,
   placeholder,
   options,
+  onValueChange,
 }: {
   name: string;
   label: string;
   value: string;
   placeholder: string;
   options: Array<{ value: string; label: string }>;
+  onValueChange?: (value: string) => void;
 }) {
-  const [selected, setSelected] = useState(value);
-  const [previousValue, setPreviousValue] = useState(value);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  if (value !== previousValue) {
-    setPreviousValue(value);
-    setSelected(value);
-  }
-
   const updateValue = (nextValue: string) => {
-    setSelected(nextValue);
+    onValueChange?.(nextValue);
     if (name === 'country' && !isAuthenticated) {
       try {
         if (nextValue) localStorage.setItem('averon_catalog_country', nextValue);
@@ -47,8 +41,8 @@ export function CatalogSelect({
   return (
     <div className="min-w-0">
       <span className="text-xs font-bold uppercase text-stone-500">{label}</span>
-      {selected || name === 'country' ? <input type="hidden" name={name} value={selected} /> : null}
-      <Select value={selected} onValueChange={updateValue}>
+      {value || name === 'country' ? <input type="hidden" name={name} value={value} /> : null}
+      <Select value={value} onValueChange={updateValue}>
         <SelectTrigger aria-label={label} className="mt-2 normal-case">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

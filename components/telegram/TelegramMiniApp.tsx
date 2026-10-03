@@ -302,7 +302,13 @@ export function TelegramMiniApp({
                 : (
                   <>
                   <article className="mt-6 grid gap-6 lg:grid-cols-2">
-                    <ProductGallery images={product.images ?? []} productTitle={title} locale={locale} label={text.gallery} imageLabel={text.image} />
+                    <ProductGallery
+                      images={product.images ?? []}
+                      productTitle={title}
+                      locale={locale}
+                      label={text.gallery}
+                      imageLabels={(product.images ?? []).map((_, index) => text.image(index + 1))}
+                    />
                     <section>
                       <p className="text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-300">{text.confirmed}</p>
                       <h1 className="mt-2 text-3xl font-extrabold">{title}</h1>

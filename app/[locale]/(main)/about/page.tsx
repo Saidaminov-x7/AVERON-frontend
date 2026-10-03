@@ -19,9 +19,9 @@ export default async function AboutPage({
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-white">
       <section className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
-        <div className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-[#10263f] to-[#075b78] px-6 py-12 text-white shadow-xl shadow-slate-950/10 sm:px-10 sm:py-16 lg:px-14">
-          <div aria-hidden="true" className="absolute -right-20 -top-28 -z-10 size-96 rounded-full bg-cyan-400/15 blur-3xl" />
-          <div aria-hidden="true" className="absolute -bottom-36 left-1/3 -z-10 size-80 rounded-full bg-blue-500/20 blur-3xl" />
+        <div className="relative isolate overflow-hidden rounded-[2rem] bg-stone-900 px-6 py-12 text-white shadow-xl shadow-slate-950/10 dark:bg-black sm:px-10 sm:py-16 lg:px-14">
+          <div aria-hidden="true" className="absolute -right-20 -top-28 -z-10 size-96 rounded-full bg-white/[0.035] blur-3xl" />
+          <div aria-hidden="true" className="absolute -bottom-36 left-1/3 -z-10 size-80 rounded-full bg-cyan-500/[0.04] blur-3xl" />
           <p className="text-xs font-bold uppercase tracking-[.2em] text-cyan-300">
             {t("eyebrow")}
           </p>

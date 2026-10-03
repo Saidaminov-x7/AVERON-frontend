@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { ProductCard, type StoreProduct } from './ProductCard';
+import { getScrubbedImageIndex, ProductCard, type StoreProduct } from './ProductCard';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 
@@ -13,6 +13,16 @@ describe('ProductCard', () => {
   beforeEach(() => {
     useFavoritesStore.setState({ ids: [] });
     useCompareStore.setState({ ids: [] });
+  });
+
+  it('maps image pointer zones to bounded image indexes', () => {
+    expect(getScrubbedImageIndex(0, 0, 100, 5)).toBe(0);
+    expect(getScrubbedImageIndex(20, 0, 100, 5)).toBe(1);
+    expect(getScrubbedImageIndex(60, 0, 100, 5)).toBe(3);
+    expect(getScrubbedImageIndex(100, 0, 100, 5)).toBe(4);
+    expect(getScrubbedImageIndex(-5, 0, 100, 5)).toBe(0);
+    expect(getScrubbedImageIndex(10, 0, 0, 5)).toBe(0);
+    expect(getScrubbedImageIndex(10, 0, 100, 1)).toBe(0);
   });
 
   it('renders a localized product and toggles favorites', () => {
@@ -41,8 +51,21 @@ describe('ProductCard', () => {
 
   it('toggles product comparison', () => {
     render(<ProductCard product={product} locale="ru" />);
-    fireEvent.click(screen.getByRole('button', { name: 'Добавить к сравнению' }));
+    const addButton = screen.getByRole('button', { name: 'Добавить к сравнению' });
+    fireEvent.click(addButton);
     expect(useCompareStore.getState().ids).toEqual(['product-1']);
+    expect(screen.getByRole('button', { name: 'Убрать из сравнения' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'Убрать из сравнения' }));
+    expect(useCompareStore.getState().ids).toEqual([]);
+  });
+
+  it('shows localized feedback when the comparison limit is reached', () => {
+    useCompareStore.setState({ ids: ['one', 'two', 'three', 'four'] });
+    render(<ProductCard product={product} locale="en" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add to comparison' }));
+    expect(screen.getByRole('status')).toHaveTextContent('You can compare up to 4 products.');
+    expect(useCompareStore.getState().ids).toEqual(['one', 'two', 'three', 'four']);
   });
 
   it('labels preorder and unavailable products from backend availability only', () => {
