@@ -5,7 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: var(--color-primary, #14b8a6);
+  --color-primary: var(--color-primary, #2563eb);
   --color-primary-50: color-mix(in srgb, var(--color-primary) 5%, white);
   --color-primary-100: color-mix(in srgb, var(--color-primary) 10%, white);
   --color-primary-200: color-mix(in srgb, var(--color-primary) 20%, white);
@@ -22,7 +22,7 @@
 }
 
 :root {
-  --color-primary: #0f766e;
+  --color-primary: #2563eb;
   --color-secondary: #115e59;
   --color-bg: #f9fafb;
   --color-text: #111827;
@@ -139,18 +139,18 @@
 }
 * {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-primary, #0f766e) 65%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--color-primary, #2563eb) 65%, transparent) transparent;
 }
 
 *::-webkit-scrollbar { width: 9px; height: 9px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--color-primary, #0f766e) 58%, #78716c);
+  background: color-mix(in srgb, var(--color-primary, #2563eb) 58%, #78716c);
   border: 2px solid transparent;
   border-radius: 999px;
   background-clip: padding-box;
 }
-*::-webkit-scrollbar-thumb:hover { background-color: var(--color-primary, #0f766e); }
+*::-webkit-scrollbar-thumb:hover { background-color: var(--color-primary, #2563eb); }
 /* Railway-inspired authentication canvas. */
 .auth-grid {
   background-image: radial-gradient(circle, rgba(148, 163, 184, .22) 1px, transparent 1px);

@@ -12,7 +12,7 @@ interface ThemeTokens {
 }
 
 const DEFAULTS: ThemeTokens = {
-  primaryColor: '#0f766e',
+  primaryColor: '#2563eb',
   secondaryColor: '#115e59',
   backgroundColor: '#f9fafb',
   textColor: '#111827',

@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'ijara-uz',
+      name: 'averon-frontend',
       script: './node_modules/next/dist/bin/next',
       args: 'start -p ' + (process.env.PORT || 3000),
       exec_mode: 'cluster',
@@ -28,18 +28,4 @@ module.exports = {
       log_date_format: 'YYYY-MM-DD HH:mm Z'
     }
   ],
-  
-  deploy: {
-    production: {
-      user: 'node',
-      host: process.env.DEPLOY_HOST || 'your-server-ip',
-      ref: 'origin/main',
-      repo: 'git@github.com:your-username/averon-frontend-three.vercel.app.git',
-      path: '/var/www/averon-frontend-three.vercel.app',
-      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
-      env: {
-        NODE_ENV: 'production'
-      }
-    }
-  }
 };
