@@ -21,11 +21,11 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Configure the storefront API URL and public canonical site URL in the local
-environment file. `NEXT_PUBLIC_YANDEX_METRIKA_ID` is optional; leave it unset
-to disable Yandex.Metrika. Set `NEXT_PUBLIC_SITE_URL=https://averon.uz` in the
-production environment; preview hosts should not be used as production
-canonical URLs. Public configuration values are not secrets.
+Configure the storefront API URL in the local environment file.
+`NEXT_PUBLIC_YANDEX_METRIKA_ID` is optional; leave it unset to disable
+Yandex.Metrika. Canonical metadata is pinned to `https://averon.uz` so local
+and preview environment values cannot publish preview hosts to search engines.
+Public configuration values are not secrets.
 
 Firebase authentication uses the `NEXT_PUBLIC_FIREBASE_*` values in
 `.env.local.example`. These are public browser configuration, not server

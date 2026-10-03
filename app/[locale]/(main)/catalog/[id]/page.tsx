@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckCircle2, Headphones, MessageCircle, PackageCheck } from "lucide-react";
 import { externalBaseURL } from "@/lib/axios";
+import { SITE_URL } from "@/lib/siteUrl";
 import { AddToCart } from "@/components/commerce/AddToCart";
 import { ProductGallery } from "@/components/commerce/ProductGallery";
 import { ProductReviews } from "@/components/commerce/ProductReviews";
@@ -19,7 +20,6 @@ import {
 } from "@/lib/products";
 
 type Filters = Record<string, string | string[] | undefined>;
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://averon.uz").replace(/\/+$/, "");
 
 class ProductRequestError extends Error {
   constructor(public readonly kind: "network" | "server") {

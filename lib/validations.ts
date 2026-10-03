@@ -17,7 +17,7 @@ export const MAX_FILE_SIZE_MB = 5;
 export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 export const ACCEPTED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
-/** Клиентская проверка файла перед загрузкой фото объявления. */
+/** Client-side validation before uploading a product photo. */
 export function validateImageFile(file: File): string | null {
   const ext = '.' + (file.name.split('.').pop() ?? '').toLowerCase();
   if (!ACCEPTED_IMAGE_TYPES.includes(file.type) || !ACCEPTED_IMAGE_EXTENSIONS.includes(ext)) {
@@ -28,36 +28,3 @@ export function validateImageFile(file: File): string | null {
   }
   return null;
 }
-
-/** Zod-схема формы добавления объявления (используется с react-hook-form). */
-export const listingSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(10, 'Минимум 10 символов')
-    .max(120, 'Максимум 120 символов'),
-  description: z
-    .string()
-    .trim()
-    .min(20, 'Минимум 20 символов')
-    .max(2000, 'Максимум 2000 символов'),
-  type: z.enum(['apartment', 'room', 'daily']),
-  region: z.string().trim().min(1, 'Выберите регион'),
-  district: z.string().trim().min(1, 'Выберите район'),
-  address: z.string().trim().max(200, 'Максимум 200 символов').optional().or(z.literal('')),
-  price: z.coerce
-    .number({ error: 'Укажите цену' })
-    .positive('Цена должна быть больше 0')
-    .max(100_000, 'Слишком большая цена'),
-  rooms: z.coerce.number().int().min(1, 'Минимум 1').max(20, 'Максимум 20'),
-  area: z.coerce.number().positive('Укажите площадь').max(2000, 'Слишком большая площадь'),
-  floor: z.coerce.number().int().min(0, 'Минимум 0').max(200, 'Максимум 200'),
-  furnished: z.boolean().default(false),
-  audience: z.enum(['all', 'students', 'families', 'girls', 'boys']),
-  phone: phoneSchema,
-});
-
-// z.coerce.number() даёт разные "входные"/"выходные" типы —
-// ListingFormInput используется в useForm<...>, ListingFormValues — в onSubmit.
-export type ListingFormInput  = z.input<typeof listingSchema>;
-export type ListingFormValues = z.output<typeof listingSchema>;

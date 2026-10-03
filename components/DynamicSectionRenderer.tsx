@@ -10,7 +10,7 @@ import type {
   SectionType,
   HeroSearchContent,
   BenefitsContent,
-  PopularListingsContent,
+  PopularProductsContent,
   CtaBannerContent,
   CategoriesContent,
   TextBlockContent,
@@ -33,7 +33,7 @@ export interface DynamicSectionData {
 }
 
 export interface PlatformStatsData {
-  totalListings: number;
+  totalProducts: number;
   activeUsers: number;
   cities: number;
   dailyViews: number;
@@ -104,9 +104,9 @@ export function DynamicSectionRenderer({
         switch (section.sectionType as SectionType) {
           case 'HERO_SEARCH': {
             const c = content as HeroSearchContent;
-            const title = c.title || section.title || 'Аренда жилья в Узбекистане';
-            const subtitle = c.subtitle || 'Быстрый и удобный поиск квартир и комнат';
-            const searchPlaceholder = c.searchPlaceholder || 'Район, метро, улица или город...';
+            const title = c.title || section.title || 'Товары для вашего стиля в AVERON';
+            const subtitle = c.subtitle || 'Откройте одежду, обувь и аксессуары в каталоге AVERON';
+            const searchPlaceholder = c.searchPlaceholder || 'Название товара, бренд или категория';
             const quickFilters = c.quickFilters || [];
             return (
               <div key={section.id} className="my-10 flex flex-col items-center text-center">
@@ -174,8 +174,8 @@ export function DynamicSectionRenderer({
           }
 
           case 'POPULAR_LISTINGS': {
-            const c = content as PopularListingsContent;
-            const title = c.title || section.title || 'Популярные объявления';
+            const c = content as PopularProductsContent;
+            const title = c.title || section.title || 'Популярные товары';
             const viewAllText = c.viewAllText || 'Смотреть все';
             return (
               <div key={section.id} className="py-6">
@@ -190,7 +190,7 @@ export function DynamicSectionRenderer({
                 </div>
                 {popularProducts.length === 0 ? (
                   <div className="rounded-2xl border border-dashed border-stone-300 dark:border-stone-800 p-12 text-center text-stone-500 dark:text-stone-400">
-                    <Icons.Home size={36} className="mx-auto mb-3 text-stone-400" />
+                    <Icons.ShoppingBag size={36} className="mx-auto mb-3 text-stone-400" />
                     <p className="font-medium">Здесь появятся первые опубликованные товары</p>
                   </div>
                 ) : (
@@ -401,9 +401,10 @@ export function DynamicSectionRenderer({
           }
 
           case 'PLATFORM_STATS': {
+            if (!platformStats) return null;
             const c = content as PlatformStatsContent;
             const title = c.title || section.title || 'AVERON в цифрах';
-            const stats = platformStats || { totalListings: 0, activeUsers: 0, cities: 0, dailyViews: 0 };
+            const stats = platformStats;
             return (
               <div key={section.id} className="rounded-3xl bg-stone-100 p-8 shadow-sm dark:bg-stone-900 sm:p-12">
                 <h2 className="mb-8 text-center text-2xl font-bold text-stone-900 dark:text-white sm:text-3xl">
@@ -411,7 +412,7 @@ export function DynamicSectionRenderer({
                 </h2>
                 <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
                   {[
-                    { value: stats.totalListings, label: 'Объявлений' },
+                    { value: stats.totalProducts, label: 'Товаров' },
                     { value: stats.activeUsers, label: 'Пользователей' },
                     { value: stats.cities, label: 'Городов' },
                     { value: stats.dailyViews, label: 'Просмотров в день' },

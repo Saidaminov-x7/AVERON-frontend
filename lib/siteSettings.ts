@@ -19,7 +19,6 @@ export interface PublicSiteSettings {
   mobilePinchZoomEnabled?: boolean;
   googleAuthEnabled?: boolean;
   autoModerationEnabled?: boolean;
-  maxImagesPerListing?: number;
 }
 
 // Кэш настроек
@@ -49,7 +48,6 @@ export const getSiteSettings = async (): Promise<PublicSiteSettings> => {
       mobilePinchZoomEnabled: data.mobilePinchZoomEnabled ?? true,
       googleAuthEnabled: data.googleAuthEnabled ?? true,
       autoModerationEnabled: data.autoModerationEnabled ?? false,
-      maxImagesPerListing: data.maxImagesPerListing ?? 10,
     };
     lastFetchTime = now;
     return cachedSettings;
@@ -63,7 +61,6 @@ export const getSiteSettings = async (): Promise<PublicSiteSettings> => {
       mobilePinchZoomEnabled: true,
       googleAuthEnabled: true,
       autoModerationEnabled: false,
-      maxImagesPerListing: 10,
     };
   }
 };

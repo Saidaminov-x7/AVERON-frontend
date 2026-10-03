@@ -36,8 +36,8 @@ vi.mock('next/navigation', () => ({
 vi.mock('@/components/ProtectedRoute', () => ({ default: ({ children }: { children: ReactNode }) => children }));
 vi.mock('@/hooks/useCommerceCart', () => ({ useCommerceCart: () => cartMock }));
 vi.mock('@/store/useAuthStore', () => ({ useAuthStore: () => ({ user: checkoutStore, isAuthenticated: true, isLoading: false }) }));
-vi.mock('@/lib/commerce-orders', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/commerce-orders')>();
+vi.mock('@/lib/commerce-orders', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/commerce-orders')>('@/lib/commerce-orders');
   return {
     ...actual,
     createCheckout: vi.fn(),

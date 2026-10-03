@@ -15,8 +15,8 @@ vi.mock("./useCommerceCapabilities", () => ({
   useCommerceCapabilities: () => capabilityState,
 }));
 
-vi.mock("@/lib/visual-search", async (importOriginal) => {
-  const original = await importOriginal<typeof import("@/lib/visual-search")>();
+vi.mock("@/lib/visual-search", async () => {
+  const original = await vi.importActual<typeof import("@/lib/visual-search")>("@/lib/visual-search");
   return { ...original, loadSimilarProducts: vi.fn() };
 });
 

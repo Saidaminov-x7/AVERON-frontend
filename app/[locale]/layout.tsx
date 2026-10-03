@@ -1,6 +1,7 @@
 import LayoutServer from './layout-server'
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { SITE_URL } from '@/lib/siteUrl';
 
 export async function generateMetadata({
   params,
@@ -15,7 +16,7 @@ export async function generateMetadata({
   return {
     title: { default: title, template: '%s | AVERON' },
     description,
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://averon.uz'),
+    metadataBase: new URL(SITE_URL),
     alternates: {
       canonical: `/${locale}`,
       languages: {

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
+import { SITE_URL } from '@/lib/siteUrl';
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://averon.uz').replace(/\/+$/, '');
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',

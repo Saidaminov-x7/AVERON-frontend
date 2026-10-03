@@ -21,8 +21,8 @@ vi.mock("./useCommerceCapabilities", () => ({
   useCommerceCapabilities: () => capabilities,
 }));
 
-vi.mock("@/lib/catalog-assistant", async (importOriginal) => {
-  const original = await importOriginal<typeof import("@/lib/catalog-assistant")>();
+vi.mock("@/lib/catalog-assistant", async () => {
+  const original = await vi.importActual<typeof import("@/lib/catalog-assistant")>("@/lib/catalog-assistant");
   return {
     ...original,
     searchCatalogWithIntent: vi.fn(),

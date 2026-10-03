@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { externalBaseURL } from '@/lib/axios';
+import { SITE_URL } from '@/lib/siteUrl';
 
-const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://averon.uz').replace(/\/+$/, '');
 const LOCALES = ['ru', 'uz', 'en'] as const;
 const STATIC_PATHS = [
   '',
@@ -47,7 +47,7 @@ async function getPublishedProducts(): Promise<SitemapProduct[]> {
 }
 
 function localizedRoute(path: string, locale: string) {
-  return `${BASE_URL}/${locale}${path}`;
+  return `${SITE_URL}/${locale}${path}`;
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

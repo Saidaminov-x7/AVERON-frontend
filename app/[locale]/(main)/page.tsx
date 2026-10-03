@@ -5,8 +5,7 @@ import { ArrowRight, Search, ShieldCheck, Sparkles, Zap, Headphones } from 'luci
 import { SearchInput } from '@/components/ui/SearchInput';
 import { ProductCard, type StoreProduct } from '@/components/commerce/ProductCard';
 import { externalBaseURL } from '@/lib/axios';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://averon.uz';
+import { SITE_URL } from '@/lib/siteUrl';
 
 async function getPopularProducts() {
   try {

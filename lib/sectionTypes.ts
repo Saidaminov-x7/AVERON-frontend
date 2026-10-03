@@ -39,7 +39,7 @@ export interface BenefitsContent {
   items: BenefitItem[];
 }
 
-export interface PopularListingsContent {
+export interface PopularProductsContent {
   title: string;
   subtitle?: string;
   viewAllText: string;
@@ -105,7 +105,7 @@ export interface PlatformStatsContent {
 export type SectionContentMap = {
   HERO_SEARCH: HeroSearchContent;
   BENEFITS: BenefitsContent;
-  POPULAR_LISTINGS: PopularListingsContent;
+  POPULAR_LISTINGS: PopularProductsContent;
   CTA_BANNER: CtaBannerContent;
   CATEGORIES: CategoriesContent;
   TEXT_BLOCK: TextBlockContent;
@@ -141,10 +141,10 @@ export const SECTION_META: Record<
     defaultTitle: 'Преимущества',
   },
   POPULAR_LISTINGS: {
-    label: 'Популярные / Рекомендуемые объявления',
+    label: 'Популярные товары',
     icon: 'Flame',
-    desc: 'Сетка популярных или рекомендованных объявлений из базы данных',
-    defaultTitle: 'Популярные объявления',
+    desc: 'Сетка популярных или рекомендованных товаров из каталога',
+    defaultTitle: 'Популярные товары',
   },
   CTA_BANNER: {
     label: 'Призыв к действию (CTA Баннер)',
@@ -153,10 +153,10 @@ export const SECTION_META: Record<
     defaultTitle: 'Баннер размещения',
   },
   CATEGORIES: {
-    label: 'Категории жилья',
+    label: 'Категории товаров',
     icon: 'Tag',
-    desc: 'Список категорий (посуточно, новостройки, студентам, комнаты)',
-    defaultTitle: 'Категории жилья',
+    desc: 'Подборка категорий товаров',
+    defaultTitle: 'Категории товаров',
   },
   TEXT_BLOCK: {
     label: 'Текстовый блок / Описание',
@@ -191,7 +191,7 @@ export const SECTION_META: Record<
   PLATFORM_STATS: {
     label: 'Статистика платформы',
     icon: 'BarChart3',
-    desc: 'Автоматические цифры: объявления, пользователи, города, просмотры',
+    desc: 'Проверенные показатели каталога, пользователей, городов и просмотров',
     defaultTitle: 'Статистика',
   },
 };
@@ -200,50 +200,48 @@ export const SECTION_META: Record<
 // и как fallback на фронтенде, если content пустой.
 export const SECTION_DEFAULTS: SectionContentMap = {
   HERO_SEARCH: {
-    title: 'Аренда жилья в Узбекистане без посредников',
-    subtitle: 'Найдите идеальную квартиру, дом или комнату напрямую от собственников',
+    title: 'Товары для вашего стиля в AVERON',
+    subtitle: 'Откройте одежду, обувь и аксессуары в каталоге AVERON',
     showSearch: true,
-    searchPlaceholder: 'Район, метро, улица или город...',
-    badgeText: '✨ Проверенные собственники',
+    searchPlaceholder: 'Название товара, бренд или категория',
+    badgeText: 'Товары со всего мира',
     quickFilters: [
-      { label: 'Студии', href: '/catalog?type_apartments=studio' },
-      { label: '1-комнатные', href: '/catalog?rooms=1' },
+      { label: 'Одежда', href: '/catalog?category=women' },
+      { label: 'Обувь', href: '/catalog?category=shoes' },
     ],
   },
   BENEFITS: {
-    title: 'Почему выбирают averon',
+    title: 'Почему выбирают AVERON',
     items: [
-      { icon: 'ShieldCheck', title: 'Прямой контакт с собственниками', text: 'Все объявления проходят модерацию. Никаких скрытых комиссий риелторов.' },
-      { icon: 'Map', title: 'Удобный поиск по карте', text: 'Выбирайте жильё рядом с работой, учёбой или станциями метро.' },
-      { icon: 'MessagesSquare', title: 'Безопасное общение', text: 'Встроенный чат с проверкой истории и защитой от спама и мошенников.' },
+      { icon: 'ShieldCheck', title: 'Проверенная информация', text: 'Находите важные сведения о товаре перед покупкой.' },
+      { icon: 'Search', title: 'Удобный поиск', text: 'Подбирайте товары по названию, категории и стране.' },
+      { icon: 'PackageCheck', title: 'Покупки с AVERON', text: 'Следите за заказом и его статусом в личном кабинете.' },
     ],
   },
   POPULAR_LISTINGS: {
-    title: 'Популярные предложения',
-    subtitle: 'Свежие проверенные варианты аренды',
+    title: 'Популярные товары',
+    subtitle: 'Товары, которые выбирают покупатели AVERON',
     viewAllText: 'Смотреть все',
     limit: 6,
   },
   CTA_BANNER: {
-    title: 'Сдайте жильё выгодно и быстро',
-    text: 'Разместите объявление бесплатно за 2 минуты и найдите надёжных арендаторов уже сегодня',
-    buttonText: 'Разместить объявление',
+    title: 'Найдите товары для своего стиля',
+    text: 'Откройте каталог AVERON и выберите то, что подходит именно вам.',
+    buttonText: 'Перейти в каталог',
     buttonLink: '/catalog',
   },
   CATEGORIES: {
-    title: 'Категории недвижимости',
+    title: 'Категории товаров',
     categories: [
-      { name: 'Посуточно', icon: 'Key', href: '/catalog?rental_type=daily' },
-      { name: 'Новостройки', icon: 'Building2', href: '/catalog?building_type=new' },
-      { name: 'Элитные', icon: 'Sparkles', href: '/catalog?class=elite' },
-      { name: 'Для студентов', icon: 'Home', href: '/catalog?for_whom=students' },
-      { name: 'Долгосрочно', icon: 'Home', href: '/catalog?rental_type=long' },
-      { name: 'Студии', icon: 'Building', href: '/catalog?type_apartments=studio' },
+      { name: 'Женская одежда', icon: 'Shirt', href: '/catalog?category=women' },
+      { name: 'Мужская одежда', icon: 'Shirt', href: '/catalog?category=men' },
+      { name: 'Обувь', icon: 'Footprints', href: '/catalog?category=shoes' },
+      { name: 'Аксессуары', icon: 'Watch', href: '/catalog?category=accessories' },
     ],
   },
   TEXT_BLOCK: {
     title: 'О нашем сервисе',
-    text: 'AVERON — это современная национальная платформа аренды жилой и коммерческой недвижимости в Узбекистане.',
+    text: 'AVERON — онлайн-платформа для поиска и покупки товаров с удобным каталогом и сопровождением заказов.',
     align: 'left',
   },
   CUSTOM_HTML: {
@@ -258,9 +256,9 @@ export const SECTION_DEFAULTS: SectionContentMap = {
   FAQ_ACCORDION: {
     title: 'Часто задаваемые вопросы',
     items: [
-      { question: 'Как разместить объявление?', answer: 'Нажмите кнопку «Разместить объявление» в верхнем меню, заполните данные о квартире и прикрепите фотографии.' },
-      { question: 'Берётся ли комиссия с арендаторов?', answer: 'Нет! AVERON соединяет арендаторов напрямую с проверенными собственниками без комиссий.' },
-      { question: 'Как связаться с поддержкой?', answer: 'Вы можете написать нам через Telegram-бота или на email support@averon.uz.' },
+      { question: 'Как оформить заказ?', answer: 'Выберите товар, добавьте его в корзину и следуйте шагам оформления заказа.' },
+      { question: 'Где посмотреть статус заказа?', answer: 'Статус и детали заказа доступны в личном кабинете AVERON.' },
+      { question: 'Как связаться с поддержкой?', answer: 'Напишите нам через Telegram или на email support@averon.uz.' },
     ],
   },
   CONTACT_INFO: {

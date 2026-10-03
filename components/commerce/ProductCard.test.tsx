@@ -29,7 +29,7 @@ describe('ProductCard', () => {
       <ProductCard
         product={product}
         locale="ru"
-        catalogQuery="q=coat&country=CN&category=outerwear&page=2"
+        catalogQuery={'q=coat&country=CN&category=outerwear&page=2'}
       />,
     );
 

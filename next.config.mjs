@@ -11,7 +11,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'averon-frontend-three.vercel.app',
+        hostname: 'averon.uz',
       },
       {
         protocol: 'http',
