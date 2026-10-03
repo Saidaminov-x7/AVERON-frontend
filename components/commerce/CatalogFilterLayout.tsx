@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 
 export function CatalogFilterLayout({
   filters,
@@ -21,6 +21,14 @@ export function CatalogFilterLayout({
   const router = useRouter();
   const [filtersVisible, setFiltersVisible] = useState(true);
   const reduceMotion = useReducedMotion();
+  const asideRef = useRef<HTMLElement>(null);
+  const [asideReady, setAsideReady] = useState(false);
+
+  // Mark as ready after first render so CSS transition fires correctly
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setAsideReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   useEffect(() => {
     let refreshTimer: number | undefined;
@@ -40,57 +48,82 @@ export function CatalogFilterLayout({
       type="button"
       aria-expanded={filtersVisible}
       onClick={() => setFiltersVisible((visible) => !visible)}
-      className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-stone-300 px-3 text-sm font-semibold text-stone-700 hover:border-stone-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/15 dark:text-stone-200"
+      className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-stone-300 bg-white px-3 text-sm font-semibold text-stone-700 transition-colors hover:border-primary-500 hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-primary-500 dark:hover:text-primary-300"
     >
       <SlidersHorizontal size={16} aria-hidden="true" />
       {filtersVisible ? t('hideFilters') : t('showFilters')}
     </button>
   );
 
+  // Duration for the animation
+  const duration = reduceMotion ? '0ms' : '220ms';
+  const ease = 'cubic-bezier(0.25, 1, 0.5, 1)';
+
   return (
-    <div className="mt-6 lg:mt-0">
+    <div data-catalog-filters-visible={filtersVisible}>
+      {/* Header: "Товары (N)" left, toggle button right */}
       <header className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-xl font-bold">
           {t('products')} <span className="text-stone-400">({resultCount})</span>
         </h2>
         {toggle}
       </header>
-      <motion.div
-        layout
-        data-catalog-filters-visible={filtersVisible}
-        className={`grid grid-cols-1 gap-6 transition-[grid-template-columns] ${reduceMotion ? 'duration-0' : 'duration-250'} ${filtersVisible ? 'lg:grid-cols-[minmax(0,290px)_minmax(0,1fr)]' : ''}`}
-        transition={{ duration: reduceMotion ? 0 : 0.24, ease: 'easeOut' }}
-      >
-        <AnimatePresence initial={false}>
-        {filtersVisible ? (
-          <motion.aside
-            className="hidden min-w-0 overflow-hidden lg:block"
-            initial={reduceMotion ? false : { opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -12 }}
-            transition={reduceMotion ? { duration: 0 } : { duration: 0.2 }}
+
+      {/* Main body: sidebar + content, aligned at the same top edge */}
+      <div className="flex flex-col items-start lg:flex-row">
+        {/* Desktop sidebar */}
+        <aside
+          ref={asideRef}
+          className="hidden lg:block shrink-0 overflow-hidden"
+          style={
+            asideReady
+              ? {
+                  width: filtersVisible ? 290 : 0,
+                  marginRight: filtersVisible ? 24 : 0,
+                  opacity: filtersVisible ? 1 : 0,
+                  transition: reduceMotion
+                    ? undefined
+                    : `width ${duration} ${ease}, margin-right ${duration} ${ease}, opacity ${duration} ${ease}`,
+                }
+              : {
+                  width: 290,
+                  marginRight: 24,
+                  opacity: 1,
+                }
+          }
+          aria-hidden={!filtersVisible}
+        >
+          {/* Fixed-width inner prevents content from squishing during animation */}
+          <div className="w-[290px]">{filters}</div>
+        </aside>
+
+        {/* Product area – always starts at the same top as filters */}
+        <section className="min-w-0 flex-1 w-full">
+          {/* Mobile filters: height-based collapse */}
+          <div
+            className="overflow-hidden lg:hidden"
+            style={
+              reduceMotion
+                ? { display: filtersVisible ? undefined : 'none' }
+                : {
+                    maxHeight: filtersVisible ? '2000px' : '0',
+                    opacity: filtersVisible ? 1 : 0,
+                    transition: filtersVisible
+                      ? `max-height 300ms ${ease}, opacity 200ms ${ease}`
+                      : `max-height 220ms ${ease}, opacity 180ms ${ease}`,
+                    overflow: 'hidden',
+                  }
+            }
+            aria-hidden={!filtersVisible}
           >
-            {filters}
-          </motion.aside>
-        ) : null}
-        </AnimatePresence>
-        <section className="min-w-0">
-        <AnimatePresence initial={false}>
-        {filtersVisible ? (
-            <motion.div
-              className="mb-4 overflow-hidden rounded-2xl border border-stone-200 bg-white p-4 lg:hidden dark:border-white/10 dark:bg-stone-900"
-              initial={reduceMotion ? false : { opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={reduceMotion ? { duration: 0 } : { duration: 0.22 }}
-            >
+            <div className="mb-4 overflow-hidden rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
               {mobileFilters}
-            </motion.div>
-          ) : null}
-          </AnimatePresence>
+            </div>
+          </div>
+
           {children}
         </section>
-      </motion.div>
+      </div>
     </div>
   );
 }

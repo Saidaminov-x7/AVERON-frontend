@@ -1,12 +1,28 @@
 const supportedLocales = new Set(['ru', 'uz', 'en']);
 const authRoutes = new Set(['login', 'register', 'forgot-password', 'reset-password']);
+
+export type RouteAccessLevel = 'public' | 'protected' | 'auth';
+
+export const KNOWN_ROUTE_ACCESS: Record<string, RouteAccessLevel> = {
+  login: 'auth',
+  register: 'auth',
+  'forgot-password': 'auth',
+  'reset-password': 'auth',
+  cart: 'protected',
+  checkout: 'protected',
+  orders: 'protected',
+  profile: 'protected',
+  outfits: 'protected',
+  favorites: 'protected',
+};
+
 const authBackTransitions: Record<string, Set<string>> = {
   login: new Set(['register']),
   register: new Set(['login']),
   'forgot-password': new Set(['login']),
   'reset-password': new Set(['forgot-password']),
 };
-const protectedAuthBackRoutes = new Set(['cart', 'checkout', 'orders', 'profile']);
+
 const preservedLocaleQueryKeys = new Set([
   'q',
   'country',
@@ -36,6 +52,18 @@ export function isAuthPathname(pathname: string, locale: string): boolean {
   if (!supportedLocales.has(locale)) return false;
   const firstRouteSegment = routeSegment(pathname, locale);
   return firstRouteSegment !== null && authRoutes.has(firstRouteSegment);
+}
+
+export function getRouteAccess(pathname: string, locale: string): RouteAccessLevel | null {
+  if (!supportedLocales.has(locale)) return null;
+  const segment = routeSegment(pathname, locale);
+  if (segment === null) return null;
+  if (!segment) return 'public';
+  return KNOWN_ROUTE_ACCESS[segment] ?? 'public';
+}
+
+export function isProtectedPathname(pathname: string, locale: string): boolean {
+  return getRouteAccess(pathname, locale) === 'protected';
 }
 
 export function getSafeInternalReturnTo(value: string | null | undefined, locale: string): string | null {
@@ -124,7 +152,7 @@ export function getSafePreviousRoute(
     return value;
   }
 
-  if (currentIsAuth && protectedAuthBackRoutes.has(routeSegment(candidate, locale) ?? '')) {
+  if (currentIsAuth && getRouteAccess(candidate.split(/[?#]/, 1)[0], locale) !== 'public') {
     return null;
   }
   if (candidate.split(/[?#]/, 1)[0] === currentPathname) return null;

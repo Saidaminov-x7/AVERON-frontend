@@ -42,33 +42,35 @@ function AuthLayoutInner({ children }: Pick<AuthLayoutProps, 'children'>) {
   }, []);
 
   return (
-    <div className="auth-grid relative flex min-h-[calc(100dvh-80px)] flex-col items-center justify-center overflow-hidden bg-[#090a0f] px-4 py-8">
+    <div className="auth-grid relative flex min-h-[calc(100dvh-80px)] flex-col items-center justify-center overflow-hidden bg-stone-50 px-4 py-8 dark:bg-stone-950">
       <div ref={glowRef} className="auth-pointer-glow pointer-events-none absolute inset-0" />
       
       {/* Decorative blobs */}
       <div className="absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-primary-600/10 blur-[120px]" />
 
+      {/* Top Auth chrome / navigation */}
+      <div className="relative z-10 w-full max-w-md px-4 mb-3 flex items-center justify-between">
+        <SmartBackButton fallbackHref={`/${locale}`} />
+      </div>
+
       {/* Card container */}
       <div className="relative z-10 w-full max-w-md px-4">
-        <div className="relative overflow-hidden rounded-2xl border border-stone-200 bg-stone-950 shadow-2xl dark:border-white/10">
+        <div className="relative overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-xl dark:border-stone-800 dark:bg-stone-900">
           {/* Inner top gradient stripe */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary-400/50 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary-500/40 to-transparent" />
 
           {/* Card inner container */}
           <div className="p-6 sm:p-8">
-            <div className="mb-4">
-              <SmartBackButton fallbackHref={`/${locale}/login`} />
-            </div>
             {children}
           </div>
 
           {/* Inner bottom gradient stripe */}
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-stone-200 dark:via-stone-700 to-transparent" />
         </div>
       </div>
 
       {/* Bottom branding */}
-      <p className="relative z-10 mt-4 text-xs text-stone-500">
+      <p className="relative z-10 mt-4 text-xs text-stone-500 dark:text-stone-400">
         © 2026 AVERON
       </p>
     </div>

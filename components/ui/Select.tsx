@@ -1,9 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { forwardRef, useState, useRef, useEffect, createContext, useContext } from 'react';
+import { forwardRef, useState, useRef, useEffect, useLayoutEffect, createContext, useContext } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
 import { Check, ChevronDown } from 'lucide-react';
+import { calculateDropdownPosition, type DropdownPosition } from '@/lib/dropdown-position';
 
 interface SelectContextType {
   value: string;
@@ -14,6 +16,8 @@ interface SelectContextType {
   registerLabel: (val: string, label: React.ReactNode) => void;
   selectId: string;
   disabled: boolean;
+  triggerRef: React.MutableRefObject<HTMLButtonElement | null>;
+  contentRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
 const SelectContext = createContext<SelectContextType | null>(null);
@@ -31,6 +35,8 @@ function Select({ children, value: controlledValue, defaultValue = '', onValueCh
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
   const [open, setOpen] = useState(false);
   const [labelMap, setLabelMap] = useState<Record<string, React.ReactNode>>({});
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   const isControlled = controlledValue !== undefined;
   const value = isControlled ? controlledValue : uncontrolledValue;
@@ -59,6 +65,8 @@ function Select({ children, value: controlledValue, defaultValue = '', onValueCh
         registerLabel,
         selectId,
         disabled,
+        triggerRef,
+        contentRef,
       }}
     >
       <div className="relative inline-block w-full">{children}</div>
@@ -95,7 +103,11 @@ const SelectTrigger = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<H
 
     return (
       <button
-        ref={ref}
+        ref={(node) => {
+          context && (context.triggerRef.current = node);
+          if (typeof ref === 'function') ref(node);
+          else if (ref) ref.current = node;
+        }}
         type="button"
         id={context ? `${context.selectId}-trigger` : undefined}
         role="combobox"
@@ -107,10 +119,9 @@ const SelectTrigger = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<H
         onKeyDown={(event) => {
           if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && !context?.open) {
             event.preventDefault();
-            const trigger = event.currentTarget;
             context?.setOpen(true);
             requestAnimationFrame(() => {
-              const options = trigger.parentElement?.querySelectorAll<HTMLButtonElement>('[role="option"]:not(:disabled)');
+              const options = context?.contentRef.current?.querySelectorAll<HTMLButtonElement>('[role="option"]:not(:disabled)');
               (event.key === 'ArrowUp' ? options?.[options.length - 1] : options?.[0])?.focus();
             });
           }
@@ -137,11 +148,17 @@ SelectTrigger.displayName = 'SelectTrigger';
 const SelectContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => {
     const context = useContext(SelectContext);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const [position, setPosition] = useState<DropdownPosition | null>(null);
+    const [portalReady, setPortalReady] = useState(false);
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
+    useEffect(() => setPortalReady(true), []);
     useEffect(() => {
       const handleOutside = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        if (
+          !containerRef.current?.contains(e.target as Node) &&
+          !context?.triggerRef.current?.contains(e.target as Node)
+        ) {
           context?.setOpen(false);
         }
       };
@@ -151,11 +168,39 @@ const SelectContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEle
       return () => document.removeEventListener('mousedown', handleOutside);
     }, [context?.open, context]);
 
-    if (!context?.open) return null;
+    useLayoutEffect(() => {
+      if (!context?.open || !portalReady || !context.triggerRef.current || !containerRef.current) return;
+      const update = () => {
+        const trigger = context.triggerRef.current?.getBoundingClientRect();
+        const menu = containerRef.current;
+        if (!trigger || !menu) return;
+        setPosition(calculateDropdownPosition({
+          trigger,
+          menuHeight: menu.scrollHeight,
+          viewportWidth: window.innerWidth,
+          viewportHeight: window.innerHeight,
+        }));
+      };
+      update();
+      window.addEventListener('resize', update);
+      window.addEventListener('scroll', update, true);
+      return () => {
+        window.removeEventListener('resize', update);
+        window.removeEventListener('scroll', update, true);
+      };
+    }, [context?.open, portalReady]);
 
-    return (
+    if (!context?.open) return null;
+    if (!portalReady) return null;
+
+    return createPortal(
       <div
-        ref={containerRef}
+        ref={(node) => {
+          containerRef.current = node;
+          if (context) context.contentRef.current = node;
+          if (typeof ref === 'function') ref(node);
+          else if (ref) ref.current = node;
+        }}
         id={`${context.selectId}-listbox`}
         role="listbox"
         aria-labelledby={`${context.selectId}-trigger`}
@@ -183,13 +228,20 @@ const SelectContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEle
           }
         }}
         className={cn(
-          'absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-lg border border-stone-200 bg-white p-1 shadow-lg shadow-stone-900/10 dark:border-stone-700 dark:bg-stone-800 dark:shadow-black/40',
+          'fixed z-[1000] overflow-auto rounded-lg border border-stone-200 bg-white p-1 shadow-lg shadow-stone-900/10 dark:border-stone-700 dark:bg-stone-800 dark:shadow-black/40',
           className
         )}
+        style={position ? {
+          top: position.top,
+          left: position.left,
+          width: position.width,
+          maxHeight: position.maxHeight,
+        } : { visibility: 'hidden', left: 0, top: 0, width: context.triggerRef.current?.offsetWidth }}
         {...props}
       >
         <div ref={ref}>{children}</div>
-      </div>
+      </div>,
+      document.body,
     );
   }
 );
@@ -224,14 +276,14 @@ const SelectItem = forwardRef<HTMLButtonElement, SelectItemProps>(
         onClick={() => !props.disabled && context?.onValueChange(value)}
         className={cn(
           'relative flex w-full cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm text-stone-700 transition-colors hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-700',
-          isSelected && 'bg-primary-50 font-medium text-primary-700 dark:bg-primary-950/60 dark:text-primary-300',
+          isSelected && 'bg-primary-600 font-medium text-white dark:bg-primary-600 dark:text-white',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
         {...props}
       >
         <span className="flex-1 text-left">{children}</span>
-        {isSelected && <Check className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" />}
+        {isSelected && <Check className="h-4 w-4 shrink-0 text-white" />}
       </button>
     );
   }

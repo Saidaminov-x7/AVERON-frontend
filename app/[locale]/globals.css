@@ -5,6 +5,13 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --color-stone-950: #111b29;
+  --color-stone-900: #182536;
+  --color-stone-800: #243449;
+  --color-stone-700: #34485f;
+  --color-stone-100: #eef2f7;
+  --color-stone-50: #f6f8fb;
+  --color-secondary: #1d4ed8;
   --color-primary: var(--color-primary, #2563eb);
   --color-primary-50: color-mix(in srgb, var(--color-primary) 5%, white);
   --color-primary-100: color-mix(in srgb, var(--color-primary) 10%, white);
@@ -23,8 +30,11 @@
 
 :root {
   --color-primary: #2563eb;
-  --color-secondary: #115e59;
-  --color-bg: #f9fafb;
+  --color-secondary: #1d4ed8;
+  --color-bg: #f6f8fb;
+  --color-surface: #ffffff;
+  --color-surface-raised: #eef2f7;
+  --color-text-muted: #64748b;
   --color-text: #111827;
   --border-radius: 0.75rem;
   --font-family: Calibri, "Segoe UI", Arial, sans-serif;
@@ -46,17 +56,23 @@
   }
 
   body {
-    background-color: #FAFAFA;
+    background-color: #f6f8fb;
     color: #171717;
     -webkit-font-smoothing: antialiased;
     font-family: var(--font-family, Calibri, "Segoe UI", Arial, sans-serif);
     transition: background-color var(--duration-ui) var(--ease-out-ui), color var(--duration-ui) var(--ease-out-ui);
   }
 
-  /* Тёмная тема */
-  html.dark body { 
-    background-color: #0F0F10; 
-    color: #F3F4F6; 
+  html.dark {
+    --color-bg: #111b29;
+    --color-surface: #182536;
+    --color-surface-raised: #243449;
+    --color-text-muted: #a8b5c5;
+  }
+
+  html.dark body {
+    background-color: var(--color-bg);
+    color: #f1f5f9;
   }
 
   /* Курсор-рука на всех интерактивных элементах */
@@ -159,14 +175,19 @@
 .auth-pointer-glow {
   --glow-x: 50vw;
   --glow-y: 35vh;
-  background: radial-gradient(circle 110px at var(--glow-x) var(--glow-y), rgba(45,212,191,.10), transparent 72%);
+  background: radial-gradient(circle 110px at var(--glow-x) var(--glow-y), rgba(37, 99, 235, 0.12), transparent 72%);
 }
 .auth-pointer-glow { contain: paint; }
 @media (pointer: coarse), (prefers-reduced-motion: reduce) {
   .auth-pointer-glow { display: none; }
 }
-@media (min-width: 1440px) {
+@media (min-width: 1280px) {
   [data-catalog-filters-visible="false"] .catalog-product-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  [data-catalog-filters-visible="false"] .catalog-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   }
 }

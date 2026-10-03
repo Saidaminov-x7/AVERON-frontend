@@ -23,6 +23,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     if (!isLoading && !isAuthenticated) {
       const returnTo = getSafeInternalReturnTo(pathname, locale) ?? `/${locale}/profile`;
       const redirectUrl = `/${locale}/login?returnTo=${encodeURIComponent(returnTo)}`;
+      try {
+        sessionStorage.setItem('averon_auth_redirect_target', pathname);
+      } catch {
+        // Storage can be unavailable in restricted browser contexts.
+      }
       router.push(redirectUrl);
     }
   }, [isAuthenticated, isLoading, router, pathname, locale]);

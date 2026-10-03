@@ -142,24 +142,24 @@ export default function RegisterPage() {
   };
 
   const field =
-    'h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-white outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20';
+    'h-12 w-full rounded-xl border border-stone-300 bg-white px-4 text-stone-900 outline-none transition-colors focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:focus:border-primary-400';
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">{text.title}</h1>
-        <p className="mt-1.5 text-sm text-stone-400">
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{text.title}</h1>
+        <p className="mt-1.5 text-sm text-stone-600 dark:text-stone-300">
           {step === 'form' ? text.intro : text.codeIntro(phone)}
         </p>
       </div>
       {smsAvailable === false ? (
         <SmsUnavailableNotice locale={locale} />
       ) : smsAvailable === null ? (
-        <p className="text-sm text-stone-400" role="status">{text.checkingSms}</p>
+        <p className="text-sm text-stone-500 dark:text-stone-400" role="status">{text.checkingSms}</p>
       ) : null}
       {error ? (
         <div
-          className="flex gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400"
+          className="flex gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400"
           role="alert"
         >
           <AlertCircle size={16} aria-hidden="true" />
@@ -176,7 +176,7 @@ export default function RegisterPage() {
         {step === 'form' ? (
           <>
             <label className="block space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">{text.name}</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">{text.name}</span>
               <input
                 required
                 minLength={2}
@@ -188,7 +188,7 @@ export default function RegisterPage() {
               />
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">{text.phone}</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">{text.phone}</span>
               <input
                 required
                 minLength={7}
@@ -201,7 +201,7 @@ export default function RegisterPage() {
               />
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">{text.password}</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">{text.password}</span>
               <div className="relative">
                 <input
                   required
@@ -216,15 +216,15 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setShowPassword((visible) => !visible)}
                   aria-label={showPassword ? text.hidePassword : text.showPassword}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-sm text-stone-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-sm text-stone-400 hover:text-stone-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-stone-500 dark:hover:text-stone-300"
                 >
                   {showPassword ? <EyeOff size={17} aria-hidden="true" /> : <Eye size={17} aria-hidden="true" />}
                 </button>
               </div>
-              <span className="text-xs text-stone-500">{text.passwordHint}</span>
+              <span className="text-xs text-stone-500 dark:text-stone-400">{text.passwordHint}</span>
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">{text.confirmPassword}</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">{text.confirmPassword}</span>
               <input
                 required
                 minLength={8}
@@ -235,16 +235,16 @@ export default function RegisterPage() {
                 className={field}
               />
             </label>
-            <p className="text-xs leading-5 text-stone-500">
+            <p className="text-xs leading-5 text-stone-500 dark:text-stone-400">
               {text.consent}{' '}
-              <Link href={`/${locale}/terms`} className="text-primary-400">{text.terms}</Link>{' '}
+              <Link href={`/${locale}/terms`} className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">{text.terms}</Link>{' '}
               {text.and}{' '}
-              <Link href={`/${locale}/privacy`} className="text-primary-400">{text.privacy}</Link>.
+              <Link href={`/${locale}/privacy`} className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">{text.privacy}</Link>.
             </p>
           </>
         ) : (
           <label className="block space-y-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">{text.code}</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">{text.code}</span>
             <input
               required
               value={code}
@@ -264,7 +264,7 @@ export default function RegisterPage() {
           disabled={loading || smsAvailable !== true || (step === 'form'
             ? name.trim().length < 2 || password.length < 8 || confirm.length < 8
             : code.length !== 6)}
-          className="h-12 w-full rounded-xl bg-primary-600 font-semibold text-white hover:bg-primary-500"
+          className="h-12 w-full rounded-xl bg-primary-600 font-semibold text-white transition-colors hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-primary-600 dark:hover:bg-primary-500"
         >
           {smsAvailable === false ? text.smsUnavailable : step === 'form' ? text.getCode : text.confirm}
         </Button>
@@ -276,15 +276,15 @@ export default function RegisterPage() {
             setStep('form');
             setCode('');
           }}
-          className="mx-auto flex min-h-10 items-center gap-2 rounded-sm text-sm text-stone-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+          className="mx-auto flex min-h-10 items-center gap-2 rounded-sm text-sm text-stone-600 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-stone-400 dark:hover:text-stone-200"
         >
           <ArrowLeft size={15} aria-hidden="true" />
           {text.editDetails}
         </button>
       ) : null}
-      <p className="text-center text-sm text-stone-500">
+      <p className="text-center text-sm text-stone-600 dark:text-stone-400">
         {text.existingAccount}{' '}
-        <Link href={`/${locale}/login`} className="font-semibold text-primary-400">{text.login}</Link>
+        <Link href={`/${locale}/login`} className="font-semibold text-primary-600 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-primary-400 dark:hover:text-primary-300">{text.login}</Link>
       </p>
     </div>
   );

@@ -13,12 +13,24 @@ interface ThemeTokens {
 
 const DEFAULTS: ThemeTokens = {
   primaryColor: '#2563eb',
-  secondaryColor: '#115e59',
-  backgroundColor: '#f9fafb',
+  secondaryColor: '#1d4ed8',
+  backgroundColor: '#f6f8fb',
   textColor: '#111827',
   borderRadius: '0.75rem',
   fontFamily: 'Calibri, "Segoe UI", Arial, sans-serif',
 };
+
+// Sanitize theme values from DB to prevent dirty green/teal tints
+// that occur when legacy ThemeSettings contain #151812 or similar greenish-blacks
+function sanitizeThemeToken(key: keyof ThemeTokens, value: string): string {
+  if (!value) return DEFAULTS[key];
+  // Block known dirty green/teal near-blacks used in old ThemeSettings
+  const dirtyGreenPattern = /^#1[0-7][0-2][0-8][0-1][0-9a-f]$/i;
+  if ((key === 'secondaryColor' || key === 'textColor' || key === 'backgroundColor') && dirtyGreenPattern.test(value)) {
+    return DEFAULTS[key];
+  }
+  return value;
+}
 
 function applyTokensToDom(tokens: ThemeTokens) {
   if (typeof document === 'undefined') return;

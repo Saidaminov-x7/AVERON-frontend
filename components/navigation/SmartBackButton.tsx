@@ -28,6 +28,14 @@ function getPreviousRouteSnapshot() {
   }
 }
 
+function getLastPublicRouteSnapshot() {
+  try {
+    return sessionStorage.getItem('averon_last_public_page');
+  } catch {
+    return null;
+  }
+}
+
 const labels = {
   ru: { back: 'Назад', home: 'На главную', login: 'Ко входу', catalog: 'В каталог', cart: 'В корзину', orders: 'К заказам' },
   uz: { back: 'Orqaga', home: 'Bosh sahifaga', login: 'Kirishga', catalog: 'Katalogga', cart: 'Savatchaga', orders: 'Buyurtmalarga' },
@@ -38,7 +46,6 @@ export function SmartBackButton({ fallbackHref }: { fallbackHref: string }) {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const routeFallback = getRouteFallback(pathname, locale);
   const fallback = isAuthPathname(pathname, locale)
     ? routeFallback
@@ -48,14 +55,23 @@ export function SmartBackButton({ fallbackHref }: { fallbackHref: string }) {
     getPreviousRouteSnapshot,
     () => null,
   );
-  const returnTo = getSafePreviousRoute(searchParams.get('returnTo'), pathname, locale);
-  const previousRoute = getSafePreviousRoute(storedPreviousRoute, pathname, locale);
+  const storedLastPublicRoute = useSyncExternalStore(
+    subscribeToNavigationHistory,
+    getLastPublicRouteSnapshot,
+    () => null,
+  );
+  const isAuth = isAuthPathname(pathname, locale);
+  const publicFallback = getSafePreviousRoute(storedLastPublicRoute, pathname, locale);
+  const safeStoredPrevious = getSafePreviousRoute(storedPreviousRoute, pathname, locale);
+  const searchParams = useSearchParams();
+  const returnToParam = searchParams?.get('returnTo');
+  const safeReturnTo = !isAuth ? getSafePreviousRoute(returnToParam, pathname, locale) : null;
+
+  const previousRoute = isAuth
+    ? (publicFallback ?? safeStoredPrevious)
+    : (safeReturnTo ?? safeStoredPrevious ?? publicFallback);
 
   const goBack = () => {
-    if (returnTo) {
-      router.replace(returnTo);
-      return;
-    }
     if (previousRoute) {
       router.replace(previousRoute);
       return;
@@ -65,7 +81,7 @@ export function SmartBackButton({ fallbackHref }: { fallbackHref: string }) {
 
   const labelSet = labels[locale as keyof typeof labels] ?? labels.en;
   const fallbackPath = fallback.split(/[?#]/, 1)[0];
-  const label = returnTo || previousRoute ? 'back'
+  const label = previousRoute ? 'back'
     : fallbackPath === `/${locale}` ? 'home'
     : fallbackPath.endsWith('/login') ? 'login'
       : fallbackPath.endsWith('/cart') ? 'cart'

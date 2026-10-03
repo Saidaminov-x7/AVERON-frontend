@@ -27,8 +27,8 @@ export function LocaleSwitcher({currentLocale}: {currentLocale: string}) {
             href={href}
             className={`rounded-lg border px-3 py-2 text-sm transition-colors ${
               active
-                ? 'border-emerald-600 bg-emerald-600 text-white'
-                : 'border-gray-300 bg-white text-gray-900'
+                ? 'border-primary-600 bg-primary-600 text-white dark:border-primary-500 dark:bg-primary-600'
+                : 'border-stone-300 bg-white text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100'
             }`}
             aria-current={active ? 'page' : undefined}
             aria-label={label}

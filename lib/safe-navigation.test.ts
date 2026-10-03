@@ -53,14 +53,19 @@ describe('safe internal navigation', () => {
     expect(getRouteFallback('/en/checkout', 'en')).toBe('/en/cart');
   });
 
-  it('allows only the intended auth back transitions', () => {
+  it('allows only safe transitions and strictly prevents auth redirect loops', () => {
     expect(getSafePreviousRoute('/ru/login', '/ru/forgot-password', 'ru')).toBe('/ru/login');
     expect(getSafePreviousRoute('/en/register', '/en/login', 'en')).toBe('/en/register');
     expect(getSafePreviousRoute('/uz/forgot-password', '/uz/login', 'uz')).toBeNull();
     expect(getSafePreviousRoute('/ru/cart', '/ru/login', 'ru')).toBeNull();
     expect(getSafePreviousRoute('https://evil.example/ru/cart', '/ru/login', 'ru')).toBeNull();
     expect(getSafePreviousRoute('/ru/checkout', '/ru/login', 'ru')).toBeNull();
+    expect(getSafePreviousRoute('/ru/outfits', '/ru/login', 'ru')).toBeNull();
+    expect(getSafePreviousRoute('/ru/favorites', '/ru/login', 'ru')).toBeNull();
+    expect(getSafePreviousRoute('/ru/profile', '/ru/login', 'ru')).toBeNull();
+    expect(getSafePreviousRoute('/ru/orders', '/ru/login', 'ru')).toBeNull();
     expect(getSafePreviousRoute('/ru/catalog?q=boots', '/ru/login', 'ru')).toBe('/ru/catalog?q=boots');
+    expect(getSafePreviousRoute('/ru/catalog/product-42', '/ru/login', 'ru')).toBe('/ru/catalog/product-42');
     expect(getSafePreviousRoute('/ru/login', '/ru/login', 'ru')).toBeNull();
   });
 
