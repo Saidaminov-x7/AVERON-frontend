@@ -3,7 +3,19 @@
 import { useState } from 'react';
 import { ImageOff } from 'lucide-react';
 
-export function ProductImage({ src, alt }: { src?: string; alt: string }) {
+export function ProductImage({
+  src,
+  alt,
+  fit = 'cover',
+  zoomOnHover = true,
+  onLoad,
+}: {
+  src?: string;
+  alt: string;
+  fit?: 'contain' | 'cover';
+  zoomOnHover?: boolean;
+  onLoad?: (naturalWidth: number, naturalHeight: number) => void;
+}) {
   const [failed, setFailed] = useState(false);
 
   if (!src || failed) {
@@ -23,7 +35,8 @@ export function ProductImage({ src, alt }: { src?: string; alt: string }) {
       alt={alt}
       loading="lazy"
       onError={() => setFailed(true)}
-      className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+      onLoad={(event) => onLoad?.(event.currentTarget.naturalWidth, event.currentTarget.naturalHeight)}
+      className={`h-full w-full ${fit === 'contain' ? 'object-contain' : 'object-cover'} ${zoomOnHover ? 'transition-transform duration-300 ease-out group-hover:scale-[1.03]' : ''}`}
     />
   );
 }

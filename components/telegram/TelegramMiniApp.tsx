@@ -29,7 +29,8 @@ const copy = {
   ru: {
     title: 'Магазин AVERON', catalog: 'Каталог', cart: 'Корзина', orders: 'Заказы', loading: 'Загружаем каталог…', checkingAuth: 'Проверяем вход через Telegram',
     loadError: 'Не удалось загрузить каталог.', retry: 'Повторить', unavailable: 'Товар не найден или больше недоступен.',
-    back: 'В каталог', gallery: 'Фотографии товара', image: (index: number) => `Показать фото ${index}`,
+    back: 'В каталог', gallery: 'Фотографии товара', image: (index: number) => `Показать фото ${index}`, previousImage: 'Предыдущее фото', nextImage: 'Следующее фото',
+    openImage: 'Открыть фото на весь экран', closeImageViewer: 'Закрыть просмотр фото', zoomIn: 'Увеличить фото', zoomOut: 'Уменьшить фото',
     confirmed: 'Товар из каталога AVERON', description: 'Описание пока недоступно.',
     price: 'Цена', stock: 'В наличии', lowStock: 'Заканчивается', preorder: 'Предзаказ', outOfStock: 'Нет в наличии',
     ask: 'Задать вопрос о товаре', chooseQuestion: 'Что вас интересует?', size: 'Размер', color: 'Цвет',
@@ -52,7 +53,8 @@ const copy = {
   uz: {
     title: 'AVERON do‘koni', catalog: 'Katalog', cart: 'Savatcha', orders: 'Buyurtmalar', loading: 'Katalog yuklanmoqda…', checkingAuth: 'Telegram orqali kirish tekshirilmoqda',
     loadError: 'Katalogni yuklab bo‘lmadi.', retry: 'Qayta urinish', unavailable: 'Mahsulot topilmadi yoki mavjud emas.',
-    back: 'Katalogga', gallery: 'Mahsulot rasmlari', image: (index: number) => `${index}-rasmni ko‘rsatish`,
+    back: 'Katalogga', gallery: 'Mahsulot rasmlari', image: (index: number) => `${index}-rasmni ko‘rsatish`, previousImage: 'Oldingi rasm', nextImage: 'Keyingi rasm',
+    openImage: 'Rasmni to‘liq ekranda ochish', closeImageViewer: 'Rasm ko‘rinishini yopish', zoomIn: 'Rasmni kattalashtirish', zoomOut: 'Rasmni kichraytirish',
     confirmed: 'AVERON katalogidagi mahsulot', description: 'Tavsif hozircha mavjud emas.',
     price: 'Narxi', stock: 'Mavjud', lowStock: 'Kam qoldi', preorder: 'Oldindan buyurtma', outOfStock: 'Mavjud emas',
     ask: 'Mahsulot haqida savol berish', chooseQuestion: 'Sizni nima qiziqtiradi?', size: 'O‘lcham', color: 'Rang',
@@ -75,7 +77,8 @@ const copy = {
   en: {
     title: 'AVERON Store', catalog: 'Catalog', cart: 'Cart', orders: 'Orders', loading: 'Loading catalog…', checkingAuth: 'Checking Telegram sign-in',
     loadError: 'Could not load the catalog.', retry: 'Try again', unavailable: 'Product not found or no longer available.',
-    back: 'Back to catalog', gallery: 'Product images', image: (index: number) => `Show image ${index}`,
+    back: 'Back to catalog', gallery: 'Product images', image: (index: number) => `Show image ${index}`, previousImage: 'Previous image', nextImage: 'Next image',
+    openImage: 'Open image full screen', closeImageViewer: 'Close image viewer', zoomIn: 'Zoom in', zoomOut: 'Zoom out',
     confirmed: 'Product from the AVERON catalog', description: 'Description is not available yet.',
     price: 'Price', stock: 'In stock', lowStock: 'Low stock', preorder: 'Preorder', outOfStock: 'Out of stock',
     ask: 'Ask about this product', chooseQuestion: 'What would you like to know?', size: 'Size', color: 'Color',
@@ -308,6 +311,12 @@ export function TelegramMiniApp({
                       locale={locale}
                       label={text.gallery}
                       imageLabels={(product.images ?? []).map((_, index) => text.image(index + 1))}
+                      previousLabel={text.previousImage}
+                      nextLabel={text.nextImage}
+                      openImageLabel={text.openImage}
+                      closeViewerLabel={text.closeImageViewer}
+                      zoomInLabel={text.zoomIn}
+                      zoomOutLabel={text.zoomOut}
                     />
                     <section>
                       <p className="text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-300">{text.confirmed}</p>

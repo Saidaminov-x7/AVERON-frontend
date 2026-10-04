@@ -377,7 +377,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
             <nav
               className={
-                'hidden items-center gap-1.5 overflow-hidden transition-all duration-300 ease-out lg:flex ' +
+                'hidden items-center gap-1 overflow-hidden transition-all duration-300 ease-out xl:flex ' +
                 (searchOpen ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-xl opacity-100')
               }
             >
@@ -399,7 +399,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </div>
 
           {/* Right Desktop items */}
-          <div className="hidden items-center gap-2 lg:flex">
+          <div className="hidden items-center gap-1.5 xl:flex">
             <div className="relative flex items-center">
               {searchOpen ? (
                 <form
@@ -536,7 +536,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </div>
 
           {/* Mobile & Tablet primary actions */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-2 xl:hidden">
             <button
               type="button"
               onClick={() => setSearchOpen((open) => !open)}
@@ -578,7 +578,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </div>
         </div>
         {searchOpen && (
-          <div id="mobile-header-search" className="averon-menu-surface absolute inset-x-4 top-full z-50 p-3 lg:hidden">
+          <div id="mobile-header-search" className="averon-menu-surface absolute inset-x-4 top-full z-50 p-3 xl:hidden">
             <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
               <Search size={16} className="pointer-events-none absolute left-3 text-stone-400" />
               <input
@@ -618,7 +618,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         inert={!mobileOpen}
         onClick={closeMobileMenu}
         className={
-          `fixed inset-0 z-[60] bg-black/45 backdrop-blur-[2px] transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
+          `fixed inset-0 z-[60] bg-black/45 backdrop-blur-[2px] transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} xl:hidden ` +
           (mobileOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0')
         }
       />
@@ -635,7 +635,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'var(--ease-drawer)',
         }}
         className={
-          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-full max-w-[min(100vw,30rem)] flex-col border-l border-[var(--color-border)] bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
+          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-full max-w-[min(100vw,30rem)] flex-col border-l border-[var(--color-border)] bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:max-w-[min(38rem,50vw)] xl:hidden ` +
           (mobileOpen ? 'translate-x-0' : 'translate-x-full')
         }
       >

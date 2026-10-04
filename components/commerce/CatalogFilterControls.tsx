@@ -20,7 +20,7 @@ type FilterValues = {
 };
 
 const keys = ['q', 'category', 'audience', 'country', 'size', 'color', 'minPrice', 'maxPrice', 'sort'] as const;
-const controlClass = 'h-11 w-full rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-primary-600/15';
+const controlClass = 'h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-primary-600/15';
 
 function valuesFromSearch(search: URLSearchParams): FilterValues {
   return Object.fromEntries(keys.map((key) => [key, search.get(key) ?? (key === 'sort' ? 'newest' : '')])) as FilterValues;
@@ -137,7 +137,7 @@ function CatalogFilterDraft({
         <legend className="text-xs font-bold uppercase text-stone-500">{t('audience')}</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {audiences.map(([value, label]) => (
-            <button key={value || 'all'} type="button" aria-pressed={draft.audience === value} onClick={() => set('audience', value)} className={`min-h-11 rounded-sm border px-3 text-sm font-medium transition-colors ${draft.audience === value ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white' : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'}`}>{label}</button>
+            <button key={value || 'all'} type="button" aria-pressed={draft.audience === value} onClick={() => set('audience', value)} className={`min-h-11 rounded-[var(--radius-control)] border px-3 text-sm font-medium transition-colors ${draft.audience === value ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white' : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-muted)] hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-text)]'}`}>{label}</button>
           ))}
         </div>
       </fieldset>
@@ -169,8 +169,8 @@ function CatalogFilterDraft({
           onValueChange={(value) => set('sort', value)}
         />
       </div>
-      <button type="submit" disabled={isPending} className="mt-5 h-11 w-full rounded-sm bg-primary-700 text-sm font-bold text-white transition-colors hover:bg-primary-800 disabled:cursor-wait disabled:opacity-70" aria-live="polite">{isPending ? t('applying') : t('show')}</button>
-      <button type="button" disabled={!active || isPending} onClick={reset} className="mt-2 h-10 w-full rounded-sm text-sm font-semibold text-stone-600 enabled:hover:bg-stone-100 disabled:opacity-40 dark:text-stone-300 dark:enabled:hover:bg-white/5">{t('reset')}</button>
+      <button type="submit" disabled={isPending} className="averon-primary-button mt-5 w-full disabled:cursor-wait" aria-live="polite">{isPending ? t('applying') : t('show')}</button>
+      <button type="button" disabled={!active || isPending} onClick={reset} className="averon-secondary-button mt-2 !min-h-10 w-full !py-2 disabled:cursor-not-allowed">{t('reset')}</button>
     </form>
   );
 }

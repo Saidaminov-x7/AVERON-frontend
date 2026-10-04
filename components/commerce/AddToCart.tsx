@@ -25,24 +25,27 @@ interface PurchaseVariant {
 const labels = {
   ru: {
     choose: 'Выберите вариант', quantity: 'Количество', decrease: 'Уменьшить количество', increase: 'Увеличить количество',
+    size: 'Размер', color: 'Цвет',
     add: 'Добавить в корзину', buy: 'Купить сейчас', adding: 'Добавляем…', buying: 'Оформляем…', signIn: 'Войдите, чтобы добавить товар в корзину', added: 'Добавлено в корзину',
     goCart: 'Перейти в корзину', unavailable: 'Нет в наличии', available: 'Доступен для заказа',
     stock: 'В наличии: {count}', lowStock: 'Заканчивается: {count} шт.', generic: 'Не удалось добавить товар.', noStock: 'Этот товар сейчас недоступен.',
-    standard: 'Стандартный', currency: 'сум', preorder: 'Предзаказ', preorderDate: 'Ожидаемая доступность: {date}',
+    standard: 'Стандартный', currency: 'сум', preorder: 'Предзаказ', preorderDate: 'Ожидаемая доступность: {date}', discount: 'Скидка {percent}%',
   },
   uz: {
     choose: 'Variantni tanlang', quantity: 'Miqdor', decrease: 'Miqdorni kamaytirish', increase: 'Miqdorni oshirish',
+    size: 'O‘lcham', color: 'Rang',
     add: 'Savatchaga qo‘shish', buy: 'Hozir xarid qilish', adding: 'Qo‘shilmoqda…', buying: 'Rasmiylashtirilmoqda…', signIn: 'Savatchaga qo‘shish uchun tizimga kiring', added: 'Savatchaga qo‘shildi',
     goCart: 'Savatchaga o‘tish', unavailable: 'Mavjud emas', available: 'Buyurtma berish mumkin',
     stock: 'Mavjud: {count}', lowStock: 'Kam qoldi: {count} dona.', generic: 'Mahsulotni qo‘shib bo‘lmadi.', noStock: 'Bu mahsulot hozir mavjud emas.',
-    standard: 'Standart', currency: 'so‘m', preorder: 'Oldindan buyurtma', preorderDate: 'Kutilayotgan mavjudlik: {date}',
+    standard: 'Standart', currency: 'so‘m', preorder: 'Oldindan buyurtma', preorderDate: 'Kutilayotgan mavjudlik: {date}', discount: '{percent}% chegirma',
   },
   en: {
     choose: 'Choose an option', quantity: 'Quantity', decrease: 'Decrease quantity', increase: 'Increase quantity',
+    size: 'Size', color: 'Color',
     add: 'Add to cart', buy: 'Buy now', adding: 'Adding…', buying: 'Processing…', signIn: 'Sign in to add this product to your cart', added: 'Added to cart',
     goCart: 'View cart', unavailable: 'Out of stock', available: 'Available to order',
     stock: 'In stock: {count}', lowStock: 'Low stock: {count} left.', generic: 'Could not add this product.', noStock: 'This product is currently unavailable.',
-    standard: 'Standard', currency: 'UZS', preorder: 'Preorder', preorderDate: 'Estimated availability: {date}',
+    standard: 'Standard', currency: 'UZS', preorder: 'Preorder', preorderDate: 'Estimated availability: {date}', discount: '{percent}% off',
   },
 } as const;
 
@@ -57,6 +60,7 @@ function formatUzs(amount: string | number, locale: string, currency: string) {
 export function AddToCart({
   productId,
   productPrice,
+  productCompareAtPrice,
   productStock,
   productAvailable,
   productAvailability,
@@ -64,6 +68,7 @@ export function AddToCart({
 }: {
   productId: string;
   productPrice: string | number;
+  productCompareAtPrice?: string | number | null;
   productStock?: number;
   productAvailable?: boolean;
   productAvailability?: {
@@ -103,6 +108,15 @@ export function AddToCart({
   const isPreorder = canPreorder && (!stockIsKnown || quantity > stock!);
   const lowStock = !unavailable && stockIsKnown && stock! > 0 && stock! <= 5;
   const selectedPrice = selectedVariant?.salePriceUzs ?? productPrice;
+  const currentPriceValue = Number(selectedPrice);
+  const compareAtPriceValue = Number(productCompareAtPrice);
+  const showCompareAtPrice = (!selectedVariant || Number(selectedVariant.salePriceUzs ?? productPrice) === Number(productPrice))
+    && Number.isFinite(compareAtPriceValue)
+    && Number.isFinite(currentPriceValue)
+    && compareAtPriceValue > currentPriceValue;
+  const discountPercent = showCompareAtPrice
+    ? Math.round((1 - currentPriceValue / compareAtPriceValue) * 100)
+    : null;
   const selectedName = selectedVariant
     ? [selectedVariant.color, selectedVariant.size].filter(Boolean).join(' · ') || text.standard
     : '';
@@ -153,13 +167,24 @@ export function AddToCart({
 
   return (
     <div className="mt-4 space-y-4">
-      <p className="text-3xl font-bold tracking-tight text-[var(--color-text)]" aria-live="polite">
-        {formatUzs(selectedPrice, locale, text.currency)}
-      </p>
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1" aria-live="polite">
+        <p className="text-3xl font-bold tracking-tight text-[var(--color-text)]">
+          {formatUzs(selectedPrice, locale, text.currency)}
+        </p>
+        {showCompareAtPrice && (
+          <>
+            <del className="text-sm text-[var(--color-muted)]">{formatUzs(productCompareAtPrice!, locale, text.currency)}</del>
+            <span className="bg-[var(--color-error)] px-2 py-1 text-xs font-semibold text-white">
+              {text.discount.replace('{percent}', String(discountPercent))}
+            </span>
+          </>
+        )}
+      </div>
       {selectedName && <p className="text-sm text-[var(--color-text-secondary)]">{selectedName}</p>}
       {stockStatus && (
         <p
           role={unavailable ? 'status' : undefined}
+          aria-live="polite"
           className={unavailable ? 'text-sm font-semibold text-[var(--color-error)]' : 'text-sm text-[var(--color-text-secondary)]'}
         >
           {stockStatus}
@@ -170,8 +195,8 @@ export function AddToCart({
           variants={variants}
           value={variantId}
           label={text.choose}
-          standardLabel={text.standard}
-          stockLabel={text.stock}
+          sizeLabel={text.size}
+          colorLabel={text.color}
           availabilityLabel={(available) => available ? text.available : text.unavailable}
           onChange={(next) => { setVariantId(next); setQuantity(1); setAdded(false); }}
         />

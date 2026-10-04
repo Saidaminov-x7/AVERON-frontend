@@ -22,7 +22,7 @@ export function CatalogFilterLayout({
       type="button"
       aria-expanded={filtersVisible}
       onClick={() => setFiltersVisible((visible) => !visible)}
-      className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-sm border border-[var(--color-border)] px-3 text-sm font-semibold text-stone-700 hover:border-primary-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-stone-200"
+      className="averon-control-button min-h-11 shrink-0 px-3 text-sm"
     >
       <SlidersHorizontal size={16} aria-hidden="true" />
       {filtersVisible ? t('hideFilters') : t('showFilters')}

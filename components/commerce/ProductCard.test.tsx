@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { getScrubbedImageIndex, ProductCard, type StoreProduct } from './ProductCard';
+import { isProductNew, ProductCard, type StoreProduct } from './ProductCard';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 
@@ -15,14 +15,32 @@ describe('ProductCard', () => {
     useCompareStore.setState({ ids: [] });
   });
 
-  it('maps image pointer zones to bounded image indexes', () => {
-    expect(getScrubbedImageIndex(0, 0, 100, 5)).toBe(0);
-    expect(getScrubbedImageIndex(20, 0, 100, 5)).toBe(1);
-    expect(getScrubbedImageIndex(60, 0, 100, 5)).toBe(3);
-    expect(getScrubbedImageIndex(100, 0, 100, 5)).toBe(4);
-    expect(getScrubbedImageIndex(-5, 0, 100, 5)).toBe(0);
-    expect(getScrubbedImageIndex(10, 0, 0, 5)).toBe(0);
-    expect(getScrubbedImageIndex(10, 0, 100, 1)).toBe(0);
+  it('shows only the second image on hover without zooming the card or image', () => {
+    render(
+      <ProductCard
+        product={{ ...product, images: [{ url: '/first.jpg' }, { url: '/second.jpg' }, { url: '/third.jpg' }] }}
+        locale="ru"
+      />,
+    );
+    const card = screen.getByRole('article');
+    const image = screen.getByRole('img', { name: 'Красное платье' });
+
+    expect(image).toHaveAttribute('src', '/first.jpg');
+    fireEvent.mouseEnter(card);
+    expect(image).toHaveAttribute('src', '/second.jpg');
+    expect(image).not.toHaveClass('group-hover:scale-[1.03]');
+    expect(card.className).not.toContain('hover:-translate');
+
+    fireEvent.mouseLeave(card);
+    expect(image).toHaveAttribute('src', '/first.jpg');
+  });
+
+  it('expires the new label after two weeks and ignores future dates', () => {
+    const now = Date.UTC(2026, 0, 15);
+    expect(isProductNew(new Date(now - 13 * 24 * 60 * 60 * 1000).toISOString(), now)).toBe(true);
+    expect(isProductNew(new Date(now - 14 * 24 * 60 * 60 * 1000).toISOString(), now)).toBe(false);
+    expect(isProductNew(new Date(now + 60_000).toISOString(), now)).toBe(false);
+    expect(isProductNew('not-a-date', now)).toBe(false);
   });
 
   it('renders a localized product and toggles favorites', () => {
@@ -52,11 +70,22 @@ describe('ProductCard', () => {
   it('toggles product comparison', () => {
     render(<ProductCard product={product} locale="ru" />);
     const addButton = screen.getByRole('button', { name: 'Добавить к сравнению' });
+    expect(addButton).toHaveClass('ring-1', 'ring-[var(--color-border)]');
     fireEvent.click(addButton);
     expect(useCompareStore.getState().ids).toEqual(['product-1']);
-    expect(screen.getByRole('button', { name: 'Убрать из сравнения' })).toHaveAttribute('aria-pressed', 'true');
+    const removeButton = screen.getByRole('button', { name: 'Убрать из сравнения' });
+    expect(removeButton).toHaveAttribute('aria-pressed', 'true');
+    expect(removeButton).toHaveClass('ring-[var(--color-text)]');
     fireEvent.click(screen.getByRole('button', { name: 'Убрать из сравнения' }));
     expect(useCompareStore.getState().ids).toEqual([]);
+  });
+
+  it('keeps the favorite action the same size on hover as comparison', () => {
+    render(<ProductCard product={product} locale="ru" />);
+
+    const favoriteButton = screen.getByRole('button', { name: 'Добавить в избранное' });
+    expect(favoriteButton).toHaveClass('size-10', 'transition-[background-color,color,box-shadow]');
+    expect(favoriteButton.className).not.toContain('hover:scale');
   });
 
   it('shows localized feedback when the comparison limit is reached', () => {
@@ -92,5 +121,12 @@ describe('ProductCard', () => {
       />,
     );
     expect(screen.getByText('Нет в наличии')).toBeInTheDocument();
+  });
+
+  it('shows a discount badge and struck-through price only for a real discount', () => {
+    render(<ProductCard product={{ ...product, compareAtPriceUzs: 300000 }} locale="ru" />);
+
+    expect(screen.getByLabelText('Скидка 17%')).toHaveTextContent('−17%');
+    expect(screen.getByText(/300.*000 сум/)).toHaveClass('line-through');
   });
 });

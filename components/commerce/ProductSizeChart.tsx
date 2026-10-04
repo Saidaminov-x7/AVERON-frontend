@@ -123,17 +123,17 @@ export function ProductSizeChart({
   return (
     <section aria-labelledby="product-size-chart-title" className="mt-6">
       <h2 id="product-size-chart-title" className="text-xl font-semibold tracking-tight text-[var(--color-text)]">{title}</h2>
-      <div className="mt-3 overflow-x-auto">
-        <table className="w-full min-w-[360px] border-collapse text-left text-xs">
+      <div className="mt-3 overflow-x-auto rounded-[var(--radius-control)] border border-[var(--color-border)]">
+        <table className="w-full min-w-[420px] border-collapse text-left text-xs">
           <thead>
-            <tr className="border-b border-[var(--color-border)] text-[var(--color-text-secondary)]">
-              {headers.map((header) => <th key={header} scope="col" className="px-2 py-2 font-semibold first:pl-0">{header}</th>)}
+            <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-soft)] text-[var(--color-text-secondary)]">
+              {headers.map((header) => <th key={header} scope="col" className="border-r border-[var(--color-border)] px-3 py-2.5 font-semibold last:border-r-0">{header}</th>)}
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {rows.map((row, rowIndex) => (
               <tr key={row[0]} className="border-b border-[var(--color-border)] last:border-0">
-                {row.map((value, index) => <td key={index} className="px-2 py-2 text-[var(--color-text)] first:pl-0">{value}</td>)}
+                {row.map((value, index) => <td key={index} className={`border-r border-[var(--color-border)] px-3 py-2.5 text-[var(--color-text)] last:border-r-0 ${rowIndex % 2 ? 'bg-[var(--color-surface-soft)]/45' : ''}`}>{value}</td>)}
               </tr>
             ))}
           </tbody>

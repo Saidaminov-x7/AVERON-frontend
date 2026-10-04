@@ -18,7 +18,7 @@
   --color-primary-900: color-mix(in srgb, var(--color-primary) 60%, black);
   --color-primary-950: color-mix(in srgb, var(--color-primary) 50%, black);
   --radius-theme: var(--border-radius, 0.75rem);
-  --font-theme: var(--font-family, Calibri, "Segoe UI", Arial, sans-serif);
+  --font-theme: var(--font-family, Arial, "Segoe UI", sans-serif);
 }
 
 :root {
@@ -54,7 +54,7 @@
   --space-16: 4rem;
   --space-20: 5rem;
   --space-24: 6rem;
-  --font-family: Inter, "Segoe UI", Arial, sans-serif;
+  --font-family: Arial, "Segoe UI", sans-serif;
   --font-size-display: clamp(3rem, 8vw, 7rem);
   --font-size-h1: clamp(2.25rem, 5vw, 4.5rem);
   --font-size-h2: clamp(1.875rem, 3.5vw, 2.75rem);
@@ -117,7 +117,7 @@
     background-color: var(--color-bg);
     color: var(--color-text);
     -webkit-font-smoothing: antialiased;
-    font-family: var(--font-family, Calibri, "Segoe UI", Arial, sans-serif);
+    font-family: var(--font-family, Arial, "Segoe UI", sans-serif);
     transition: background-color var(--duration-ui) var(--ease-out-ui), color var(--duration-ui) var(--ease-out-ui);
   }
 
@@ -151,7 +151,7 @@
 @layer components {
   .averon-panel { border: 1px solid var(--color-border); border-radius: var(--border-radius); background: var(--color-surface); }
   .averon-kicker { color: var(--color-primary); font-size: .6875rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-  .averon-title { font-family: "Hanken Grotesk", Inter, "Segoe UI", sans-serif; font-weight: 600; letter-spacing: -.025em; }
+  .averon-title { font-family: var(--font-family, Arial, "Segoe UI", sans-serif); font-weight: 600; letter-spacing: -.025em; }
   .averon-control-button {
     display: inline-flex;
     min-height: 44px;
@@ -316,7 +316,7 @@ html:not(.dark) .averon-site-shell :where(main, section, article, aside)[class*=
 }
 
 .font-theme {
-  font-family: var(--font-family, Calibri, "Segoe UI", Arial, sans-serif) !important;
+  font-family: var(--font-family, Arial, "Segoe UI", sans-serif) !important;
 }
 * {
   scrollbar-width: thin;

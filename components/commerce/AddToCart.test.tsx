@@ -32,6 +32,21 @@ describe('AddToCart availability', () => {
     expect(screen.queryByText('Available to order')).not.toBeInTheDocument();
   });
 
+  it('shows a real markdown price without replacing the current price', () => {
+    render(
+      <AddToCart
+        productId="product-1"
+        productPrice="125000"
+        productCompareAtPrice="200000"
+        variants={[]}
+      />,
+    );
+
+    expect(screen.getByText('125,000 UZS')).toBeInTheDocument();
+    expect(screen.getByText('200,000 UZS')).toHaveAttribute('class', expect.stringContaining('text-[var(--color-muted)]'));
+    expect(screen.getByText('38% off')).toBeInTheDocument();
+  });
+
   it('shows only the backend-provided availability flag', () => {
     const { rerender } = render(
       <AddToCart productId="product-1" productPrice="125000" productAvailable={true} variants={[]} />,
@@ -56,21 +71,28 @@ describe('AddToCart availability', () => {
     expect(screen.queryByText(/Low stock/)).not.toBeInTheDocument();
   });
 
-  it('uses the selected backend variant price and availability for adding to cart', () => {
+  it('renders sizes separately and updates variant availability when a color is selected', () => {
     render(
       <AddToCart
         productId="product-1"
         productPrice="125000"
         variants={[
           { id: 'variant-1', color: 'Blue', size: 'M', stock: 6, salePriceUzs: '125000' },
-          { id: 'variant-2', color: 'Red', size: 'M', stock: 0, available: false, salePriceUzs: '130000' },
+          { id: 'variant-2', color: 'Blue', size: 'L', stock: 4, salePriceUzs: '125000' },
+          { id: 'variant-3', color: 'Red', size: 'M', stock: 0, available: false, salePriceUzs: '130000' },
         ]}
       />,
     );
 
     expect(screen.getByText('In stock: 6')).toBeInTheDocument();
     expect(screen.getByText('125,000 UZS')).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Blue · M, Available to order' })).toHaveAttribute('aria-checked', 'true');
-    expect(screen.getByRole('radio', { name: 'Red · M, Out of stock' })).toHaveClass('text-[var(--color-muted)]');
+    expect(screen.getByRole('button', { name: 'M, Available to order' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'L, Available to order' }));
+    expect(screen.getByText('Low stock: 4 left.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'L, Available to order' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'Red, Out of stock' }));
+    expect(screen.getByText('Out of stock', { selector: 'p' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Out of stock' })).toBeDisabled();
+    expect(screen.getByText('130,000 UZS')).toBeInTheDocument();
   });
 });

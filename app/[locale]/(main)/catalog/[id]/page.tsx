@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { CheckCircle2, Headphones, MessageCircle, PackageCheck } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { externalBaseURL } from "@/lib/axios";
 import { SITE_URL } from "@/lib/siteUrl";
 import { AddToCart } from "@/components/commerce/AddToCart";
@@ -49,6 +49,26 @@ function recommendationScore(current: StoreProduct, candidate: StoreProduct) {
   return score;
 }
 
+function isSemanticallyRelated(current: StoreProduct, candidate: StoreProduct) {
+  const sameCategory = Boolean(
+    current.category?.slug && current.category.slug === candidate.category?.slug,
+  );
+  const currentAudience = current.attributes?.audience;
+  const normalizedAudience = typeof currentAudience === "string"
+    ? currentAudience.trim().toLocaleLowerCase()
+    : "";
+  const sameAudience = Boolean(
+    normalizedAudience &&
+    !["all", "everyone", "unisex", "для всех"].includes(normalizedAudience) &&
+    normalizedAudience === String(candidate.attributes?.audience ?? "").trim().toLocaleLowerCase(),
+  );
+
+  // A matching colour, size or source country alone does not make products similar.
+  // Without category/audience metadata it is better to show no fallback section
+  // than to disguise the rest of the catalogue as recommendations.
+  return sameCategory || sameAudience;
+}
+
 async function loadFallbackRecommendations(product: StoreProduct): Promise<StoreProduct[]> {
   try {
     const query = new URLSearchParams({ limit: "24", sort: "newest" });
@@ -61,6 +81,7 @@ async function loadFallbackRecommendations(product: StoreProduct): Promise<Store
     if (!Array.isArray(payload.items)) return [];
     return payload.items
       .filter((candidate): candidate is StoreProduct => isStoreProduct(candidate) && candidate.id !== product.id)
+      .filter((candidate) => isSemanticallyRelated(product, candidate))
       .map((candidate) => ({ candidate, score: recommendationScore(product, candidate) }))
       .filter(({ score }) => score >= 3)
       .sort((left, right) => right.score - left.score || left.candidate.id.localeCompare(right.candidate.id))
@@ -104,17 +125,27 @@ async function loadProduct(slug: string): Promise<ProductDetail | null> {
   } catch {
     return null;
   }
-  let response: Response;
-  try {
-    response = await fetch(
-      `${externalBaseURL}/api/v1/products/${encodeURIComponent(identifier)}`,
-      { cache: "no-store", signal: AbortSignal.timeout(15000) },
-    );
-  } catch {
-    throw new ProductRequestError("network");
+  let response: Response | undefined;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      response = await fetch(
+        `${externalBaseURL}/api/v1/products/${encodeURIComponent(identifier)}`,
+        { cache: "no-store", signal: AbortSignal.timeout(15000) },
+      );
+    } catch {
+      if (attempt === 1) throw new ProductRequestError("network");
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      continue;
+    }
+    if (response.ok || response.status === 404) break;
+    if (response.status >= 500 && attempt === 0) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      continue;
+    }
+    throw new ProductRequestError("server");
   }
+  if (!response) throw new ProductRequestError("network");
   if (response.status === 404) return null;
-  if (!response.ok) throw new ProductRequestError("server");
   let payload: unknown;
   try {
     payload = await response.json();
@@ -131,6 +162,18 @@ function getProductDescription(product: StoreProduct, locale: string) {
     ? localizedDescription
     : localizedDescription?.text;
   return description?.trim() || null;
+}
+
+function getProductAttribute(product: StoreProduct, names: string[], locale: string) {
+  for (const name of names) {
+    const value = product.attributes?.[name];
+    if (typeof value === "string" && value.trim()) return value.trim();
+    if (typeof value !== "object" || value === null || Array.isArray(value)) continue;
+    const localized = value as Record<string, unknown>;
+    const text = localized[locale] ?? localized.text ?? localized.value;
+    if (typeof text === "string" && text.trim()) return text.trim();
+  }
+  return null;
 }
 
 function getStructuredAvailability(product: StoreProduct) {
@@ -234,6 +277,9 @@ export default async function ProductPage({
     back: t("back"),
     verified: t("verified"),
     descriptionTitle: t("descriptionTitle"),
+    compositionTitle: t("compositionTitle"),
+    careTitle: t("careTitle"),
+    compositionCareTitle: t("compositionCareTitle"),
     productDetails: t("productDetails"),
     purchaseOptions: t("purchaseOptions"),
     country: t("country"),
@@ -242,12 +288,6 @@ export default async function ProductPage({
     colors: t("colors"),
     descriptionFallback: t("descriptionFallback"),
     gallery: t("gallery"),
-    delivery: t("delivery"),
-    orderStatus: t("orderStatus"),
-    support: t("support"),
-    supportText: t("supportText"),
-    askProduct: t("askProduct"),
-    askProductText: t("askProductText"),
     confirmed: t("confirmed"),
   };
   const catalogQuery = buildCatalogSearchParams(filters).toString();
@@ -257,6 +297,8 @@ export default async function ProductPage({
   const catalogHref = `/${locale}/catalog${catalogQuery ? `?${catalogQuery}` : ""}`;
   const localizedDescription = product.description?.[locale];
   const description = getProductDescription(product, locale) ?? copy.descriptionFallback;
+  const composition = getProductAttribute(product, ["composition", "fabricComposition"], locale) ?? product.material?.trim() ?? null;
+  const care = getProductAttribute(product, ["careInstructions", "care"], locale);
   const fallbackRecommendations = await loadFallbackRecommendations(product);
   const variantSizes = [...new Set((product.variants ?? []).map(({ size }) => size).filter((size): size is string => Boolean(size)))];
   const variantColors = [...new Set((product.variants ?? []).map(({ color }) => color).filter((color): color is string => Boolean(color)))];
@@ -311,8 +353,23 @@ export default async function ProductPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, '\\u003c') }}
       />
       <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
-        <SmartBackButton fallbackHref={catalogHref} />
-        <div className="mt-6 grid items-start gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,.92fr)] lg:gap-12 xl:gap-16">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <SmartBackButton fallbackHref={catalogHref} />
+          <nav aria-label={copy.productDetails} className="hidden min-w-0 items-center gap-2 truncate text-xs text-[var(--color-muted)] sm:flex">
+            <Link href={`/${locale}`} className="transition-colors hover:text-[var(--color-text)]">AVERON</Link>
+            <span aria-hidden="true">/</span>
+            <Link href={catalogHref} className="transition-colors hover:text-[var(--color-text)]">{t("catalog")}</Link>
+            {product.category ? (
+              <>
+                <span aria-hidden="true">/</span>
+                <span>{categoryName(product.category, locale)}</span>
+              </>
+            ) : null}
+            <span aria-hidden="true">/</span>
+            <span className="truncate text-[var(--color-text)]">{plainTitle}</span>
+          </nav>
+        </div>
+        <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,.85fr)] lg:gap-10 xl:gap-14">
           <div className="min-w-0">
             <ProductGallery
               images={product.images ?? []}
@@ -320,45 +377,35 @@ export default async function ProductPage({
               locale={locale}
               label={copy.gallery}
               imageLabels={(product.images ?? []).map((_, index) => t("imageLabel", { index: index + 1 }))}
+              previousLabel={t("previousImage")}
+              nextLabel={t("nextImage")}
+              openImageLabel={t("openImage")}
+              closeViewerLabel={t("closeImageViewer")}
+              zoomInLabel={t("zoomIn")}
+              zoomOutLabel={t("zoomOut")}
             />
-            <article aria-labelledby="product-description-title" className="mt-8 border-t border-[var(--color-border)] pt-7">
-              <h2 id="product-description-title" className="text-xl font-semibold tracking-tight text-[var(--color-text)]">
-                {copy.descriptionTitle}
-              </h2>
-              <div className="mt-4 whitespace-pre-line text-sm leading-7 text-[var(--color-text-secondary)]">
-                <ProductRichText content={description} />
-              </div>
-            </article>
-            {product.sizeChartType ? (
-              <ProductSizeChart sizeChartType={product.sizeChartType} locale={locale} title={t("sizeChartTitle")} />
-            ) : null}
           </div>
-          <section className="min-w-0 lg:sticky lg:top-24">
-            <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--color-text-secondary)]">
+          <section className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[.12em] text-[var(--color-text-secondary)]">
               {copy.verified}
             </p>
-            <h1 className="averon-title mt-3 text-3xl leading-tight sm:text-4xl lg:text-[2.65rem]">
+            <h1 className="averon-title mt-2 text-2xl leading-tight sm:text-3xl lg:text-[2rem]">
               <ProductRichText content={title} inline />
             </h1>
 
-            {productDetails.length > 0 && (
-              <section aria-label={copy.productDetails} className="mt-6 grid grid-cols-2 gap-x-5 gap-y-3 border-y border-[var(--color-border)] py-4">
-                {productDetails.map(({ label, value }) => (
-                  <div key={label} className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-[.1em] text-[var(--color-muted)]">{label}</p>
-                    <p className="mt-1 break-words text-sm font-medium text-[var(--color-text)]">{value}</p>
-                  </div>
-                ))}
+            {(product.category || product.country) && (
+              <section aria-label={copy.productDetails} className="mt-3 flex flex-wrap gap-x-2 text-xs text-[var(--color-text-secondary)]">
+                {product.category ? <span>{categoryName(product.category, locale)}</span> : null}
+                {product.country ? <><span aria-hidden="true">·</span><span>{product.country}</span></> : null}
               </section>
             )}
 
-            <section aria-labelledby="purchase-options-title" className="mt-7 rounded-[var(--radius-card)] bg-[var(--color-surface)] p-5 sm:p-6">
-              <h2 id="purchase-options-title" className="text-base font-semibold tracking-tight text-[var(--color-text)]">
-                {copy.purchaseOptions}
-              </h2>
+            <section aria-labelledby="purchase-options-title" className="mt-5">
+              <h2 id="purchase-options-title" className="sr-only">{copy.purchaseOptions}</h2>
               <AddToCart
                 productId={product.id}
                 productPrice={product.salePriceUzs}
+                productCompareAtPrice={product.compareAtPriceUzs}
                 productStock={product.stock}
                 productAvailable={product.available}
                 productAvailability={product.availability}
@@ -372,45 +419,6 @@ export default async function ProductPage({
               </Link>
             </section>
 
-            <div className="mt-6 grid gap-2 sm:grid-cols-2">
-              <div className="flex min-w-0 gap-3 rounded-[var(--radius-control)] bg-[var(--color-surface)] p-4">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface-soft)]">
-                  <PackageCheck size={18} className="text-[var(--color-text)]" />
-                </span>
-                <div>
-                  <b className="text-sm text-[var(--color-text)]">{copy.delivery}</b>
-                  <p className="mt-1 text-xs leading-5 text-[var(--color-text-secondary)]">
-                    {copy.orderStatus}
-                  </p>
-                </div>
-              </div>
-              <Link
-                href={`/${locale}/support`}
-                className="flex min-w-0 gap-3 rounded-[var(--radius-control)] bg-[var(--color-surface)] p-4 transition-[background-color,box-shadow] hover:bg-[var(--color-surface-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
-              >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface-soft)]">
-                  <Headphones size={18} className="text-[var(--color-text)]" />
-                </span>
-                <div>
-                  <b className="text-sm text-[var(--color-text)]">{copy.support}</b>
-                  <p className="mt-1 text-xs leading-5 text-[var(--color-text-secondary)]">
-                    {copy.supportText}
-                  </p>
-                </div>
-              </Link>
-              <Link
-                href={`/${locale}/mini-app?product=${encodeURIComponent(product.slug)}#ask`}
-                className="flex min-w-0 gap-3 rounded-[var(--radius-control)] bg-[var(--color-surface)] p-4 transition-[background-color,box-shadow] hover:bg-[var(--color-surface-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
-              >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface-soft)]">
-                  <MessageCircle size={18} className="text-[var(--color-text)]" />
-                </span>
-                <div>
-                  <b className="text-sm text-[var(--color-text)]">{copy.askProduct}</b>
-                  <p className="mt-1 text-xs leading-5 text-[var(--color-text-secondary)]">{copy.askProductText}</p>
-                </div>
-              </Link>
-            </div>
             <p className="mt-5 flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
               <CheckCircle2 size={16} className="text-[var(--color-success)]" />
               {copy.confirmed}
@@ -418,11 +426,61 @@ export default async function ProductPage({
           </section>
         </div>
       </div>
-      <div className="mx-auto max-w-[1440px] border-t border-[var(--color-border)] px-4 pb-12 pt-10 sm:px-6 lg:px-10">
-        <ProductReviews slug={product.slug} routeId={productRouteId(product)} locale={locale} initialOrderNumber={initialOrderNumber} />
-        <CompleteTheLook slug={product.slug} locale={locale} />
-        <ProductRecommendations slug={product.slug} locale={locale} fallbackProducts={fallbackRecommendations} />
-      </div>
+      <section className="mx-auto max-w-[1440px] px-4 pb-12 sm:px-6 lg:px-10">
+        <div className="border-t border-[var(--color-border)] pt-8 sm:pt-10">
+          <div className={`grid items-start gap-8 ${product.sizeChartType ? 'lg:grid-cols-2 lg:gap-0' : ''}`}>
+            <div className={`min-w-0 ${product.sizeChartType ? 'lg:border-r lg:border-[var(--color-border)] lg:pr-8' : ''}`}>
+              <article aria-labelledby="product-description-title">
+                <h2 id="product-description-title" className="text-xl font-semibold tracking-tight text-[var(--color-text)] sm:text-2xl">
+                  {copy.descriptionTitle}
+                </h2>
+                <div className="mt-4 max-w-[72ch] whitespace-pre-line break-words text-[15px] leading-7 text-[var(--color-text-secondary)]">
+                  <ProductRichText content={description} />
+                </div>
+              </article>
+            </div>
+            {product.sizeChartType ? (
+              <div className="min-w-0 lg:pl-8">
+                <ProductSizeChart sizeChartType={product.sizeChartType} locale={locale} title={t("sizeChartTitle")} />
+              </div>
+            ) : null}
+          </div>
+          {composition || care ? (
+            <section
+              className={`mt-8 grid grid-cols-1 border-t border-[var(--color-border)] pt-6 sm:pt-8 ${product.sizeChartType ? 'lg:grid-cols-2' : ''}`}
+              aria-label={copy.productDetails}
+            >
+              <div className={`min-w-0 space-y-5 ${product.sizeChartType ? 'lg:pr-8' : ''}`}>
+                <h2 className="text-lg font-semibold tracking-tight text-[var(--color-text)] sm:text-xl">
+                  {copy.compositionCareTitle}
+                </h2>
+                {composition ? (
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold text-[var(--color-text)]">{copy.compositionTitle}</h3>
+                    <div className="mt-2 max-w-[72ch] break-words [overflow-wrap:anywhere] whitespace-pre-line text-sm leading-6 text-[var(--color-text-secondary)]">
+                      <ProductRichText content={composition} />
+                    </div>
+                  </div>
+                ) : null}
+                {care ? (
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold text-[var(--color-text)]">{copy.careTitle}</h3>
+                    <div className="mt-2 max-w-[72ch] break-words [overflow-wrap:anywhere] whitespace-pre-line text-sm leading-6 text-[var(--color-text-secondary)]">
+                      <ProductRichText content={care} />
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              {product.sizeChartType ? (
+                <div aria-hidden="true" className="hidden min-w-0 lg:block lg:border-l lg:border-[var(--color-border)] lg:pl-8" />
+              ) : null}
+            </section>
+          ) : null}
+          <ProductReviews slug={product.slug} routeId={productRouteId(product)} locale={locale} initialOrderNumber={initialOrderNumber} />
+          <ProductRecommendations slug={product.slug} locale={locale} fallbackProducts={fallbackRecommendations} />
+          <CompleteTheLook slug={product.slug} locale={locale} />
+        </div>
+      </section>
     </main>
   );
 }
