@@ -183,13 +183,13 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const t = useTranslations('nav');
   const { data: settings } = useSiteSettings();
   const marketCopy = MARKET_COPY[locale as keyof typeof MARKET_COPY] ?? MARKET_COPY.ru;
-  const marketLinks = [
-    { href: '/catalog', label: marketCopy.catalog },
+  const countryLinks = [
     { href: '/catalog?country=CN', label: marketCopy.china },
     { href: '/catalog?country=US', label: marketCopy.usa },
     { href: '/catalog?country=TR', label: marketCopy.turkey },
     { href: '/catalog?country=IT', label: marketCopy.europe },
   ];
+  const marketLinks = [{ href: '/catalog', label: t('catalog') }, ...countryLinks];
   const activeCountry = searchParams.get('country');
   const isMarketActive = (href: string) => {
     if (!pathname.startsWith(`/${locale}/catalog`)) return false;
@@ -662,7 +662,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               {marketCopy.markets}
             </p>
             <div className="mt-3 grid grid-cols-2 gap-2">
-              {marketLinks.map(({ href, label }) => (
+              {countryLinks.map(({ href, label }) => (
                 <Link
                   key={href}
                   href={to(href)}
