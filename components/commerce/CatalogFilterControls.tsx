@@ -20,7 +20,7 @@ type FilterValues = {
 };
 
 const keys = ['q', 'category', 'audience', 'country', 'size', 'color', 'minPrice', 'maxPrice', 'sort'] as const;
-const controlClass = 'h-11 w-full rounded-xl border border-stone-300 bg-white px-3 text-sm outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-600/15 dark:border-white/15 dark:bg-stone-950';
+const controlClass = 'h-11 w-full rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-primary-600/15';
 
 function valuesFromSearch(search: URLSearchParams): FilterValues {
   return Object.fromEntries(keys.map((key) => [key, search.get(key) ?? (key === 'sort' ? 'newest' : '')])) as FilterValues;
@@ -123,7 +123,7 @@ function CatalogFilterDraft({
         <legend className="text-xs font-bold uppercase text-stone-500">{t('audience')}</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {audiences.map(([value, label]) => (
-            <button key={value || 'all'} type="button" aria-pressed={draft.audience === value} onClick={() => set('audience', value)} className={`min-h-11 rounded-xl border px-3 text-sm font-medium transition-colors ${draft.audience === value ? 'border-stone-900 bg-stone-900 text-white dark:border-white dark:bg-white dark:text-stone-950' : 'border-stone-300 hover:border-stone-500 dark:border-white/15'}`}>{label}</button>
+            <button key={value || 'all'} type="button" aria-pressed={draft.audience === value} onClick={() => set('audience', value)} className={`min-h-11 rounded-sm border px-3 text-sm font-medium transition-colors ${draft.audience === value ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white' : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'}`}>{label}</button>
           ))}
         </div>
       </fieldset>
@@ -154,8 +154,8 @@ function CatalogFilterDraft({
           onValueChange={(value) => set('sort', value)}
         />
       </div>
-      <button type="submit" className="mt-5 h-11 w-full rounded-xl bg-primary-700 text-sm font-bold text-white shadow-sm transition-colors hover:bg-primary-800">{t('show')}</button>
-      <button type="button" disabled={!active} onClick={reset} className="mt-2 h-10 w-full rounded-xl text-sm font-semibold text-stone-600 enabled:hover:bg-stone-100 disabled:opacity-40 dark:text-stone-300 dark:enabled:hover:bg-white/5">{t('reset')}</button>
+      <button type="submit" className="mt-5 h-11 w-full rounded-sm bg-primary-700 text-sm font-bold text-white transition-colors hover:bg-primary-800">{t('show')}</button>
+      <button type="button" disabled={!active} onClick={reset} className="mt-2 h-10 w-full rounded-sm text-sm font-semibold text-stone-600 enabled:hover:bg-stone-100 disabled:opacity-40 dark:text-stone-300 dark:enabled:hover:bg-white/5">{t('reset')}</button>
     </form>
   );
 }

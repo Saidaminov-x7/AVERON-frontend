@@ -24,7 +24,7 @@ export function CatalogFilterLayout({
       type="button"
       aria-expanded={filtersVisible}
       onClick={() => setFiltersVisible((visible) => !visible)}
-      className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-stone-300 px-3 text-sm font-semibold text-stone-700 hover:border-stone-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/15 dark:text-stone-200"
+      className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-sm border border-[var(--color-border)] px-3 text-sm font-semibold text-stone-700 hover:border-primary-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-stone-200"
     >
       <SlidersHorizontal size={16} aria-hidden="true" />
       {filtersVisible ? t('hideFilters') : t('showFilters')}
@@ -62,7 +62,7 @@ export function CatalogFilterLayout({
         <AnimatePresence initial={false}>
         {filtersVisible ? (
             <motion.div
-              className="mb-4 overflow-hidden rounded-2xl border border-stone-200 bg-white p-4 lg:hidden dark:border-white/10 dark:bg-stone-900"
+              className="mb-4 overflow-hidden rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] p-4 lg:hidden"
               initial={reduceMotion ? false : { opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}

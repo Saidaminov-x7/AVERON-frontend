@@ -97,10 +97,10 @@ function CartContent() {
   };
 
   return (
-    <main className="min-h-[65vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
+    <main className="min-h-[65vh] bg-[var(--color-bg)] text-[var(--color-text)]">
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <SmartBackButton fallbackHref={`/${locale}/catalog`} />
-        <h1 className="text-3xl font-extrabold">{text.title}</h1>
+        <h1 className="averon-title text-3xl">{text.title}</h1>
 
         {isLoading ? (
           <div role="status" className="mt-8 rounded-2xl border border-stone-200 bg-white p-8 text-stone-500 dark:border-white/10 dark:bg-stone-900">
@@ -129,8 +129,8 @@ function CartContent() {
                 <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-200">{errorMessage}</p>
               )}
               {items.map((item) => (
-                <article key={item.id} className="flex gap-4 rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900">
-                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-stone-100 dark:bg-stone-800">
+                <article key={item.id} className="flex gap-4 rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-sm bg-[var(--color-surface-soft)]">
                     <ProductImage src={item.imageUrl ?? undefined} alt={item.title} />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -173,7 +173,7 @@ function CartContent() {
               ))}
             </section>
 
-            <aside className="h-fit rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+            <aside className="h-fit rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
               <h2 className="text-lg font-bold">{text.subtotal}</h2>
               <p className="mt-3 flex justify-between gap-4 text-lg font-extrabold">
                 <span>{text.subtotal}</span><span>{formatUzs(data?.subtotalUzs ?? 0, locale)}</span>

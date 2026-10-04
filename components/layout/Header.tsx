@@ -324,7 +324,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
       <header
         ref={searchRef}
         className={cn(
-          'sticky top-0 z-40 flex h-[calc(5rem+env(safe-area-inset-top))] w-full items-center pt-[env(safe-area-inset-top)] transition-[background-color,backdrop-filter] duration-300 sm:h-20 sm:pt-0',
+          'sticky top-0 z-40 flex h-[calc(4.5rem+env(safe-area-inset-top))] w-full items-center border-b border-[var(--color-border)] pt-[env(safe-area-inset-top)] transition-[background-color,backdrop-filter] duration-300 sm:h-[72px] sm:pt-0',
           scrolled
             ? 'bg-white/90 backdrop-blur-2xl after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-primary-500/60 after:to-transparent dark:bg-[#111111]/90'
             : 'bg-white/95 dark:bg-[#111111]/95'
@@ -352,10 +352,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     key={href}
                     href={href.startsWith('http') ? href : to(href)}
                     className={
-                      'whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors duration-250 ' +
+                      'whitespace-nowrap border-b-2 border-transparent px-3 py-2 text-[13px] font-semibold transition-colors duration-250 ' +
                       (isActive(href)
-                        ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300'
-                        : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-white')
+                        ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-300'
+                        : 'text-stone-600 hover:text-stone-950 dark:text-stone-400 dark:hover:text-white')
                     }
                   >
                     {label}

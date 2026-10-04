@@ -144,15 +144,15 @@ function CatalogContent({
   ];
 
   return (
-    <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+      <div className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 lg:px-12">
         <CatalogCountryDefaultResolver
           locale={locale}
           hasExplicitCountry={Object.prototype.hasOwnProperty.call(f, "country")}
         />
         <CatalogFilterLayout
           filters={
-            <div className="sticky top-24 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+            <div className="sticky top-24 rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
               <div className="flex items-center gap-2 border-b pb-4 font-bold dark:border-white/10">
                 <Filter className="text-primary-700 dark:text-primary-300" size={18} />
                 {t("filters")}
@@ -200,7 +200,7 @@ function CatalogContent({
                 </Link>
               </div>
             ) : products.length ? (
-              <div className="catalog-product-grid mt-5 grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+              <div className="catalog-product-grid mt-5 grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:gap-x-5 2xl:grid-cols-4">
                 {products.map((p) => (
                   <ProductCard
                     key={p.id}

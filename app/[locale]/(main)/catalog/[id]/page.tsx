@@ -233,7 +233,7 @@ export default async function ProductPage({
     ],
   };
   return (
-    <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
+    <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <ProductViewTracker productId={product.id} />
       <script
         type="application/ld+json"
@@ -257,7 +257,7 @@ export default async function ProductPage({
             <p className="text-xs font-bold uppercase tracking-[.18em] text-primary-700 dark:text-primary-300">
               {copy.verified}
             </p>
-            <h1 className="mt-3 text-3xl font-extrabold sm:text-4xl">
+            <h1 className="averon-title mt-3 text-3xl sm:text-4xl">
               {title}
             </h1>
             <p className="mt-5 leading-7 text-stone-600 dark:text-stone-300">
@@ -273,12 +273,12 @@ export default async function ProductPage({
             />
             <Link
               href={`/${locale}/outfits?product=${encodeURIComponent(product.slug)}`}
-              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl border border-primary-700 px-4 text-sm font-bold text-primary-800 transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-primary-200 dark:hover:bg-primary-950/30"
+              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-sm border border-primary-700 px-4 text-sm font-bold text-primary-800 transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-primary-200 dark:hover:bg-primary-950/30"
             >
               {t("addToOutfit")}
             </Link>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <div className="flex gap-3 rounded-xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900">
+              <div className="flex gap-3 rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
                 <PackageCheck className="text-primary-700 dark:text-primary-300" />
                 <div>
                   <b className="text-sm">{copy.delivery}</b>

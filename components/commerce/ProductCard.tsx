@@ -130,7 +130,7 @@ export function ProductCard({
 
   return (
     <article
-      className={`group relative h-full min-w-0 overflow-hidden rounded-2xl border border-stone-200/90 bg-white shadow-sm motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-200 motion-safe:ease-out motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-stone-300 motion-safe:hover:shadow-lg dark:border-white/10 dark:bg-stone-900 dark:motion-safe:hover:border-white/20 ${previewOpen ? 'z-20 shadow-xl' : ''}`}
+      className={`group relative h-full min-w-0 overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] motion-safe:transition-[box-shadow,border-color] motion-safe:duration-200 motion-safe:hover:border-[var(--color-primary)] motion-safe:hover:shadow-[0_4px_16px_-2px_rgba(17,17,17,.08)] ${previewOpen ? 'z-20 shadow-xl' : ''}`}
       onPointerEnter={(event) => { if (event.pointerType === 'mouse') startPreviewTimer(); }}
       onPointerLeave={() => { stopPreview(); setImageIndex(0); }}
       onFocusCapture={startPreviewTimer}
@@ -142,10 +142,10 @@ export function ProductCard({
         href={`/${locale}/catalog/${product.slug}${catalogQuery ? `?${catalogQuery}` : ''}`}
         className="block"
       >
-        <div className="relative h-52 overflow-hidden bg-stone-100 sm:h-56 dark:bg-stone-800" onPointerMove={scrubImage} onPointerLeave={() => setImageIndex(0)}>
+        <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-surface-soft)]" onPointerMove={scrubImage} onPointerLeave={() => setImageIndex(0)}>
           <ProductImage src={image} alt={title} />
           {availabilityLabel ? (
-            <span className={`absolute bottom-3 left-3 rounded-full px-3 py-1 text-xs font-bold shadow-sm ${preorderOnly ? 'bg-sky-100 text-sky-900 dark:bg-sky-950/90 dark:text-sky-100' : unavailable ? 'bg-stone-800/90 text-white' : 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/90 dark:text-emerald-100'}`}>
+            <span className={`absolute left-2 top-2 rounded-sm border px-2 py-1 text-[10px] font-bold uppercase tracking-[.04em] ${preorderOnly ? 'border-primary-500/20 bg-primary-50 text-primary-800 dark:bg-primary-950 dark:text-primary-200' : unavailable ? 'border-stone-600 bg-stone-800 text-white' : 'border-primary-500/20 bg-primary-50 text-primary-800 dark:bg-primary-950 dark:text-primary-200'}`}>
               {availabilityLabel}
             </span>
           ) : null}
@@ -155,10 +155,11 @@ export function ProductCard({
             </div>
           ) : null}
         </div>
-        <div className="p-4">
-          <p className="line-clamp-2 min-h-10 text-sm font-semibold leading-5">{title}</p>
+        <div className="p-3 sm:p-4">
+          {product.country ? <p className="mb-1 text-[10px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{product.country}</p> : null}
+          <p className="line-clamp-2 min-h-10 text-sm font-medium leading-5">{title}</p>
           <div className="mt-3 flex flex-wrap items-baseline gap-2">
-            <strong>{price} {currency}</strong>
+            <strong className="text-sm tabular-nums sm:text-base">{price} {currency}</strong>
             {product.compareAtPriceUzs ? <span className="text-xs text-stone-400 line-through">{Number(product.compareAtPriceUzs).toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')} {currency}</span> : null}
           </div>
         </div>
