@@ -83,17 +83,25 @@
   color-scheme: dark;
   --color-primary: #72777d;
   --color-secondary: #858b91;
-  --color-bg: #25292e;
+  --color-bg: #111315;
   --color-text: #f2f3f3;
   --color-text-secondary: #c3c7cb;
-  --color-surface: #2d3238;
-  --color-surface-soft: #363c43;
-  --color-border: #454c54;
+  --color-surface: #181b1f;
+  --color-surface-soft: #20242a;
+  --color-border: #30353c;
   --color-muted: #9ba2a9;
   --color-success: #78bd94;
   --color-warning: #e1b966;
   --color-error: #ff8d83;
   --color-info: #93b9d7;
+}
+
+[data-sonner-toaster] [data-sonner-toast] {
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  box-shadow: 0 18px 48px rgb(0 0 0 / .18) !important;
 }
 
 @layer base {

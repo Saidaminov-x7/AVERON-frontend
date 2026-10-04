@@ -12,7 +12,7 @@ import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
 import { categoryName } from '@/lib/products';
 import { useReducedMotion } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export type { StoreProduct } from '@/lib/products';
 export { productTitle } from '@/lib/products';
@@ -80,6 +80,11 @@ export function ProductCard({
   const variants = product.variants ?? [];
   const sizes = [...new Set(variants.map(({ size }) => size).filter((size): size is string => Boolean(size)))];
   const colors = [...new Set(variants.map(({ color }) => color).filter((color): color is string => Boolean(color)))];
+  const [isNew, setIsNew] = useState(false);
+  useEffect(() => {
+    setIsNew(Boolean(product.createdAt && Date.now() - new Date(product.createdAt).getTime() <= 14 * 24 * 60 * 60 * 1000));
+  }, [product.createdAt]);
+  const newLabel = locale === 'uz' ? 'Yangi' : locale === 'en' ? 'New' : 'Новинка';
 
   const startPreviewTimer = () => {
     if (previewTimer.current) clearTimeout(previewTimer.current);
@@ -149,7 +154,9 @@ export function ProductCard({
           <div className="h-full w-full transition-transform duration-500 ease-out group-hover:scale-[1.025] group-focus-within:scale-[1.015]">
             <ProductImage src={image} alt={plainTitle} />
           </div>
-          {availabilityLabel ? (
+          {isNew ? (
+            <span className="absolute left-3 top-3 bg-black px-2 py-1 text-[10px] font-bold text-white">{newLabel}</span>
+          ) : availabilityLabel ? (
             <span className={`absolute left-3 top-3 rounded-full px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[.08em] shadow-sm backdrop-blur-md ${preorderOnly ? 'bg-white/90 text-stone-900 dark:bg-stone-900/90 dark:text-white' : unavailable ? 'bg-stone-900/90 text-white' : 'bg-white/90 text-stone-900 dark:bg-stone-900/90 dark:text-white'}`}>
               {availabilityLabel}
             </span>

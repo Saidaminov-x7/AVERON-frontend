@@ -61,7 +61,7 @@ export default function LocaleLayout({
             <div className="flex min-h-screen flex-col">
               <AppChrome>{children}</AppChrome>
             </div>
-            <Toaster richColors position="top-center" />
+            <Toaster closeButton position="top-center" toastOptions={{ duration: 4000 }} />
           </QueryProvider>
         </NextIntlClientProvider>
       </ThemeProvider>

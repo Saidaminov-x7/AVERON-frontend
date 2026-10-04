@@ -70,7 +70,7 @@ describe('AddToCart availability', () => {
 
     expect(screen.getByText('In stock: 6')).toBeInTheDocument();
     expect(screen.getByText('125,000 UZS')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('combobox', { name: 'Choose an option' }));
-    expect(screen.getByRole('option', { name: 'Red · M · Out of stock' })).toBeDisabled();
+    expect(screen.getByRole('radio', { name: 'Blue · M, Available to order' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('radio', { name: 'Red · M, Out of stock' })).toHaveClass('text-[var(--color-muted)]');
   });
 });

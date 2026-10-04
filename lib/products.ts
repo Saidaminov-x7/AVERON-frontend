@@ -16,6 +16,7 @@ export type StoreCategory = {
 export type StoreProduct = {
   id: string;
   slug: string;
+  createdAt?: string;
   publicId?: string | null;
   sizeChartType?: 'CLOTHING' | 'SHOES' | 'KIDS_CLOTHING' | null;
   source?: string | null;
