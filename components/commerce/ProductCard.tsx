@@ -25,6 +25,11 @@ export function isProductNew(createdAt: string | undefined, now = Date.now()) {
   return Number.isFinite(createdTime) && age >= 0 && age < NEW_PRODUCT_WINDOW_MS;
 }
 
+export function parseProductColor(value: string) {
+  const [name, hex] = value.split('::').map((part) => part.trim());
+  return { name, hex: /^#[0-9a-fA-F]{6}$/.test(hex ?? '') ? hex.toUpperCase() : '#D6D3D1' };
+}
+
 export function ProductCard({
   product,
   locale,
@@ -39,7 +44,6 @@ export function ProductCard({
   const productHref = `/${locale}/catalog/${encodeURIComponent(productRouteId(product))}${catalogQuery ? `?${catalogQuery}` : ''}`;
   const images = product.images?.map(({ url }) => url).filter(Boolean) ?? [];
   const [imageIndex, setImageIndex] = useState(0);
-  const image = images[imageIndex];
   const price = Number(product.salePriceUzs || 0).toLocaleString(locale === 'en' ? 'en-US' : 'ru-RU');
   const currency = locale === 'en' ? 'UZS' : locale === 'uz' ? "so'm" : 'сум';
   const preorderOnly = product.recommendationAvailability
@@ -80,7 +84,7 @@ export function ProductCard({
     : 'bg-[var(--color-surface)] text-[var(--color-text)] ring-[var(--color-border)] hover:bg-[var(--color-surface-soft)] hover:ring-[var(--color-border-hover)]';
   const variants = product.variants ?? [];
   const sizes = [...new Set(variants.map(({ size }) => size).filter((size): size is string => Boolean(size)))];
-  const colors = [...new Set(variants.map(({ color }) => color).filter((color): color is string => Boolean(color)))];
+  const colors = [...new Set(variants.map(({ color }) => color).filter((color): color is string => Boolean(color)))].map(parseProductColor);
   const [isNew, setIsNew] = useState(false);
   useEffect(() => {
     const updateNewState = () => setIsNew(isProductNew(product.createdAt));
@@ -153,7 +157,14 @@ export function ProductCard({
         className="block rounded-[var(--radius-control)] focus-visible:outline-none"
       >
         <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-control)] bg-[var(--color-surface-soft)]">
-          <ProductImage src={image} alt={plainTitle} zoomOnHover={false} />
+          <div className="absolute inset-0 transition-opacity duration-300 ease-out group-hover:opacity-0 group-focus-within:opacity-0">
+            <ProductImage src={images[0]} alt={plainTitle} zoomOnHover={false} />
+          </div>
+          {images[1] ? (
+            <div className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 group-focus-within:opacity-100">
+              <ProductImage src={images[1]} alt="" zoomOnHover={false} />
+            </div>
+          ) : null}
           {(isNew || availabilityLabel || discountPercent !== null) && (
             <div className="absolute left-3 top-3 flex max-w-[calc(100%-5.5rem)] flex-col items-start gap-1.5">
               {discountPercent !== null && (
@@ -175,6 +186,14 @@ export function ProductCard({
           ) : null}
         </div>
         <div className="px-1 pt-3">
+          {colors.length > 0 && (
+            <div className="mb-2 flex items-center gap-1" aria-label={locale === 'en' ? 'Available colors' : locale === 'uz' ? 'Mavjud ranglar' : 'Доступные цвета'}>
+              {colors.slice(0, 6).map(({ name, hex }) => (
+                <span key={`${name}-${hex}`} title={name} className="size-3.5 rounded-full border border-black/10 ring-1 ring-white" style={{ backgroundColor: hex }} />
+              ))}
+              {colors.length > 6 ? <span className="ml-0.5 text-[11px] text-[var(--color-muted)]">+{colors.length - 6}</span> : null}
+            </div>
+          )}
           <div className="mb-1.5 flex min-h-4 items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-[var(--color-muted)]">
             {product.country ? <span>{product.country}</span> : null}
             {product.country && product.category ? <span className="size-1 rounded-full bg-[var(--color-muted)]/60" aria-hidden="true" /> : null}
@@ -187,7 +206,7 @@ export function ProductCard({
             {isNew && <span className="bg-black px-2 py-1 text-[10px] font-bold text-white">{newLabel}</span>}
           {(sizes.length > 0 || colors.length > 0) && (
             <p className="mt-1 truncate text-[11px] text-[var(--color-muted)]">
-              {[sizes.slice(0, 4).join(' / '), colors.slice(0, 2).join(', ')].filter(Boolean).join(' · ')}
+              {sizes.slice(0, 4).join(' / ')}
             </p>
           )}
           <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
