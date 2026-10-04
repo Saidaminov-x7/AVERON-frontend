@@ -35,7 +35,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const products = popularProducts as StoreProduct[];
   const c = copy[activeLocale];
   const to = (path: string) => `/${locale}${path}`;
-  const heroImage = products[0]?.images?.[0]?.url;
+  const heroImage = '/images/stitch-hero-editorial.jpg';
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
@@ -45,13 +45,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <section className="mx-auto max-w-[1440px] px-4 py-6 sm:px-8 lg:px-12">
         <div className="relative min-h-[540px] overflow-hidden border border-[var(--color-border)] bg-[#d9d5cf] lg:min-h-[610px]">
           {heroImage ? <div className="absolute inset-0 bg-cover bg-center opacity-90" style={{ backgroundImage: `url(${heroImage})` }} /> : null}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/5" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent" />
           <div className="relative flex min-h-[540px] max-w-[780px] flex-col justify-end p-7 text-white sm:p-12 lg:min-h-[610px] lg:p-16">
             <p className="mb-4 text-[11px] font-bold uppercase tracking-[.1em]">{c.season}</p>
             <h1 className="font-display max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-.035em] sm:text-6xl lg:text-7xl">{t('heroTitle')}</h1>
             <p className="mt-5 max-w-2xl text-sm leading-6 text-white/85 sm:text-base">{t('heroBody')}</p>
             <div className="mt-7 max-w-xl"><SearchInput locale={locale} placeholder={t('searchPlaceholder')} className="h-12 rounded-none border-white/35 bg-black/35 text-white backdrop-blur placeholder:text-white/70" /></div>
-            <div className="mt-5 flex flex-wrap gap-2"><Link href={to('/catalog')} className="averon-primary-button rounded-none">{t('catalogButton')} <ArrowRight size={15} /></Link><Link href={to('/about')} className="averon-secondary-button rounded-none border-white/40 bg-black/20 text-white hover:bg-white hover:text-black">{t('aboutButton')}</Link></div>
+            <div className="averon-hero-actions mt-5 flex flex-wrap gap-2"><Link href={to('/catalog')} className="averon-primary-button">{t('catalogButton')} <ArrowRight size={15} /></Link><Link href={to('/about')} className="averon-secondary-button">{t('aboutButton')}</Link></div>
           </div>
         </div>
       </section>

@@ -152,15 +152,15 @@ export function AddToCart({
   };
 
   return (
-    <div className="mt-6 space-y-3">
-      <p className="text-2xl font-black" aria-live="polite">
+    <div className="mt-4 space-y-4">
+      <p className="text-3xl font-bold tracking-tight text-[var(--color-text)]" aria-live="polite">
         {formatUzs(selectedPrice, locale, text.currency)}
       </p>
-      {selectedName && <p className="text-sm text-stone-600 dark:text-stone-300">{selectedName}</p>}
+      {selectedName && <p className="text-sm text-[var(--color-text-secondary)]">{selectedName}</p>}
       {stockStatus && (
         <p
           role={unavailable ? 'status' : undefined}
-          className={unavailable ? 'text-sm font-semibold text-rose-700 dark:text-rose-300' : 'text-sm text-stone-600 dark:text-stone-300'}
+          className={unavailable ? 'text-sm font-semibold text-[var(--color-error)]' : 'text-sm text-[var(--color-text-secondary)]'}
         >
           {stockStatus}
         </p>
@@ -196,14 +196,14 @@ export function AddToCart({
             loading={activeAction === 'add'}
             loadingLabel={text.adding}
             disabled={!isAuthenticated || isLoading || mutation.isPending || activeAction !== null || unavailable || quantity > maxQuantity}
-            className="h-11 min-w-48 flex-1 rounded-xl bg-stone-900 px-4 font-bold text-white hover:bg-stone-700 focus-visible:ring-stone-500 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-200"
+            className="h-11 min-w-48 flex-1 font-semibold"
           >
             <ShoppingCart size={17} className="mr-2" aria-hidden="true" />{unavailable ? text.unavailable : text.add}
           </Button>
         ) : (
           <Link
             href={`/${locale}/login?returnTo=${encodeURIComponent(getSafeInternalReturnTo(`${pathname}${searchParams.size ? `?${searchParams.toString()}` : ''}`, locale) ?? `/${locale}/catalog`)}`}
-            className="inline-flex min-h-11 min-w-48 flex-1 items-center justify-center rounded-xl border border-stone-300 px-4 text-center text-sm font-semibold hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:border-white/15 dark:hover:bg-white/5"
+            className="averon-secondary-button min-h-11 min-w-48 flex-1 text-center"
           >
             {text.signIn}
           </Link>
@@ -217,7 +217,7 @@ export function AddToCart({
           loadingLabel={text.buying}
           disabled={isLoading || mutation.isPending || activeAction !== null || quantity > maxQuantity}
           variant="outline"
-          className="min-h-10 rounded-xl px-4 text-sm font-semibold focus-visible:ring-stone-500"
+          className="min-h-11 px-4 text-sm font-semibold"
         >
           {text.buy}
         </Button>

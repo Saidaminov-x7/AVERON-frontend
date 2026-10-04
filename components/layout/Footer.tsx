@@ -52,7 +52,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
         {links.map(([key, href]) => (
           <li key={href}>
             <Link
-              className="flex min-h-11 items-center py-2 text-sm text-stone-600 transition-colors hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-stone-400 dark:hover:text-primary-300"
+              className="flex min-h-11 items-center py-2 text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               href={href.startsWith("http") ? href : `/${locale}${href}`}
             >
               {key}
@@ -70,37 +70,37 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
   const documentLinks = DOCUMENT_LINKS.map(([key, href]) => [t(key), href] as const);
 
   return (
-    <footer className="w-full border-t border-stone-200 bg-[#fcfbf8] dark:border-white/10 dark:bg-stone-950">
+    <footer className="w-full border-t border-[var(--color-border)] bg-[var(--color-surface-soft)]">
       <div className="mx-auto max-w-[1440px] px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-12 sm:pb-[calc(3rem+env(safe-area-inset-bottom))] lg:px-8">
         <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-[1.25fr_repeat(3,1fr)] lg:gap-10">
           <div className="min-w-0">
             <Link
               href={`/${locale}`}
-              className="inline-flex min-h-11 items-center text-xl font-black tracking-[.18em] text-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-primary-300"
+              className="inline-flex min-h-11 items-center text-xl font-black tracking-[.18em] text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             >
               {settings?.siteName || "AVERON"}
             </Link>
-            <p className="mt-2 max-w-xs text-sm leading-6 text-stone-600 dark:text-stone-400">
+            <p className="mt-2 max-w-xs text-sm leading-6 text-[var(--color-text-secondary)]">
               {t("description")}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <a
                 href="https://t.me/averon_fashion"
-                className="inline-flex min-h-11 items-center rounded-xl border border-stone-300 px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/10"
+                className="inline-flex min-h-11 items-center rounded-xl border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <Send className="mr-2 shrink-0" size={15} />
                 {t("channel")}
               </a>
               <a
                 href="https://t.me/averon_fashion_admin"
-                className="inline-flex min-h-11 items-center rounded-xl border border-stone-300 px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/10"
+                className="inline-flex min-h-11 items-center rounded-xl border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <MessageCircle className="mr-2 shrink-0" size={15} />
                 {t("support")}
               </a>
             </div>
             {(settings?.contactEmail || settings?.contactPhone) && (
-              <div className="mt-3 space-y-1 text-sm text-stone-600 dark:text-stone-400">
+              <div className="mt-3 space-y-1 text-sm text-[var(--color-text-secondary)]">
                 {settings.contactEmail && (
                   <a className="flex min-h-11 items-center break-all hover:text-primary-700" href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>
                 )}
@@ -114,7 +114,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
           {col(t("helpTitle"), helpLinks)}
           {col(t("documentsTitle"), documentLinks)}
         </div>
-        <div className="mt-6 flex flex-col justify-between gap-2 border-t border-stone-200 pt-4 text-xs leading-5 text-stone-500 dark:border-white/10 dark:text-stone-400 sm:mt-8 sm:flex-row sm:gap-4 sm:pt-5">
+        <div className="mt-6 flex flex-col justify-between gap-2 border-t border-[var(--color-border)] pt-4 text-xs leading-5 text-[var(--color-muted)] sm:mt-8 sm:flex-row sm:gap-4 sm:pt-5">
           <p>
             © {new Date().getFullYear()} {settings?.siteName || "AVERON"}. {t("rights")}
           </p>

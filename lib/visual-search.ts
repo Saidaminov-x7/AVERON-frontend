@@ -64,8 +64,12 @@ export async function loadCommerceCapabilities(
   fetcher: typeof fetch = fetch,
 ): Promise<CommerceCapabilities> {
   try {
-    const response = await fetcher(`${apiBaseUrl}/api/v1/capabilities`, {
+    const endpoint = typeof window !== "undefined"
+      ? "/api/backend/api/v1/capabilities"
+      : `${apiBaseUrl}/api/v1/capabilities`;
+    const response = await fetcher(endpoint, {
       cache: "no-store",
+      credentials: "include",
       signal: AbortSignal.timeout(10000),
     });
     if (!response.ok) return NO_COMMERCE_CAPABILITIES;

@@ -5,7 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: var(--color-primary, #2563eb);
+  --color-primary: var(--color-primary, #34383c);
   --color-primary-50: color-mix(in srgb, var(--color-primary) 5%, white);
   --color-primary-100: color-mix(in srgb, var(--color-primary) 10%, white);
   --color-primary-200: color-mix(in srgb, var(--color-primary) 20%, white);
@@ -22,22 +22,78 @@
 }
 
 :root {
-  --color-primary: #1a44c2;
-  --color-secondary: #0f32a3;
-  --color-bg: #fbf9f9;
-  --color-text: #1b1c1c;
+  --color-primary: #34383c;
+  --color-secondary: #25282b;
+  --color-bg: #faf9f7;
   --color-surface: #ffffff;
-  --color-surface-soft: #f5f3f3;
-  --color-border: #e3e2e2;
-  --color-muted: #747685;
-  --border-radius: 0.25rem;
+  --color-surface-soft: #f4f3f1;
+  --color-text: #202124;
+  --color-text-secondary: #55585b;
+  --color-border: #e5e3df;
+  --color-muted: #707276;
+  --color-success: #24734b;
+  --color-warning: #9a6417;
+  --color-error: #b42318;
+  --color-info: #436d91;
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-card: 0.5rem;
+  --radius-control: 0.375rem;
+  --border-radius: var(--radius-card);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
   --font-family: Inter, "Segoe UI", Arial, sans-serif;
+  --font-size-display: clamp(3rem, 8vw, 7rem);
+  --font-size-h1: clamp(2.25rem, 5vw, 4.5rem);
+  --font-size-h2: clamp(1.875rem, 3.5vw, 2.75rem);
+  --font-size-h3: clamp(1.5rem, 2.5vw, 2rem);
+  --font-size-h4: 1.25rem;
+  --font-size-body-lg: 1.0625rem;
+  --font-size-body: 0.9375rem;
+  --font-size-body-sm: 0.8125rem;
+  --font-size-caption: 0.6875rem;
+  --font-size-button: 0.8125rem;
+  --font-size-label: 0.75rem;
+  --breakpoint-mobile: 20rem;
+  --breakpoint-tablet: 48rem;
+  --breakpoint-laptop: 64rem;
+  --breakpoint-desktop: 80rem;
+  --breakpoint-wide: 120rem;
   --ease-out-ui: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out-ui: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --duration-press: 140ms;
   --duration-ui: 180ms;
   --duration-overlay: 280ms;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --color-primary: #72777d;
+  --color-secondary: #858b91;
+  --color-bg: #25292e;
+  --color-text: #f2f3f3;
+  --color-text-secondary: #c3c7cb;
+  --color-surface: #2d3238;
+  --color-surface-soft: #363c43;
+  --color-border: #454c54;
+  --color-muted: #9ba2a9;
+  --color-success: #78bd94;
+  --color-warning: #e1b966;
+  --color-error: #ff8d83;
+  --color-info: #93b9d7;
 }
 
 @layer base {
@@ -55,18 +111,6 @@
     -webkit-font-smoothing: antialiased;
     font-family: var(--font-family, Calibri, "Segoe UI", Arial, sans-serif);
     transition: background-color var(--duration-ui) var(--ease-out-ui), color var(--duration-ui) var(--ease-out-ui);
-  }
-
-  /* Тёмная тема */
-  html.dark {
-    --color-primary: #4d8eff;
-    --color-secondary: #adc6ff;
-    --color-bg: #0e0f12;
-    --color-text: #f4f4f6;
-    --color-surface: #14161b;
-    --color-surface-soft: #1b1e24;
-    --color-border: #272b35;
-    --color-muted: #9ca3af;
   }
 
   html.dark body {
@@ -100,10 +144,115 @@
   .averon-panel { border: 1px solid var(--color-border); border-radius: var(--border-radius); background: var(--color-surface); }
   .averon-kicker { color: var(--color-primary); font-size: .6875rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
   .averon-title { font-family: "Hanken Grotesk", Inter, "Segoe UI", sans-serif; font-weight: 600; letter-spacing: -.025em; }
-  .averon-primary-button, .averon-secondary-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: .5rem; border-radius: var(--border-radius); padding: .75rem 1.25rem; font-size: .8125rem; font-weight: 700; }
-  .averon-primary-button { background: var(--color-primary); color: white; }
-  .averon-secondary-button { border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); }
+  .averon-control-button {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-family: var(--font-family);
+    font-size: .8125rem;
+    font-weight: 600;
+    transition: color var(--duration-press) var(--ease-out-ui), background-color var(--duration-press) var(--ease-out-ui), border-color var(--duration-press) var(--ease-out-ui), box-shadow var(--duration-press) var(--ease-out-ui);
+  }
+  .averon-control-button:hover { border-color: var(--color-muted); background: var(--color-surface-soft); color: var(--color-text); }
+  .averon-control-button:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+  .averon-control-button:disabled { cursor: not-allowed; opacity: .5; }
+  .averon-icon-button { width: 44px; min-width: 44px; padding: 0; }
+  .averon-primary-button, .averon-secondary-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: .5rem; border: 1px solid transparent; border-radius: var(--radius-control); padding: .75rem 1.25rem; font-family: var(--font-family); font-size: .8125rem; font-weight: 700; line-height: 1.25rem; text-align: center; transition: color var(--duration-press) var(--ease-out-ui), background-color var(--duration-press) var(--ease-out-ui), border-color var(--duration-press) var(--ease-out-ui), box-shadow var(--duration-press) var(--ease-out-ui); }
+  .averon-primary-button { background: var(--color-primary); color: #fff; }
+  .averon-primary-button:hover { background: var(--color-secondary); }
+  :root.dark .averon-primary-button { background: #e3e4e4; color: #25292e; }
+  :root.dark .averon-primary-button:hover { background: #fff; }
+  .averon-secondary-button { border-color: var(--color-border); background: var(--color-surface); color: var(--color-text); }
+  .averon-secondary-button:hover { background: var(--color-surface-soft); }
+  .averon-ghost-button { border: 1px solid transparent; background: transparent; color: var(--color-text-secondary); }
+  .averon-ghost-button:hover { background: var(--color-surface-soft); color: var(--color-text); }
+  .averon-menu-surface { border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface); color: var(--color-text); box-shadow: 0 12px 32px rgb(20 20 20 / .12); }
+  .averon-menu-item { display: flex; min-height: 44px; width: 100%; align-items: center; border-radius: var(--radius-sm); padding: .625rem .75rem; color: var(--color-text-secondary); text-align: left; transition: background-color var(--duration-press) var(--ease-out-ui), color var(--duration-press) var(--ease-out-ui); }
+  .averon-menu-item:hover, .averon-menu-item[aria-selected="true"], .averon-menu-item[aria-checked="true"] { background: var(--color-surface-soft); color: var(--color-text); }
+  .averon-menu-item:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
 }
+
+/* Stitch shell: every storefront route shares the same canvas, geometry and surface hierarchy. */
+.averon-site-shell main {
+  background-color: var(--color-bg) !important;
+  color: var(--color-text) !important;
+}
+.averon-site-shell .rounded-3xl,
+.averon-site-shell .rounded-2xl { border-radius: var(--radius-card) !important; }
+.averon-site-shell .rounded-xl,
+.averon-site-shell .rounded-lg { border-radius: var(--radius-control) !important; }
+.averon-site-shell .rounded-md,
+.averon-site-shell .rounded-sm { border-radius: var(--radius-sm) !important; }
+.averon-site-shell :where(button, [role="button"], .averon-primary-button, .averon-secondary-button, .averon-control-button) {
+  border-radius: var(--radius-control);
+  font-family: var(--font-family);
+}
+.averon-site-shell button:not([class*="h-7"]):not([class*="h-8"]):not([class*="h-9"]):not([class*="size-"]):not([class*="absolute"]) {
+  min-height: 44px;
+}
+.averon-site-shell :where(button, [role="button"], a.averon-primary-button, a.averon-secondary-button, a.averon-control-button):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.averon-site-shell :where(button, [role="button"], a.averon-primary-button, a.averon-secondary-button, a.averon-control-button):disabled {
+  cursor: not-allowed;
+}
+.averon-site-shell :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]):not([type="range"]), textarea, select) {
+  min-height: 44px;
+  border-color: var(--color-border);
+  border-radius: var(--radius-control);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  transition: border-color var(--duration-press) var(--ease-out-ui), box-shadow var(--duration-press) var(--ease-out-ui), background-color var(--duration-press) var(--ease-out-ui);
+}
+.averon-site-shell :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]):not([type="range"]), textarea, select):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 42%, transparent);
+  outline-offset: 1px;
+  border-color: var(--color-primary);
+}
+.averon-site-shell :where(input, textarea, select):disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+.averon-site-shell :where([role="listbox"], [role="menu"], [data-radix-popper-content-wrapper] > *) { color: var(--color-text); }
+.averon-site-shell :where([role="option"], [role="menuitem"], [role="menuitemradio"]) { border-radius: var(--radius-sm); }
+.averon-site-shell .averon-hero-actions .averon-secondary-button {
+  border-color: rgb(255 255 255 / .45);
+  background: rgb(0 0 0 / .2);
+  color: #fff;
+}
+.averon-site-shell .averon-hero-actions .averon-secondary-button:hover {
+  background: rgb(255 255 255 / .14);
+}
+.averon-site-shell :where(section, article, aside)[class~="bg-white"] {
+  border-color: var(--color-border);
+}
+html.dark .averon-site-shell :where(section, article, aside)[class~="bg-white"] {
+  background-color: var(--color-surface) !important;
+}
+html:not(.dark) .averon-site-shell :where(main, section, article, aside)[class*="dark:bg-"] {
+  color-scheme: light;
+}
+
+.averon-auth-shell h1,
+.averon-auth-shell h2 { color: var(--color-text) !important; }
+.averon-auth-shell :where(input, textarea, select) {
+  border: 1px solid var(--color-border) !important;
+  border-radius: .25rem !important;
+  background: var(--color-surface-soft) !important;
+  color: var(--color-text) !important;
+}
+.averon-auth-shell :where(input, textarea)::placeholder { color: var(--color-muted) !important; }
+.averon-auth-shell :where(label, p)[class*="text-stone"] { color: var(--color-muted) !important; }
+.averon-auth-shell .rounded-xl,
+.averon-auth-shell .rounded-2xl { border-radius: var(--radius-card) !important; }
 
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(10px); }

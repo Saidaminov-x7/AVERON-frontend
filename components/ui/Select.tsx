@@ -116,7 +116,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<H
           }
         }}
         className={cn(
-          'flex h-10 w-full items-center justify-between rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 shadow-sm transition-colors focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100',
+          'averon-control-button h-11 w-full justify-between px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
         {...props}
@@ -124,7 +124,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<H
         {children}
         <ChevronDown
           className={cn(
-            'h-4 w-4 shrink-0 text-stone-500 transition-transform duration-200 dark:text-stone-400',
+            'h-4 w-4 shrink-0 text-[var(--color-muted)] transition-transform duration-200',
             context?.open && 'rotate-180'
           )}
         />
@@ -141,7 +141,8 @@ const SelectContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEle
 
     useEffect(() => {
       const handleOutside = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        const selectRoot = containerRef.current?.parentElement;
+        if (selectRoot && !selectRoot.contains(e.target as Node)) {
           context?.setOpen(false);
         }
       };
@@ -183,7 +184,7 @@ const SelectContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEle
           }
         }}
         className={cn(
-          'absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-lg border border-stone-200 bg-white p-1 shadow-lg shadow-stone-900/10 dark:border-stone-700 dark:bg-stone-800 dark:shadow-black/40',
+          'averon-menu-surface absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto p-1',
           className
         )}
         {...props}
@@ -223,15 +224,15 @@ const SelectItem = forwardRef<HTMLButtonElement, SelectItemProps>(
         aria-selected={isSelected}
         onClick={() => !props.disabled && context?.onValueChange(value)}
         className={cn(
-          'relative flex w-full cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm text-stone-700 transition-colors hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-700',
-          isSelected && 'bg-primary-50 font-medium text-primary-700 dark:bg-primary-950/60 dark:text-primary-300',
+          'averon-menu-item relative cursor-pointer select-none text-sm',
+          isSelected && '!bg-[var(--color-surface-soft)] !font-semibold !text-[var(--color-text)]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
         {...props}
       >
         <span className="flex-1 text-left">{children}</span>
-        {isSelected && <Check className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" />}
+        {isSelected && <Check className="h-4 w-4 shrink-0" />}
       </button>
     );
   }

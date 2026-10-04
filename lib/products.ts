@@ -16,6 +16,8 @@ export type StoreCategory = {
 export type StoreProduct = {
   id: string;
   slug: string;
+  publicId?: string | null;
+  sizeChartType?: 'CLOTHING' | 'SHOES' | 'KIDS_CLOTHING' | null;
   source?: string | null;
   sourceUrl?: string | null;
   translations?: Record<string, Translation>;
@@ -48,6 +50,20 @@ export type StoreProduct = {
     salePriceUzs?: string | number;
   }>;
 };
+
+export function productRouteId(product: Pick<StoreProduct, 'publicId' | 'slug'>) {
+  return product.publicId || product.slug;
+}
+
+export function productPlainText(value: string) {
+  return value
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/(\*\*|__|~~|[*_`])/g, '')
+    .replace(/^\s{0,3}(#{1,6}\s|>\s|[-*+]\s|\d+\.\s)/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 export function productTitle(product: StoreProduct, locale = 'ru') {
   const value = product.translations?.[locale]

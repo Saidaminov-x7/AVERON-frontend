@@ -70,4 +70,17 @@ describe('Select', () => {
     await user.click(screen.getByRole('button', { name: 'Outside' }));
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
+
+  it('closes when the open trigger is clicked again', async () => {
+    const user = userEvent.setup();
+    render(<TestSelect />);
+
+    const trigger = screen.getByRole('combobox', { name: 'Language' });
+    await user.click(trigger);
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
 });

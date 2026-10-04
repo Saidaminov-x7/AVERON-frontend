@@ -5,7 +5,8 @@ import { Heart, Scale } from 'lucide-react';
 import { ProductImage } from './ProductImage';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
-import { productTitle, type StoreProduct } from '@/lib/products';
+import { productPlainText, productRouteId, productTitle, type StoreProduct } from '@/lib/products';
+import { ProductRichText } from './ProductRichText';
 import { addWishlistItem, removeWishlistItem } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -31,6 +32,8 @@ export function ProductCard({
   catalogQuery?: string;
 }) {
   const title = productTitle(product, locale);
+  const plainTitle = productPlainText(title);
+  const productHref = `/${locale}/catalog/${encodeURIComponent(productRouteId(product))}${catalogQuery ? `?${catalogQuery}` : ''}`;
   const images = product.images?.map(({ url }) => url).filter(Boolean) ?? [];
   const [imageIndex, setImageIndex] = useState(0);
   const image = images[imageIndex];
@@ -130,7 +133,7 @@ export function ProductCard({
 
   return (
     <article
-      className={`group relative h-full min-w-0 overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] motion-safe:transition-[box-shadow,border-color] motion-safe:duration-200 motion-safe:hover:border-[var(--color-primary)] motion-safe:hover:shadow-[0_4px_16px_-2px_rgba(17,17,17,.08)] ${previewOpen ? 'z-20 shadow-xl' : ''}`}
+      className={`group relative h-full min-w-0 pb-3 motion-safe:transition-[box-shadow,transform] motion-safe:duration-200 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-[0_12px_28px_-18px_rgba(17,17,17,.35)] focus-within:shadow-[0_12px_28px_-18px_rgba(17,17,17,.35)] after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-[var(--color-primary)] after:transition-transform group-hover:after:scale-x-100 group-focus-within:after:scale-x-100 ${previewOpen ? 'z-20' : ''}`}
       onPointerEnter={(event) => { if (event.pointerType === 'mouse') startPreviewTimer(); }}
       onPointerLeave={() => { stopPreview(); setImageIndex(0); }}
       onFocusCapture={startPreviewTimer}
@@ -139,55 +142,68 @@ export function ProductCard({
       }}
     >
       <Link
-        href={`/${locale}/catalog/${product.slug}${catalogQuery ? `?${catalogQuery}` : ''}`}
-        className="block"
+        href={productHref}
+        className="block rounded-[var(--radius-control)] focus-visible:outline-none"
       >
-        <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-surface-soft)]" onPointerMove={scrubImage} onPointerLeave={() => setImageIndex(0)}>
-          <ProductImage src={image} alt={title} />
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-control)] bg-[var(--color-surface-soft)]" onPointerMove={scrubImage} onPointerLeave={() => setImageIndex(0)}>
+          <div className="h-full w-full transition-transform duration-500 ease-out group-hover:scale-[1.025] group-focus-within:scale-[1.015]">
+            <ProductImage src={image} alt={plainTitle} />
+          </div>
           {availabilityLabel ? (
-            <span className={`absolute left-2 top-2 rounded-sm border px-2 py-1 text-[10px] font-bold uppercase tracking-[.04em] ${preorderOnly ? 'border-primary-500/20 bg-primary-50 text-primary-800 dark:bg-primary-950 dark:text-primary-200' : unavailable ? 'border-stone-600 bg-stone-800 text-white' : 'border-primary-500/20 bg-primary-50 text-primary-800 dark:bg-primary-950 dark:text-primary-200'}`}>
+            <span className={`absolute left-3 top-3 rounded-full px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[.08em] shadow-sm backdrop-blur-md ${preorderOnly ? 'bg-white/90 text-stone-900 dark:bg-stone-900/90 dark:text-white' : unavailable ? 'bg-stone-900/90 text-white' : 'bg-white/90 text-stone-900 dark:bg-stone-900/90 dark:text-white'}`}>
               {availabilityLabel}
             </span>
           ) : null}
           {images.length > 1 ? (
-            <div className="absolute bottom-2 right-3 flex gap-1.5" aria-hidden="true">
-              {images.map((_, index) => <span key={index} className={`size-1.5 rounded-full shadow ${imageIndex === index ? 'bg-white' : 'bg-white/50'}`} />)}
+            <div className="absolute bottom-3 left-3 flex gap-1.5 rounded-full bg-black/25 px-2 py-1.5 backdrop-blur-sm" aria-hidden="true">
+              {images.map((_, index) => <span key={index} className={`h-1 w-3 rounded-full transition-colors ${imageIndex === index ? 'bg-white' : 'bg-white/45'}`} />)}
             </div>
           ) : null}
         </div>
-        <div className="p-3 sm:p-4">
-          {product.country ? <p className="mb-1 text-[10px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{product.country}</p> : null}
-          <p className="line-clamp-2 min-h-10 text-sm font-medium leading-5">{title}</p>
-          <div className="mt-3 flex flex-wrap items-baseline gap-2">
-            <strong className="text-sm tabular-nums sm:text-base">{price} {currency}</strong>
-            {product.compareAtPriceUzs ? <span className="text-xs text-stone-400 line-through">{Number(product.compareAtPriceUzs).toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')} {currency}</span> : null}
+        <div className="px-1 pt-3">
+          <div className="mb-1.5 flex min-h-4 items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-[var(--color-muted)]">
+            {product.country ? <span>{product.country}</span> : null}
+            {product.country && product.category ? <span className="size-1 rounded-full bg-[var(--color-muted)]/60" aria-hidden="true" /> : null}
+            {product.category ? <span className="truncate">{categoryName(product.category, locale)}</span> : null}
+          </div>
+          <p className="line-clamp-2 min-h-10 text-[13px] font-medium leading-5 text-[var(--color-text)] sm:text-sm">
+            <ProductRichText content={title} inline />
+          </p>
+          {(sizes.length > 0 || colors.length > 0) && (
+            <p className="mt-1 truncate text-[11px] text-[var(--color-muted)]">
+              {[sizes.slice(0, 4).join(' / '), colors.slice(0, 2).join(', ')].filter(Boolean).join(' · ')}
+            </p>
+          )}
+          <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <strong className="text-sm font-bold tabular-nums tracking-tight text-[var(--color-text)] sm:text-base">{price} {currency}</strong>
+            {product.compareAtPriceUzs ? <span className="text-xs tabular-nums text-[var(--color-muted)] line-through">{Number(product.compareAtPriceUzs).toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')} {currency}</span> : null}
           </div>
         </div>
       </Link>
-      {previewOpen ? <div
-        className={`pointer-events-none absolute inset-x-2 bottom-[4.75rem] z-10 rounded-xl border border-stone-200/90 bg-white/95 p-3 text-xs text-stone-700 shadow-lg backdrop-blur-sm ${reduceMotion ? '' : 'transition-[opacity,transform] duration-200'} dark:border-white/10 dark:bg-stone-950/95 dark:text-stone-200`}
-      >
-        <p className="line-clamp-3 leading-5">{description || title}</p>
-        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-stone-500 dark:text-stone-400">
-          {product.category ? <span>{labels.category}: {categoryName(product.category, locale)}</span> : null}
-          {product.country ? <span>{labels.country}: {product.country}</span> : null}
-          {sizes.length ? <span>{sizes.join(' / ')}</span> : null}
-          {colors.length ? <span>{colors.join(', ')}</span> : null}
-          <span>{availabilityLabel || localizedAvailability.available}</span>
+      {previewOpen && (
+        <div className={`px-1 pt-3 text-xs text-[var(--color-text-secondary)] ${reduceMotion ? '' : 'animate-in fade-in slide-in-from-top-1 duration-200'}`}>
+          <div className="line-clamp-3 leading-5">
+            <ProductRichText content={description || title} />
+          </div>
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-[var(--color-muted)]">
+            {product.category ? <span>{labels.category}: {categoryName(product.category, locale)}</span> : null}
+            {product.country ? <span>{labels.country}: {product.country}</span> : null}
+            {availabilityLabel ? <span>{availabilityLabel}</span> : null}
+          </div>
+          <Link
+            href={productHref}
+            className="mt-2 inline-flex font-semibold text-[var(--color-text)] underline decoration-[var(--color-muted)] underline-offset-4 hover:decoration-[var(--color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+          >
+            {labels.details}
+          </Link>
         </div>
-        <Link
-          href={`/${locale}/catalog/${product.slug}${catalogQuery ? `?${catalogQuery}` : ''}`}
-          className="pointer-events-auto mt-2 inline-flex font-semibold text-primary-700 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-primary-300"
-        >
-          {labels.details}
-        </Link>
-      </div> : null}
+      )}
       <div className="absolute right-3 top-3 flex gap-2">
-        <button type="button" aria-label={labels.compare} aria-pressed={isCompared} onClick={toggleComparedProduct} className={`flex size-10 items-center justify-center rounded-full border border-stone-300/80 bg-white/90 text-stone-700 shadow-sm backdrop-blur transition-colors hover:border-primary-500 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/20 dark:bg-stone-900/90 dark:text-stone-100 dark:hover:text-primary-300 ${isCompared ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-200' : ''}`}><Scale size={17} /></button>
-        <button type="button" aria-label={labels.favorite} aria-pressed={isFavorite} disabled={favoritePending} onClick={() => void toggleFavoriteProduct()} className={`flex size-10 items-center justify-center rounded-full border border-stone-300/80 bg-white/90 text-stone-700 shadow-sm backdrop-blur transition-colors hover:border-rose-500 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-wait disabled:opacity-60 dark:border-white/20 dark:bg-stone-900/90 dark:text-stone-100 dark:hover:text-rose-300 ${isFavorite ? 'border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-200' : ''}`}><Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} /></button>
+        <button type="button" aria-label={labels.compare} aria-pressed={isCompared} onClick={toggleComparedProduct} className={`flex size-10 items-center justify-center rounded-full bg-white/90 text-stone-700 shadow-md backdrop-blur-md transition-[background-color,color,transform] hover:scale-105 hover:bg-white hover:text-stone-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:bg-stone-900/90 dark:text-stone-100 dark:hover:bg-stone-900 ${isCompared ? 'bg-stone-900 text-white dark:bg-white dark:text-stone-900' : ''}`}><Scale size={17} /></button>
+        <button type="button" aria-label={labels.favorite} aria-pressed={isFavorite} disabled={favoritePending} onClick={() => void toggleFavoriteProduct()} className={`flex size-10 items-center justify-center rounded-full bg-white/90 text-stone-700 shadow-md backdrop-blur-md transition-[background-color,color,transform] hover:scale-105 hover:bg-white hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-wait disabled:opacity-60 dark:bg-stone-900/90 dark:text-stone-100 dark:hover:bg-stone-900 dark:hover:text-rose-300 ${isFavorite ? 'bg-rose-600 text-white dark:bg-rose-500 dark:text-white' : ''}`}><Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} /></button>
       </div>
-      {favoriteError && <p role="alert" className="absolute bottom-2 left-2 rounded bg-white px-2 py-1 text-xs text-rose-700 shadow dark:bg-stone-800 dark:text-rose-200">{locale === 'uz' ? 'Tanlanganlarni yangilab bo‘lmadi.' : locale === 'en' ? 'Could not update wishlist.' : 'Не удалось обновить избранное.'}</p>}
-      {compareLimitError && <p role="status" className="absolute bottom-2 left-2 rounded bg-white px-2 py-1 text-xs text-stone-700 shadow dark:bg-stone-800 dark:text-stone-200">{labels.compareLimit}</p>}
+      {favoriteError && <p role="alert" className="mt-2 px-1 text-xs text-rose-700 dark:text-rose-300">{locale === 'uz' ? 'Tanlanganlarni yangilab bo‘lmadi.' : locale === 'en' ? 'Could not update wishlist.' : 'Не удалось обновить избранное.'}</p>}
+      {compareLimitError && <p role="status" className="mt-2 px-1 text-xs text-[var(--color-text-secondary)]">{labels.compareLimit}</p>}
     </article>
   );
 }

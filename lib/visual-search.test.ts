@@ -50,6 +50,23 @@ describe("commerce visual-search API", () => {
     ).resolves.toEqual(NO_COMMERCE_CAPABILITIES);
   });
 
+  it("loads browser capabilities through the same-origin backend proxy", async () => {
+    vi.stubGlobal("window", {});
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ recommendations: true }), { status: 200 }),
+    );
+
+    try {
+      await loadCommerceCapabilities(fetcher);
+      expect(fetcher).toHaveBeenCalledWith(
+        "/api/backend/api/v1/capabilities",
+        expect.objectContaining({ credentials: "include", cache: "no-store" }),
+      );
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("sends catalog filters in the query string and only the image as multipart data", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ items: [], meta: { limit: 12 } }), {

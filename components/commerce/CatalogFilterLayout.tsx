@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
 export function CatalogFilterLayout({
   filters,
@@ -18,7 +17,6 @@ export function CatalogFilterLayout({
 }) {
   const t = useTranslations('catalog');
   const [filtersVisible, setFiltersVisible] = useState(true);
-  const reduceMotion = useReducedMotion();
   const toggle = (
     <button
       type="button"
@@ -39,42 +37,28 @@ export function CatalogFilterLayout({
         </h2>
         {toggle}
       </header>
-      <motion.div
-        layout
+      <div
         data-catalog-filters-visible={filtersVisible}
-        className={`grid grid-cols-1 gap-6 transition-[grid-template-columns] ${reduceMotion ? 'duration-0' : 'duration-250'} ${filtersVisible ? 'lg:grid-cols-[minmax(0,290px)_minmax(0,1fr)]' : ''}`}
-        transition={{ duration: reduceMotion ? 0 : 0.24, ease: 'easeOut' }}
+        className={`grid grid-cols-1 gap-6 ${filtersVisible ? 'lg:grid-cols-[minmax(0,290px)_minmax(0,1fr)]' : ''}`}
       >
-        <AnimatePresence initial={false}>
         {filtersVisible ? (
-          <motion.aside
+          <aside
             className="hidden min-w-0 overflow-hidden lg:block"
-            initial={reduceMotion ? false : { opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -12 }}
-            transition={reduceMotion ? { duration: 0 } : { duration: 0.2 }}
           >
             {filters}
-          </motion.aside>
+          </aside>
         ) : null}
-        </AnimatePresence>
         <section className="min-w-0">
-        <AnimatePresence initial={false}>
         {filtersVisible ? (
-            <motion.div
+            <div
               className="mb-4 overflow-hidden rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] p-4 lg:hidden"
-              initial={reduceMotion ? false : { opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={reduceMotion ? { duration: 0 } : { duration: 0.22 }}
             >
               {mobileFilters}
-            </motion.div>
+            </div>
           ) : null}
-          </AnimatePresence>
           {children}
         </section>
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -76,6 +76,16 @@ describe('CatalogFilterControls', () => {
     expect(navigation.push).toHaveBeenCalledWith('/ru/catalog?maxPrice=120000&sort=newest');
   });
 
+  it('keeps the user on the filter form and explains an invalid price range', () => {
+    renderControls();
+    fireEvent.change(screen.getByRole('textbox', { name: 'От' }), { target: { value: '200000' } });
+    fireEvent.change(screen.getByRole('textbox', { name: 'До' }), { target: { value: '100000' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Показать товары' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Минимальная цена не может быть выше максимальной.');
+    expect(navigation.push).not.toHaveBeenCalled();
+  });
+
   it('enables reset for a sort-only selection and clears filter URL state', () => {
     navigation.search = 'sort=popular&page=3';
     renderControls();

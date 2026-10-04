@@ -17,7 +17,7 @@ const STATIC_PATHS = [
 const PRODUCTS_PER_PAGE = 100;
 const MAX_PRODUCT_PAGES = 100;
 
-type SitemapProduct = { slug: string; updatedAt?: string };
+type SitemapProduct = { slug: string; publicId?: string | null; updatedAt?: string };
 
 function getItems(payload: unknown): SitemapProduct[] {
   if (typeof payload !== 'object' || payload === null) return [];
@@ -27,7 +27,10 @@ function getItems(payload: unknown): SitemapProduct[] {
     typeof item === 'object' &&
     item !== null &&
     typeof (item as { slug?: unknown }).slug === 'string' &&
-    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test((item as { slug: string }).slug),
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test((item as { slug: string }).slug) &&
+    ((item as { publicId?: unknown }).publicId == null ||
+      (typeof (item as { publicId?: unknown }).publicId === 'string' &&
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test((item as { publicId: string }).publicId))),
   );
 }
 
@@ -70,7 +73,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const products = await getPublishedProducts();
     for (const product of products) {
-      const path = `/catalog/${encodeURIComponent(product.slug)}`;
+      const path = `/catalog/${encodeURIComponent(product.publicId ?? product.slug)}`;
       const lastModified = product.updatedAt && !Number.isNaN(Date.parse(product.updatedAt))
         ? new Date(product.updatedAt)
         : undefined;

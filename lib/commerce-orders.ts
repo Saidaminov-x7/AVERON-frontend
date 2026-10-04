@@ -119,6 +119,7 @@ export interface OutfitItemDto {
   sortOrder?: number;
   product: {
     slug: string;
+    publicId?: string | null;
     title: string;
     imageUrl: string | null;
     priceUzs: string;
@@ -139,6 +140,7 @@ export interface SavedOutfit {
 export interface WishlistItem {
   id: string;
   slug: string;
+  publicId?: string | null;
   title: string;
   imageUrl: string | null;
   priceUzs: string;

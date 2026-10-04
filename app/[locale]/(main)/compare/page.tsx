@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ArrowRight, LoaderCircle, Scale, Trash2, X } from "lucide-react";
 import { ProductImage } from "@/components/commerce/ProductImage";
+import { ProductRichText } from "@/components/commerce/ProductRichText";
+import { productRouteId } from "@/lib/products";
 import {
   productTitle,
   type StoreProduct,
@@ -154,10 +156,10 @@ export default function ComparePage() {
                   />
                 </div>
                 <h2 className="mt-3 line-clamp-2 font-bold">
-                  {productTitle(product, locale)}
+                  <ProductRichText content={productTitle(product, locale)} inline />
                 </h2>
                 <Link
-                  href={`/${locale}/catalog/${product.slug}`}
+                  href={`/${locale}/catalog/${encodeURIComponent(productRouteId(product))}`}
                   className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary-700"
                 >
                   {t("details")} <ArrowRight size={14} />

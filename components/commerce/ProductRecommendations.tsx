@@ -9,7 +9,6 @@ import { useCommerceCapabilities } from "./useCommerceCapabilities";
 
 type Sections = {
   related: StoreProduct[];
-  discovery: StoreProduct[];
   recent: StoreProduct[];
   personalized: StoreProduct[];
 };
@@ -23,7 +22,6 @@ export function ProductRecommendations({ slug, locale }: { slug: string; locale:
   const capabilities = useCommerceCapabilities();
   const [sections, setSections] = useState<Sections>({
     related: [],
-    discovery: [],
     recent: [],
     personalized: [],
   });
@@ -40,16 +38,10 @@ export function ProductRecommendations({ slug, locale }: { slug: string; locale:
       if (capabilities.recentlyViewed) {
         await recordProductView(slug).catch((error: unknown) => reportOptionalFailure("view tracking", error));
       }
-      const [related, discovery, recent, personalized] = await Promise.all([
+      const [related, recent, personalized] = await Promise.all([
         capabilities.recommendations
           ? loadProductRecommendations(slug, "related").catch((error: unknown) => {
             reportOptionalFailure("related products", error);
-            return null;
-          })
-          : Promise.resolve(null),
-        capabilities.recommendations
-          ? loadProductRecommendations(slug, "you-may-also-like").catch((error: unknown) => {
-            reportOptionalFailure("discovery", error);
             return null;
           })
           : Promise.resolve(null),
@@ -73,15 +65,13 @@ export function ProductRecommendations({ slug, locale }: { slug: string; locale:
         seen.add(product.id);
         return [product];
       });
-      const recentProducts = unique(recent);
       const relatedProducts = unique(related?.items);
-      const discoveryProducts = unique(discovery?.items);
       const personalizedProducts = personalized?.meta?.personalized
         ? unique(personalized.items)
         : [];
+      const recentProducts = unique(recent);
       setSections({
         related: relatedProducts,
-        discovery: discoveryProducts,
         recent: recentProducts,
         personalized: personalizedProducts,
       });
@@ -99,7 +89,6 @@ export function ProductRecommendations({ slug, locale }: { slug: string; locale:
 
   const rows: Array<[keyof Sections, string]> = [
     ["related", "relatedProductsTitle"],
-    ["discovery", "youMayAlsoLikeTitle"],
     ["personalized", "personalizedProductsTitle"],
     ["recent", "recentlyViewedTitle"],
   ];

@@ -30,8 +30,8 @@ const EMPTY_FACETS: CatalogFacets = { sizes: [], colors: [] };
 export async function loadStoreCatalogFacets(fetcher: typeof fetch = fetch): Promise<CatalogFacetsRequest> {
   try {
     const response = await fetcher(`${externalBaseURL}/api/v1/catalog-facets`, {
-      cache: 'no-store',
-      signal: AbortSignal.timeout(5000),
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(1500),
     });
     if (!response.ok) throw new Error(`Catalog facet request failed: ${response.status}`);
     const data: unknown = await response.json();
@@ -61,7 +61,7 @@ export async function loadStoreCatalog(
   try {
     const response = await fetcher(`${externalBaseURL}/api/v1/products?${query}`, {
       cache: 'no-store',
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(3500),
     });
     if (!response.ok) throw new Error(`Catalog request failed: ${response.status}`);
 
@@ -83,8 +83,8 @@ export async function loadStoreCatalog(
 export async function loadStoreCategories(fetcher: typeof fetch = fetch): Promise<CategoryRequest> {
   try {
     const response = await fetcher(`${externalBaseURL}/api/v1/categories`, {
-      cache: 'no-store',
-      signal: AbortSignal.timeout(5000),
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(1500),
     });
     if (!response.ok) throw new Error(`Category request failed: ${response.status}`);
 

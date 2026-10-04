@@ -67,8 +67,9 @@ function controlledError(error: unknown, t: ReturnType<typeof useTranslations>) 
   return t('errors.generic');
 }
 
-export function ProductReviews({ slug, locale, initialOrderNumber }: {
+export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumber }: {
   slug: string;
+  routeId?: string;
   locale: string;
   initialOrderNumber?: string;
 }) {
@@ -275,7 +276,7 @@ export function ProductReviews({ slug, locale, initialOrderNumber }: {
       )}
       {!isAuthenticated && <div className="mt-5 flex flex-wrap items-center gap-3">
         <p className="text-sm text-stone-500">{t('signIn')}</p>
-        <Link href={`/${locale}/login?returnTo=${encodeURIComponent(`/${locale}/catalog/${slug}#reviews`)}`} className="inline-flex min-h-10 items-center rounded-lg border border-stone-300 px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 dark:border-white/20">{t('signInAction')}</Link>
+        <Link href={`/${locale}/login?returnTo=${encodeURIComponent(`/${locale}/catalog/${routeId}#reviews`)}`} className="inline-flex min-h-10 items-center rounded-lg border border-stone-300 px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 dark:border-white/20">{t('signInAction')}</Link>
       </div>}
 
       {activeReviewId !== null || (activeReviewId === null && purchaseId) ? (

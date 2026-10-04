@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getProduct, getProducts, productTitle, type StoreProduct } from '@/lib/products';
+import { getProduct, getProducts, productRouteId, productTitle, type StoreProduct } from '@/lib/products';
 import { Button } from '@/components/ui/Button';
 import {
   Select,
@@ -267,7 +267,7 @@ function OutfitBuilderContent() {
                 <article key={`${item.product.id}:${index}`} className="flex flex-col gap-4 rounded-2xl border border-stone-200 bg-white p-4 sm:flex-row sm:items-center dark:border-white/10 dark:bg-stone-900">
                   {item.product.images?.[0]?.url && <img src={item.product.images[0].url} alt="" className="size-20 rounded-xl object-cover" />}
                   <div className="min-w-0 flex-1">
-                    <a href={`/${locale}/catalog/${item.product.slug}`} className="font-bold hover:underline">{productTitle(item.product, locale)}</a>
+                    <a href={`/${locale}/catalog/${encodeURIComponent(productRouteId(item.product))}`} className="font-bold hover:underline">{productTitle(item.product, locale)}</a>
                     <p className="mt-1 text-sm text-stone-500">{formatUzs(Number(item.product.variants?.find((variant) => variant.id === item.variantId)?.salePriceUzs ?? item.product.salePriceUzs ?? 0), locale)}</p>
                     {(item.product.variants?.length ?? 0) > 0 && <div className="mt-2 max-w-sm text-sm">
                       <span>{text.variant}</span>

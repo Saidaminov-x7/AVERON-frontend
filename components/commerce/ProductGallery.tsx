@@ -33,7 +33,7 @@ export function ProductGallery({
       <div
         role="img"
         aria-label={productTitle}
-        className="flex aspect-[4/3] items-center justify-center rounded-3xl bg-stone-100 text-stone-400 dark:bg-stone-800"
+        className="flex aspect-[4/5] items-center justify-center bg-stone-100 text-stone-400 dark:bg-stone-800"
       >
         AVERON
       </div>
@@ -42,7 +42,7 @@ export function ProductGallery({
 
   return (
     <section aria-label={label} className="space-y-3">
-      <div className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-stone-100 shadow-sm dark:bg-stone-800">
+      <div className="group relative aspect-[4/5] overflow-hidden bg-stone-100 dark:bg-stone-800">
         <ProductImage src={selectedImage.url} alt={selectedAlt} />
       </div>
       {images.length > 1 && (

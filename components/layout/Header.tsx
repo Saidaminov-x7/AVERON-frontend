@@ -8,6 +8,7 @@ import { useSiteSettings } from '@/hooks/useSiteSettings';
 import type { NavLink } from '@/lib/siteSettings';
 import {
   Search, X, Heart, ChevronRight, LogIn, LogOut, Menu, User, Scale, ShoppingCart,
+  Home, ShoppingBag, Sparkles, Info, Headphones,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
@@ -17,7 +18,6 @@ import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { getSearchSuggestions } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'framer-motion';
-import { LanguageFlag, type LocaleFlagCode } from '@/components/ui/LanguageFlag';
 import { localizeHrefPreservingSafeQuery } from '@/lib/safe-navigation';
 
 const LOCALES = [
@@ -27,12 +27,7 @@ const LOCALES = [
 ] as const;
 
 const BTN_CLASS =
-  'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ' +
-  'border-stone-200 bg-white text-stone-600 transition-all duration-200 ' +
-  'hover:border-stone-300 hover:bg-stone-50 hover:text-stone-900 ' +
-  'dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 ' +
-  'dark:hover:border-white/20 dark:hover:bg-stone-800 dark:hover:text-white ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50';
+  'averon-control-button averon-icon-button h-11 shrink-0';
 
 function localeHref(pathname: string, code: string, search: string) {
   return localizeHrefPreservingSafeQuery(pathname, search ? `?${search}` : '', code);
@@ -48,6 +43,8 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
   const [open, setOpen] = useState(false);
   const [openUpward, setOpenUpward] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const current = LOCALES.find((l) => l.code === locale) ?? LOCALES[0];
   const search = searchParams.toString();
 
@@ -58,6 +55,18 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
     document.addEventListener('mousedown', fn);
     return () => document.removeEventListener('mousedown', fn);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open]);
 
   const handleToggle = () => {
     if (!open && ref.current) {
@@ -78,21 +87,47 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
   return (
     <div ref={ref} className="relative flex items-center">
       <button
+        ref={triggerRef}
         type="button"
         onClick={handleToggle}
+        onKeyDown={(event) => {
+          if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+          event.preventDefault();
+          setOpen(true);
+          requestAnimationFrame(() => {
+            menuRef.current?.querySelector<HTMLButtonElement>('[aria-checked="true"]')?.focus();
+          });
+        }}
         className={BTN_CLASS + ' gap-2 !w-auto px-3 text-sm font-semibold ' + (open ? '!border-primary-500 !text-primary-600 dark:!text-primary-400' : '')}
         aria-label={t('language')}
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        <LanguageFlag locale={current.code as LocaleFlagCode} className="h-4 w-6" />
-        {current.short}
+        <span className="font-semibold tracking-wide">{current.short}</span>
       </button>
       <div
+        ref={menuRef}
         role="menu"
+        aria-hidden={!open}
+        inert={!open}
+        onKeyDown={(event) => {
+          const items = Array.from(menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitemradio"]') ?? []);
+          const index = items.indexOf(document.activeElement as HTMLButtonElement);
+          const nextIndex = event.key === 'Home'
+            ? 0
+            : event.key === 'End'
+              ? items.length - 1
+              : event.key === 'ArrowDown'
+                ? (index + 1) % items.length
+                : event.key === 'ArrowUp'
+                  ? (index <= 0 ? items.length - 1 : index - 1)
+                  : -1;
+          if (nextIndex < 0 || items.length === 0) return;
+          event.preventDefault();
+          items[nextIndex]?.focus();
+        }}
         className={
-          'absolute right-0 z-50 w-40 overflow-hidden rounded-xl border border-stone-200/80 bg-white py-1 shadow-lg ' +
-          'dark:border-white/10 dark:bg-stone-900 ' +
+          'averon-menu-surface absolute right-0 z-50 w-40 overflow-hidden py-1 ' +
           (prefersReducedMotion ? 'transition-none ' : 'transition-all duration-200 ') +
           (openUpward ? 'bottom-full mb-2 origin-bottom-right' : 'top-full mt-2 origin-top-right') + ' ' +
           (open ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0')
@@ -108,14 +143,13 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
               aria-checked={active}
               onClick={() => handleSelectLocale(code)}
               className={
-                'flex min-h-11 w-full items-center px-3 py-2 text-xs font-medium text-left ' +
+                'averon-menu-item text-xs font-medium ' +
                 (prefersReducedMotion ? '' : 'transition-colors ') +
                 (active
-                  ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/40 dark:text-primary-400'
-                  : 'text-stone-600 hover:bg-stone-50 dark:text-stone-300 dark:hover:bg-white/5')
+                  ? '!bg-[var(--color-surface-soft)] !text-[var(--color-text)]'
+                  : '')
               }
             >
-              <LanguageFlag locale={code as LocaleFlagCode} className="h-4 w-6" />
               <span className="ml-2 flex-1">{label}</span>
               <span className="text-[10px] text-stone-400">{short}</span>
             </button>
@@ -307,8 +341,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             href={to('/')}
             className="flex items-center gap-1.5 rounded-sm text-sm text-stone-400 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
-            <div className="h-2 w-2 rounded-full bg-primary-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
-            <span className="text-primary-400 font-semibold tracking-tight">{settings?.siteName || 'AVERON'}</span>
+            <div className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
+            <span className="font-semibold tracking-tight text-[var(--color-text)]">{settings?.siteName || 'AVERON'}</span>
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -326,8 +360,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         className={cn(
           'sticky top-0 z-40 flex h-[calc(4.5rem+env(safe-area-inset-top))] w-full items-center border-b border-[var(--color-border)] pt-[env(safe-area-inset-top)] transition-[background-color,backdrop-filter] duration-300 sm:h-[72px] sm:pt-0',
           scrolled
-            ? 'bg-white/90 backdrop-blur-2xl after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-primary-500/60 after:to-transparent dark:bg-[#111111]/90'
-            : 'bg-white/95 dark:bg-[#111111]/95'
+            ? 'bg-[color-mix(in_srgb,var(--color-surface)_90%,transparent)] backdrop-blur-2xl'
+            : 'bg-[var(--color-surface)]'
         )}
       >
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -381,7 +415,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     value={query}
                     onChange={(e) => handleQuery(e.target.value)}
                     placeholder={t('searchPlaceholder')}
-                    className="h-10 w-72 rounded-xl border border-stone-300 bg-stone-50 pl-10 pr-9 text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-primary-500 focus:bg-white focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500"
+                    className="h-11 w-72 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] pl-10 pr-9 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none focus:border-[var(--color-primary)] focus:bg-[var(--color-surface)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
                   />
                   <button
                     type="button"
@@ -391,13 +425,13 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     <X size={14} />
                   </button>
                   {suggestions.length > 0 && (
-                    <div className="absolute right-0 top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-stone-200 bg-white shadow-lg dark:border-stone-850 dark:bg-stone-900">
+                    <div className="averon-menu-surface absolute right-0 top-full z-50 mt-2 w-full overflow-hidden">
                       {suggestions.map((item, i) => (
                         <button
                           key={i}
                           type="button"
                           onClick={() => navTo(item.href)}
-                          className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs hover:bg-stone-50 dark:hover:bg-stone-850 transition-colors"
+                          className="averon-menu-item gap-3 text-xs"
                         >
                           <span className="text-sm">{item.icon}</span>
                           <div className="min-w-0 flex-1">
@@ -470,7 +504,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               href="https://t.me/averon_fashion_admin"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white transition hover:brightness-110 xl:inline-flex"
+              className="averon-primary-button hidden h-10 px-4 text-sm xl:inline-flex"
             >
               {t('support')}
             </a>
@@ -478,7 +512,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             {isAuthenticated ? (
               <Link
                 href={to('/profile')}
-                className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary-50 px-3.5 text-sm font-semibold text-primary-700 transition-colors hover:bg-primary-100 dark:bg-primary-950/50 dark:text-primary-300 dark:hover:bg-primary-900/50"
+                className="averon-secondary-button h-10 gap-2 px-3.5 text-sm"
               >
                 <User size={16} />
                 <span className="max-w-[120px] truncate">{user?.name || t('profile')}</span>
@@ -487,13 +521,13 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <>
                 <Link
                   href={to('/login')}
-                  className="border border-stone-200 dark:border-white/10 inline-flex h-10 items-center justify-center rounded-xl px-4 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-800"
+                  className="averon-secondary-button h-10 px-4 text-sm"
                 >
                   {t('login')}
                 </Link>
                 <Link
                   href={to('/register')}
-                  className="inline-flex h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white transition hover:brightness-110"
+                  className="averon-primary-button h-10 px-4 text-sm"
                 >
                   {t('register')}
                 </Link>
@@ -544,7 +578,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </div>
         </div>
         {searchOpen && (
-          <div id="mobile-header-search" className="absolute inset-x-4 top-full z-50 rounded-xl border border-stone-200 bg-white p-3 shadow-lg dark:border-white/10 dark:bg-stone-900 lg:hidden">
+          <div id="mobile-header-search" className="averon-menu-surface absolute inset-x-4 top-full z-50 p-3 lg:hidden">
             <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
               <Search size={16} className="pointer-events-none absolute left-3 text-stone-400" />
               <input
@@ -554,7 +588,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 onChange={(e) => handleQuery(e.target.value)}
                 placeholder={t('searchPlaceholder')}
                 aria-label={t('search')}
-                className="h-11 w-full rounded-lg border border-stone-300 bg-stone-50 pl-10 pr-3 text-sm text-stone-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-white"
+                className="h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] pl-10 pr-3 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
               />
             </form>
             {suggestions.length > 0 && (
@@ -564,7 +598,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     key={`${item.href}-${i}`}
                     type="button"
                     onClick={() => navTo(item.href)}
-                    className="flex min-h-11 w-full items-center gap-3 px-3 text-left text-sm hover:bg-stone-50 dark:hover:bg-white/5"
+                    className="averon-menu-item gap-3 text-sm"
                   >
                     <span>{item.icon}</span>
                     <span className="truncate">{item.text}</span>
@@ -584,7 +618,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         inert={!mobileOpen}
         onClick={closeMobileMenu}
         className={
-          `fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
+          `fixed inset-0 z-[60] bg-black/45 backdrop-blur-[2px] transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
           (mobileOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0')
         }
       />
@@ -598,136 +632,196 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         aria-hidden={!mobileOpen}
         inert={!mobileOpen}
         style={{
-          transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+          transitionTimingFunction: 'var(--ease-drawer)',
         }}
         className={
-          `fixed inset-y-0 left-0 z-[61] flex h-dvh w-full max-w-none flex-col bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} dark:bg-[#1A1A1A] lg:hidden ` +
-          (mobileOpen ? 'translate-x-0' : '-translate-x-full')
+          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-full max-w-[min(100vw,30rem)] flex-col border-l border-[var(--color-border)] bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
+          (mobileOpen ? 'translate-x-0' : 'translate-x-full')
         }
       >
-        <div className="flex h-20 shrink-0 items-center justify-between border-b border-stone-200 px-5 dark:border-white/10">
-          <Link href={to('/')} onClick={() => setMobileOpen(false)} className="flex items-center text-xl font-black text-stone-900 dark:text-white">
-            <span className="max-w-52 truncate tracking-[0.2em]">{settings?.siteName || 'AVERON'}</span>
-          </Link>
-          <button ref={mobileCloseButtonRef} type="button" aria-label={t('close')} onClick={closeMobileMenu} className={BTN_CLASS}>
+        <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-border)] px-4 py-3.5 min-[360px]:px-5">
+          <div className="flex min-w-0 items-baseline gap-2 min-[360px]:gap-3">
+            <Link href={to('/')} onClick={closeMobileMenu} className="truncate text-base font-black tracking-[0.16em] text-[var(--color-text)] min-[360px]:text-lg min-[360px]:tracking-[0.2em]">
+              {settings?.siteName || 'AVERON'}
+            </Link>
+            <span className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)] min-[280px]:inline">{t('menu')}</span>
+          </div>
+          <button
+            ref={mobileCloseButtonRef}
+            type="button"
+            aria-label={t('close')}
+            onClick={closeMobileMenu}
+            className={`${BTN_CLASS} ml-3`}
+          >
             <X size={18} />
           </button>
         </div>
 
-        {/* Поиск внутри бургера ТОЛЬКО для мобильной версии (скрыт на планшетах через block sm:hidden) */}
-        <div className="block sm:hidden border-b border-stone-200 p-4 dark:border-white/10">
-          <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
-            <div className="absolute left-3.5 flex items-center pointer-events-none text-stone-400">
-              <Search size={15} />
-            </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-5 min-[360px]:px-5">
+          <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative">
+            <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
             <input
-              type="text"
+              type="search"
               value={query}
               onChange={(e) => handleMobileQuery(e.target.value)}
               placeholder={t('searchPlaceholder')}
               aria-label={t('search')}
-              className="h-10 w-full rounded-xl border border-stone-200 bg-stone-50 pl-10 pr-8 text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-primary-500 focus:bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500"
+              autoComplete="off"
+              enterKeyHint="search"
+              className="h-12 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] pl-11 pr-4 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-primary)] focus:bg-[var(--color-surface)]"
             />
-            {query && (
-              <button
-                type="button"
-                onClick={() => { setQuery(''); setMobileSuggestions([]); }}
-                className="absolute right-3 text-stone-400 hover:text-stone-600"
-              >
-                <X size={14} />
-              </button>
-            )}
           </form>
           {mobileSuggestions.length > 0 && (
-            <div className="mt-1.5 overflow-hidden rounded-xl border border-stone-200 bg-white shadow-md dark:border-stone-700 dark:bg-stone-800">
+            <div className="averon-menu-surface mt-2 overflow-hidden">
               {mobileSuggestions.map((item, i) => (
                 <button
-                  key={i}
+                  key={`${item.href}-${i}`}
                   type="button"
                   onClick={() => navTo(item.href)}
-                  className="flex min-h-11 w-full items-center gap-2 px-3 py-2 text-left text-xs hover:bg-stone-50 dark:hover:bg-stone-750"
+                  className="averon-menu-item gap-3 text-sm"
                 >
-                  <span>{item.icon}</span>
-                  <span className="truncate text-stone-800 dark:text-stone-200">{item.text}</span>
+                  <span aria-hidden="true">{item.icon}</span>
+                  <span className="truncate">{item.text}</span>
                 </button>
               ))}
             </div>
           )}
+
+          <nav aria-label={t('menu')} className="mt-7">
+            <div className="space-y-1">
+              {visibleNavLinks.map(({ href, label }) => {
+                const active = isActive(href);
+                const icon = href === '/'
+                  ? <Home size={18} />
+                  : href.startsWith('/catalog')
+                    ? <ShoppingBag size={18} />
+                    : href === '/ai'
+                      ? <Sparkles size={18} />
+                      : href === '/about'
+                        ? <Info size={18} />
+                        : <ChevronRight size={18} />;
+                return (
+                  <Link
+                    key={href}
+                    href={href.startsWith('http') ? href : to(href)}
+                    onClick={closeMobileMenu}
+                    aria-current={active ? 'page' : undefined}
+                    className={
+                      'group flex min-h-[58px] items-center gap-3 rounded-[var(--radius-control)] px-3 transition-colors ' +
+                      (active
+                        ? 'bg-[var(--color-surface-soft)] text-[var(--color-text)]'
+                        : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-text)]')
+                    }
+                  >
+                    <span className={
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-control)] transition-colors ' +
+                      (active ? 'bg-[var(--color-surface)] text-[var(--color-text)]' : 'bg-[var(--color-surface-soft)] text-[var(--color-muted)] group-hover:text-[var(--color-text)]')
+                    } aria-hidden="true">
+                      {icon}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{label}</span>
+                    <ChevronRight size={16} className="shrink-0 text-[var(--color-muted)] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+
+          {(() => {
+            const utilityLinks = [
+              { href: '/favorites', label: t('favorites'), icon: <Heart size={17} />, count: favCount },
+              { href: '/compare', label: t('compare'), icon: <Scale size={17} />, count: compareCount },
+              { href: '/cart', label: t('cart'), icon: <ShoppingCart size={17} />, count: cartCount },
+              { href: '/support', label: t('support'), icon: <Headphones size={17} />, count: 0 },
+            ].filter(({ href }) => !visibleNavLinks.some((item) => item.href === href));
+
+            if (utilityLinks.length === 0) return null;
+
+            return (
+              <div className="mt-7 border-t border-[var(--color-border)] pt-5">
+                <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
+                  {utilityLinks.map(({ href, label, icon, count }) => {
+                    const active = isActive(href);
+                    return (
+                      <Link
+                        key={href}
+                        href={to(href)}
+                        onClick={closeMobileMenu}
+                        aria-current={active ? 'page' : undefined}
+                        aria-label={count > 0 ? `${label}, ${count}` : label}
+                        className={
+                          'flex min-h-[68px] items-center gap-3 rounded-[var(--radius-control)] border px-3 transition-colors ' +
+                          (active
+                            ? 'border-[var(--color-muted)] bg-[var(--color-surface-soft)] text-[var(--color-text)]'
+                            : 'border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-text)]')
+                        }
+                      >
+                        <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface-soft)] text-[var(--color-text)]" aria-hidden="true">
+                          {icon}
+                          {count > 0 && (
+                            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-text)] px-1 text-[9px] font-bold leading-none text-[var(--color-surface)]">
+                              {count > 99 ? '99+' : count}
+                            </span>
+                          )}
+                        </span>
+                        <span className="min-w-0 truncate text-xs font-semibold">{label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
-        {/* Навигационные ссылки */}
-        <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3">
-          {[...visibleNavLinks, ...[
-            { href: '/favorites', label: t('favorites') },
-            { href: '/compare', label: t('compare') },
-            { href: '/cart', label: t('cart') },
-            { href: '/support', label: t('support') },
-          ].filter(({ href }) => !visibleNavLinks.some((item) => item.href === href))].map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href.startsWith('http') ? href : to(href)}
-                  onClick={closeMobileMenu}
-                  className={
-                    'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ' +
-                    (isActive(href)
-                      ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300 font-semibold'
-                      : 'text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5')
-                  }
-                >
-                  <span>{label}</span>
-                  <ChevronRight size={15} className="text-stone-400 opacity-50" />
-                </Link>
-              ))}
-        </nav>
-
-        <div className="shrink-0 space-y-3 border-t border-stone-200 p-4 dark:border-white/10 bg-stone-50/60 dark:bg-[#1C1C1C]">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-medium text-stone-500">{t('langAndTheme')}</span>
+        <div className="shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-5 pb-4 pt-3">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-xs font-medium text-[var(--color-text-secondary)]">{t('langAndTheme')}</span>
             <div className="flex items-center gap-2">
               <LanguagePicker onSelect={closeMobileMenu} />
               <ThemeToggle />
             </div>
           </div>
           {isAuthenticated ? (
-            <>
+            <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
               <Link
                 href={to('/profile')}
                 onClick={closeMobileMenu}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary-600 text-sm font-semibold text-white"
+                className="averon-primary-button h-11 min-w-0 gap-2"
               >
-                <User size={16} />
-                <span>{user?.name || t('profile')}</span>
+                <User size={16} className="shrink-0" />
+                <span className="truncate">{user?.name || t('profile')}</span>
               </Link>
               <Link
                 href={to('/orders')}
                 onClick={closeMobileMenu}
-                className="flex h-11 w-full items-center justify-center rounded-xl border border-stone-300 bg-white text-sm font-semibold text-stone-800 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
+                className="averon-secondary-button h-11"
               >
                 {t('orders')}
               </Link>
               <button
                 type="button"
                 onClick={() => { void handleLogout(); }}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-stone-300 text-sm font-semibold dark:border-stone-700"
+                className="averon-secondary-button col-span-2 h-10 gap-2 text-xs"
               >
-                <LogOut size={16} />
+                <LogOut size={15} />
                 {t('logout')}
               </button>
-            </>
+            </div>
           ) : (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
               <Link
                 href={to('/login')}
-                onClick={() => setMobileOpen(false)}
-                className="flex h-11 items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white text-sm font-semibold text-stone-750 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200"
+                onClick={closeMobileMenu}
+                className="averon-secondary-button h-11 gap-2"
               >
                 <LogIn size={15} />
                 {t('login')}
               </Link>
               <Link
                 href={to('/register')}
-                onClick={() => setMobileOpen(false)}
-                className="flex h-11 items-center justify-center rounded-xl bg-primary-600 text-sm font-semibold text-white"
+                onClick={closeMobileMenu}
+                className="averon-primary-button h-11"
               >
                 {t('register')}
               </Link>

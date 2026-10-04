@@ -43,7 +43,7 @@ export default function SharedWishlistPage() {
                 <h2 className="line-clamp-2 font-semibold">{item.title}</h2>
                 <p className="mt-2 font-bold">{Number(item.priceUzs).toLocaleString(locale)} {locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}</p>
                 <p className="mt-1 text-sm">{item.available ? text.available : text.unavailableProduct}</p>
-                <Link href={`/${locale}/catalog/${encodeURIComponent(item.slug)}`} className="mt-3 inline-flex min-h-10 items-center font-semibold text-primary-700 underline underline-offset-4">
+                <Link href={`/${locale}/catalog/${encodeURIComponent(item.publicId || item.slug)}`} className="mt-3 inline-flex min-h-10 items-center font-semibold text-primary-700 underline underline-offset-4">
                   {text.view}
                 </Link>
               </div>

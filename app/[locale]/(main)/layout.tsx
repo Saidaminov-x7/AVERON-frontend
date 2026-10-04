@@ -4,9 +4,5 @@ interface MainLayoutProps {
 }
 
 export default async function MainLayout({ children }: MainLayoutProps) {
-  return (
-    <>
-      {children}
-    </>
-  );
+  return <div className="averon-site-shell min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">{children}</div>;
 }
