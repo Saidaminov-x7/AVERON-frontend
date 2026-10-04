@@ -35,6 +35,41 @@ class ProductRequestError extends Error {
 
 type ProductDetail = StoreProduct;
 
+function recommendationScore(current: StoreProduct, candidate: StoreProduct) {
+  let score = 0;
+  if (current.category?.slug && current.category.slug === candidate.category?.slug) score += 8;
+  if (current.country && current.country === candidate.country) score += 2;
+  if (current.material && current.material === candidate.material) score += 3;
+  const currentAudience = current.attributes?.audience;
+  if (typeof currentAudience === "string" && currentAudience === candidate.attributes?.audience) score += 4;
+  const sizes = new Set((current.variants ?? []).map(({ size }) => size).filter(Boolean));
+  const colors = new Set((current.variants ?? []).map(({ color }) => color).filter(Boolean));
+  if ((candidate.variants ?? []).some(({ size }) => size && sizes.has(size))) score += 1;
+  if ((candidate.variants ?? []).some(({ color }) => color && colors.has(color))) score += 2;
+  return score;
+}
+
+async function loadFallbackRecommendations(product: StoreProduct): Promise<StoreProduct[]> {
+  try {
+    const query = new URLSearchParams({ limit: "24", sort: "newest" });
+    const response = await fetch(`${externalBaseURL}/api/v1/products?${query}`, {
+      next: { revalidate: 120 },
+      signal: AbortSignal.timeout(2500),
+    });
+    if (!response.ok) return [];
+    const payload = await response.json() as { items?: unknown };
+    if (!Array.isArray(payload.items)) return [];
+    return payload.items
+      .filter((candidate): candidate is StoreProduct => isStoreProduct(candidate) && candidate.id !== product.id)
+      .map((candidate) => ({ candidate, score: recommendationScore(product, candidate) }))
+      .sort((left, right) => right.score - left.score || left.candidate.id.localeCompare(right.candidate.id))
+      .slice(0, 8)
+      .map(({ candidate }) => candidate);
+  } catch {
+    return [];
+  }
+}
+
 function isStoreProduct(value: unknown): value is ProductDetail {
   if (typeof value !== "object" || value === null) return false;
   const product = value as Record<string, unknown>;
@@ -221,6 +256,7 @@ export default async function ProductPage({
   const catalogHref = `/${locale}/catalog${catalogQuery ? `?${catalogQuery}` : ""}`;
   const localizedDescription = product.description?.[locale];
   const description = getProductDescription(product, locale) ?? copy.descriptionFallback;
+  const fallbackRecommendations = await loadFallbackRecommendations(product);
   const variantSizes = [...new Set((product.variants ?? []).map(({ size }) => size).filter((size): size is string => Boolean(size)))];
   const variantColors = [...new Set((product.variants ?? []).map(({ color }) => color).filter((color): color is string => Boolean(color)))];
   const productDetails = [
@@ -284,6 +320,17 @@ export default async function ProductPage({
               label={copy.gallery}
               imageLabels={(product.images ?? []).map((_, index) => t("imageLabel", { index: index + 1 }))}
             />
+            <article aria-labelledby="product-description-title" className="mt-8 border-t border-[var(--color-border)] pt-7">
+              <h2 id="product-description-title" className="text-xl font-semibold tracking-tight text-[var(--color-text)]">
+                {copy.descriptionTitle}
+              </h2>
+              <div className="mt-4 whitespace-pre-line text-sm leading-7 text-[var(--color-text-secondary)]">
+                <ProductRichText content={description} />
+              </div>
+            </article>
+            {product.sizeChartType ? (
+              <ProductSizeChart sizeChartType={product.sizeChartType} locale={locale} title={t("sizeChartTitle")} />
+            ) : null}
           </div>
           <section className="min-w-0 lg:sticky lg:top-24">
             <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--color-text-secondary)]">
@@ -370,28 +417,10 @@ export default async function ProductPage({
           </section>
         </div>
       </div>
-      <section
-        aria-label={copy.productDetails}
-        className="mx-auto mt-4 max-w-[1440px] border-t border-[var(--color-border)] px-4 py-10 sm:px-6 lg:px-10 lg:py-14"
-      >
-        <div className={product.sizeChartType ? "grid gap-10 lg:grid-cols-2 lg:gap-16" : "max-w-3xl"}>
-          <article aria-labelledby="product-description-title">
-            <h2 id="product-description-title" className="text-xl font-semibold tracking-tight text-[var(--color-text)]">
-              {copy.descriptionTitle}
-            </h2>
-            <div className="mt-4 whitespace-pre-line text-sm leading-7 text-[var(--color-text-secondary)]">
-              <ProductRichText content={description} />
-            </div>
-          </article>
-          {product.sizeChartType ? (
-            <ProductSizeChart sizeChartType={product.sizeChartType} locale={locale} title={t("sizeChartTitle")} />
-          ) : null}
-        </div>
-      </section>
-      <div className="mx-auto max-w-[1200px] px-4 pb-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1440px] border-t border-[var(--color-border)] px-4 pb-12 pt-10 sm:px-6 lg:px-10">
         <ProductReviews slug={product.slug} routeId={productRouteId(product)} locale={locale} initialOrderNumber={initialOrderNumber} />
         <CompleteTheLook slug={product.slug} locale={locale} />
-        <ProductRecommendations slug={product.slug} locale={locale} />
+        <ProductRecommendations slug={product.slug} locale={locale} fallbackProducts={fallbackRecommendations} />
       </div>
     </main>
   );

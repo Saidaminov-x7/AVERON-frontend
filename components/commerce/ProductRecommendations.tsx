@@ -17,11 +17,19 @@ function reportOptionalFailure(section: string, error: unknown) {
   console.warn(`Recommendation section unavailable: ${section}`, error instanceof Error ? error.name : "UnknownError");
 }
 
-export function ProductRecommendations({ slug, locale }: { slug: string; locale: string }) {
+export function ProductRecommendations({
+  slug,
+  locale,
+  fallbackProducts = [],
+}: {
+  slug: string;
+  locale: string;
+  fallbackProducts?: StoreProduct[];
+}) {
   const t = useTranslations("catalog");
   const capabilities = useCommerceCapabilities();
   const [sections, setSections] = useState<Sections>({
-    related: [],
+    related: fallbackProducts,
     recent: [],
     personalized: [],
   });
@@ -65,13 +73,19 @@ export function ProductRecommendations({ slug, locale }: { slug: string; locale:
         seen.add(product.id);
         return [product];
       });
+      const uniqueProducts = (items: StoreProduct[]) => items.flatMap((product) => {
+        if (seen.has(product.id)) return [];
+        seen.add(product.id);
+        return [product];
+      });
       const relatedProducts = unique(related?.items);
+      const fallbackRelated = uniqueProducts(fallbackProducts);
       const personalizedProducts = personalized?.meta?.personalized
         ? unique(personalized.items)
         : [];
       const recentProducts = unique(recent);
       setSections({
-        related: relatedProducts,
+        related: [...relatedProducts, ...fallbackRelated].slice(0, 8),
         recent: recentProducts,
         personalized: personalizedProducts,
       });
@@ -84,6 +98,7 @@ export function ProductRecommendations({ slug, locale }: { slug: string; locale:
     capabilities.personalizedRecommendations,
     capabilities.recentlyViewed,
     capabilities.recommendations,
+    fallbackProducts,
     slug,
   ]);
 
