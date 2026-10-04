@@ -29,6 +29,21 @@ const LOCALES = [
 const BTN_CLASS =
   'averon-control-button averon-icon-button h-11 shrink-0';
 
+const MARKET_COPY = {
+  ru: {
+    catalog: 'Каталог', china: 'Из Китая', usa: 'Из США', turkey: 'Из Турции',
+    europe: 'Европа', orders: 'Мои заказы', markets: 'Магазины мира',
+  },
+  uz: {
+    catalog: 'Katalog', china: 'Xitoydan', usa: 'AQShdan', turkey: 'Turkiyadan',
+    europe: 'Yevropa', orders: 'Buyurtmalarim', markets: 'Dunyo do‘konlari',
+  },
+  en: {
+    catalog: 'Catalog', china: 'From China', usa: 'From USA', turkey: 'From Turkey',
+    europe: 'Europe', orders: 'My orders', markets: 'Shop by country',
+  },
+} as const;
+
 function localeHref(pathname: string, code: string, search: string) {
   return localizeHrefPreservingSafeQuery(pathname, search ? `?${search}` : '', code);
 }
@@ -163,9 +178,24 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
 export function Header({ locale: localeProp }: { locale?: string }) {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = useLocale() || localeProp || 'ru';
   const t = useTranslations('nav');
   const { data: settings } = useSiteSettings();
+  const marketCopy = MARKET_COPY[locale as keyof typeof MARKET_COPY] ?? MARKET_COPY.ru;
+  const marketLinks = [
+    { href: '/catalog', label: marketCopy.catalog },
+    { href: '/catalog?country=CN', label: marketCopy.china },
+    { href: '/catalog?country=US', label: marketCopy.usa },
+    { href: '/catalog?country=TR', label: marketCopy.turkey },
+    { href: '/catalog?country=IT', label: marketCopy.europe },
+  ];
+  const activeCountry = searchParams.get('country');
+  const isMarketActive = (href: string) => {
+    if (!pathname.startsWith(`/${locale}/catalog`)) return false;
+    const country = new URLSearchParams(href.split('?')[1] ?? '').get('country');
+    return country ? activeCountry === country : !activeCountry;
+  };
 
   const navLinks = [
     { href: '/', label: t('home') },
@@ -364,10 +394,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             : 'bg-[var(--color-surface)]'
         )}
       >
-        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-[1540px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           
           {/* Left: Logo & Nav */}
-          <div className="flex items-center gap-8">
+          <div className="flex min-w-0 items-center gap-7">
             <Link
               href={to('/')}
               className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
@@ -375,20 +405,15 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">{settings?.siteName || 'AVERON'}</span>
             </Link>
 
-            <nav
-              className={
-                'hidden items-center gap-1 overflow-hidden transition-all duration-300 ease-out xl:flex ' +
-                (searchOpen ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-xl opacity-100')
-              }
-            >
-              {visibleNavLinks.map(({ href, label }) => (
+            <nav className="hidden items-center gap-0.5 xl:flex" aria-label={marketCopy.markets}>
+              {marketLinks.map(({ href, label }) => (
                   <Link
                     key={href}
-                    href={href.startsWith('http') ? href : to(href)}
+                    href={to(href)}
                     className={
-                      'whitespace-nowrap border-b-2 border-transparent px-3 py-2 text-[13px] font-semibold transition-colors duration-250 ' +
-                      (isActive(href)
-                        ? 'border-primary-600 text-primary-700 dark:border-primary-400 dark:text-primary-300'
+                      'whitespace-nowrap border-b-2 border-transparent px-2.5 py-2 text-[13px] font-semibold transition-colors ' +
+                      (isMarketActive(href)
+                        ? 'border-[var(--color-text)] text-[var(--color-text)]'
                         : 'text-stone-600 hover:text-stone-950 dark:text-stone-400 dark:hover:text-white')
                     }
                   >
@@ -399,54 +424,32 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </div>
 
           {/* Right Desktop items */}
-          <div className="hidden items-center gap-1.5 xl:flex">
-            <div className="relative flex items-center">
-              {searchOpen ? (
-                <form
-                  onSubmit={(e) => { e.preventDefault(); doSearch(query); }}
-                  className="relative flex items-center animate-in fade-in zoom-in-95 duration-200"
-                >
-                  <div className="absolute left-3.5 flex items-center pointer-events-none text-stone-400">
-                    <Search size={16} />
-                  </div>
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={query}
-                    onChange={(e) => handleQuery(e.target.value)}
-                    placeholder={t('searchPlaceholder')}
-                    className="h-11 w-72 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] pl-10 pr-9 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none focus:border-[var(--color-primary)] focus:bg-[var(--color-surface)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => { setSearchOpen(false); setQuery(''); setSuggestions([]); }}
-                    className="absolute right-2.5 flex h-5 w-5 items-center justify-center rounded-md text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
-                  >
-                    <X size={14} />
-                  </button>
-                  {suggestions.length > 0 && (
-                    <div className="averon-menu-surface absolute right-0 top-full z-50 mt-2 w-full overflow-hidden">
-                      {suggestions.map((item, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => navTo(item.href)}
-                          className="averon-menu-item gap-3 text-xs"
-                        >
-                          <span className="text-sm">{item.icon}</span>
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate font-semibold text-stone-900 dark:text-stone-100">{item.text}</p>
-                            <p className="truncate text-[11px] text-stone-500">{item.sub}</p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </form>
-              ) : (
-                <button type="button" onClick={() => setSearchOpen(true)} aria-label={t('search')} className={BTN_CLASS}>
-                  <Search size={20} strokeWidth={2.2} />
-                </button>
+          <div className="hidden min-w-0 flex-1 items-center justify-end gap-1.5 xl:flex">
+            <div className="relative mx-2 w-full max-w-[340px]">
+              <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
+                <Search size={17} className="pointer-events-none absolute left-3.5 text-[var(--color-muted)]" />
+                <input
+                  ref={inputRef}
+                  type="search"
+                  value={query}
+                  onChange={(e) => handleQuery(e.target.value)}
+                  placeholder={t('searchPlaceholder')}
+                  aria-label={t('search')}
+                  className="h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] pl-10 pr-4 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition focus:border-[var(--color-text-secondary)] focus:ring-2 focus:ring-[var(--color-primary)]/15"
+                />
+              </form>
+              {suggestions.length > 0 && (
+                <div className="averon-menu-surface absolute inset-x-0 top-full z-50 mt-2 overflow-hidden">
+                  {suggestions.map((item, i) => (
+                    <button key={i} type="button" onClick={() => navTo(item.href)} className="averon-menu-item gap-3 text-xs">
+                      <span className="text-sm">{item.icon}</span>
+                      <div className="min-w-0 flex-1 text-left">
+                        <p className="truncate font-semibold text-[var(--color-text)]">{item.text}</p>
+                        <p className="truncate text-[11px] text-[var(--color-muted)]">{item.sub}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
 
@@ -480,34 +483,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               )}
             </Link>
 
-            <Link href={to('/compare')} aria-label={t('compare')} title={t('compare')} className={`${BTN_CLASS} relative`}>
-              <Scale size={17} />
-              {compareCount > 0 && (
-                <motion.span
-                  key={compareCount}
-                  initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-bold text-white shadow"
-                >
-                  {compareCount}
-                </motion.span>
-              )}
-            </Link>
-
             <LanguagePicker />
-            <ThemeToggle />
-
-            <div className="mx-1.5 h-6 w-px bg-stone-200 dark:bg-white/10" />
-
-            <a
-              href="https://t.me/averon_fashion_admin"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="averon-primary-button hidden h-10 px-4 text-sm xl:inline-flex"
-            >
-              {t('support')}
-            </a>
 
             {isAuthenticated ? (
               <Link
@@ -521,15 +497,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <>
                 <Link
                   href={to('/login')}
-                  className="averon-secondary-button h-10 px-4 text-sm"
+                  className="h-10 whitespace-nowrap px-3 text-sm font-semibold text-[var(--color-text)] transition-opacity hover:opacity-65"
                 >
                   {t('login')}
-                </Link>
-                <Link
-                  href={to('/register')}
-                  className="averon-primary-button h-10 px-4 text-sm"
-                >
-                  {t('register')}
                 </Link>
               </>
             )}
@@ -686,6 +656,25 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               ))}
             </div>
           )}
+
+          <section className="mt-6" aria-labelledby="mobile-markets-title">
+            <p id="mobile-markets-title" className="px-1 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">
+              {marketCopy.markets}
+            </p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {marketLinks.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={to(href)}
+                  onClick={closeMobileMenu}
+                  className="flex min-h-12 items-center justify-between rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm font-semibold text-[var(--color-text)] hover:bg-[var(--color-surface-soft)]"
+                >
+                  <span>{label}</span>
+                  <ChevronRight size={15} className="text-[var(--color-muted)]" aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
+          </section>
 
           <nav aria-label={t('menu')} className="mt-7">
             <div className="space-y-1">
