@@ -29,7 +29,7 @@ export function ProductRecommendations({
   const t = useTranslations("catalog");
   const capabilities = useCommerceCapabilities();
   const [sections, setSections] = useState<Sections>({
-    related: fallbackProducts,
+    related: fallbackProducts.slice(0, 3),
     recent: [],
     personalized: [],
   });
@@ -85,7 +85,7 @@ export function ProductRecommendations({
         : [];
       const recentProducts = unique(recent);
       setSections({
-        related: [...relatedProducts, ...fallbackRelated].slice(0, 8),
+        related: [...relatedProducts, ...fallbackRelated].slice(0, 3),
         recent: recentProducts,
         personalized: personalizedProducts,
       });

@@ -62,6 +62,7 @@ async function loadFallbackRecommendations(product: StoreProduct): Promise<Store
     return payload.items
       .filter((candidate): candidate is StoreProduct => isStoreProduct(candidate) && candidate.id !== product.id)
       .map((candidate) => ({ candidate, score: recommendationScore(product, candidate) }))
+      .filter(({ score }) => score >= 3)
       .sort((left, right) => right.score - left.score || left.candidate.id.localeCompare(right.candidate.id))
       .slice(0, 8)
       .map(({ candidate }) => candidate);
