@@ -2,7 +2,6 @@
 
 import { ArrowLeft } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
-import { useLocale } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   getRouteFallback,
@@ -34,9 +33,11 @@ const labels = {
   en: { back: 'Back', home: 'Home', login: 'Sign in', catalog: 'Back to catalog', cart: 'Back to cart', orders: 'Back to orders' },
 } as const;
 
-export function SmartBackButton({ fallbackHref }: { fallbackHref: string }) {
-  const locale = useLocale();
+export function SmartBackButton({ fallbackHref, label: explicitLabel, variant = 'ghost' }: { fallbackHref: string; label?: string; variant?: 'ghost' | 'primary' | 'secondary' }) {
   const pathname = usePathname();
+  const locale = pathname.split('/')[1] && ['ru', 'uz', 'en'].includes(pathname.split('/')[1])
+    ? pathname.split('/')[1]
+    : 'ru';
   const router = useRouter();
   const searchParams = useSearchParams();
   const routeFallback = getRouteFallback(pathname, locale);
@@ -72,14 +73,19 @@ export function SmartBackButton({ fallbackHref }: { fallbackHref: string }) {
         : fallbackPath.endsWith('/orders') ? 'orders'
           : fallbackPath.endsWith('/catalog') ? 'catalog'
             : 'back';
+  const className = variant === 'primary'
+    ? 'averon-primary-button'
+    : variant === 'secondary'
+      ? 'averon-secondary-button'
+      : 'inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-semibold text-stone-600 transition-colors hover:text-stone-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:text-stone-300 dark:hover:text-white';
   return (
     <button
       type="button"
       onClick={goBack}
-      className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-semibold text-stone-600 transition-colors hover:text-stone-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:text-stone-300 dark:hover:text-white"
+      className={className}
     >
       <ArrowLeft size={16} aria-hidden="true" />
-      {labelSet[label as keyof typeof labelSet] ?? labelSet.back}
+      {(returnTo || previousRoute ? labelSet.back : explicitLabel) ?? labelSet[label as keyof typeof labelSet] ?? labelSet.back}
     </button>
   );
 }

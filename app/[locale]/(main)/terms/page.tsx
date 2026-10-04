@@ -1,9 +1,11 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Terms' });
+  return { title: t('title'), robots: { index: false, follow: true } };
+}
 
 export default async function TermsPage() {
   const t = await getTranslations('Terms');

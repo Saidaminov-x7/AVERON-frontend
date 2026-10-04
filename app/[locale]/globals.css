@@ -22,12 +22,16 @@
 }
 
 :root {
-  --color-primary: #2563eb;
-  --color-secondary: #115e59;
-  --color-bg: #f9fafb;
-  --color-text: #111827;
-  --border-radius: 0.75rem;
-  --font-family: Calibri, "Segoe UI", Arial, sans-serif;
+  --color-primary: #1a44c2;
+  --color-secondary: #0f32a3;
+  --color-bg: #fbf9f9;
+  --color-text: #1b1c1c;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f5f3f3;
+  --color-border: #e3e2e2;
+  --color-muted: #747685;
+  --border-radius: 0.25rem;
+  --font-family: Inter, "Segoe UI", Arial, sans-serif;
   --ease-out-ui: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out-ui: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
@@ -46,17 +50,28 @@
   }
 
   body {
-    background-color: #FAFAFA;
-    color: #171717;
+    background-color: var(--color-bg);
+    color: var(--color-text);
     -webkit-font-smoothing: antialiased;
     font-family: var(--font-family, Calibri, "Segoe UI", Arial, sans-serif);
     transition: background-color var(--duration-ui) var(--ease-out-ui), color var(--duration-ui) var(--ease-out-ui);
   }
 
   /* Тёмная тема */
-  html.dark body { 
-    background-color: #0F0F10; 
-    color: #F3F4F6; 
+  html.dark {
+    --color-primary: #4d8eff;
+    --color-secondary: #adc6ff;
+    --color-bg: #0e0f12;
+    --color-text: #f4f4f6;
+    --color-surface: #14161b;
+    --color-surface-soft: #1b1e24;
+    --color-border: #272b35;
+    --color-muted: #9ca3af;
+  }
+
+  html.dark body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
   }
 
   /* Курсор-рука на всех интерактивных элементах */
@@ -79,6 +94,15 @@
   button:disabled, [role="button"][aria-disabled="true"] {
     cursor: not-allowed;
   }
+}
+
+@layer components {
+  .averon-panel { border: 1px solid var(--color-border); border-radius: var(--border-radius); background: var(--color-surface); }
+  .averon-kicker { color: var(--color-primary); font-size: .6875rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .averon-title { font-family: "Hanken Grotesk", Inter, "Segoe UI", sans-serif; font-weight: 600; letter-spacing: -.025em; }
+  .averon-primary-button, .averon-secondary-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: .5rem; border-radius: var(--border-radius); padding: .75rem 1.25rem; font-size: .8125rem; font-weight: 700; }
+  .averon-primary-button { background: var(--color-primary); color: white; }
+  .averon-secondary-button { border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); }
 }
 
 @keyframes fade-up {

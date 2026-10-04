@@ -12,8 +12,7 @@ import { NavigationHistoryTracker } from '@/components/NavigationHistoryTracker'
 import AuthInitializer from '@/components/AuthInitializer';
 import { SiteViewportSettings } from '@/components/SiteViewportSettings';
 import type { PublicSiteSettings } from '@/lib/siteSettings';
-import './globals.css';
-import React, { Suspense } from 'react';
+import React, { Suspense, useLayoutEffect } from 'react';
 
 const DEFAULT_LOCALE = 'ru';
 
@@ -30,11 +29,16 @@ export default function LocaleLayout({
 }) {
   const { locale } = params;
 
+  const validLocale = locale || DEFAULT_LOCALE;
+
+  useLayoutEffect(() => {
+    document.documentElement.lang = validLocale;
+  }, [validLocale]);
+
   if (!messages) {
     console.error('Messages not provided');
     return null;
   }
-  const validLocale = locale || DEFAULT_LOCALE;
 
   return (
       <ThemeProvider>

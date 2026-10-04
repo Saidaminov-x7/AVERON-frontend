@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { SITE_URL } from '@/lib/siteUrl';
+import './[locale]/globals.css';
 
 const organizationJsonLd = {
   '@context': 'https://schema.org',
@@ -90,7 +91,7 @@ export default async function RootLayout({
           }}
         />}
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
       </body>
     </html>

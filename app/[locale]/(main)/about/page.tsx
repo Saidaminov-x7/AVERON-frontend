@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { CheckCircle2, PackageCheck, Search, ShieldCheck } from "lucide-react";
+import type { Metadata } from 'next';
 
 const icons = [Search, ShieldCheck, PackageCheck];
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'aboutPage' });
+  return { title: t('title') };
+}
 export default async function AboutPage({
   params,
 }: {
