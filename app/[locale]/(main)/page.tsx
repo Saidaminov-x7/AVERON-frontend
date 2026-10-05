@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { ArrowRight, Search, ShieldCheck, Sparkles, Truck } from 'lucide-react';
-import { SearchInput } from '@/components/ui/SearchInput';
+import { ArrowRight, ShieldCheck, Sparkles, Truck } from 'lucide-react';
 import { ProductCard, type StoreProduct } from '@/components/commerce/ProductCard';
 import { externalBaseURL } from '@/lib/axios';
 import { SITE_URL } from '@/lib/siteUrl';
@@ -44,6 +43,7 @@ function ProductShelf({ title, href, products, locale, allLabel }: {
   locale: string;
   allLabel: string;
 }) {
+  if (products.length === 0) return null;
   return (
     <section className="mx-auto max-w-[1440px] px-4 py-10 sm:px-8 lg:px-12">
       <div className="mb-6 flex items-end justify-between gap-4">
@@ -52,15 +52,9 @@ function ProductShelf({ title, href, products, locale, allLabel }: {
           {allLabel} <ArrowRight size={15} />
         </Link>
       </div>
-      {products.length > 0 ? (
-        <div className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-4">
-          {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
-        </div>
-      ) : (
-        <div className="border-y border-[var(--color-border)] py-8 text-sm text-[var(--color-muted)]">
-          {locale === 'en' ? 'Products for this section will appear here.' : locale === 'uz' ? 'Bu bo‘limdagi mahsulotlar shu yerda paydo bo‘ladi.' : 'Товары для этого раздела появятся здесь.'}
-        </div>
-      )}
+      <div className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-4">
+        {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
+      </div>
     </section>
   );
 }
@@ -72,9 +66,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 const copy = {
-  ru: { route: 'Доставка из: Китай • США • Италия • Турция • Великобритания', season: 'Весна–лето 2026 · Новая коллекция', world: 'Подборка AVERON', categories: 'Выберите, что ищете', clothing: 'Одежда', outerwear: 'Верхняя одежда', shoes: 'Обувь', accessories: 'Сумки и аксессуары', categoryHint: 'Перейти к товарам', process: 'Как работает AVERON', guarantee: 'Проверенные карточки и прозрачная доставка', guaranteeBody: 'Мы показываем источник товара, статус наличия и путь заказа до Узбекистана.', steps: ['Выберите оригинал', 'Оформите заказ', 'Проверка и доставка'] },
-  uz: { route: 'Yetkazib berish: Xitoy • AQSh • Italiya • Turkiya • Buyuk Britaniya', season: 'Bahor–yoz 2026 · Yangi kolleksiya', world: 'AVERON tanlovi', categories: 'Nimani izlayapsiz?', clothing: 'Kiyim', outerwear: 'Ustki kiyim', shoes: 'Oyoq kiyim', accessories: 'Sumkalar va aksessuarlar', categoryHint: 'Mahsulotlarga o‘tish', process: 'AVERON qanday ishlaydi', guarantee: 'Tekshirilgan kartalar va shaffof yetkazib berish', guaranteeBody: 'Mahsulot manbasi, mavjudligi va O‘zbekistongacha bo‘lgan yo‘lini ko‘rsatamiz.', steps: ['Asl mahsulotni tanlang', 'Buyurtma bering', 'Tekshiruv va yetkazish'] },
-  en: { route: 'Delivery from: China • USA • Italy • Turkey • United Kingdom', season: 'Spring–Summer 2026 · New collection', world: 'Curated by AVERON', categories: 'What are you looking for?', clothing: 'Clothing', outerwear: 'Outerwear', shoes: 'Footwear', accessories: 'Bags & accessories', categoryHint: 'Shop products', process: 'How AVERON works', guarantee: 'Verified listings and transparent delivery', guaranteeBody: 'We show the product source, availability, and route to Uzbekistan.', steps: ['Choose the original', 'Place your order', 'Verification and delivery'] },
+  ru: { route: 'Доставка из: Китай • США • Италия • Турция • Великобритания', season: 'Весна–лето 2026 · Новая коллекция', world: 'Каталог AVERON', categories: 'Выберите категорию', clothing: 'Одежда', outerwear: 'Верхняя одежда', shoes: 'Обувь', accessories: 'Сумки и аксессуары', categoryHint: 'Перейти к товарам', process: 'Как работает AVERON', guarantee: 'Понятный заказ и доставка', guaranteeBody: 'Вы видите наличие, цену и информацию о товаре до оформления заказа.', steps: ['Выберите товар', 'Оформите заказ', 'Проверка и доставка'] },
+  uz: { route: 'Yetkazib berish: Xitoy • AQSh • Italiya • Turkiya • Buyuk Britaniya', season: 'Bahor–yoz 2026 · Yangi kolleksiya', world: 'AVERON katalogi', categories: 'Toifani tanlang', clothing: 'Kiyim', outerwear: 'Ustki kiyim', shoes: 'Oyoq kiyim', accessories: 'Sumkalar va aksessuarlar', categoryHint: 'Mahsulotlarga o‘tish', process: 'AVERON qanday ishlaydi', guarantee: 'Tushunarli buyurtma va yetkazib berish', guaranteeBody: 'Buyurtma berishdan oldin mavjudlik, narx va mahsulot ma’lumotlarini ko‘rasiz.', steps: ['Mahsulotni tanlang', 'Buyurtma bering', 'Tekshiruv va yetkazish'] },
+  en: { route: 'Delivery from: China • USA • Italy • Turkey • United Kingdom', season: 'Spring–Summer 2026 · New collection', world: 'AVERON catalog', categories: 'Choose a category', clothing: 'Clothing', outerwear: 'Outerwear', shoes: 'Footwear', accessories: 'Bags & accessories', categoryHint: 'Shop products', process: 'How AVERON works', guarantee: 'Clear ordering and delivery', guaranteeBody: 'See availability, price, and product details before placing an order.', steps: ['Choose a product', 'Place your order', 'Verification and delivery'] },
 } as const;
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -95,53 +89,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const c = copy[activeLocale];
   const s = sectionCopy[activeLocale];
   const to = (path: string) => `/${locale}${path}`;
-  const heroMarkets = [
-    { code: 'CN', title: s.china, caption: s.chinaBody },
-    { code: 'US', title: s.usa, caption: s.usaBody },
-    { code: 'TR', title: s.turkey, caption: s.turkeyBody },
-    { code: 'IT', title: s.europe, caption: s.europeBody },
-  ];
-
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@graph': [{ '@type': 'Organization', name: 'AVERON', url: SITE_URL }, { '@type': 'WebSite', name: 'AVERON', url: `${SITE_URL}/${locale}`, inLanguage: locale }] }).replace(/</g, '\\u003c') }} />
       <div className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto flex min-h-9 max-w-[1440px] items-center justify-between px-4 text-[10px] font-semibold uppercase tracking-[.08em] sm:px-8 lg:px-12"><span className="truncate">{c.route}</span><span className="hidden text-[var(--color-muted)] md:block">RU · UZ · EN</span></div></div>
 
-      <section className="mx-auto max-w-[1440px] px-4 py-5 sm:px-8 sm:py-7 lg:px-12 lg:py-9">
-        <div className="grid overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,.65fr)]">
-          <div className="flex flex-col justify-center px-6 py-10 sm:px-10 sm:py-14 lg:min-h-[460px] lg:px-14 lg:py-16 xl:px-16">
-            <p className="averon-kicker">{t('badge')}</p>
-            <h1 className="font-display mt-4 max-w-4xl text-[clamp(2.5rem,5.2vw,5rem)] font-semibold leading-[.98] tracking-[-.045em]">
-              {t('heroTitle')}
-            </h1>
-            <p className="mt-6 max-w-2xl text-sm leading-6 text-[var(--color-muted)] sm:text-base sm:leading-7">{t('heroBody')}</p>
-            <div className="mt-8 max-w-2xl">
-              <SearchInput locale={locale} placeholder={t('searchPlaceholder')} className="h-14 rounded-none bg-[var(--color-bg)]" />
-            </div>
-            <div className="averon-hero-actions mt-4 flex flex-wrap gap-2">
-              <Link href={to('/catalog')} className="averon-primary-button">{t('catalogButton')} <ArrowRight size={15} /></Link>
-              <Link href={to('/about')} className="averon-secondary-button">{t('aboutButton')}</Link>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-px border-t border-[var(--color-border)] bg-[var(--color-border)] lg:border-l lg:border-t-0">
-            {heroMarkets.map((market, index) => (
-              <Link
-                key={market.code}
-                href={to(`/catalog?country=${market.code}`)}
-                className="group flex min-h-40 flex-col justify-between bg-[var(--color-surface-soft)] p-5 transition-colors hover:bg-[var(--color-surface)] sm:min-h-48 sm:p-6 lg:min-h-0"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="text-[11px] font-bold tracking-[.16em] text-[var(--color-muted)]">0{index + 1} / {market.code}</span>
-                  <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
-                </div>
-                <div>
-                  <h2 className="averon-title text-xl sm:text-2xl">{market.title}</h2>
-                  <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--color-muted)]">{market.caption}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+      <section className="mx-auto max-w-[1440px] px-4 py-6 sm:px-8 lg:px-12">
+        <div className="bg-[var(--color-surface-soft)] px-6 py-10 sm:px-10 sm:py-12 lg:px-12 lg:py-14">
+          <h1 className="averon-title max-w-3xl text-3xl leading-tight sm:text-4xl lg:text-5xl">{t('heroTitle')}</h1>
+          <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--color-muted)] sm:text-base">{t('heroBody')}</p>
+          <Link href={to('/how-to-order')} className="mt-6 inline-flex items-center gap-2 border-b border-current pb-0.5 text-sm font-semibold hover:opacity-60">
+            {locale === 'en' ? 'How to order' : locale === 'uz' ? 'Qanday buyurtma berish' : 'Как заказать'} <ArrowRight size={14} />
+          </Link>
         </div>
       </section>
 
@@ -181,16 +140,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <ProductShelf title={s.new} href={to('/catalog?sort=newest')} products={newest} locale={locale} allLabel={s.all} />
       <ProductShelf title={s.sale} href={to('/catalog?sort=price_asc')} products={discounted} locale={locale} allLabel={s.all} />
       <ProductShelf title={s.popular} href={to('/catalog?sort=popular')} products={products} locale={locale} allLabel={s.all} />
-
-      {products.length === 0 && newest.length === 0 ? (
-        <section className="mx-auto max-w-[1440px] px-4 py-10 sm:px-8 lg:px-12">
-          <div className="border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-16 text-center">
-            <Search className="mx-auto text-[var(--color-primary)]" size={30} />
-            <h3 className="mt-4 font-semibold">{t('emptyTitle')}</h3>
-            <p className="mt-2 text-sm text-[var(--color-muted)]">{t('emptyBody')}</p>
-          </div>
-        </section>
-      ) : null}
 
       <section className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto max-w-[1440px] px-4 py-14 sm:px-8 lg:px-12"><p className="averon-kicker">{c.process}</p><h2 className="averon-title mt-2 max-w-2xl text-3xl sm:text-4xl">{c.guarantee}</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--color-muted)]">{c.guaranteeBody}</p><div className="mt-8 grid gap-px border border-[var(--color-border)] bg-[var(--color-border)] md:grid-cols-3">{c.steps.map((step, index) => <div key={step} className="bg-[var(--color-surface)] p-6"><span className="text-xs font-bold text-[var(--color-primary)]">0{index + 1}</span><h3 className="mt-6 font-semibold">{step}</h3><div className="mt-4 text-[var(--color-muted)]">{index === 0 ? <Sparkles size={21}/> : index === 1 ? <ShieldCheck size={21}/> : <Truck size={21}/>}</div></div>)}</div></div></section>
     </main>
