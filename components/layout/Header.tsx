@@ -178,7 +178,6 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
 export function Header({ locale: localeProp }: { locale?: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const locale = useLocale() || localeProp || 'ru';
   const t = useTranslations('nav');
   const { data: settings } = useSiteSettings();

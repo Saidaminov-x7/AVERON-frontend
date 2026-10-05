@@ -18,7 +18,8 @@ export function ProductImage({
   onLoad?: (naturalWidth: number, naturalHeight: number) => void;
   onError?: () => void;
 }) {
-  const [failed, setFailed] = useState(false);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const failed = Boolean(src && failedSrc === src);
 
   if (!src || failed) {
     return (
@@ -37,7 +38,7 @@ export function ProductImage({
       alt={alt}
       loading="lazy"
       onError={() => {
-        setFailed(true);
+        setFailedSrc(src ?? null);
         onError?.();
       }}
       onLoad={(event) => onLoad?.(event.currentTarget.naturalWidth, event.currentTarget.naturalHeight)}

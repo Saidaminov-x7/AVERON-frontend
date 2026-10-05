@@ -300,14 +300,6 @@ export default async function ProductPage({
   const composition = getProductAttribute(product, ["composition", "fabricComposition"], locale) ?? product.material?.trim() ?? null;
   const care = getProductAttribute(product, ["careInstructions", "care"], locale);
   const fallbackRecommendations = await loadFallbackRecommendations(product);
-  const variantSizes = [...new Set((product.variants ?? []).map(({ size }) => size).filter((size): size is string => Boolean(size)))];
-  const variantColors = [...new Set((product.variants ?? []).map(({ color }) => color).filter((color): color is string => Boolean(color)))];
-  const productDetails = [
-    ...(product.category ? [{ label: copy.category, value: categoryName(product.category, locale) }] : []),
-    ...(product.country ? [{ label: copy.country, value: product.country }] : []),
-    ...(variantSizes.length ? [{ label: copy.sizes, value: variantSizes.join(" / ") }] : []),
-    ...(variantColors.length ? [{ label: copy.colors, value: variantColors.join(", ") }] : []),
-  ];
   const productUrl = `${SITE_URL}/${locale}/catalog/${encodeURIComponent(productRouteId(product))}`;
   const canonicalPrice = String(product.salePriceUzs);
   const hasCanonicalPrice = /^\d+(?:\.\d+)?$/.test(canonicalPrice) && Number(canonicalPrice) >= 0;

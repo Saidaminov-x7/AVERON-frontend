@@ -44,10 +44,6 @@ export function ProductCard({
   const images = product.images?.map(({ url }) => url).filter(Boolean) ?? [];
   const [imageIndex, setImageIndex] = useState(0);
   const [secondImageAvailable, setSecondImageAvailable] = useState(Boolean(images[1]));
-  useEffect(() => {
-    setSecondImageAvailable(Boolean(images[1]));
-    setImageIndex(0);
-  }, [images[1]]);
   const price = Number(product.salePriceUzs || 0).toLocaleString(locale === 'en' ? 'en-US' : 'ru-RU');
   const currency = locale === 'en' ? 'UZS' : locale === 'uz' ? "so'm" : 'сум';
   const preorderOnly = product.recommendationAvailability
@@ -87,7 +83,6 @@ export function ProductCard({
     ? 'bg-[var(--color-text)] text-[var(--color-surface)] ring-[var(--color-text)] hover:bg-[var(--color-text-secondary)]'
     : 'bg-[var(--color-surface)] text-[var(--color-text)] ring-[var(--color-border)] hover:bg-[var(--color-surface-soft)] hover:ring-[var(--color-border-hover)]';
   const variants = product.variants ?? [];
-  const sizes = [...new Set(variants.map(({ size }) => size).filter((size): size is string => Boolean(size)))];
   const colors = [...new Set(variants.map(({ color }) => color).filter((color): color is string => Boolean(color)))].map(parseProductColor);
   const [isNew, setIsNew] = useState(false);
   useEffect(() => {
@@ -161,17 +156,15 @@ export function ProductCard({
         className="block rounded-[var(--radius-control)] focus-visible:outline-none"
       >
         <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-surface-soft)]">
-          <div className={`absolute inset-0 transition-opacity duration-300 ease-out ${secondImageAvailable ? 'group-hover:opacity-0 group-focus-within:opacity-0' : ''}`}>
-            <ProductImage src={images[0]} alt={plainTitle} zoomOnHover={false} />
-          </div>
-          {images[1] && secondImageAvailable ? (
-            <div className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 group-focus-within:opacity-100">
-              <ProductImage src={images[1]} alt="" zoomOnHover={false} onError={() => {
-                setSecondImageAvailable(false);
-                setImageIndex(0);
-              }} />
-            </div>
-          ) : null}
+          <ProductImage
+            src={images[imageIndex] || images[0]}
+            alt={plainTitle}
+            zoomOnHover={false}
+            onError={imageIndex === 1 ? () => {
+              setSecondImageAvailable(false);
+              setImageIndex(0);
+            } : undefined}
+          />
           {(isNew || availabilityLabel || discountPercent !== null) && (
             <div className="absolute left-3 top-3 flex max-w-[calc(100%-5.5rem)] flex-col items-start gap-1.5">
               {discountPercent !== null && (
@@ -220,7 +213,7 @@ export function ProductCard({
           aria-label={labels.compare}
           aria-pressed={isCompared}
           onClick={toggleComparedProduct}
-          className={`flex size-9 items-center justify-center rounded-sm shadow-sm ring-1 transition-[background-color,color,box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] ${compareButtonStateClass}`}
+          className={`flex size-10 items-center justify-center rounded-sm shadow-sm ring-1 transition-[background-color,color,box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] ${compareButtonStateClass}`}
         >
           <Scale size={17} />
         </button>
@@ -230,7 +223,7 @@ export function ProductCard({
           aria-pressed={isFavorite}
           disabled={favoritePending}
           onClick={() => void toggleFavoriteProduct()}
-          className={`flex size-9 items-center justify-center rounded-sm shadow-sm ring-1 transition-[background-color,color,box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] disabled:cursor-wait disabled:opacity-60 ${
+          className={`flex size-10 items-center justify-center rounded-sm shadow-sm ring-1 transition-[background-color,color,box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] disabled:cursor-wait disabled:opacity-60 ${
             isFavorite
               ? 'bg-rose-600 text-white ring-rose-600 hover:bg-rose-700 dark:bg-rose-500 dark:ring-rose-500 dark:hover:bg-rose-600'
               : 'bg-[var(--color-surface)] text-[var(--color-text)] ring-[var(--color-border)] hover:bg-[var(--color-surface-soft)] hover:text-rose-600 hover:ring-[var(--color-border-hover)] dark:hover:text-rose-300'
