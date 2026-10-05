@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/Button';
 
 export function CatalogFilterLayout({
   filters,
@@ -18,28 +19,29 @@ export function CatalogFilterLayout({
   const t = useTranslations('catalog');
   const [filtersVisible, setFiltersVisible] = useState(true);
   const toggle = (
-    <button
+    <Button
       type="button"
+      variant="outline"
       aria-expanded={filtersVisible}
       onClick={() => setFiltersVisible((visible) => !visible)}
-      className="averon-control-button min-h-11 shrink-0 px-3 text-sm"
+      className="min-h-10 shrink-0 px-3 text-sm"
     >
       <SlidersHorizontal size={16} aria-hidden="true" />
       {filtersVisible ? t('hideFilters') : t('showFilters')}
-    </button>
+    </Button>
   );
 
   return (
     <div className="mt-6 lg:mt-0">
       <header className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-xl font-bold">
-          {t('products')} <span className="text-stone-400">({resultCount})</span>
+        <h2 className="text-lg font-semibold">
+          {t('products')} <span className="font-normal text-[var(--color-muted)]">({resultCount})</span>
         </h2>
         {toggle}
       </header>
       <div
         data-catalog-filters-visible={filtersVisible}
-        className={`grid grid-cols-1 gap-6 ${filtersVisible ? 'lg:grid-cols-[minmax(0,290px)_minmax(0,1fr)]' : ''}`}
+        className={`grid grid-cols-1 gap-8 ${filtersVisible ? 'lg:grid-cols-[minmax(0,240px)_minmax(0,1fr)]' : ''}`}
       >
         {filtersVisible ? (
           <aside

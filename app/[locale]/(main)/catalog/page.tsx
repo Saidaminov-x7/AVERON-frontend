@@ -152,7 +152,7 @@ function CatalogContent({
         />
         <CatalogFilterLayout
           filters={
-            <div className="sticky top-24 rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+            <div className="sticky top-24 border-t border-[var(--color-border)] bg-[var(--color-surface)] py-4">
               <div className="flex items-center gap-2 border-b pb-4 font-bold dark:border-white/10">
                 <Filter className="text-primary-700 dark:text-primary-300" size={18} />
                 {t("filters")}

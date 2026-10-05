@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { ArrowRight, ShieldCheck, Sparkles, Truck } from 'lucide-react';
 import { ProductCard, type StoreProduct } from '@/components/commerce/ProductCard';
+import { ProductImage } from '@/components/commerce/ProductImage';
 import { externalBaseURL } from '@/lib/axios';
 import { SITE_URL } from '@/lib/siteUrl';
 
@@ -44,15 +45,15 @@ function ProductShelf({ title, href, products, locale, allLabel }: {
   allLabel: string;
 }) {
   return (
-    <section className="mx-auto max-w-[1440px] px-4 py-10 sm:px-8 lg:px-12">
+    <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 lg:px-12">
       <div className="mb-6 flex items-end justify-between gap-4">
-        <h2 className="averon-title text-2xl sm:text-3xl">{title}</h2>
+        <h2 className="averon-title text-xl sm:text-2xl">{title}</h2>
         <Link href={href} className="flex shrink-0 items-center gap-2 text-sm font-semibold text-[var(--color-text)] hover:opacity-60">
           {allLabel} <ArrowRight size={15} />
         </Link>
       </div>
       {products.length > 0 ? (
-        <div className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-4">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-7 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-3">
           {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
         </div>
       ) : null}
@@ -96,8 +97,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <div className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto flex min-h-9 max-w-[1440px] items-center justify-between px-4 text-[10px] font-semibold uppercase tracking-[.08em] sm:px-8 lg:px-12"><span className="truncate">{c.route}</span><span className="hidden text-[var(--color-muted)] md:block">RU · UZ · EN</span></div></div>
 
       <section className="mx-auto max-w-[1440px] px-4 py-6 sm:px-8 lg:px-12">
-        <div className="bg-[var(--color-surface-soft)] px-6 py-10 sm:px-10 sm:py-12 lg:px-12 lg:py-14">
-          <h1 className="averon-title max-w-3xl text-3xl leading-tight sm:text-4xl lg:text-5xl">{t('heroTitle')}</h1>
+        <div className="bg-[var(--color-surface-soft)] px-6 py-9 sm:px-10 sm:py-11 lg:px-12">
+          <h1 className="averon-title max-w-3xl text-3xl leading-tight sm:text-4xl">{t('heroTitle')}</h1>
           <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--color-muted)] sm:text-base">{t('heroBody')}</p>
           <Link href={to('/how-to-order')} className="mt-6 inline-flex items-center gap-2 border-b border-current pb-0.5 text-sm font-semibold hover:opacity-60">
             {locale === 'en' ? 'How to order' : locale === 'uz' ? 'Qanday buyurtma berish' : 'Как заказать'} <ArrowRight size={14} />
@@ -105,33 +106,32 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1440px] px-4 pb-8 pt-10 sm:px-8 lg:px-12">
+      <section className="mx-auto max-w-[1440px] px-4 pb-6 pt-8 sm:px-8 lg:px-12">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="averon-kicker">{c.world}</p>
-            <h2 className="averon-title mt-2 text-3xl sm:text-4xl">{c.categories}</h2>
+            <h2 className="averon-title mt-2 text-2xl sm:text-3xl">{c.categories}</h2>
           </div>
           <Link href={to('/catalog')} className="hidden items-center gap-2 text-sm font-semibold hover:opacity-60 sm:flex">{s.all} <ArrowRight size={15} /></Link>
         </div>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           {[
-            { title: c.clothing, featured: true },
-            { title: c.outerwear },
-            { title: c.shoes },
-            { title: c.accessories },
-          ].map((category, index) => (
+            { title: c.clothing, image: newest[0]?.images?.[0]?.url || products[0]?.images?.[0]?.url },
+            { title: c.outerwear, image: newest[1]?.images?.[0]?.url || products[1]?.images?.[0]?.url },
+            { title: c.shoes, image: newest[2]?.images?.[0]?.url || products[2]?.images?.[0]?.url },
+            { title: c.accessories, image: newest[3]?.images?.[0]?.url || products[3]?.images?.[0]?.url },
+          ].map((category) => (
             <Link
               key={category.title}
               href={to(`/catalog?q=${encodeURIComponent(category.title)}`)}
-              className={`group flex min-h-56 flex-col justify-between border p-6 transition-transform hover:-translate-y-1 sm:min-h-64 ${category.featured ? 'border-[#222] bg-[#222] text-white' : 'border-[var(--color-border)] bg-[var(--color-surface-soft)]'}`}
+              className="group border-0 bg-[var(--color-surface)]"
             >
-              <div className="flex items-center justify-between">
-                <span className={`text-[11px] font-bold tracking-[.16em] ${category.featured ? 'text-white/55' : 'text-[var(--color-muted)]'}`}>0{index + 1}</span>
-                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+              <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-image-surface)]">
+                <ProductImage src={category.image} alt={category.title} fit="contain" zoomOnHover={false} />
               </div>
-              <div>
-                <h3 className="averon-title max-w-[12ch] text-2xl sm:text-3xl">{category.title}</h3>
-                <p className={`mt-3 text-xs font-semibold uppercase tracking-[.08em] ${category.featured ? 'text-white/65' : 'text-[var(--color-muted)]'}`}>{c.categoryHint}</p>
+              <div className="flex items-center justify-between gap-3 py-2">
+                <h3 className="text-sm font-semibold">{category.title}</h3>
+                <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
               </div>
             </Link>
           ))}
@@ -142,7 +142,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <ProductShelf title={s.sale} href={to('/catalog?sort=price_asc')} products={discounted} locale={locale} allLabel={s.all} />
       <ProductShelf title={s.popular} href={to('/catalog?sort=popular')} products={products} locale={locale} allLabel={s.all} />
 
-      <section className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto max-w-[1440px] px-4 py-14 sm:px-8 lg:px-12"><p className="averon-kicker">{c.process}</p><h2 className="averon-title mt-2 max-w-2xl text-3xl sm:text-4xl">{c.guarantee}</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--color-muted)]">{c.guaranteeBody}</p><div className="mt-8 grid gap-px border border-[var(--color-border)] bg-[var(--color-border)] md:grid-cols-3">{c.steps.map((step, index) => <div key={step} className="bg-[var(--color-surface)] p-6"><span className="text-xs font-bold text-[var(--color-primary)]">0{index + 1}</span><h3 className="mt-6 font-semibold">{step}</h3><div className="mt-4 text-[var(--color-muted)]">{index === 0 ? <Sparkles size={21}/> : index === 1 ? <ShieldCheck size={21}/> : <Truck size={21}/>}</div></div>)}</div></div></section>
+      <section className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto max-w-[1440px] px-4 py-10 sm:px-8 lg:px-12"><p className="averon-kicker">{c.process}</p><h2 className="averon-title mt-2 max-w-2xl text-2xl sm:text-3xl">{c.guarantee}</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--color-muted)]">{c.guaranteeBody}</p><div className="mt-6 grid gap-px border border-[var(--color-border)] bg-[var(--color-border)] md:grid-cols-3">{c.steps.map((step, index) => <div key={step} className="bg-[var(--color-surface)] p-5"><span className="text-xs font-bold text-[var(--color-primary)]">0{index + 1}</span><h3 className="mt-4 font-semibold">{step}</h3><div className="mt-3 text-[var(--color-muted)]">{index === 0 ? <Sparkles size={19}/> : index === 1 ? <ShieldCheck size={19}/> : <Truck size={19}/>}</div></div>)}</div></div></section>
     </main>
   );
 }

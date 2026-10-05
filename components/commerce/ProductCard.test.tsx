@@ -84,7 +84,7 @@ describe('ProductCard', () => {
     render(<ProductCard product={product} locale="ru" />);
 
     const favoriteButton = screen.getByRole('button', { name: 'Добавить в избранное' });
-    expect(favoriteButton).toHaveClass('size-10', 'transition-[background-color,color,box-shadow]');
+    expect(favoriteButton).toHaveClass('size-9', 'transition-colors');
     expect(favoriteButton.className).not.toContain('hover:scale');
   });
 

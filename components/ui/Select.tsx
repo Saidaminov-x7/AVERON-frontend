@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { forwardRef, useState, useRef, useEffect, createContext, useContext } from 'react';
+import { forwardRef, useState, useRef, useEffect, useLayoutEffect, createContext, useContext } from 'react';
 import { cn } from '@/lib/utils';
 import { Check, ChevronDown } from 'lucide-react';
 
@@ -138,6 +138,17 @@ const SelectContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEle
   ({ className, children, ...props }, ref) => {
     const context = useContext(SelectContext);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [openUpwards, setOpenUpwards] = useState(false);
+
+    useLayoutEffect(() => {
+      if (!context?.open) return;
+      const root = containerRef.current?.parentElement;
+      const rect = root?.getBoundingClientRect();
+      if (!rect) return;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setOpenUpwards(spaceBelow < 260 && spaceAbove > spaceBelow);
+    }, [context?.open]);
 
     useEffect(() => {
       const handleOutside = (e: MouseEvent) => {
@@ -152,13 +163,15 @@ const SelectContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEle
       return () => document.removeEventListener('mousedown', handleOutside);
     }, [context?.open, context]);
 
-    if (!context?.open) return null;
+    if (!context) return null;
 
     return (
       <div
         ref={containerRef}
         id={`${context.selectId}-listbox`}
         role="listbox"
+        aria-hidden={!context.open}
+        inert={!context.open}
         aria-labelledby={`${context.selectId}-trigger`}
         onKeyDown={(event) => {
           const options = Array.from(containerRef.current?.querySelectorAll<HTMLButtonElement>('[role="option"]:not(:disabled)') ?? []);
@@ -184,7 +197,9 @@ const SelectContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEle
           }
         }}
         className={cn(
-          'averon-menu-surface absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto p-1',
+          'averon-menu-surface absolute left-0 right-0 z-50 max-h-60 overflow-auto p-1',
+          !context.open && 'hidden',
+          openUpwards ? 'bottom-full mb-1' : 'top-full mt-1',
           className
         )}
         {...props}

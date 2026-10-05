@@ -6,7 +6,7 @@ import { ImageOff } from 'lucide-react';
 export function ProductImage({
   src,
   alt,
-  fit = 'cover',
+  fit = 'contain',
   zoomOnHover = true,
   onLoad,
   onError,

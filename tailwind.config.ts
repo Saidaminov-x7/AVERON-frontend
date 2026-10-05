@@ -28,10 +28,10 @@ const config: Config = {
         },
       },
       borderRadius: {
-        theme: "var(--border-radius, 0.75rem)",
+        theme: "var(--border-radius, 0.125rem)",
       },
       fontFamily: {
-        theme: ["var(--font-family)", "Inter", "sans-serif"],
+        theme: ["var(--font-family)", "var(--font-inter)", "Arial", "sans-serif"],
       },
     },
   },

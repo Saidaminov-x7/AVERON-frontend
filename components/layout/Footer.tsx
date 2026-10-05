@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import type { NavLink } from "@/lib/siteSettings";
 
@@ -84,6 +85,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
               {t("description")}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
+              <ThemeToggle />
               <a
                 href="https://t.me/averon_fashion"
                 className="inline-flex min-h-11 items-center rounded-xl border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"

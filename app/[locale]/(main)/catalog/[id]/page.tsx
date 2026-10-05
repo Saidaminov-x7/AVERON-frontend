@@ -12,6 +12,7 @@ import { ProductReviews } from "@/components/commerce/ProductReviews";
 import { ProductSizeChart } from "@/components/commerce/ProductSizeChart";
 import { CompleteTheLook } from "@/components/commerce/CompleteTheLook";
 import { ProductRecommendations } from "@/components/commerce/ProductRecommendations";
+import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import { ProductViewTracker } from "@/components/analytics/ProductViewTracker";
 import { ProductLoadFailure } from "@/components/commerce/ProductLoadFailure";
 import { SmartBackButton } from "@/components/navigation/SmartBackButton";
@@ -470,6 +471,7 @@ export default async function ProductPage({
           ) : null}
           <ProductReviews slug={product.slug} routeId={productRouteId(product)} locale={locale} initialOrderNumber={initialOrderNumber} />
           <ProductRecommendations slug={product.slug} locale={locale} fallbackProducts={fallbackRecommendations} />
+          <SimilarProducts slug={product.slug} locale={locale} />
           <CompleteTheLook slug={product.slug} locale={locale} />
         </div>
       </section>

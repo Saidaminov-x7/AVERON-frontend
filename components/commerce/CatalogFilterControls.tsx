@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { CatalogSelect } from './CatalogSelect';
 import type { CatalogFacets } from '@/lib/storefront-catalog';
 import { categoryName, type StoreCategory } from '@/lib/products';
+import { Button } from '@/components/ui/Button';
 
 type FilterValues = {
   q: string;
@@ -107,6 +108,9 @@ function CatalogFilterDraft({
     : Boolean(draft[key].trim()));
   const categoriesOptions = [
     { value: '', label: t('all') },
+    ...(draft.category && !categories.some((category) => category.slug === draft.category)
+      ? [{ value: draft.category, label: draft.category.replaceAll('-', ' ') }]
+      : []),
     ...categories.map((category) => ({
       value: category.slug,
       label: categoryName(category, locale),
@@ -127,17 +131,17 @@ function CatalogFilterDraft({
 
   return (
     <form onSubmit={apply} aria-busy={isPending}>
-      <label className="text-xs font-bold uppercase text-stone-500" htmlFor={`${id}-search`}>{t('search')}</label>
+      <label className="text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]" htmlFor={`${id}-search`}>{t('search')}</label>
       <input id={`${id}-search`} className={`${controlClass} mt-2`} value={draft.q} onChange={(event) => set('q', event.target.value)} placeholder={t('placeholder')} />
       <div className="mt-5">
         <CatalogSelect name="category" label={t('category')} value={draft.category} placeholder={t('all')} options={categoriesOptions} onValueChange={(value) => set('category', value)} />
         {categoriesError && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">{locale === 'uz' ? 'Toifalarni yuklab bo‘lmadi.' : locale === 'en' ? 'Categories could not be loaded.' : 'Не удалось загрузить категории.'}</p>}
       </div>
       <fieldset className="mt-5">
-        <legend className="text-xs font-bold uppercase text-stone-500">{t('audience')}</legend>
+        <legend className="text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('audience')}</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {audiences.map(([value, label]) => (
-            <button key={value || 'all'} type="button" aria-pressed={draft.audience === value} onClick={() => set('audience', value)} className={`min-h-11 rounded-[var(--radius-control)] border px-3 text-sm font-medium transition-colors ${draft.audience === value ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white' : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-muted)] hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-text)]'}`}>{label}</button>
+            <Button key={value || 'all'} variant={draft.audience === value ? 'default' : 'outline'} type="button" aria-pressed={draft.audience === value} onClick={() => set('audience', value)} className="min-h-11 px-3 text-sm">{label}</Button>
           ))}
         </div>
       </fieldset>
@@ -149,7 +153,7 @@ function CatalogFilterDraft({
         <CatalogSelect name="color" label={t('color')} value={draft.color} placeholder={t('anyColor')} options={[{ value: '', label: t('anyColor') }, ...colors.map((value) => ({ value, label: value }))]} onValueChange={(value) => set('color', value)} />
       </div>
       {facetsError && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">{locale === 'uz' ? 'O‘lcham va ranglar ro‘yxatini yuklab bo‘lmadi.' : locale === 'en' ? 'Available sizes and colors could not be loaded.' : 'Не удалось загрузить доступные размеры и цвета.'}</p>}
-      <p className="mt-5 text-xs font-bold uppercase text-stone-500">{t('price')}</p>
+      <p className="mt-5 text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('price')}</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
         {(['minPrice', 'maxPrice'] as const).map((key) => <input key={key} className={controlClass} aria-label={key === 'minPrice' ? t('from') : t('to')} type="text" inputMode="decimal" value={draft[key]} onChange={(event) => set(key, event.target.value)} placeholder={key === 'minPrice' ? t('from') : t('to')} />)}
       </div>
@@ -169,8 +173,8 @@ function CatalogFilterDraft({
           onValueChange={(value) => set('sort', value)}
         />
       </div>
-      <button type="submit" disabled={isPending} className="averon-primary-button mt-5 w-full disabled:cursor-wait" aria-live="polite">{isPending ? t('applying') : t('show')}</button>
-      <button type="button" disabled={!active || isPending} onClick={reset} className="averon-secondary-button mt-2 !min-h-10 w-full !py-2 disabled:cursor-not-allowed">{t('reset')}</button>
+      <Button type="submit" loading={isPending} loadingLabel={t('applying')} className="mt-5 w-full" aria-live="polite">{t('show')}</Button>
+      <Button type="button" variant="outline" disabled={!active || isPending} onClick={reset} className="mt-2 w-full">{t('reset')}</Button>
     </form>
   );
 }

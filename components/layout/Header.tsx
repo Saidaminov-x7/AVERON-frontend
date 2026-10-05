@@ -396,7 +396,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">{settings?.siteName || 'AVERON'}</span>
             </Link>
 
-            <nav className="hidden items-center gap-0.5 xl:flex" aria-label={t('menu')}>
+            <nav className="hidden items-center gap-0.5 lg:flex" aria-label={t('menu')}>
               {visibleNavLinks.filter(({ href }) => href !== '/').map(({ href, label }) => (
                   <Link
                     key={href}
@@ -415,8 +415,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </div>
 
           {/* Right Desktop items */}
-          <div className="hidden min-w-0 flex-1 items-center justify-end gap-1.5 xl:flex">
-            <div className="relative mx-2 w-full max-w-[340px]">
+          <div className="hidden min-w-0 flex-1 items-center justify-end gap-1.5 lg:flex">
+            <div className="relative mx-2 w-full max-w-[300px]">
               <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
                 <Search size={17} className="pointer-events-none absolute left-3.5 text-[var(--color-muted)]" />
                 <input
@@ -485,19 +485,19 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 <span className="max-w-[120px] truncate">{user?.name || t('profile')}</span>
               </Link>
             ) : (
-              <>
-                <Link
-                  href={to('/login')}
-                  className="h-10 whitespace-nowrap px-3 text-sm font-semibold text-[var(--color-text)] transition-opacity hover:opacity-65"
-                >
+              <div className="flex items-center gap-1">
+                <Link href={to('/login')} className="h-10 whitespace-nowrap px-3 py-2.5 text-sm font-semibold text-[var(--color-text)] transition-opacity hover:opacity-65">
                   {t('login')}
                 </Link>
-              </>
+                <Link href={to('/register')} className="averon-primary-button h-10 whitespace-nowrap px-4 text-sm">
+                  {t('register')}
+                </Link>
+              </div>
             )}
           </div>
 
           {/* Mobile & Tablet primary actions */}
-          <div className="flex items-center gap-2 xl:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               type="button"
               onClick={() => setSearchOpen((open) => !open)}
@@ -539,7 +539,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </div>
         </div>
         {searchOpen && (
-          <div id="mobile-header-search" className="averon-menu-surface absolute inset-x-4 top-full z-50 p-3 xl:hidden">
+          <div id="mobile-header-search" className="averon-menu-surface absolute inset-x-4 top-full z-50 p-3 lg:hidden">
             <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
               <Search size={16} className="pointer-events-none absolute left-3 text-stone-400" />
               <input
@@ -579,7 +579,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         inert={!mobileOpen}
         onClick={closeMobileMenu}
         className={
-          `fixed inset-0 z-[60] bg-black/45 backdrop-blur-[2px] transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} xl:hidden ` +
+          `fixed inset-0 z-[60] bg-black/45 backdrop-blur-[2px] transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
           (mobileOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0')
         }
       />
@@ -596,7 +596,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'var(--ease-drawer)',
         }}
         className={
-          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-full max-w-[min(100vw,30rem)] flex-col border-l border-[var(--color-border)] bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:max-w-[min(38rem,50vw)] xl:hidden ` +
+          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-full max-w-[min(100vw,30rem)] flex-col border-l border-[var(--color-border)] bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
           (mobileOpen ? 'translate-x-0' : 'translate-x-full')
         }
       >

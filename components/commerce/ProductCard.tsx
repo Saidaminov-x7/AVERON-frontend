@@ -155,32 +155,24 @@ export function ProductCard({
         href={productHref}
         className="block rounded-[var(--radius-control)] focus-visible:outline-none"
       >
-        <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-surface-soft)]">
+        <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-image-surface)]">
           <ProductImage
             src={images[imageIndex] || images[0]}
             alt={plainTitle}
             zoomOnHover={false}
+            fit="contain"
             onError={imageIndex === 1 ? () => {
               setSecondImageAvailable(false);
               setImageIndex(0);
             } : undefined}
           />
-          {(isNew || availabilityLabel || discountPercent !== null) && (
-            <div className="absolute left-3 top-3 flex max-w-[calc(100%-5.5rem)] flex-col items-start gap-1.5">
-              {discountPercent !== null && (
-                <span aria-label={discountLabel} className="bg-rose-700 px-2 py-1 text-[10px] font-bold text-white">
-                  −{discountPercent}%
-                </span>
-              )}
-              {availabilityLabel && (
-                <span className={`rounded-full px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[.08em] shadow-sm backdrop-blur-md ${preorderOnly ? 'bg-white/90 text-stone-900 dark:bg-stone-900/90 dark:text-white' : unavailable ? 'bg-stone-900/90 text-white' : 'bg-white/90 text-stone-900 dark:bg-stone-900/90 dark:text-white'}`}>
-                  {availabilityLabel}
-                </span>
-              )}
-            </div>
+          {(preorderOnly || unavailable) && (
+            <span className="absolute left-2 top-2 bg-[var(--color-overlay)] px-1.5 py-1 text-[9px] font-semibold uppercase tracking-[.06em] text-white">
+              {availabilityLabel}
+            </span>
           )}
           {secondImageAvailable ? (
-            <div className="absolute bottom-3 left-3 flex gap-1.5 rounded-full bg-black/25 px-2 py-1.5 backdrop-blur-sm" aria-hidden="true">
+            <div className="absolute bottom-2 left-2 flex gap-1 bg-[var(--color-overlay)] px-1.5 py-1" aria-hidden="true">
               {images.map((_, index) => <span key={index} className={`h-1 w-1/2 rounded-full transition-colors ${imageIndex === index ? 'bg-white' : 'bg-white/45'}`} />)}
             </div>
           ) : null}
@@ -194,15 +186,15 @@ export function ProductCard({
               {colors.length > 6 ? <span className="ml-0.5 text-[11px] text-[var(--color-muted)]">+{colors.length - 6}</span> : null}
             </div>
           )}
-          <div className="mb-1.5 flex min-h-5 items-center gap-1.5">
-            {discountPercent !== null ? <span className="rounded-sm bg-[#e60023] px-1.5 py-0.5 text-[10px] font-bold text-white">{locale === 'en' ? 'Sale' : locale === 'uz' ? 'Chegirma' : 'Скидка'}</span> : null}
-            {isNew && discountPercent === null ? <span className="rounded-sm bg-black px-1.5 py-0.5 text-[10px] font-bold text-white">{newLabel}</span> : null}
+          <div className="mb-1 flex min-h-4 items-center gap-2">
+            {discountPercent !== null ? <span aria-label={discountLabel} className="text-[10px] font-bold uppercase tracking-[.04em] text-[var(--color-sale)]">−{discountPercent}%</span> : null}
+            {isNew ? <span className="text-[10px] font-bold uppercase tracking-[.04em] text-[var(--color-text)]">{newLabel}</span> : null}
           </div>
           <p className="line-clamp-2 text-[13px] font-normal leading-[1.35] text-[var(--color-text)] sm:text-[15px]">
             <ProductRichText content={title} inline />
           </p>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <strong className={`text-sm font-bold tabular-nums tracking-tight sm:text-base ${discountPercent !== null ? 'text-[#e60023]' : 'text-[var(--color-text)]'}`}>{price} {currency}</strong>
+            <strong className={`text-sm font-semibold tabular-nums tracking-tight ${discountPercent !== null ? 'text-[var(--color-sale)]' : 'text-[var(--color-text)]'}`}>{price} {currency}</strong>
             {discountPercent !== null ? <span className="text-xs tabular-nums text-[var(--color-muted)] line-through">{compareAtPrice.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')} {currency}</span> : null}
           </div>
         </div>
@@ -213,7 +205,7 @@ export function ProductCard({
           aria-label={labels.compare}
           aria-pressed={isCompared}
           onClick={toggleComparedProduct}
-          className={`flex size-10 items-center justify-center rounded-sm shadow-sm ring-1 transition-[background-color,color,box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] ${compareButtonStateClass}`}
+          className={`flex size-9 items-center justify-center rounded-sm ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] ${compareButtonStateClass}`}
         >
           <Scale size={17} />
         </button>
@@ -223,10 +215,10 @@ export function ProductCard({
           aria-pressed={isFavorite}
           disabled={favoritePending}
           onClick={() => void toggleFavoriteProduct()}
-          className={`flex size-10 items-center justify-center rounded-sm shadow-sm ring-1 transition-[background-color,color,box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] disabled:cursor-wait disabled:opacity-60 ${
+          className={`flex size-9 items-center justify-center rounded-sm ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] disabled:cursor-wait disabled:opacity-60 ${
             isFavorite
-              ? 'bg-rose-600 text-white ring-rose-600 hover:bg-rose-700 dark:bg-rose-500 dark:ring-rose-500 dark:hover:bg-rose-600'
-              : 'bg-[var(--color-surface)] text-[var(--color-text)] ring-[var(--color-border)] hover:bg-[var(--color-surface-soft)] hover:text-rose-600 hover:ring-[var(--color-border-hover)] dark:hover:text-rose-300'
+              ? 'bg-[var(--color-text)] text-[var(--color-surface)] ring-[var(--color-text)]'
+              : 'bg-[var(--color-surface)] text-[var(--color-text)] ring-[var(--color-border)] hover:bg-[var(--color-surface-soft)] hover:ring-[var(--color-border-hover)]'
           }`}
         >
           <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />

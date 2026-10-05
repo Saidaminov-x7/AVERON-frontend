@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
 import { SITE_URL } from '@/lib/siteUrl';
 import './[locale]/globals.css';
+
+const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-inter', display: 'swap' });
 
 const organizationJsonLd = {
   '@context': 'https://schema.org',
@@ -58,7 +61,7 @@ export default async function RootLayout({
     ? configuredMetrikaId
     : null;
   return (
-    <html suppressHydrationWarning>
+    <html suppressHydrationWarning className={inter.variable}>
       <head>
         <link rel="icon" href="/logotip.png" />
         <script
