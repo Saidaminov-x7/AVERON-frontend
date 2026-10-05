@@ -32,15 +32,15 @@ const BTN_CLASS =
 const MARKET_COPY = {
   ru: {
     catalog: 'Каталог', china: 'Из Китая', usa: 'Из США', turkey: 'Из Турции',
-    europe: 'Европа', orders: 'Мои заказы', markets: 'Магазины мира',
+    europe: 'Европа', orders: 'Мои заказы', markets: 'Магазины мира', newest: 'Новинки', sale: 'Скидки', popular: 'Популярное',
   },
   uz: {
     catalog: 'Katalog', china: 'Xitoydan', usa: 'AQShdan', turkey: 'Turkiyadan',
-    europe: 'Yevropa', orders: 'Buyurtmalarim', markets: 'Dunyo do‘konlari',
+    europe: 'Yevropa', orders: 'Buyurtmalarim', markets: 'Dunyo do‘konlari', newest: 'Yangiliklar', sale: 'Chegirmalar', popular: 'Ommabop',
   },
   en: {
     catalog: 'Catalog', china: 'From China', usa: 'From USA', turkey: 'From Turkey',
-    europe: 'Europe', orders: 'My orders', markets: 'Shop by country',
+    europe: 'Europe', orders: 'My orders', markets: 'Shop by country', newest: 'New', sale: 'Sale', popular: 'Popular',
   },
 } as const;
 
@@ -192,6 +192,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const navLinks = [
     { href: '/', label: t('home') },
     { href: '/catalog', label: t('catalog') },
+    { href: '/catalog?sort=newest', label: marketCopy.newest },
+    { href: '/catalog?sort=price_asc', label: marketCopy.sale },
+    { href: '/catalog?sort=popular', label: marketCopy.popular },
     { href: '/ai', label: 'AI' },
     { href: '/about', label: t('about') },
   ];
@@ -319,7 +322,16 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   }, [searchOpen]);
 
   const to = (p: string) => (p === '/' ? `/${locale}` : `/${locale}${p}`);
-  const isActive = (p: string) => pathname === to(p) || (p !== '/' && pathname.startsWith(to(p)));
+  const isActive = (p: string) => {
+    const [targetPath, targetQuery = ''] = p.split('?');
+    const localizedPath = to(targetPath);
+    if (pathname !== localizedPath && !(targetPath !== '/' && pathname.startsWith(`${localizedPath}/`))) return false;
+    const expected = new URLSearchParams(targetQuery);
+    if (expected.size > 0) {
+      return [...expected].every(([key, value]) => searchParams.get(key) === value);
+    }
+    return targetPath !== '/catalog' || !searchParams.get('sort');
+  };
 
   const handleQuery = (val: string) => {
     setQuery(val);
