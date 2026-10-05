@@ -67,9 +67,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 const copy = {
-  ru: { route: 'Доставка из: Китай • США • Италия • Турция • Великобритания', season: 'Весна–лето 2026 · Новая коллекция', world: 'География поставок', categories: 'Популярные категории', outerwear: 'Верхняя одежда', shoes: 'Обувь', accessories: 'Аксессуары и сумки', process: 'Как работает AVERON', guarantee: 'Проверенные карточки и прозрачная доставка', guaranteeBody: 'Мы показываем источник товара, статус наличия и путь заказа до Узбекистана.', steps: ['Выберите оригинал', 'Оформите заказ', 'Проверка и доставка'] },
-  uz: { route: 'Yetkazib berish: Xitoy • AQSh • Italiya • Turkiya • Buyuk Britaniya', season: 'Bahor–yoz 2026 · Yangi kolleksiya', world: 'Yetkazib berish geografiyasi', categories: 'Mashhur toifalar', outerwear: 'Ustki kiyim', shoes: 'Oyoq kiyim', accessories: 'Aksessuarlar va sumkalar', process: 'AVERON qanday ishlaydi', guarantee: 'Tekshirilgan kartalar va shaffof yetkazib berish', guaranteeBody: 'Mahsulot manbasi, mavjudligi va O‘zbekistongacha bo‘lgan yo‘lini ko‘rsatamiz.', steps: ['Asl mahsulotni tanlang', 'Buyurtma bering', 'Tekshiruv va yetkazish'] },
-  en: { route: 'Delivery from: China • USA • Italy • Turkey • United Kingdom', season: 'Spring–Summer 2026 · New collection', world: 'Shipping geography', categories: 'Popular categories', outerwear: 'Outerwear', shoes: 'Footwear', accessories: 'Accessories & bags', process: 'How AVERON works', guarantee: 'Verified listings and transparent delivery', guaranteeBody: 'We show the product source, availability, and route to Uzbekistan.', steps: ['Choose the original', 'Place your order', 'Verification and delivery'] },
+  ru: { route: 'Доставка из: Китай • США • Италия • Турция • Великобритания', season: 'Весна–лето 2026 · Новая коллекция', world: 'Подборка AVERON', categories: 'Выберите, что ищете', clothing: 'Одежда', outerwear: 'Верхняя одежда', shoes: 'Обувь', accessories: 'Сумки и аксессуары', categoryHint: 'Перейти к товарам', process: 'Как работает AVERON', guarantee: 'Проверенные карточки и прозрачная доставка', guaranteeBody: 'Мы показываем источник товара, статус наличия и путь заказа до Узбекистана.', steps: ['Выберите оригинал', 'Оформите заказ', 'Проверка и доставка'] },
+  uz: { route: 'Yetkazib berish: Xitoy • AQSh • Italiya • Turkiya • Buyuk Britaniya', season: 'Bahor–yoz 2026 · Yangi kolleksiya', world: 'AVERON tanlovi', categories: 'Nimani izlayapsiz?', clothing: 'Kiyim', outerwear: 'Ustki kiyim', shoes: 'Oyoq kiyim', accessories: 'Sumkalar va aksessuarlar', categoryHint: 'Mahsulotlarga o‘tish', process: 'AVERON qanday ishlaydi', guarantee: 'Tekshirilgan kartalar va shaffof yetkazib berish', guaranteeBody: 'Mahsulot manbasi, mavjudligi va O‘zbekistongacha bo‘lgan yo‘lini ko‘rsatamiz.', steps: ['Asl mahsulotni tanlang', 'Buyurtma bering', 'Tekshiruv va yetkazish'] },
+  en: { route: 'Delivery from: China • USA • Italy • Turkey • United Kingdom', season: 'Spring–Summer 2026 · New collection', world: 'Curated by AVERON', categories: 'What are you looking for?', clothing: 'Clothing', outerwear: 'Outerwear', shoes: 'Footwear', accessories: 'Bags & accessories', categoryHint: 'Shop products', process: 'How AVERON works', guarantee: 'Verified listings and transparent delivery', guaranteeBody: 'We show the product source, availability, and route to Uzbekistan.', steps: ['Choose the original', 'Place your order', 'Verification and delivery'] },
 } as const;
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -141,30 +141,32 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </section>
 
       <section className="mx-auto max-w-[1440px] px-4 pb-8 pt-10 sm:px-8 lg:px-12">
-        <div className="mb-6 max-w-2xl">
-          <p className="averon-kicker">{c.world}</p>
-          <h2 className="averon-title mt-2 text-3xl sm:text-4xl">{s.directions}</h2>
-          <p className="mt-3 text-sm leading-6 text-[var(--color-muted)]">{s.directionsBody}</p>
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <p className="averon-kicker">{c.world}</p>
+            <h2 className="averon-title mt-2 text-3xl sm:text-4xl">{c.categories}</h2>
+          </div>
+          <Link href={to('/catalog')} className="hidden items-center gap-2 text-sm font-semibold hover:opacity-60 sm:flex">{s.all} <ArrowRight size={15} /></Link>
         </div>
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           {[
-            { code: 'CN', title: s.china, body: s.chinaBody, mark: 'CN' },
-            { code: 'US', title: s.usa, body: s.usaBody, mark: 'US' },
-            { code: 'TR', title: s.turkey, body: s.turkeyBody, mark: 'TR' },
-            { code: 'IT', title: s.europe, body: s.europeBody, mark: 'EU' },
-          ].map((market) => (
+            { title: c.clothing, featured: true },
+            { title: c.outerwear },
+            { title: c.shoes },
+            { title: c.accessories },
+          ].map((category, index) => (
             <Link
-              key={market.code}
-              href={to(`/catalog?country=${market.code}`)}
-              className="group flex min-h-44 flex-col justify-between border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-colors hover:bg-[var(--color-surface-soft)] sm:min-h-52 sm:p-6"
+              key={category.title}
+              href={to(`/catalog?q=${encodeURIComponent(category.title)}`)}
+              className={`group flex min-h-56 flex-col justify-between border p-6 transition-transform hover:-translate-y-1 sm:min-h-64 ${category.featured ? 'border-[#222] bg-[#222] text-white' : 'border-[var(--color-border)] bg-[var(--color-surface-soft)]'}`}
             >
               <div className="flex items-center justify-between">
-                <span className="flex size-10 items-center justify-center rounded-full border border-[var(--color-border)] text-xs font-black tracking-wider">{market.mark}</span>
-                <ArrowRight size={18} className="text-[var(--color-muted)] transition-transform group-hover:translate-x-1" />
+                <span className={`text-[11px] font-bold tracking-[.16em] ${category.featured ? 'text-white/55' : 'text-[var(--color-muted)]'}`}>0{index + 1}</span>
+                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
               </div>
               <div>
-                <h3 className="averon-title text-xl sm:text-2xl">{market.title}</h3>
-                <p className="mt-2 text-xs leading-5 text-[var(--color-muted)] sm:text-sm">{market.body}</p>
+                <h3 className="averon-title max-w-[12ch] text-2xl sm:text-3xl">{category.title}</h3>
+                <p className={`mt-3 text-xs font-semibold uppercase tracking-[.08em] ${category.featured ? 'text-white/65' : 'text-[var(--color-muted)]'}`}>{c.categoryHint}</p>
               </div>
             </Link>
           ))}
