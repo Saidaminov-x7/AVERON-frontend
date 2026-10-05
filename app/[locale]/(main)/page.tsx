@@ -43,7 +43,6 @@ function ProductShelf({ title, href, products, locale, allLabel }: {
   locale: string;
   allLabel: string;
 }) {
-  if (products.length === 0) return null;
   return (
     <section className="mx-auto max-w-[1440px] px-4 py-10 sm:px-8 lg:px-12">
       <div className="mb-6 flex items-end justify-between gap-4">
@@ -52,9 +51,11 @@ function ProductShelf({ title, href, products, locale, allLabel }: {
           {allLabel} <ArrowRight size={15} />
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-4">
-        {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
-      </div>
+      {products.length > 0 ? (
+        <div className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-4">
+          {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
+        </div>
+      ) : null}
     </section>
   );
 }
