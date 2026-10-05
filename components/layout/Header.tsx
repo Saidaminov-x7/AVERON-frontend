@@ -189,14 +189,6 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     { href: '/catalog?country=TR', label: marketCopy.turkey },
     { href: '/catalog?country=IT', label: marketCopy.europe },
   ];
-  const marketLinks = [{ href: '/catalog', label: t('catalog') }, ...countryLinks];
-  const activeCountry = searchParams.get('country');
-  const isMarketActive = (href: string) => {
-    if (!pathname.startsWith(`/${locale}/catalog`)) return false;
-    const country = new URLSearchParams(href.split('?')[1] ?? '').get('country');
-    return country ? activeCountry === country : !activeCountry;
-  };
-
   const navLinks = [
     { href: '/', label: t('home') },
     { href: '/catalog', label: t('catalog') },
@@ -405,14 +397,14 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">{settings?.siteName || 'AVERON'}</span>
             </Link>
 
-            <nav className="hidden items-center gap-0.5 xl:flex" aria-label={marketCopy.markets}>
-              {marketLinks.map(({ href, label }) => (
+            <nav className="hidden items-center gap-0.5 xl:flex" aria-label={t('menu')}>
+              {visibleNavLinks.filter(({ href }) => href !== '/').map(({ href, label }) => (
                   <Link
                     key={href}
                     href={to(href)}
                     className={
                       'whitespace-nowrap border-b-2 border-transparent px-2.5 py-2 text-[13px] font-semibold transition-colors ' +
-                      (isMarketActive(href)
+                      (isActive(href)
                         ? 'border-[var(--color-text)] text-[var(--color-text)]'
                         : 'text-stone-600 hover:text-stone-950 dark:text-stone-400 dark:hover:text-white')
                     }

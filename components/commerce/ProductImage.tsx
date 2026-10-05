@@ -9,12 +9,14 @@ export function ProductImage({
   fit = 'cover',
   zoomOnHover = true,
   onLoad,
+  onError,
 }: {
   src?: string;
   alt: string;
   fit?: 'contain' | 'cover';
   zoomOnHover?: boolean;
   onLoad?: (naturalWidth: number, naturalHeight: number) => void;
+  onError?: () => void;
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -34,7 +36,10 @@ export function ProductImage({
       src={src}
       alt={alt}
       loading="lazy"
-      onError={() => setFailed(true)}
+      onError={() => {
+        setFailed(true);
+        onError?.();
+      }}
       onLoad={(event) => onLoad?.(event.currentTarget.naturalWidth, event.currentTarget.naturalHeight)}
       className={`h-full w-full ${fit === 'contain' ? 'object-contain' : 'object-cover'} ${zoomOnHover ? 'transition-transform duration-300 ease-out group-hover:scale-[1.03]' : ''}`}
     />

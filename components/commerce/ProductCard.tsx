@@ -10,7 +10,6 @@ import { ProductRichText } from './ProductRichText';
 import { addWishlistItem, removeWishlistItem } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
-import { categoryName } from '@/lib/products';
 import { useEffect, useRef, useState } from 'react';
 
 export type { StoreProduct } from '@/lib/products';
@@ -44,6 +43,11 @@ export function ProductCard({
   const productHref = `/${locale}/catalog/${encodeURIComponent(productRouteId(product))}${catalogQuery ? `?${catalogQuery}` : ''}`;
   const images = product.images?.map(({ url }) => url).filter(Boolean) ?? [];
   const [imageIndex, setImageIndex] = useState(0);
+  const [secondImageAvailable, setSecondImageAvailable] = useState(Boolean(images[1]));
+  useEffect(() => {
+    setSecondImageAvailable(Boolean(images[1]));
+    setImageIndex(0);
+  }, [images[1]]);
   const price = Number(product.salePriceUzs || 0).toLocaleString(locale === 'en' ? 'en-US' : 'ru-RU');
   const currency = locale === 'en' ? 'UZS' : locale === 'uz' ? "so'm" : 'сум';
   const preorderOnly = product.recommendationAvailability
@@ -145,9 +149,9 @@ export function ProductCard({
   return (
     <article
       className="group relative h-full min-w-0 pb-3"
-      onMouseEnter={() => setImageIndex(images.length > 1 ? 1 : 0)}
+      onMouseEnter={() => setImageIndex(secondImageAvailable ? 1 : 0)}
       onMouseLeave={() => setImageIndex(0)}
-      onFocusCapture={() => setImageIndex(images.length > 1 ? 1 : 0)}
+      onFocusCapture={() => setImageIndex(secondImageAvailable ? 1 : 0)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setImageIndex(0);
       }}
@@ -156,13 +160,16 @@ export function ProductCard({
         href={productHref}
         className="block rounded-[var(--radius-control)] focus-visible:outline-none"
       >
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-control)] bg-[var(--color-surface-soft)]">
-          <div className="absolute inset-0 transition-opacity duration-300 ease-out group-hover:opacity-0 group-focus-within:opacity-0">
+        <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-surface-soft)]">
+          <div className={`absolute inset-0 transition-opacity duration-300 ease-out ${secondImageAvailable ? 'group-hover:opacity-0 group-focus-within:opacity-0' : ''}`}>
             <ProductImage src={images[0]} alt={plainTitle} zoomOnHover={false} />
           </div>
-          {images[1] ? (
+          {images[1] && secondImageAvailable ? (
             <div className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 group-focus-within:opacity-100">
-              <ProductImage src={images[1]} alt="" zoomOnHover={false} />
+              <ProductImage src={images[1]} alt="" zoomOnHover={false} onError={() => {
+                setSecondImageAvailable(false);
+                setImageIndex(0);
+              }} />
             </div>
           ) : null}
           {(isNew || availabilityLabel || discountPercent !== null) && (
@@ -179,49 +186,41 @@ export function ProductCard({
               )}
             </div>
           )}
-          {images.length > 1 ? (
+          {secondImageAvailable ? (
             <div className="absolute bottom-3 left-3 flex gap-1.5 rounded-full bg-black/25 px-2 py-1.5 backdrop-blur-sm" aria-hidden="true">
               {images.map((_, index) => <span key={index} className={`h-1 w-1/2 rounded-full transition-colors ${imageIndex === index ? 'bg-white' : 'bg-white/45'}`} />)}
             </div>
           ) : null}
         </div>
-        <div className="px-1 pt-3">
+        <div className="pt-2">
           {colors.length > 0 && (
-            <div className="mb-2 flex items-center gap-1" aria-label={locale === 'en' ? 'Available colors' : locale === 'uz' ? 'Mavjud ranglar' : 'Доступные цвета'}>
+            <div className="mb-1.5 flex items-center gap-1" aria-label={locale === 'en' ? 'Available colors' : locale === 'uz' ? 'Mavjud ranglar' : 'Доступные цвета'}>
               {colors.slice(0, 6).map(({ name, hex }) => (
                 <span key={`${name}-${hex}`} title={name} className="size-3.5 rounded-full border border-black/10 ring-1 ring-white" style={{ backgroundColor: hex }} />
               ))}
               {colors.length > 6 ? <span className="ml-0.5 text-[11px] text-[var(--color-muted)]">+{colors.length - 6}</span> : null}
             </div>
           )}
-          <div className="mb-1.5 flex min-h-4 items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-[var(--color-muted)]">
-            {product.country ? <span>{product.country}</span> : null}
-            {product.country && product.category ? <span className="size-1 rounded-full bg-[var(--color-muted)]/60" aria-hidden="true" /> : null}
-            {product.category ? <span className="truncate">{categoryName(product.category, locale)}</span> : null}
+          <div className="mb-1.5 flex min-h-5 items-center gap-1.5">
+            {discountPercent !== null ? <span className="rounded-sm bg-[#e60023] px-1.5 py-0.5 text-[10px] font-bold text-white">{locale === 'en' ? 'Sale' : locale === 'uz' ? 'Chegirma' : 'Скидка'}</span> : null}
+            {isNew && discountPercent === null ? <span className="rounded-sm bg-black px-1.5 py-0.5 text-[10px] font-bold text-white">{newLabel}</span> : null}
           </div>
-
-          <p className="line-clamp-2 min-h-10 text-[13px] font-medium leading-5 text-[var(--color-text)] sm:text-sm">
+          <p className="line-clamp-2 text-[13px] font-normal leading-[1.35] text-[var(--color-text)] sm:text-[15px]">
             <ProductRichText content={title} inline />
           </p>
-            {isNew && <span className="bg-black px-2 py-1 text-[10px] font-bold text-white">{newLabel}</span>}
-          {(sizes.length > 0 || colors.length > 0) && (
-            <p className="mt-1 truncate text-[11px] text-[var(--color-muted)]">
-              {sizes.slice(0, 4).join(' / ')}
-            </p>
-          )}
-          <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <strong className="text-sm font-bold tabular-nums tracking-tight text-[var(--color-text)] sm:text-base">{price} {currency}</strong>
+          <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <strong className={`text-sm font-bold tabular-nums tracking-tight sm:text-base ${discountPercent !== null ? 'text-[#e60023]' : 'text-[var(--color-text)]'}`}>{price} {currency}</strong>
             {discountPercent !== null ? <span className="text-xs tabular-nums text-[var(--color-muted)] line-through">{compareAtPrice.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')} {currency}</span> : null}
           </div>
         </div>
       </Link>
-      <div className="absolute right-3 top-3 flex gap-2">
+      <div className="absolute right-2 top-2 flex gap-1.5 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
         <button
           type="button"
           aria-label={labels.compare}
           aria-pressed={isCompared}
           onClick={toggleComparedProduct}
-          className={`flex size-10 items-center justify-center rounded-full shadow-md ring-1 transition-[background-color,color,box-shadow] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] ${compareButtonStateClass}`}
+          className={`flex size-9 items-center justify-center rounded-sm shadow-sm ring-1 transition-[background-color,color,box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] ${compareButtonStateClass}`}
         >
           <Scale size={17} />
         </button>
@@ -231,7 +230,7 @@ export function ProductCard({
           aria-pressed={isFavorite}
           disabled={favoritePending}
           onClick={() => void toggleFavoriteProduct()}
-          className={`flex size-10 items-center justify-center rounded-full shadow-md ring-1 transition-[background-color,color,box-shadow] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] disabled:cursor-wait disabled:opacity-60 ${
+          className={`flex size-9 items-center justify-center rounded-sm shadow-sm ring-1 transition-[background-color,color,box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] disabled:cursor-wait disabled:opacity-60 ${
             isFavorite
               ? 'bg-rose-600 text-white ring-rose-600 hover:bg-rose-700 dark:bg-rose-500 dark:ring-rose-500 dark:hover:bg-rose-600'
               : 'bg-[var(--color-surface)] text-[var(--color-text)] ring-[var(--color-border)] hover:bg-[var(--color-surface-soft)] hover:text-rose-600 hover:ring-[var(--color-border-hover)] dark:hover:text-rose-300'
