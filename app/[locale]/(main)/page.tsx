@@ -90,23 +90,52 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const c = copy[activeLocale];
   const s = sectionCopy[activeLocale];
   const to = (path: string) => `/${locale}${path}`;
-  const heroImage = '/images/stitch-hero-editorial.jpg';
+  const heroMarkets = [
+    { code: 'CN', title: s.china, caption: s.chinaBody },
+    { code: 'US', title: s.usa, caption: s.usaBody },
+    { code: 'TR', title: s.turkey, caption: s.turkeyBody },
+    { code: 'IT', title: s.europe, caption: s.europeBody },
+  ];
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@graph': [{ '@type': 'Organization', name: 'AVERON', url: SITE_URL }, { '@type': 'WebSite', name: 'AVERON', url: `${SITE_URL}/${locale}`, inLanguage: locale }] }).replace(/</g, '\\u003c') }} />
       <div className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto flex min-h-9 max-w-[1440px] items-center justify-between px-4 text-[10px] font-semibold uppercase tracking-[.08em] sm:px-8 lg:px-12"><span className="truncate">{c.route}</span><span className="hidden text-[var(--color-muted)] md:block">RU · UZ · EN</span></div></div>
 
-      <section className="mx-auto max-w-[1440px] px-4 py-6 sm:px-8 lg:px-12">
-        <div className="relative min-h-[540px] overflow-hidden border border-[var(--color-border)] bg-[#d9d5cf] lg:min-h-[610px]">
-          {heroImage ? <div className="absolute inset-0 bg-cover bg-center opacity-90" style={{ backgroundImage: `url(${heroImage})` }} /> : null}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent" />
-          <div className="relative flex min-h-[540px] max-w-[780px] flex-col justify-end p-7 text-white sm:p-12 lg:min-h-[610px] lg:p-16">
-            <p className="mb-4 text-[11px] font-bold uppercase tracking-[.1em]">{c.season}</p>
-            <h1 className="font-display max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-.035em] sm:text-6xl lg:text-7xl">{t('heroTitle')}</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-6 text-white/85 sm:text-base">{t('heroBody')}</p>
-            <div className="mt-7 max-w-xl"><SearchInput locale={locale} placeholder={t('searchPlaceholder')} className="h-12 rounded-none border-white/35 bg-black/35 text-white backdrop-blur placeholder:text-white/70" /></div>
-            <div className="averon-hero-actions mt-5 flex flex-wrap gap-2"><Link href={to('/catalog')} className="averon-primary-button">{t('catalogButton')} <ArrowRight size={15} /></Link><Link href={to('/about')} className="averon-secondary-button">{t('aboutButton')}</Link></div>
+      <section className="mx-auto max-w-[1440px] px-4 py-5 sm:px-8 sm:py-7 lg:px-12 lg:py-9">
+        <div className="grid overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,.65fr)]">
+          <div className="flex flex-col justify-center px-6 py-10 sm:px-10 sm:py-14 lg:min-h-[460px] lg:px-14 lg:py-16 xl:px-16">
+            <p className="averon-kicker">{t('badge')}</p>
+            <h1 className="font-display mt-4 max-w-4xl text-[clamp(2.5rem,5.2vw,5rem)] font-semibold leading-[.98] tracking-[-.045em]">
+              {t('heroTitle')}
+            </h1>
+            <p className="mt-6 max-w-2xl text-sm leading-6 text-[var(--color-muted)] sm:text-base sm:leading-7">{t('heroBody')}</p>
+            <div className="mt-8 max-w-2xl">
+              <SearchInput locale={locale} placeholder={t('searchPlaceholder')} className="h-14 rounded-none bg-[var(--color-bg)]" />
+            </div>
+            <div className="averon-hero-actions mt-4 flex flex-wrap gap-2">
+              <Link href={to('/catalog')} className="averon-primary-button">{t('catalogButton')} <ArrowRight size={15} /></Link>
+              <Link href={to('/about')} className="averon-secondary-button">{t('aboutButton')}</Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-px border-t border-[var(--color-border)] bg-[var(--color-border)] lg:border-l lg:border-t-0">
+            {heroMarkets.map((market, index) => (
+              <Link
+                key={market.code}
+                href={to(`/catalog?country=${market.code}`)}
+                className="group flex min-h-40 flex-col justify-between bg-[var(--color-surface-soft)] p-5 transition-colors hover:bg-[var(--color-surface)] sm:min-h-48 sm:p-6 lg:min-h-0"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-[11px] font-bold tracking-[.16em] text-[var(--color-muted)]">0{index + 1} / {market.code}</span>
+                  <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
+                </div>
+                <div>
+                  <h2 className="averon-title text-xl sm:text-2xl">{market.title}</h2>
+                  <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--color-muted)]">{market.caption}</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
