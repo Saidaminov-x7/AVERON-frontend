@@ -397,7 +397,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             </Link>
 
             <nav className="hidden items-center gap-0.5 lg:flex" aria-label={t('menu')}>
-              {visibleNavLinks.filter(({ href }) => href !== '/').map(({ href, label }) => (
+              {visibleNavLinks.map(({ href, label }) => (
                   <Link
                     key={href}
                     href={to(href)}
