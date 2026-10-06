@@ -379,7 +379,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
       <header
         ref={searchRef}
         className={cn(
-          'sticky top-0 z-40 mx-auto flex h-[calc(4.5rem+env(safe-area-inset-top))] w-full max-w-[1440px] items-center border-x border-b border-[var(--color-border)] pt-[env(safe-area-inset-top)] transition-[background-color,backdrop-filter] duration-300 sm:h-[72px] sm:pt-0',
+          'sticky top-0 z-40 flex h-[calc(4.5rem+env(safe-area-inset-top))] w-full items-center border-b border-[var(--color-border)] pt-[env(safe-area-inset-top)] transition-[background-color,backdrop-filter] duration-300 sm:h-[72px] sm:pt-0',
           scrolled
             ? 'bg-[color-mix(in_srgb,var(--color-surface)_90%,transparent)] backdrop-blur-2xl'
             : 'bg-[var(--color-surface)]'
