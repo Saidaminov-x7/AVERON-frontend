@@ -486,7 +486,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </Link>
             ) : (
               <div className="flex items-center gap-1">
-                <Link href={to('/login')} className="h-10 whitespace-nowrap px-3 py-2.5 text-sm font-semibold text-[var(--color-text)] transition-opacity hover:opacity-65">
+                <Link href={to('/login')} className="averon-secondary-button h-10 whitespace-nowrap px-4 text-sm font-semibold">
                   {t('login')}
                 </Link>
                 <Link href={to('/register')} className="averon-primary-button h-10 whitespace-nowrap px-4 text-sm">
