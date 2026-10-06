@@ -44,6 +44,8 @@ function ProductShelf({ title, href, products, locale, allLabel }: {
   locale: string;
   allLabel: string;
 }) {
+  if (products.length === 0) return null;
+
   return (
     <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 lg:px-12">
       <div className="mb-6 flex items-end justify-between gap-4">
