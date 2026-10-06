@@ -23,6 +23,11 @@
 
 :root {
   --layout-max-width: 1440px;
+  --color-scroll-top-bg: #ffffff;
+  --color-scroll-top-hover: #f1f1f1;
+  --color-scroll-top-fg: #1a1a1a;
+  --color-scroll-top-border: #1a1a1a;
+  --shadow-scroll-top: 0 4px 18px rgb(0 0 0 / 18%);
   --color-primary: #1a1a1a;
   --color-secondary: #404040;
   --color-bg: #ffffff;
@@ -84,6 +89,14 @@
   --duration-ui: 180ms;
   --duration-overlay: 280ms;
   --shadow-drawer: -18px 0 48px rgb(0 0 0 / .18);
+}
+
+.dark {
+  --color-scroll-top-bg: #f4f4f4;
+  --color-scroll-top-hover: #ffffff;
+  --color-scroll-top-fg: #111111;
+  --color-scroll-top-border: #ffffff;
+  --shadow-scroll-top: 0 4px 20px rgb(0 0 0 / 45%);
 }
 
 /* Keep the storefront canvas consistent while allowing each page to use all available width. */

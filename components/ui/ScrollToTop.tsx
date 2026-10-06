@@ -31,7 +31,7 @@ export function ScrollToTop() {
       {isVisible && (
         <button
           onClick={scrollToTop}
-          className="flex size-11 items-center justify-center rounded-full bg-primary-600 text-white shadow-lg shadow-primary-900/20 transition hover:-translate-y-0.5 hover:brightness-110"
+          className="flex size-11 items-center justify-center rounded-full border border-[var(--color-scroll-top-border)] bg-[var(--color-scroll-top-bg)] text-[var(--color-scroll-top-fg)] shadow-[var(--shadow-scroll-top)] transition hover:-translate-y-0.5 hover:bg-[var(--color-scroll-top-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg)]"
           aria-label="Наверх"
         >
           <ArrowUp size={20} />
