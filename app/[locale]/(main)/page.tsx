@@ -136,7 +136,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             { title: c.outerwear, slug: 'outerwear', image: newest[1]?.images?.[0]?.url || products[1]?.images?.[0]?.url },
             { title: c.shoes, slug: 'shoes', image: newest[2]?.images?.[0]?.url || products[2]?.images?.[0]?.url },
             { title: c.accessories, slug: 'accessories', image: newest[3]?.images?.[0]?.url || products[3]?.images?.[0]?.url },
-          ]).map((category) => (
+          ]).map((category: { title: string; slug: string; image?: string }) => (
             <Link
               key={category.title}
               href={to(`/catalog?category=${encodeURIComponent(category.slug)}`)}
