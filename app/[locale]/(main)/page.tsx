@@ -16,6 +16,15 @@ async function getProducts(sort: 'popular' | 'newest', limit = 12) {
   } catch { return []; }
 }
 
+async function getCategories() {
+  try {
+    const response = await fetch(`${externalBaseURL}/api/v1/categories`, { next: { revalidate: 60 }, signal: AbortSignal.timeout(3000) });
+    if (!response.ok) return [];
+    const data = await response.json();
+    return Array.isArray(data) ? data : data.items || [];
+  } catch { return []; }
+}
+
 const sectionCopy = {
   ru: {
     directions: 'Магазины мира', directionsBody: 'Выберите страну — мы покажем товары именно из этого направления.',
@@ -78,9 +87,10 @@ const copy = {
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const activeLocale = locale === 'en' || locale === 'uz' ? locale : 'ru';
-  const [popularProducts, newestProducts, t] = await Promise.all([
+  const [popularProducts, newestProducts, categories, t] = await Promise.all([
     getProducts('popular'),
     getProducts('newest'),
+    getCategories(),
     getTranslations({ locale, namespace: 'home' }),
   ]);
   const products = popularProducts as StoreProduct[];
@@ -117,15 +127,19 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <Link href={to('/catalog')} className="hidden items-center gap-2 text-sm font-semibold hover:opacity-60 sm:flex">{s.all} <ArrowRight size={15} /></Link>
         </div>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          {[
-            { title: c.clothing, image: newest[0]?.images?.[0]?.url || products[0]?.images?.[0]?.url },
-            { title: c.outerwear, image: newest[1]?.images?.[0]?.url || products[1]?.images?.[0]?.url },
-            { title: c.shoes, image: newest[2]?.images?.[0]?.url || products[2]?.images?.[0]?.url },
-            { title: c.accessories, image: newest[3]?.images?.[0]?.url || products[3]?.images?.[0]?.url },
-          ].map((category) => (
+          {(categories.length ? categories.slice(0, 4).map((category: { slug: string; name?: Record<string, string> | string; imageUrl?: string | null }) => ({
+            title: typeof category.name === 'string' ? category.name : category.name?.[activeLocale] || category.name?.ru || category.slug,
+            slug: category.slug,
+            image: category.imageUrl || undefined,
+          })) : [
+            { title: c.clothing, slug: 'clothing', image: newest[0]?.images?.[0]?.url || products[0]?.images?.[0]?.url },
+            { title: c.outerwear, slug: 'outerwear', image: newest[1]?.images?.[0]?.url || products[1]?.images?.[0]?.url },
+            { title: c.shoes, slug: 'shoes', image: newest[2]?.images?.[0]?.url || products[2]?.images?.[0]?.url },
+            { title: c.accessories, slug: 'accessories', image: newest[3]?.images?.[0]?.url || products[3]?.images?.[0]?.url },
+          ]).map((category) => (
             <Link
               key={category.title}
-              href={to(`/catalog?q=${encodeURIComponent(category.title)}`)}
+              href={to(`/catalog?category=${encodeURIComponent(category.slug)}`)}
               className="group border-0 bg-[var(--color-surface)]"
             >
               <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-image-surface)]">
