@@ -8,7 +8,7 @@ import { useSiteSettings } from '@/hooks/useSiteSettings';
 import type { NavLink } from '@/lib/siteSettings';
 import {
   Search, X, Heart, ChevronRight, LogIn, LogOut, Menu, User, Scale, ShoppingCart,
-  Home, ShoppingBag, Sparkles, Info, Headphones,
+  Headphones,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
@@ -385,7 +385,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             : 'bg-[var(--color-surface)]'
         )}
       >
-        <div className="mx-auto flex w-full max-w-[1540px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           
           {/* Left: Logo & Nav */}
           <div className="flex min-w-0 items-center gap-7">
@@ -596,11 +596,11 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'var(--ease-drawer)',
         }}
         className={
-          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-full max-w-[min(100vw,30rem)] flex-col border-l border-[var(--color-border)] bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
+          `fixed inset-0 z-[61] flex h-dvh w-full flex-col overflow-y-auto bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
           (mobileOpen ? 'translate-x-0' : 'translate-x-full')
         }
       >
-        <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-border)] px-4 py-3.5 min-[360px]:px-5">
+        <div className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface)] px-5">
           <div className="flex min-w-0 items-baseline gap-2 min-[360px]:gap-3">
             <Link href={to('/')} onClick={closeMobileMenu} className="truncate text-base font-black tracking-[0.16em] text-[var(--color-text)] min-[360px]:text-lg min-[360px]:tracking-[0.2em]">
               {settings?.siteName || 'AVERON'}
@@ -618,7 +618,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-5 min-[360px]:px-5">
+        <div className="mx-auto w-full max-w-xl flex-none px-5 pb-8 pt-6">
           <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative">
             <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
             <input
@@ -629,7 +629,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               aria-label={t('search')}
               autoComplete="off"
               enterKeyHint="search"
-              className="h-12 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] pl-11 pr-4 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-primary)] focus:bg-[var(--color-surface)]"
+              className="h-12 w-full border-0 border-b border-[var(--color-border)] bg-transparent pl-9 pr-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-primary)]"
             />
           </form>
           {mobileSuggestions.length > 0 && (
@@ -648,17 +648,17 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             </div>
           )}
 
-          <section className="mt-6" aria-labelledby="mobile-markets-title">
+          <section className="mt-5" aria-labelledby="mobile-markets-title">
             <p id="mobile-markets-title" className="px-1 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">
               {marketCopy.markets}
             </p>
-            <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-0">
               {countryLinks.map(({ href, label }) => (
                 <Link
                   key={href}
                   href={to(href)}
                   onClick={closeMobileMenu}
-                  className="flex min-h-12 items-center justify-between rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm font-semibold text-[var(--color-text)] hover:bg-[var(--color-surface-soft)]"
+                  className="flex min-h-12 items-center justify-between border-b border-[var(--color-border)] px-0 text-sm font-medium text-[var(--color-text)] hover:text-[var(--color-muted)]"
                 >
                   <span>{label}</span>
                   <ChevronRight size={15} className="text-[var(--color-muted)]" aria-hidden="true" />
@@ -667,19 +667,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             </div>
           </section>
 
-          <nav aria-label={t('menu')} className="mt-7">
-            <div className="space-y-1">
-              {visibleNavLinks.map(({ href, label }) => {
+          <nav aria-label={t('menu')} className="mt-8 border-t border-[var(--color-border)]">
+            <div>
+              {visibleNavLinks.map(({ href, label }, index) => {
                 const active = isActive(href);
-                const icon = href === '/'
-                  ? <Home size={18} />
-                  : href.startsWith('/catalog')
-                    ? <ShoppingBag size={18} />
-                    : href === '/ai'
-                      ? <Sparkles size={18} />
-                      : href === '/about'
-                        ? <Info size={18} />
-                        : <ChevronRight size={18} />;
                 return (
                   <Link
                     key={href}
@@ -687,19 +678,14 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     onClick={closeMobileMenu}
                     aria-current={active ? 'page' : undefined}
                     className={
-                      'group flex min-h-[58px] items-center gap-3 rounded-[var(--radius-control)] px-3 transition-colors ' +
+                      'group flex min-h-[64px] items-center gap-4 border-b border-[var(--color-border)] px-0 transition-colors ' +
                       (active
-                        ? 'bg-[var(--color-surface-soft)] text-[var(--color-text)]'
-                        : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-text)]')
+                        ? 'text-[var(--color-text)]'
+                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]')
                     }
                   >
-                    <span className={
-                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-control)] transition-colors ' +
-                      (active ? 'bg-[var(--color-surface)] text-[var(--color-text)]' : 'bg-[var(--color-surface-soft)] text-[var(--color-muted)] group-hover:text-[var(--color-text)]')
-                    } aria-hidden="true">
-                      {icon}
-                    </span>
-                    <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{label}</span>
+                    <span className="w-6 shrink-0 text-[10px] font-semibold tabular-nums tracking-[.12em] text-[var(--color-muted)]" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                    <span className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">{label}</span>
                     <ChevronRight size={16} className="shrink-0 text-[var(--color-muted)] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                   </Link>
                 );
@@ -718,8 +704,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             if (utilityLinks.length === 0) return null;
 
             return (
-              <div className="mt-7 border-t border-[var(--color-border)] pt-5">
-                <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
+              <div className="mt-8">
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">{t('menu')}</p>
+                <div className="grid grid-cols-2 gap-x-6">
                   {utilityLinks.map(({ href, label, icon, count }) => {
                     const active = isActive(href);
                     return (
@@ -730,13 +717,13 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                         aria-current={active ? 'page' : undefined}
                         aria-label={count > 0 ? `${label}, ${count}` : label}
                         className={
-                          'flex min-h-[68px] items-center gap-3 rounded-[var(--radius-control)] border px-3 transition-colors ' +
+                          'flex min-h-12 items-center gap-2 border-b px-0 transition-colors ' +
                           (active
-                            ? 'border-[var(--color-muted)] bg-[var(--color-surface-soft)] text-[var(--color-text)]'
-                            : 'border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-text)]')
+                            ? 'border-[var(--color-text)] text-[var(--color-text)]'
+                            : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)]')
                         }
                       >
-                        <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface-soft)] text-[var(--color-text)]" aria-hidden="true">
+                        <span className="relative flex h-8 w-8 shrink-0 items-center justify-start text-[var(--color-text)]" aria-hidden="true">
                           {icon}
                           {count > 0 && (
                             <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-text)] px-1 text-[9px] font-bold leading-none text-[var(--color-surface)]">
@@ -754,7 +741,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           })()}
         </div>
 
-        <div className="shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-5 pb-4 pt-3">
+        <div className="mx-auto w-full max-w-xl shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-5 pb-5 pt-4">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-xs font-medium text-[var(--color-text-secondary)]">{t('langAndTheme')}</span>
             <div className="flex items-center gap-2">
