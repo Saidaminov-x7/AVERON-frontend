@@ -10,6 +10,8 @@ export interface AuthUser {
   role?: string;
   verified?: boolean;
   defaultCatalogCountry?: 'CN' | 'US' | 'TR' | 'IT' | 'GB' | null;
+  heightCm?: number | null;
+  weightKg?: number | null;
 }
 
 interface AuthState {

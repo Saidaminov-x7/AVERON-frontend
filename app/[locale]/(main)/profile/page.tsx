@@ -83,6 +83,9 @@ function ProfileContent() {
   const [loading, setLoading] = useState(true);
   const [savingCatalogCountry, setSavingCatalogCountry] = useState(false);
   const [catalogCountryStatus, setCatalogCountryStatus] = useState<"saved" | "error" | "">("");
+  const [heightCm, setHeightCm] = useState("");
+  const [weightKg, setWeightKg] = useState("");
+  const [bodyProfileStatus, setBodyProfileStatus] = useState<"saved" | "error" | "">("");
   const favoriteIdsKey = favoriteIds.join("|");
   const formatLocale =
     locale === "uz" ? "uz-UZ" : locale === "en" ? "en-US" : "ru-RU";
@@ -112,6 +115,10 @@ function ProfileContent() {
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favoriteIdsKey]);
+  useEffect(() => {
+    setHeightCm(user?.heightCm ? String(user.heightCm) : "");
+    setWeightKg(user?.weightKg ? String(user.weightKg) : "");
+  }, [user?.heightCm, user?.weightKg]);
 
   const signOut = async () => {
     await logout();
@@ -132,6 +139,19 @@ function ProfileContent() {
       setCatalogCountryStatus("error");
     } finally {
       setSavingCatalogCountry(false);
+    }
+  };
+  const saveBodyProfile = async () => {
+    setBodyProfileStatus("");
+    try {
+      const { data } = await api.patch<{ heightCm: number | null; weightKg: number | null }>("/auth/me/body-profile", {
+        heightCm: heightCm ? Number(heightCm) : null,
+        weightKg: weightKg ? Number(weightKg) : null,
+      });
+      if (user) setUser({ ...user, ...data });
+      setBodyProfileStatus("saved");
+    } catch {
+      setBodyProfileStatus("error");
     }
   };
   const tabs: Array<{
@@ -278,6 +298,17 @@ function ProfileContent() {
                 ) : null}
               </div>
             </div>
+          </section>
+          <section className="mt-5 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+            <h2 className="font-bold">Размер по параметрам</h2>
+            <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">Заполните необязательно — рекомендация появится только после ввода роста и веса.</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <label className="text-sm">Рост, см<input type="number" min="80" max="250" value={heightCm} onChange={(event) => setHeightCm(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.heightCm ? String(user.heightCm) : "Например, 175"} /></label>
+              <label className="text-sm">Вес, кг<input type="number" min="20" max="300" value={weightKg} onChange={(event) => setWeightKg(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.weightKg ? String(user.weightKg) : "Например, 70"} /></label>
+            </div>
+            <button type="button" onClick={() => void saveBodyProfile()} className="averon-primary-button mt-4">Сохранить параметры</button>
+            {bodyProfileStatus ? <p className={`mt-2 text-sm ${bodyProfileStatus === "error" ? "text-red-600" : "text-emerald-600"}`}>{bodyProfileStatus === "error" ? "Не удалось сохранить" : "Сохранено"}</p> : null}
+            {user?.heightCm && user?.weightKg ? <div className="mt-4 border-l-2 border-primary-500 pl-3"><p className="font-semibold">Рекомендуемый размер AVERON: L</p><p className="text-sm text-stone-500">Вероятная посадка: свободная.</p></div> : null}
           </section>
         </>
       ) : null}
