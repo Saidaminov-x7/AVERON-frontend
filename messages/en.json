@@ -41,8 +41,8 @@
   "footer": {
     "description": "Clothing, shoes, and accessories with verified product details and delivery across Uzbekistan.",
     "buyers": "For buyers",
-    "helpTitle": "Help",
-    "documentsTitle": "Documents",
+    "helpTitle": "FAQ / Help",
+    "documentsTitle": "Legal pages",
     "channel": "Our channel",
     "support": "Support",
     "rights": "All rights reserved.",
@@ -61,7 +61,8 @@
     "documents": {
       "terms": "Terms of use",
       "privacy": "Privacy policy",
-      "offer": "Public offer",
+    "offer": "Public offer",
+    "use": "Terms of use",
       "delivery": "Delivery and payment",
       "returns": "Returns"
     }

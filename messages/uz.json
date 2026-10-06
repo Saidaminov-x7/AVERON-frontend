@@ -41,8 +41,8 @@
   "footer": {
     "description": "Kiyim, poyabzal va aksessuarlar: tekshirilgan mahsulot ma’lumotlari va O‘zbekiston bo‘ylab yetkazib berish.",
     "buyers": "Xaridorlarga",
-    "helpTitle": "Yordam",
-    "documentsTitle": "Hujjatlar",
+    "helpTitle": "FAQ / Yordam",
+    "documentsTitle": "Yuridik sahifalar",
     "channel": "Kanalimiz",
     "support": "Yordam",
     "rights": "Barcha huquqlar himoyalangan.",
@@ -61,7 +61,8 @@
     "documents": {
       "terms": "Foydalanuvchi kelishuvi",
       "privacy": "Maxfiylik siyosati",
-      "offer": "Ommaviy oferta",
+    "offer": "Ommaviy oferta",
+    "use": "Foydalanish shartlari",
       "delivery": "Yetkazib berish va to‘lov",
       "returns": "Tovarni qaytarish"
     }
