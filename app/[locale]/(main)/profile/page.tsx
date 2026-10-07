@@ -303,12 +303,12 @@ function ProfileContent() {
             <h2 className="font-bold">Размер по параметрам</h2>
             <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">Заполните необязательно — рекомендация появится только после ввода роста и веса.</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <label className="text-sm">Рост, см<input type="number" min="80" max="250" value={heightCm} onChange={(event) => setHeightCm(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.heightCm ? String(user.heightCm) : "Например, 175"} /></label>
-              <label className="text-sm">Вес, кг<input type="number" min="20" max="300" value={weightKg} onChange={(event) => setWeightKg(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.weightKg ? String(user.weightKg) : "Например, 70"} /></label>
+              <label className="text-sm">{t("bodyProfile.heightLabel")}<input type="number" min="80" max="250" value={heightCm} onChange={(event) => setHeightCm(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.heightCm ? String(user.heightCm) : t("bodyProfile.heightPlaceholder")} /></label>
+              <label className="text-sm">{t("bodyProfile.weightLabel")}<input type="number" min="20" max="300" value={weightKg} onChange={(event) => setWeightKg(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.weightKg ? String(user.weightKg) : t("bodyProfile.weightPlaceholder")} /></label>
             </div>
             <button type="button" onClick={() => void saveBodyProfile()} className="averon-primary-button mt-4">Сохранить параметры</button>
             {bodyProfileStatus ? <p className={`mt-2 text-sm ${bodyProfileStatus === "error" ? "text-red-600" : "text-emerald-600"}`}>{bodyProfileStatus === "error" ? "Не удалось сохранить" : "Сохранено"}</p> : null}
-            {user?.heightCm && user?.weightKg ? <div className="mt-4 border-l-2 border-primary-500 pl-3"><p className="font-semibold">Рекомендуемый размер AVERON: L</p><p className="text-sm text-stone-500">Вероятная посадка: свободная.</p></div> : null}
+            <p className="mt-4 text-sm text-stone-500">{t("bodyProfile.noRecommendation")}</p>
           </section>
         </>
       ) : null}

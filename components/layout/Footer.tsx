@@ -22,7 +22,6 @@ const DOCUMENT_LINKS = [
   ["documents.terms", "/terms"],
   ["documents.privacy", "/privacy"],
   ["documents.offer", "/public-offer"],
-  ["documents.use", "/terms"],
   ["documents.delivery", "/delivery"],
   ["documents.returns", "/returns"],
 ] as const;
