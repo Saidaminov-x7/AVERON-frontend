@@ -284,6 +284,7 @@
     "productDetails": "Информация о товаре",
     "purchaseOptions": "Параметры и покупка",
     "sizeChartTitle": "Таблица размеров",
+    "recommendedSize": "Рекомендуемый размер: {size}",
     "country": "Страна",
     "category": "Категория",
     "sizes": "Размеры",
@@ -313,7 +314,7 @@
     "signIn": "Войти"
   },
   "profile": {
-    "bodyProfile": { "heightLabel": "Рост, см", "weightLabel": "Вес, кг", "heightPlaceholder": "Например, 175", "weightPlaceholder": "Например, 70", "noRecommendation": "Точный размер будет показан только для товаров с таблицей размеров." },
+    "bodyProfile": { "heightLabel": "Рост, см", "weightLabel": "Вес, кг", "heightPlaceholder": "Например, 175", "weightPlaceholder": "Например, 70", "save": "Сохранить параметры", "saved": "Сохранено", "saveError": "Не удалось сохранить", "noRecommendation": "Точный размер будет показан только для товаров с таблицей размеров." },
     "accountName": "Покупатель AVERON",
     "active": "Активен",
     "phoneMissing": "Добавьте номер телефона для доступа к функциям AI",
