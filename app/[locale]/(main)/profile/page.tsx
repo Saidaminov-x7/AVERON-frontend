@@ -116,6 +116,8 @@ function ProfileContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favoriteIdsKey]);
   useEffect(() => {
+    // Profile values are loaded asynchronously into the auth store.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHeightCm(user?.heightCm ? String(user.heightCm) : "");
     setWeightKg(user?.weightKg ? String(user.weightKg) : "");
   }, [user?.heightCm, user?.weightKg]);
