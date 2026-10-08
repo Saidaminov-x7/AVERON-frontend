@@ -284,6 +284,7 @@
     "productDetails": "Mahsulot haqida ma’lumot",
     "purchaseOptions": "Tanlov va xarid",
     "sizeChartTitle": "O‘lchamlar jadvali",
+    "recommendedSize": "Tavsiya etilgan o‘lcham: {size}",
     "country": "Mamlakat",
     "category": "Toifa",
     "sizes": "O‘lchamlar",
@@ -313,7 +314,7 @@
     "signIn": "Kirish"
   },
   "profile": {
-    "bodyProfile": { "heightLabel": "Bo‘y, sm", "weightLabel": "Vazn, kg", "heightPlaceholder": "Masalan, 175", "weightPlaceholder": "Masalan, 70", "noRecommendation": "Aniq o‘lcham faqat o‘lcham jadvali bor mahsulotlar uchun ko‘rsatiladi." },
+    "bodyProfile": { "heightLabel": "Bo‘y, sm", "weightLabel": "Vazn, kg", "heightPlaceholder": "Masalan, 175", "weightPlaceholder": "Masalan, 70", "save": "Parametrlarni saqlash", "saved": "Saqlandi", "saveError": "Saqlab bo‘lmadi", "noRecommendation": "Aniq o‘lcham faqat o‘lcham jadvali bor mahsulotlar uchun ko‘rsatiladi." },
     "accountName": "AVERON xaridori",
     "active": "Faol",
     "phoneMissing": "AI funksiyalaridan foydalanish uchun telefon raqamingizni qo‘shing",

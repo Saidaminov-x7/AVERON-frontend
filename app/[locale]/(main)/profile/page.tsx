@@ -83,8 +83,8 @@ function ProfileContent() {
   const [loading, setLoading] = useState(true);
   const [savingCatalogCountry, setSavingCatalogCountry] = useState(false);
   const [catalogCountryStatus, setCatalogCountryStatus] = useState<"saved" | "error" | "">("");
-  const [heightCm, setHeightCm] = useState("");
-  const [weightKg, setWeightKg] = useState("");
+  const [heightCmDraft, setHeightCmDraft] = useState<string | null>(null);
+  const [weightKgDraft, setWeightKgDraft] = useState<string | null>(null);
   const [bodyProfileStatus, setBodyProfileStatus] = useState<"saved" | "error" | "">("");
   const favoriteIdsKey = favoriteIds.join("|");
   const formatLocale =
@@ -115,10 +115,8 @@ function ProfileContent() {
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favoriteIdsKey]);
-  useEffect(() => {
-    setHeightCm(user?.heightCm ? String(user.heightCm) : "");
-    setWeightKg(user?.weightKg ? String(user.weightKg) : "");
-  }, [user?.heightCm, user?.weightKg]);
+  const heightCm = heightCmDraft ?? (user?.heightCm ? String(user.heightCm) : "");
+  const weightKg = weightKgDraft ?? (user?.weightKg ? String(user.weightKg) : "");
 
   const signOut = async () => {
     await logout();
@@ -149,6 +147,8 @@ function ProfileContent() {
         weightKg: weightKg ? Number(weightKg) : null,
       });
       if (user) setUser({ ...user, ...data });
+      setHeightCmDraft(null);
+      setWeightKgDraft(null);
       setBodyProfileStatus("saved");
     } catch {
       setBodyProfileStatus("error");
@@ -303,11 +303,11 @@ function ProfileContent() {
             <h2 className="font-bold">Размер по параметрам</h2>
             <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">Заполните необязательно — рекомендация появится только после ввода роста и веса.</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <label className="text-sm">{t("bodyProfile.heightLabel")}<input type="number" min="80" max="250" value={heightCm} onChange={(event) => setHeightCm(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.heightCm ? String(user.heightCm) : t("bodyProfile.heightPlaceholder")} /></label>
-              <label className="text-sm">{t("bodyProfile.weightLabel")}<input type="number" min="20" max="300" value={weightKg} onChange={(event) => setWeightKg(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.weightKg ? String(user.weightKg) : t("bodyProfile.weightPlaceholder")} /></label>
+              <label className="text-sm">{t("bodyProfile.heightLabel")}<input type="number" min="80" max="250" value={heightCm} onChange={(event) => setHeightCmDraft(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={t("bodyProfile.heightPlaceholder")} /></label>
+              <label className="text-sm">{t("bodyProfile.weightLabel")}<input type="number" min="20" max="300" value={weightKg} onChange={(event) => setWeightKgDraft(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={t("bodyProfile.weightPlaceholder")} /></label>
             </div>
-            <button type="button" onClick={() => void saveBodyProfile()} className="averon-primary-button mt-4">Сохранить параметры</button>
-            {bodyProfileStatus ? <p className={`mt-2 text-sm ${bodyProfileStatus === "error" ? "text-red-600" : "text-emerald-600"}`}>{bodyProfileStatus === "error" ? "Не удалось сохранить" : "Сохранено"}</p> : null}
+            <button type="button" onClick={() => void saveBodyProfile()} className="averon-primary-button mt-4">{t("bodyProfile.save")}</button>
+            {bodyProfileStatus ? <p className={`mt-2 text-sm ${bodyProfileStatus === "error" ? "text-red-600" : "text-emerald-600"}`}>{bodyProfileStatus === "error" ? t("bodyProfile.saveError") : t("bodyProfile.saved")}</p> : null}
             <p className="mt-4 text-sm text-stone-500">{t("bodyProfile.noRecommendation")}</p>
           </section>
         </>

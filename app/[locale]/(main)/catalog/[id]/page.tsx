@@ -10,6 +10,7 @@ import { ProductGallery } from "@/components/commerce/ProductGallery";
 import { ProductRichText } from "@/components/commerce/ProductRichText";
 import { ProductReviews } from "@/components/commerce/ProductReviews";
 import { ProductSizeChart } from "@/components/commerce/ProductSizeChart";
+import { ProductSizeRecommendation } from "@/components/commerce/ProductSizeRecommendation";
 import { CompleteTheLook } from "@/components/commerce/CompleteTheLook";
 import { ProductRecommendations } from "@/components/commerce/ProductRecommendations";
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
@@ -432,18 +433,19 @@ export default async function ProductPage({
                 </div>
               </article>
             </div>
-            {product.sizeChartType ? (
+            {product.sizeChartType || product.sizeChart?.length ? (
               <div className="min-w-0 lg:pl-8">
-                <ProductSizeChart sizeChartType={product.sizeChartType} locale={locale} title={t("sizeChartTitle")} />
+                <ProductSizeRecommendation productId={product.id} locale={locale} />
+                <ProductSizeChart sizeChart={product.sizeChart} sizeChartType={product.sizeChartType} locale={locale} title={t("sizeChartTitle")} />
               </div>
             ) : null}
           </div>
           {composition || care ? (
             <section
-              className={`mt-8 grid grid-cols-1 border-t border-[var(--color-border)] pt-6 sm:pt-8 ${product.sizeChartType ? 'lg:grid-cols-2' : ''}`}
+              className={`mt-8 grid grid-cols-1 border-t border-[var(--color-border)] pt-6 sm:pt-8 ${product.sizeChartType || product.sizeChart?.length ? 'lg:grid-cols-2' : ''}`}
               aria-label={copy.productDetails}
             >
-              <div className={`min-w-0 space-y-5 ${product.sizeChartType ? 'lg:pr-8' : ''}`}>
+              <div className={`min-w-0 space-y-5 ${product.sizeChartType || product.sizeChart?.length ? 'lg:pr-8' : ''}`}>
                 <h2 className="text-lg font-semibold tracking-tight text-[var(--color-text)] sm:text-xl">
                   {copy.compositionCareTitle}
                 </h2>
@@ -464,7 +466,7 @@ export default async function ProductPage({
                   </div>
                 ) : null}
               </div>
-              {product.sizeChartType ? (
+              {product.sizeChartType || product.sizeChart?.length ? (
                 <div aria-hidden="true" className="hidden min-w-0 lg:block lg:border-l lg:border-[var(--color-border)] lg:pl-8" />
               ) : null}
             </section>
