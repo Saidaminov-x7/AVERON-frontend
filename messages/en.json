@@ -284,6 +284,7 @@
     "productDetails": "Product information",
     "purchaseOptions": "Options and purchase",
     "sizeChartTitle": "Size guide",
+    "recommendedSize": "Recommended size: {size}",
     "country": "Country",
     "category": "Category",
     "sizes": "Sizes",
@@ -313,7 +314,7 @@
     "signIn": "Sign in"
   },
   "profile": {
-    "bodyProfile": { "heightLabel": "Height, cm", "weightLabel": "Weight, kg", "heightPlaceholder": "For example, 175", "weightPlaceholder": "For example, 70", "noRecommendation": "An exact size is shown only for products with a size chart." },
+    "bodyProfile": { "heightLabel": "Height, cm", "weightLabel": "Weight, kg", "heightPlaceholder": "For example, 175", "weightPlaceholder": "For example, 70", "save": "Save measurements", "saved": "Saved", "saveError": "Could not save", "noRecommendation": "An exact size is shown only for products with a size chart." },
     "accountName": "AVERON customer",
     "active": "Active",
     "phoneMissing": "Add a phone number to access AI features",

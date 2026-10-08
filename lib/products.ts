@@ -19,6 +19,8 @@ export type StoreProduct = {
   createdAt?: string;
   publicId?: string | null;
   sizeChartType?: 'CLOTHING' | 'SHOES' | 'KIDS_CLOTHING' | null;
+  sizeChart?: ProductSizeChartRow[] | null;
+  sizeRecommendation?: { size: string; confidence: 'medium' | 'low'; fit: 'regular' } | null;
   source?: string | null;
   sourceUrl?: string | null;
   translations?: Record<string, Translation>;
@@ -50,6 +52,21 @@ export type StoreProduct = {
     available?: boolean;
     salePriceUzs?: string | number;
   }>;
+};
+
+export type ProductSizeChartRow = {
+  size: string;
+  shouldersCm?: number;
+  chestCm?: number;
+  lengthCm?: number;
+  sleeveCm?: number;
+  waistCm?: number;
+  hipsCm?: number;
+  inseamCm?: number;
+  recommendedHeightMinCm?: number;
+  recommendedHeightMaxCm?: number;
+  recommendedWeightMinKg?: number;
+  recommendedWeightMaxKg?: number;
 };
 
 export function productRouteId(product: Pick<StoreProduct, 'publicId' | 'slug'>) {
