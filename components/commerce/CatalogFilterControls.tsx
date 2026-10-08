@@ -130,7 +130,7 @@ function CatalogFilterDraft({
   const colors = [...new Set([...(draft.color ? [draft.color] : []), ...facets.colors])];
 
   return (
-    <form onSubmit={apply} aria-busy={isPending}>
+    <form onSubmit={apply} aria-busy={isPending} className="flex h-full flex-col">
       <label className="text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]" htmlFor={`${id}-search`}>{t('search')}</label>
       <input id={`${id}-search`} className={`${controlClass} mt-2`} value={draft.q} onChange={(event) => set('q', event.target.value)} placeholder={t('placeholder')} />
       <div className="mt-5">
@@ -175,6 +175,7 @@ function CatalogFilterDraft({
       </div>
       <Button type="submit" loading={isPending} loadingLabel={t('applying')} className="mt-5 w-full" aria-live="polite">{t('show')}</Button>
       <Button type="button" variant="outline" disabled={!active || isPending} onClick={reset} className="mt-2 w-full">{t('reset')}</Button>
+      <div className="hidden flex-1 lg:block" aria-hidden="true" />
     </form>
   );
 }

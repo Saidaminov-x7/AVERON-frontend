@@ -4,6 +4,7 @@ import { AddToCart } from './AddToCart';
 
 const mocks = vi.hoisted(() => ({
   mutate: vi.fn(),
+  isAuthenticated: true,
 }));
 
 vi.mock('next-intl', () => ({ useLocale: () => 'en' }));
@@ -18,11 +19,11 @@ vi.mock('@/hooks/useCommerceCart', () => ({
   }),
 }));
 vi.mock('@/store/useAuthStore', () => ({
-  useAuthStore: () => ({ isAuthenticated: true, isLoading: false }),
+  useAuthStore: () => ({ isAuthenticated: mocks.isAuthenticated, isLoading: false }),
 }));
 
 describe('AddToCart availability', () => {
-  beforeEach(() => mocks.mutate.mockReset());
+  beforeEach(() => { mocks.mutate.mockReset(); mocks.isAuthenticated = true; });
 
   it('does not invent an out-of-stock state when backend availability is unknown', () => {
     render(<AddToCart productId="product-1" productPrice="125000" variants={[]} />);
@@ -94,5 +95,31 @@ describe('AddToCart availability', () => {
     expect(screen.getByText('Out of stock', { selector: 'p' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Out of stock' })).toBeDisabled();
     expect(screen.getByText('130,000 UZS')).toBeInTheDocument();
+  });
+
+  it('shows color names and swatches instead of hex values', () => {
+    render(
+      <AddToCart
+        productId="product-1"
+        productPrice="125000"
+        variants={[
+          { id: 'variant-1', color: 'Black::#000000', size: 'M', stock: 6 },
+          { id: 'variant-2', color: 'Aqua::#00FFFF', size: 'M', stock: 4 },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('Black · M')).toBeInTheDocument();
+    expect(screen.queryByText(/#000000/)).not.toBeInTheDocument();
+    const blackOption = screen.getByRole('button', { name: 'Black (#000000), Available to order' });
+    expect(blackOption.querySelector('[aria-hidden="true"]')).toHaveStyle({ backgroundColor: '#000000' });
+  });
+
+  it('keeps the sign-in action full width and aligned with quantity controls', () => {
+    mocks.isAuthenticated = false;
+    render(<AddToCart productId="product-1" productPrice="125000" variants={[]} />);
+
+    const signIn = screen.getByRole('link', { name: 'Sign in to add this product to your cart' });
+    expect(signIn).toHaveClass('w-full', 'min-h-11', 'sm:flex-1');
   });
 });

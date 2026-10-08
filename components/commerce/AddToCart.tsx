@@ -7,7 +7,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { QuantityStepper } from '@/components/commerce/QuantityStepper';
-import { ProductVariantSelector, isVariantUnavailable } from '@/components/commerce/ProductVariantSelector';
+import { ProductVariantSelector, isVariantUnavailable, parseVariantColor } from '@/components/commerce/ProductVariantSelector';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { getCommerceErrorCode } from '@/lib/commerce-orders';
 import { getSafeInternalReturnTo } from '@/lib/safe-navigation';
@@ -118,7 +118,10 @@ export function AddToCart({
     ? Math.round((1 - currentPriceValue / compareAtPriceValue) * 100)
     : null;
   const selectedName = selectedVariant
-    ? [selectedVariant.color, selectedVariant.size].filter(Boolean).join(' · ') || text.standard
+    ? [
+        selectedVariant.color ? parseVariantColor(selectedVariant.color, text.color).name : null,
+        selectedVariant.size,
+      ].filter(Boolean).join(' · ') || text.standard
     : '';
   const estimatedDate = productAvailability?.estimatedAvailableAt
     ? new Date(productAvailability.estimatedAvailableAt).toLocaleDateString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')
@@ -201,7 +204,7 @@ export function AddToCart({
           onChange={(next) => { setVariantId(next); setQuantity(1); setAdded(false); }}
         />
       )}
-      <div className="flex flex-wrap items-end gap-3">
+      <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[auto_minmax(0,1fr)]">
         <div className="space-y-1.5">
           <p className="text-sm font-semibold">{text.quantity}</p>
           <QuantityStepper
@@ -228,7 +231,7 @@ export function AddToCart({
         ) : (
           <Link
             href={`/${locale}/login?returnTo=${encodeURIComponent(getSafeInternalReturnTo(`${pathname}${searchParams.size ? `?${searchParams.toString()}` : ''}`, locale) ?? `/${locale}/catalog`)}`}
-            className="averon-secondary-button min-h-11 min-w-48 flex-1 text-center"
+            className="averon-secondary-button min-h-11 w-full min-w-0 whitespace-normal px-3 text-center leading-snug sm:flex-1"
           >
             {text.signIn}
           </Link>

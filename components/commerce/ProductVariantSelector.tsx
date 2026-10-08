@@ -3,6 +3,14 @@
 interface ProductVariant { id: string; color?: string | null; size?: string | null; stock?: number; available?: boolean; }
 interface ProductVariantSelectorProps { variants: ProductVariant[]; value: string; label: string; sizeLabel: string; colorLabel: string; availabilityLabel: (available: boolean) => string; onChange: (variantId: string) => void; }
 
+export function parseVariantColor(value: string, fallbackName: string) {
+  const [rawName, rawHex] = value.split('::').map((part) => part.trim());
+  const candidateHex = rawHex ?? rawName;
+  const hex = /^#[0-9a-fA-F]{6}$/.test(candidateHex ?? '') ? candidateHex.toUpperCase() : null;
+  const name = hex && (!rawName || rawName === candidateHex) ? fallbackName : rawName || fallbackName;
+  return { name, hex };
+}
+
 export function isVariantUnavailable(available?: boolean, stock?: number) {
   return available === false || (available !== true && typeof stock === 'number' && stock <= 0);
 }
@@ -26,16 +34,18 @@ export function ProductVariantSelector({ variants, value, label, sizeLabel, colo
           const matching = variants.filter((variant) => variant[field] === option);
           const optionUnavailable = matching.every((variant) => isVariantUnavailable(variant.available, variant.stock));
           const active = selected[field] === option;
+          const parsedColor = field === 'color' ? parseVariantColor(option, colorLabel) : null;
           return (
             <button
               key={option}
               type="button"
               aria-pressed={active}
-              aria-label={`${option}, ${availabilityLabel(!optionUnavailable)}`}
+              aria-label={`${parsedColor?.name ?? option}${parsedColor?.hex ? ` (${parsedColor.hex})` : ''}, ${availabilityLabel(!optionUnavailable)}`}
               onClick={() => chooseVariant(field, option)}
-              className={`relative min-h-11 min-w-12 border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] ${active ? 'border-[var(--color-text)] bg-[var(--color-text)] text-[var(--color-surface)]' : optionUnavailable ? 'border-[var(--color-border)] bg-[linear-gradient(to_bottom_right,transparent_48%,var(--color-border)_49%,var(--color-border)_51%,transparent_52%)] text-[var(--color-muted)]' : 'border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-text)]'}`}
+              className={`relative inline-flex min-h-11 items-center gap-2 border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] ${active ? 'border-[var(--color-text)] bg-[var(--color-text)] text-[var(--color-surface)]' : optionUnavailable ? 'border-[var(--color-border)] bg-[linear-gradient(to_bottom_right,transparent_48%,var(--color-border)_49%,var(--color-border)_51%,transparent_52%)] text-[var(--color-muted)]' : 'border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-text)]'}`}
             >
-              {option}
+              {parsedColor?.hex ? <span aria-hidden="true" className="size-4 shrink-0 rounded-full border border-black/15 shadow-sm" style={{ backgroundColor: parsedColor.hex }} /> : null}
+              <span>{parsedColor?.name ?? option}</span>
             </button>
           );
         })}

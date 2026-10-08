@@ -45,12 +45,12 @@ export function CatalogFilterLayout({
       >
         {filtersVisible ? (
           <aside
-            className="hidden min-w-0 overflow-hidden lg:block"
+            className="hidden min-w-0 overflow-hidden lg:block lg:self-stretch"
           >
             {filters}
           </aside>
         ) : null}
-        <section className="min-w-0">
+        <section className="min-w-0 lg:self-stretch">
         {filtersVisible ? (
             <div
               className="mb-4 overflow-hidden rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] p-4 lg:hidden"
