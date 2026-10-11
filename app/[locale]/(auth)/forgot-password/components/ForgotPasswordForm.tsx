@@ -9,6 +9,10 @@ import { Button } from '@/components/ui/Button';
 import { SmsUnavailableNotice } from '@/components/auth/SmsUnavailableNotice';
 import { useSmsVerificationAvailability } from '@/hooks/useSmsVerificationAvailability';
 import { getLocalizedApiError } from '@/lib/localized-api-error';
+import { normalizeUzbekPhoneInput } from '@/lib/phone';
+import { UzbekPhoneInput } from '@/components/auth/UzbekPhoneInput';
+import { getSafeReturnToQuery } from '@/lib/safe-navigation';
+import { repairMojibake } from '@/lib/repair-mojibake';
 
 const copy = {
   ru: { title: 'Восстановление пароля', intro: 'Введите номер телефона. Мы отправим код подтверждения по SMS.', code: 'Код отправлен на', phone: 'Номер телефона', sms: 'Код из SMS', password: 'Новый пароль', confirm: 'Повторите пароль', send: 'Получить код', save: 'Сменить пароль', back: 'Изменить номер', done: 'Пароль изменён. Все старые сессии завершены.', login: 'Войти', mismatch: 'Пароли не совпадают.', wait: 'Сохраняем…', unavailable: 'SMS недоступны', checking: 'Проверяем доступность SMS…' },
@@ -16,8 +20,9 @@ const copy = {
   en: { title: 'Reset password', intro: 'Enter your phone number. We will send a verification code by SMS.', code: 'Code sent to', phone: 'Phone number', sms: 'SMS code', password: 'New password', confirm: 'Repeat password', send: 'Get code', save: 'Change password', back: 'Change phone', done: 'Password changed. All old sessions were signed out.', login: 'Sign in', mismatch: 'Passwords do not match.', wait: 'Saving…', unavailable: 'SMS unavailable', checking: 'Checking SMS availability…' },
 } as const;
 
-export function ForgotPasswordForm({ locale }: { locale: string }) {
-  const t = copy[locale as keyof typeof copy] ?? copy.ru;
+export function ForgotPasswordForm({ locale, returnTo }: { locale: string; returnTo?: string }) {
+  const t = repairMojibake(repairMojibake(copy[locale as keyof typeof copy] ?? copy.ru));
+  const returnToQuery = getSafeReturnToQuery(returnTo, locale);
   const smsAvailable = useSmsVerificationAvailability();
   const requestPending = useRef(false);
   const [step, setStep] = useState<'phone' | 'code' | 'done'>('phone');
@@ -36,15 +41,17 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
       return;
     }
     if (requestPending.current || smsAvailable !== true) return;
+    const canonicalPhone = normalizeUzbekPhoneInput(phone);
+    if (!canonicalPhone) return;
     requestPending.current = true;
     setLoading(true);
     setError('');
     try {
       if (step === 'phone') {
-        await api.post('/auth/password/phone/request-code', { phone });
+        await api.post('/auth/password/phone/request-code', { phone: canonicalPhone });
         setStep('code');
       } else {
-        await api.post('/auth/password/phone/verify-code', { phone, code, password });
+        await api.post('/auth/password/phone/verify-code', { phone: canonicalPhone, code, password });
         setStep('done');
       }
     } catch (value: unknown) {
@@ -60,7 +67,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
       <div className="space-y-6 text-center">
         <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400"><LockKeyhole aria-hidden="true" /></div>
         <h1 className="text-2xl font-bold text-white">{t.done}</h1>
-        <Link href={`/${locale}/login`} className="flex h-12 items-center justify-center rounded-xl bg-primary-600 font-semibold text-white">{t.login}</Link>
+        <Link href={`/${locale}/login${returnToQuery}`} className="flex h-12 items-center justify-center rounded-xl bg-primary-600 font-semibold text-white">{t.login}</Link>
       </div>
     );
   }
@@ -79,7 +86,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
             <span className="text-xs font-semibold uppercase text-stone-400">{t.phone}</span>
             <div className="relative mt-2">
               <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500" size={17} aria-hidden="true" />
-              <input value={phone} onChange={(event) => setPhone(event.target.value)} inputMode="tel" autoComplete="tel" className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-11 pr-4 text-white outline-none focus:border-primary-500" />
+              <UzbekPhoneInput locale={locale} aria-label={t.phone} value={phone} onValueChange={setPhone} className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-11 pr-4 text-white outline-none focus:border-primary-500" />
             </div>
           </label>
         ) : (
@@ -103,7 +110,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
           type="submit"
           loading={loading}
           loadingLabel={t.wait}
-          disabled={loading || smsAvailable !== true || (step === 'code' && (code.length !== 6 || password.length < 8))}
+          disabled={loading || smsAvailable !== true || (step === 'phone' ? !normalizeUzbekPhoneInput(phone) : code.length !== 6 || password.length < 8)}
           className="h-12 w-full rounded-xl bg-primary-600 font-semibold text-white hover:bg-primary-500"
         >
           {smsAvailable === false ? t.unavailable : step === 'phone' ? t.send : t.save}

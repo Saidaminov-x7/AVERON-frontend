@@ -17,10 +17,11 @@ type FilterValues = {
   color: string;
   minPrice: string;
   maxPrice: string;
+  saleOnly: string;
   sort: string;
 };
 
-const keys = ['q', 'category', 'audience', 'country', 'size', 'color', 'minPrice', 'maxPrice', 'sort'] as const;
+const keys = ['q', 'category', 'audience', 'country', 'size', 'color', 'minPrice', 'maxPrice', 'saleOnly', 'sort'] as const;
 const controlClass = 'h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-primary-600/15';
 
 function valuesFromSearch(search: URLSearchParams): FilterValues {
@@ -98,7 +99,7 @@ function CatalogFilterDraft({
   };
 
   const reset = () => {
-    setDraft({ q: '', category: '', audience: '', country: '', size: '', color: '', minPrice: '', maxPrice: '', sort: 'newest' });
+    setDraft({ q: '', category: '', audience: '', country: '', size: '', color: '', minPrice: '', maxPrice: '', saleOnly: '', sort: 'newest' });
     setFilterError('');
     onReset?.();
     startTransition(() => router.push(`/${locale}/catalog`));
@@ -153,26 +154,20 @@ function CatalogFilterDraft({
         <CatalogSelect name="color" label={t('color')} value={draft.color} placeholder={t('anyColor')} options={[{ value: '', label: t('anyColor') }, ...colors.map((value) => ({ value, label: value }))]} onValueChange={(value) => set('color', value)} />
       </div>
       {facetsError && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">{locale === 'uz' ? 'O‘lcham va ranglar ro‘yxatini yuklab bo‘lmadi.' : locale === 'en' ? 'Available sizes and colors could not be loaded.' : 'Не удалось загрузить доступные размеры и цвета.'}</p>}
+      <label className="mt-5 flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm font-medium">
+        <input
+          type="checkbox"
+          checked={draft.saleOnly === 'true'}
+          onChange={(event) => set('saleOnly', event.target.checked ? 'true' : '')}
+          className="h-4 w-4 accent-[var(--color-primary)]"
+        />
+        <span>{t('saleOnly')}</span>
+      </label>
       <p className="mt-5 text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('price')}</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
         {(['minPrice', 'maxPrice'] as const).map((key) => <input key={key} className={controlClass} aria-label={key === 'minPrice' ? t('from') : t('to')} type="text" inputMode="decimal" value={draft[key]} onChange={(event) => set(key, event.target.value)} placeholder={key === 'minPrice' ? t('from') : t('to')} />)}
       </div>
       {filterError && <p className="mt-2 text-xs text-red-700 dark:text-red-300" role="alert">{filterError}</p>}
-      <div className="mt-5">
-        <CatalogSelect
-          name="sort"
-          label={t('sort')}
-          value={draft.sort}
-          placeholder={t('newest')}
-          options={[
-            { value: 'newest', label: t('newest') },
-            { value: 'price_asc', label: t('cheap') },
-            { value: 'price_desc', label: t('expensive') },
-            { value: 'popular', label: t('popular') },
-          ]}
-          onValueChange={(value) => set('sort', value)}
-        />
-      </div>
       <Button type="submit" loading={isPending} loadingLabel={t('applying')} className="mt-5 w-full" aria-live="polite">{t('show')}</Button>
       <Button type="button" variant="outline" disabled={!active || isPending} onClick={reset} className="mt-2 w-full">{t('reset')}</Button>
       <div className="hidden flex-1 lg:block" aria-hidden="true" />

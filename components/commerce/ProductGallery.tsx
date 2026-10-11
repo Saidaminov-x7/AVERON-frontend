@@ -300,7 +300,7 @@ export function ProductGallery({
           onKeyDown={(event) => {
             if (event.key !== 'Tab') return;
             const focusable = event.currentTarget.querySelectorAll<HTMLElement>(
-              'button:not([disabled])',
+              'button:not(:disabled)',
             );
             const first = focusable[0];
             const last = focusable[focusable.length - 1];

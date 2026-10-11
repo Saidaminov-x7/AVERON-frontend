@@ -14,6 +14,7 @@ import {
 } from "@/components/commerce/ProductCard";
 import { getProduct } from "@/lib/products";
 import { useCompareStore } from "@/store/useCompareStore";
+import { formatUzs } from "@/lib/price";
 
 export default function ComparePage() {
   const { locale = "ru" } = useParams<{ locale: string }>();
@@ -78,7 +79,7 @@ export default function ComparePage() {
     [
       t("price"),
       (p: StoreProduct) =>
-        `${Number(p.salePriceUzs).toLocaleString("ru-RU")} сум`,
+        formatUzs(p.salePriceUzs, locale),
     ],
     [t("category"), (p: StoreProduct) => p.category?.slug || "—"],
     [t("material"), (p: StoreProduct) => p.material || "—"],

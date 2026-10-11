@@ -27,6 +27,7 @@ import { getProduct } from "@/lib/products";
 import api from "@/lib/axios";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useFavoritesStore } from "@/store/useFavoritesStore";
+import { formatUzs } from "@/lib/price";
 import {
   Select,
   SelectContent,
@@ -83,8 +84,12 @@ function ProfileContent() {
   const [loading, setLoading] = useState(true);
   const [savingCatalogCountry, setSavingCatalogCountry] = useState(false);
   const [catalogCountryStatus, setCatalogCountryStatus] = useState<"saved" | "error" | "">("");
-  const [heightCm, setHeightCm] = useState("");
-  const [weightKg, setWeightKg] = useState("");
+  const [bodyProfileDraft, setBodyProfileDraft] = useState<{
+    heightCm: string;
+    weightKg: string;
+  } | null>(null);
+  const heightCm = bodyProfileDraft?.heightCm ?? (user?.heightCm ? String(user.heightCm) : "");
+  const weightKg = bodyProfileDraft?.weightKg ?? (user?.weightKg ? String(user.weightKg) : "");
   const [bodyProfileStatus, setBodyProfileStatus] = useState<"saved" | "error" | "">("");
   const favoriteIdsKey = favoriteIds.join("|");
   const formatLocale =
@@ -115,11 +120,6 @@ function ProfileContent() {
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favoriteIdsKey]);
-  useEffect(() => {
-    setHeightCm(user?.heightCm ? String(user.heightCm) : "");
-    setWeightKg(user?.weightKg ? String(user.weightKg) : "");
-  }, [user?.heightCm, user?.weightKg]);
-
   const signOut = async () => {
     await logout();
     router.push(`/${locale}`);
@@ -149,6 +149,10 @@ function ProfileContent() {
         weightKg: weightKg ? Number(weightKg) : null,
       });
       if (user) setUser({ ...user, ...data });
+      setBodyProfileDraft({
+        heightCm: data.heightCm ? String(data.heightCm) : "",
+        weightKg: data.weightKg ? String(data.weightKg) : "",
+      });
       setBodyProfileStatus("saved");
     } catch {
       setBodyProfileStatus("error");
@@ -300,14 +304,14 @@ function ProfileContent() {
             </div>
           </section>
           <section className="mt-5 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
-            <h2 className="font-bold">Размер по параметрам</h2>
-            <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">Заполните необязательно — рекомендация появится только после ввода роста и веса.</p>
+            <h2 className="font-bold">{t("bodyProfile.title")}</h2>
+            <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">{t("bodyProfile.description")}</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <label className="text-sm">{t("bodyProfile.heightLabel")}<input type="number" min="80" max="250" value={heightCm} onChange={(event) => setHeightCm(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.heightCm ? String(user.heightCm) : t("bodyProfile.heightPlaceholder")} /></label>
-              <label className="text-sm">{t("bodyProfile.weightLabel")}<input type="number" min="20" max="300" value={weightKg} onChange={(event) => setWeightKg(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.weightKg ? String(user.weightKg) : t("bodyProfile.weightPlaceholder")} /></label>
+              <label className="text-sm">{t("bodyProfile.heightLabel")}<input type="number" min="80" max="250" value={heightCm} onChange={(event) => setBodyProfileDraft((current) => ({ heightCm: event.target.value, weightKg: current?.weightKg ?? (user?.weightKg ? String(user.weightKg) : "") }))} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.heightCm ? String(user.heightCm) : t("bodyProfile.heightPlaceholder")} /></label>
+              <label className="text-sm">{t("bodyProfile.weightLabel")}<input type="number" min="20" max="300" value={weightKg} onChange={(event) => setBodyProfileDraft((current) => ({ heightCm: current?.heightCm ?? (user?.heightCm ? String(user.heightCm) : ""), weightKg: event.target.value }))} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={user?.weightKg ? String(user.weightKg) : t("bodyProfile.weightPlaceholder")} /></label>
             </div>
-            <button type="button" onClick={() => void saveBodyProfile()} className="averon-primary-button mt-4">Сохранить параметры</button>
-            {bodyProfileStatus ? <p className={`mt-2 text-sm ${bodyProfileStatus === "error" ? "text-red-600" : "text-emerald-600"}`}>{bodyProfileStatus === "error" ? "Не удалось сохранить" : "Сохранено"}</p> : null}
+            <button type="button" onClick={() => void saveBodyProfile()} className="averon-primary-button mt-4">{t("bodyProfile.save")}</button>
+            {bodyProfileStatus ? <p role={bodyProfileStatus === "error" ? "alert" : "status"} className={`mt-2 text-sm ${bodyProfileStatus === "error" ? "text-red-600" : "text-emerald-600"}`}>{bodyProfileStatus === "error" ? t("bodyProfile.saveError") : t("bodyProfile.saved")}</p> : null}
             <p className="mt-4 text-sm text-stone-500">{t("bodyProfile.noRecommendation")}</p>
           </section>
         </>
@@ -323,7 +327,7 @@ function ProfileContent() {
               <div className="mt-4 space-y-2">{order.items.map((item) => <div key={item.id} className="flex justify-between gap-4 text-sm"><span className="min-w-0 truncate">{item.title}</span><span className="shrink-0">× {item.quantity}</span></div>)}</div>
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-stone-200 pt-4 text-sm dark:border-white/10">
                 <span className="text-stone-500">{new Date(order.createdAt).toLocaleDateString(formatLocale)}</span>
-                <div className="flex items-center gap-4"><strong>{Number(order.totalRevenue).toLocaleString(formatLocale)} {order.currency}</strong><Link href={`/${locale}/orders/${encodeURIComponent(order.orderNumber)}`} className="inline-flex h-11 items-center gap-1 rounded-lg px-3 font-semibold text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-950/30">{t("details")}<ArrowRight size={15} /></Link></div>
+                <div className="flex items-center gap-4"><strong>{formatUzs(order.totalRevenue, locale)}</strong><Link href={`/${locale}/orders/${encodeURIComponent(order.orderNumber)}`} className="inline-flex h-11 items-center gap-1 rounded-lg px-3 font-semibold text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-950/30">{t("details")}<ArrowRight size={15} /></Link></div>
               </div>
             </article>
           )) : <Empty title={t("noOrders")} href={`/${locale}/catalog`} action={t("browseProducts")} />}

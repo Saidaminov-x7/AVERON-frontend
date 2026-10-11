@@ -45,7 +45,7 @@ export function CatalogFilterLayout({
       >
         {filtersVisible ? (
           <aside
-            className="hidden min-w-0 overflow-hidden lg:block lg:self-stretch"
+            className="hidden min-w-0 lg:block lg:self-stretch"
           >
             {filters}
           </aside>

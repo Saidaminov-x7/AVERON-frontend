@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
+import { FittingRoomTrigger } from "@/components/commerce/FittingRoomTrigger";
 import { externalBaseURL } from "@/lib/axios";
 import { SITE_URL } from "@/lib/siteUrl";
 import { AddToCart } from "@/components/commerce/AddToCart";
@@ -10,6 +11,7 @@ import { ProductGallery } from "@/components/commerce/ProductGallery";
 import { ProductRichText } from "@/components/commerce/ProductRichText";
 import { ProductReviews } from "@/components/commerce/ProductReviews";
 import { ProductSizeChart } from "@/components/commerce/ProductSizeChart";
+import { ProductSizeRecommendation } from "@/components/commerce/ProductSizeRecommendation";
 import { CompleteTheLook } from "@/components/commerce/CompleteTheLook";
 import { ProductRecommendations } from "@/components/commerce/ProductRecommendations";
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
@@ -285,6 +287,8 @@ export default async function ProductPage({
     purchaseOptions: t("purchaseOptions"),
     country: t("country"),
     category: t("category"),
+    article: t("article"),
+    brand: t("brand"),
     sizes: t("sizes"),
     colors: t("colors"),
     descriptionFallback: t("descriptionFallback"),
@@ -300,6 +304,7 @@ export default async function ProductPage({
   const description = getProductDescription(product, locale) ?? copy.descriptionFallback;
   const composition = getProductAttribute(product, ["composition", "fabricComposition"], locale) ?? product.material?.trim() ?? null;
   const care = getProductAttribute(product, ["careInstructions", "care"], locale);
+  const brand = getProductAttribute(product, ["brand", "manufacturer"], locale);
   const fallbackRecommendations = await loadFallbackRecommendations(product);
   const productUrl = `${SITE_URL}/${locale}/catalog/${encodeURIComponent(productRouteId(product))}`;
   const canonicalPrice = String(product.salePriceUzs);
@@ -362,7 +367,7 @@ export default async function ProductPage({
             <span className="truncate text-[var(--color-text)]">{plainTitle}</span>
           </nav>
         </div>
-        <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,.85fr)] lg:gap-10 xl:gap-14">
+        <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,.9fr)_minmax(400px,1.1fr)] lg:gap-6 xl:gap-7">
           <div className="min-w-0">
             <ProductGallery
               images={product.images ?? []}
@@ -386,6 +391,14 @@ export default async function ProductPage({
               <ProductRichText content={title} inline />
             </h1>
 
+            {(brand || product.publicId) ? (
+              <p className="mt-2 flex flex-wrap gap-x-2 text-sm text-[var(--color-text-secondary)]">
+                {brand ? <span>{copy.brand}: {brand}</span> : null}
+                {brand && product.publicId ? <span aria-hidden="true">·</span> : null}
+                {product.publicId ? <span>{copy.article}: {product.publicId}</span> : null}
+              </p>
+            ) : null}
+
             {(product.category || product.country) && (
               <section aria-label={copy.productDetails} className="mt-3 flex flex-wrap gap-x-2 text-xs text-[var(--color-text-secondary)]">
                 {product.category ? <span>{categoryName(product.category, locale)}</span> : null}
@@ -403,10 +416,11 @@ export default async function ProductPage({
                 productAvailable={product.available}
                 productAvailability={product.availability}
                 variants={product.variants ?? []}
+                secondaryAction={Boolean(product.fittingRoomAvailable) ? <FittingRoomTrigger productId={String(product.id)} locale={locale} imageUrl={productImages?.[0]} /> : undefined}
               />
               <Link
                 href={`/${locale}/outfits?product=${encodeURIComponent(product.slug)}`}
-                className="averon-secondary-button mt-3 h-11 w-full"
+                className="averon-secondary-button mt-2 h-11 w-full"
               >
                 {t("addToOutfit")}
               </Link>
@@ -434,6 +448,7 @@ export default async function ProductPage({
             </div>
             {product.sizeChartType ? (
               <div className="min-w-0 lg:pl-8">
+                <ProductSizeRecommendation productId={product.id} />
                 <ProductSizeChart sizeChartType={product.sizeChartType} locale={locale} title={t("sizeChartTitle")} />
               </div>
             ) : null}

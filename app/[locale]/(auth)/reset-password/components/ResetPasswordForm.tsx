@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Button } from '@/components/ui/Button';
 import { resetPassword } from '@/lib/api';
 import { getLocalizedApiError } from '@/lib/localized-api-error';
+import { getSafeReturnToQuery } from '@/lib/safe-navigation';
 
 const resetPasswordSchema = z
   .object({
@@ -28,11 +29,13 @@ type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 interface ResetPasswordFormProps {
   locale: string;
   token: string;
+  returnTo?: string;
 }
 
-export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
+export function ResetPasswordForm({ locale, token, returnTo }: ResetPasswordFormProps) {
   const t = useTranslations('ResetPassword');
   const router = useRouter();
+  const returnToQuery = getSafeReturnToQuery(returnTo, locale);
   const requestPending = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -88,7 +91,7 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
         </div>
         <button
           type="button"
-          onClick={() => router.push(`/${locale}/login`)}
+          onClick={() => router.push(`/${locale}/login${returnToQuery}`)}
           className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 font-semibold text-white transition-all hover:bg-primary-500 shadow-lg shadow-primary-900/30 active:scale-[0.98]"
         >
           {t('loginWithNewPassword')}

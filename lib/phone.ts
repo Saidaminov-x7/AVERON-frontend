@@ -10,6 +10,15 @@ export function formatUzbekPhoneInput(value: string): string {
   return `+998${groups.length ? ` ${groups.join(' ')}` : ' '}`;
 }
 
+export function hasUnsupportedInternationalPhoneCountryCode(value: string): boolean {
+  const trimmed = value.trim();
+  if (!/^(?:\+|00)/.test(trimmed)) return false;
+
+  const digits = trimmed.replace(/\D/g, '');
+  const internationalDigits = trimmed.startsWith('00') ? digits.slice(2) : digits;
+  return !internationalDigits.startsWith('998');
+}
+
 export function normalizeUzbekPhoneInput(value: string): string | null {
   const digits = value.replace(/\D/g, '');
   const nationalNumber = digits.startsWith('998') ? digits.slice(3) : digits;

@@ -2,14 +2,18 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { ArrowRight, ShieldCheck, Sparkles, Truck } from 'lucide-react';
-import { ProductCard, type StoreProduct } from '@/components/commerce/ProductCard';
+import { type StoreProduct } from '@/components/commerce/ProductCard';
+import { HomeProductShelf } from '@/components/commerce/HomeProductShelf';
 import { ProductImage } from '@/components/commerce/ProductImage';
+import { allocateHomepageShelves } from '@/lib/homepage-shelves';
 import { externalBaseURL } from '@/lib/axios';
 import { SITE_URL } from '@/lib/siteUrl';
 
-async function getProducts(sort: 'popular' | 'newest', limit = 12) {
+async function getProducts(sort: 'popular' | 'newest', limit = 12, saleOnly = false) {
   try {
-    const response = await fetch(`${externalBaseURL}/api/v1/products?sort=${sort}&limit=${limit}`, { next: { revalidate: 60 }, signal: AbortSignal.timeout(3000) });
+    const query = new URLSearchParams({ sort, limit: String(limit) });
+    if (saleOnly) query.set('saleOnly', 'true');
+    const response = await fetch(`${externalBaseURL}/api/v1/products?${query}`, { next: { revalidate: 60 }, signal: AbortSignal.timeout(3000) });
     if (!response.ok) return [];
     const data = await response.json();
     return data.items || data || [];
@@ -28,49 +32,23 @@ async function getCategories() {
 const sectionCopy = {
   ru: {
     directions: 'Магазины мира', directionsBody: 'Выберите страну — мы покажем товары именно из этого направления.',
-    new: 'Новинки', sale: 'Скидки', popular: 'Популярное', all: 'Смотреть все',
+    new: 'Новинки', sale: 'Скидки', popular: 'Популярное', all: 'Смотреть все', empty: 'В этой подборке пока нет товаров.',
     china: 'Китай', chinaBody: 'Одежда, обувь и аксессуары', usa: 'США', usaBody: 'Бренды и редкие находки',
     turkey: 'Турция', turkeyBody: 'Повседневная мода и обувь', europe: 'Европа', europeBody: 'Италия и Великобритания',
   },
   uz: {
     directions: 'Dunyo do‘konlari', directionsBody: 'Mamlakatni tanlang — shu yo‘nalishdagi mahsulotlarni ko‘rsatamiz.',
-    new: 'Yangiliklar', sale: 'Chegirmalar', popular: 'Ommabop', all: 'Barchasini ko‘rish',
+    new: 'Yangiliklar', sale: 'Chegirmalar', popular: 'Ommabop', all: 'Barchasini ko‘rish', empty: 'Bu tanlovda hozircha mahsulotlar yo‘q.',
     china: 'Xitoy', chinaBody: 'Kiyim, poyabzal va aksessuarlar', usa: 'AQSh', usaBody: 'Brendlar va noyob topilmalar',
     turkey: 'Turkiya', turkeyBody: 'Kundalik moda va poyabzal', europe: 'Yevropa', europeBody: 'Italiya va Buyuk Britaniya',
   },
   en: {
     directions: 'Shop the world', directionsBody: 'Choose a country to see products from that market.',
-    new: 'New arrivals', sale: 'Sale', popular: 'Popular', all: 'View all',
+    new: 'New arrivals', sale: 'Sale', popular: 'Popular', all: 'View all', empty: 'There are no products in this collection yet.',
     china: 'China', chinaBody: 'Clothing, footwear and accessories', usa: 'USA', usaBody: 'Brands and rare finds',
     turkey: 'Turkey', turkeyBody: 'Everyday fashion and footwear', europe: 'Europe', europeBody: 'Italy and United Kingdom',
   },
 } as const;
-
-function ProductShelf({ title, href, products, locale, allLabel }: {
-  title: string;
-  href: string;
-  products: StoreProduct[];
-  locale: string;
-  allLabel: string;
-}) {
-  if (products.length === 0) return null;
-
-  return (
-    <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 lg:px-12">
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <h2 className="averon-title text-xl sm:text-2xl">{title}</h2>
-        <Link href={href} className="flex shrink-0 items-center gap-2 text-sm font-semibold text-[var(--color-text)] hover:opacity-60">
-          {allLabel} <ArrowRight size={15} />
-        </Link>
-      </div>
-      {products.length > 0 ? (
-        <div className="grid grid-cols-2 gap-x-3 gap-y-7 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-3">
-          {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
-        </div>
-      ) : null}
-    </section>
-  );
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -87,18 +65,17 @@ const copy = {
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const activeLocale = locale === 'en' || locale === 'uz' ? locale : 'ru';
-  const [popularProducts, newestProducts, categories, t] = await Promise.all([
+  const [popularProducts, newestProducts, saleProducts, categories, t] = await Promise.all([
     getProducts('popular'),
     getProducts('newest'),
+    getProducts('newest', 12, true),
     getCategories(),
     getTranslations({ locale, namespace: 'home' }),
   ]);
-  const products = popularProducts as StoreProduct[];
-  const newest = newestProducts as StoreProduct[];
-  const discounted = [...newest, ...products].filter((product, index, items) => {
-    const compareAt = Number(product.compareAtPriceUzs ?? 0);
-    const sale = Number(product.salePriceUzs ?? 0);
-    return compareAt > sale && sale > 0 && items.findIndex((item) => item.id === product.id) === index;
+  const { newest, discounted, popular } = allocateHomepageShelves({
+    newest: newestProducts as StoreProduct[],
+    discounted: saleProducts as StoreProduct[],
+    popular: popularProducts as StoreProduct[],
   });
   const c = copy[activeLocale];
   const s = sectionCopy[activeLocale];
@@ -126,16 +103,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
           <Link href={to('/catalog')} className="hidden items-center gap-2 text-sm font-semibold hover:opacity-60 sm:flex">{s.all} <ArrowRight size={15} /></Link>
         </div>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {(categories.length ? categories.slice(0, 4).map((category: { slug: string; name?: Record<string, string> | string; imageUrl?: string | null }) => ({
             title: typeof category.name === 'string' ? category.name : category.name?.[activeLocale] || category.name?.ru || category.slug,
             slug: category.slug,
             image: category.imageUrl || undefined,
           })) : [
-            { title: c.clothing, slug: 'clothing', image: newest[0]?.images?.[0]?.url || products[0]?.images?.[0]?.url },
-            { title: c.outerwear, slug: 'outerwear', image: newest[1]?.images?.[0]?.url || products[1]?.images?.[0]?.url },
-            { title: c.shoes, slug: 'shoes', image: newest[2]?.images?.[0]?.url || products[2]?.images?.[0]?.url },
-            { title: c.accessories, slug: 'accessories', image: newest[3]?.images?.[0]?.url || products[3]?.images?.[0]?.url },
+            { title: c.clothing, slug: 'clothing' },
+            { title: c.outerwear, slug: 'outerwear' },
+            { title: c.shoes, slug: 'shoes' },
+            { title: c.accessories, slug: 'accessories' },
           ]).map((category: { title: string; slug: string; image?: string }) => (
             <Link
               key={category.title}
@@ -154,9 +131,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      <ProductShelf title={s.new} href={to('/catalog?sort=newest')} products={newest} locale={locale} allLabel={s.all} />
-      <ProductShelf title={s.sale} href={to('/catalog?sort=price_asc')} products={discounted} locale={locale} allLabel={s.all} />
-      <ProductShelf title={s.popular} href={to('/catalog?sort=popular')} products={products} locale={locale} allLabel={s.all} />
+      <HomeProductShelf title={s.new} href={to('/catalog?sort=newest')} products={newest} locale={locale} allLabel={s.all} emptyLabel={s.empty} />
+      <HomeProductShelf title={s.sale} href={to('/catalog?saleOnly=true')} products={discounted} locale={locale} allLabel={s.all} emptyLabel={s.empty} />
+      <HomeProductShelf title={s.popular} href={to('/catalog?sort=popular')} products={popular} locale={locale} allLabel={s.all} emptyLabel={s.empty} />
 
       <section className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto max-w-[1440px] px-4 py-10 sm:px-8 lg:px-12"><p className="averon-kicker">{c.process}</p><h2 className="averon-title mt-2 max-w-2xl text-2xl sm:text-3xl">{c.guarantee}</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--color-muted)]">{c.guaranteeBody}</p><div className="mt-6 grid gap-px border border-[var(--color-border)] bg-[var(--color-border)] md:grid-cols-3">{c.steps.map((step, index) => <div key={step} className="bg-[var(--color-surface)] p-5"><span className="text-xs font-bold text-[var(--color-primary)]">0{index + 1}</span><h3 className="mt-4 font-semibold">{step}</h3><div className="mt-3 text-[var(--color-muted)]">{index === 0 ? <Sparkles size={19}/> : index === 1 ? <ShieldCheck size={19}/> : <Truck size={19}/>}</div></div>)}</div></div></section>
     </main>

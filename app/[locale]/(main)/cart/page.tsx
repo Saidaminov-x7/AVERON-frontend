@@ -11,6 +11,7 @@ import { ProductImage } from '@/components/commerce/ProductImage';
 import { QuantityStepper } from '@/components/commerce/QuantityStepper';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { getCommerceErrorCode } from '@/lib/commerce-orders';
+import { formatUzs } from '@/lib/price';
 
 const copy = {
   ru: {
@@ -65,11 +66,6 @@ const copy = {
     },
   },
 } as const;
-
-function formatUzs(amount: string | number, locale: string) {
-  const number = Number(amount);
-  return `${Number.isFinite(number) ? number.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU') : '0'} ${locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}`;
-}
 
 function formatDate(value: string | null | undefined, locale: string): string | null {
   if (!value) return null;

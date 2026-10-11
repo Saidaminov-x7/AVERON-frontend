@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-10",
+  "scopeStatus": "ЧАСТИЧНО",
+  "notes": [
+    "The manifest is expanded package by package; absence is not evidence of a working action.",
+    "Production actions are read-only until separate deployment approval."
+  ],
+  "actions": [
+    {
+      "id": "STORE-MOBILE-MENU-OPEN",
+      "route": "/{locale}",
+      "role": "guest",
+      "trigger": "header menu button below the desktop breakpoint",
+      "expected": "a compact right-side drawer opens with market, primary, utility, locale, theme and account actions; body scroll locks without document overflow",
+      "states": ["closed", "open", "short viewport", "tablet", "desktop breakpoint"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests/e2e/mobile-navigation.spec.ts: desktop and mobile Chromium, 320x568 through 1023x768", "Chrome DevTools screenshots at 390x844, 360x640 and 768x900"]
+    },
+    {
+      "id": "STORE-MOBILE-MENU-CLOSE",
+      "route": "/{locale}",
+      "role": "guest",
+      "trigger": "Escape or resize to desktop breakpoint",
+      "expected": "drawer closes, focus returns to menu trigger and page body scroll is restored",
+      "states": ["open", "closed", "desktop breakpoint"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests/e2e/mobile-navigation.spec.ts: Escape and 1023px to 1024px resize in desktop/mobile Chromium"]
+    },
+    {
+      "id": "STORE-MOBILE-MENU-SEARCH",
+      "route": "/{locale}",
+      "role": "guest",
+      "trigger": "searchbox in the mobile drawer",
+      "expected": "submit a query to /{locale}/catalog?q=... and dismiss the drawer",
+      "states": ["ready", "query submitted"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests/e2e/mobile-navigation.spec.ts: kurta query routes to /uz/catalog?q=kurta"]
+    },
+    {
+      "id": "STORE-MOBILE-MENU-LOCALE",
+      "route": "/{locale}",
+      "role": "guest",
+      "trigger": "locale radio menu in the mobile drawer",
+      "expected": "switch RU to UZ on the equivalent route and dismiss the drawer",
+      "states": ["RU", "UZ", "EN options"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests/e2e/mobile-navigation.spec.ts: selects UZ from RU and verifies route and dismissal"]
+    },
+    {
+      "id": "STORE-MOBILE-MENU-THEME",
+      "route": "/{locale}",
+      "role": "guest",
+      "trigger": "theme toggle in the mobile drawer",
+      "expected": "switch light/dark theme while retaining at least 4.5:1 drawer text contrast",
+      "states": ["light", "dark"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests/e2e/mobile-navigation.spec.ts: alternates theme at six responsive sizes and checks computed contrast"]
+    },
+    {
+      "id": "STORE-MOBILE-MENU-ROUTES",
+      "route": "/{locale}",
+      "role": "guest",
+      "trigger": "market, primary-navigation and utility links",
+      "expected": "navigate to the selected route and dismiss the drawer; protected destinations retain a safe login returnTo",
+      "states": ["market link", "primary navigation", "guest utility destination"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests/e2e/mobile-navigation.spec.ts: country route, catalog link, and guest favorites-to-login returnTo pass"]
+    },
+    {
+      "id": "HOME-SALE-VIEW-ALL",
+      "route": "/{locale}",
+      "role": "guest",
+      "trigger": "sale shelf View all link",
+      "expected": "navigate to /{locale}/catalog?saleOnly=true",
+      "states": ["ready", "empty", "error"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["component tests", "Chrome 1440x900"]
+    },
+    {
+      "id": "HOME-EMPTY-SHELVES",
+      "route": "/{locale}",
+      "role": "guest",
+      "trigger": "open the home page while newest, sale, and popular product feeds are empty",
+      "expected": "keep each shelf title and View all link visible, show a localized empty state, prevent horizontal overflow, and retain saleOnly=true on the sale link",
+      "states": ["all feeds empty", "desktop", "mobile", "sale navigation"],
+      "status": "ВЫПОЛНЕНО ЛОКАЛЬНО",
+      "evidence": ["AVERON_security_tests/e2e/storefront-smoke.spec.ts: fresh isolated production build, desktop 1440x900 and mobile 390x844; all 3 shelf states, URLs, no pageerror/overflow/5xx", "Playwright screenshots: reports/generated/playwright-results/*/home-empty-shelves.png"]
+    },
+    {
+      "id": "CATALOG-SALE-TOGGLE",
+      "route": "/{locale}/catalog",
+      "role": "guest",
+      "trigger": "localized sale-only checkbox",
+      "expected": "draft saleOnly value changes without losing other filters",
+      "states": ["unchecked", "checked"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["CatalogFilterControls.test.tsx", "Chrome 1440x900, 768x1024, 390x844"]
+    },
+    {
+      "id": "CATALOG-APPLY-FILTERS",
+      "route": "/{locale}/catalog",
+      "role": "guest",
+      "trigger": "Show products submit",
+      "expected": "URL contains saleOnly=true and resets page; API count and rows use the same predicate",
+      "states": ["ready", "pending", "invalid price"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["backend route tests", "frontend component tests", "loopback fixture browser run"]
+    },
+    {
+      "id": "CATALOG-RESET-FILTERS",
+      "route": "/{locale}/catalog?saleOnly=true",
+      "role": "guest",
+      "trigger": "Reset button",
+      "expected": "clear saleOnly and all filters; return to /{locale}/catalog",
+      "states": ["ready", "pending"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["CatalogFilterControls.test.tsx", "Chrome 390x844"]
+    },
+    {
+      "id": "ADMIN-PRODUCT-FINAL-SAVE",
+      "route": "/products/new",
+      "role": "product editor",
+      "trigger": "explicit final wizard action",
+      "expected": "zero writes during step/back navigation and exactly one create on a final-action retry after a controlled transient failure",
+      "states": ["ready", "pending", "success", "error", "retry"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium; Back preserves size/photo state; first final create receives controlled 503; retry uses identical UUID Idempotency-Key; one fixture product is persisted and deleted after assertion", "payload asserts RU/UZ/EN titles, CN country, UZS price, photo mediaId, coverCrop and idempotency key", "backend route tests cover same-payload replay and changed-payload conflict"]
+    },
+    {
+      "id": "ADMIN-PRODUCT-WIZARD-BACK",
+      "route": "/products/new",
+      "role": "product editor",
+      "trigger": "Back from a later wizard step",
+      "expected": "return to the previous step with entered size/photo data intact and no product create request",
+      "states": ["step 3 to 2 to 3", "step 5 to 4 to 5", "desktop", "mobile"],
+      "status": "ВЫПОЛНЕНО локально",
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium pass; size and uploaded-photo count remain after backward navigation; no create occurs before final confirmation"]
+    },
+    {
+      "id": "ADMIN-PRODUCT-WIZARD-CANCEL",
+      "route": "/products/new",
+      "role": "product editor",
+      "trigger": "Cancel after partially entering a manual product",
+      "expected": "close editor, return to /products and create no product",
+      "states": ["partial entry", "desktop", "mobile"],
+      "status": "ВЫПОЛНЕНО локально",
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium pass; no marker-matched product POST"]
+    },
+    {
+      "id": "CATALOG-FILTER-PANEL-TOGGLE",
+      "route": "/{locale}/catalog",
+      "role": "guest",
+      "trigger": "Show/hide filters button",
+      "expected": "aria-expanded and filter panel visibility toggle together and restore on second activation",
+      "states": ["expanded", "collapsed"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["Chrome DevTools local interaction at 1278x900 dark theme: 4 computed columns, 1268px document scrollWidth", "Playwright loopback test 1/1: toggle, aria-expanded, four computed grid tracks, font and no-5xx/overflow checks", "mobile and desktop filter-panel toggle smoke"]
+    },
+    {
+      "id": "ADMIN-LOGIN-SURFACE",
+      "route": "/login",
+      "role": "anonymous",
+      "trigger": "Direct navigation to admin login",
+      "expected": "login form is visible without rendering protected dashboard data",
+      "states": ["ready", "no horizontal overflow"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["Playwright local smoke 2026-10-09 desktop and mobile Chromium"]
+    },
+    {
+      "id": "ADMIN-SIDEBAR-COLLAPSE",
+      "route": "/products",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "admin.sidebar.toggle-collapse",
+      "expected": "sidebar collapses to 76px, preserves all 18 navigation links, restores its persisted expanded width after reload",
+      "states": ["expanded", "collapsed", "reloaded"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests e2e/admin-sidebar.spec.ts desktop Chromium", "admin-sidebar-collapsed.png"]
+    },
+    {
+      "id": "ADMIN-SIDEBAR-RESIZE",
+      "route": "/products",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "admin.sidebar.resize",
+      "expected": "keyboard Home/End set 220px/360px and pointer drag sets 320px; aria-valuenow matches the rendered width",
+      "states": ["minimum", "maximum", "pointer resize", "keyboard resize"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests e2e/admin-sidebar.spec.ts desktop Chromium", "Playwright assertions and saved width after reload"]
+    },
+    {
+      "id": "ADMIN-SIDEBAR-DARK-CONTRAST",
+      "route": "/products",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "active navigation link in dark theme",
+      "expected": "computed active-link foreground/background contrast is at least 4.5:1",
+      "states": ["active", "dark theme"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests e2e/admin-sidebar.spec.ts computes WCAG contrast from rendered Chromium styles", "admin-sidebar-dark-active.png"]
+    },
+    {
+      "id": "ADMIN-SIDEBAR-MOBILE-DRAWER",
+      "route": "/products",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "admin.sidebar.toggle-mobile-navigation; admin.sidebar.close-mobile-navigation; Escape",
+      "expected": "right-side drawer opens, language action remains available, and close button/Escape restore the page without horizontal overflow",
+      "states": ["closed", "open", "language changed", "Escape closed", "button closed"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests e2e/admin-sidebar.spec.ts mobile Chromium 390x844", "admin-sidebar-mobile-open.png", "admin-sidebar-mobile-closed.png"]
+    },
+    {
+      "id": "ADMIN-SIDEBAR-LOCALE-LABELS",
+      "route": "/products",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "admin.header.select-language.{ru|uz|en}",
+      "expected": "collapse, expand and resize accessible names update to the selected RU/UZ/EN language and persist through reload",
+      "states": ["ru", "uz", "en", "collapsed", "expanded", "reloaded"],
+      "status": "ВЫПОЛНЕНО",
+      "evidence": ["AVERON_security_tests e2e/admin-sidebar.spec.ts desktop Chromium locale loop"]
+    },
+    {
+      "id": "ADMIN-FITTING-GLB-UPLOAD-REVIEW",
+      "route": "/products/edit/fixture-review-shirt",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "select local GLB, upload, approve pending model",
+      "expected": "multipart GLB reaches loopback fixture, appears as NEEDS_REVIEW, then becomes APPROVED after explicit review action",
+      "states": ["ready", "uploading", "needs review", "approved"],
+      "status": "ЧАСТИЧНО",
+      "evidence": ["AVERON_security_tests e2e/ui-workflow.spec.ts; desktop and mobile Chromium pass; verifies request bytes/query/review payload"],
+      "remaining": "test real backend multipart validation, private storage, database audit persistence and public ACL"
+    },
+    {
+      "id": "ADMIN-IMPORT-DETAILS",
+      "route": "/imports",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "open source snapshot details for a pending import",
+      "expected": "show source description, attributes, variants, country, source URL and review state without changing status",
+      "states": ["pending", "details open", "closed"],
+      "status": "ЧАСТИЧНО",
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium use run-scoped data and intercept only the loopback admin-import API calls"],
+      "remaining": "verify the same details against a persisted parser-to-backend import row"
+    },
+    {
+      "id": "ADMIN-IMPORT-APPROVE-DRAFT",
+      "route": "/imports",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "review translations and UZS price, then explicitly approve as draft",
+      "expected": "send canonical RU/UZ/EN translations, country, positive UZS price and publish=false; move only this pending import to approved draft state",
+      "states": ["pending", "invalid required fields", "approval pending", "approved draft"],
+      "status": "ЧАСТИЧНО",
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium assert the intercepted approval payload and resulting queue state", "backend routes.test.ts and parser-import.test.ts pass in the targeted API run"],
+      "remaining": "prove product/import/audit writes and concurrent review behavior with isolated PostgreSQL"
+    },
+    {
+      "id": "ADMIN-IMPORT-REJECT",
+      "route": "/imports",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "enter a rejection reason and explicitly reject a pending import",
+      "expected": "reject only the selected pending import, require a reason and show the stored reason in the rejected queue",
+      "states": ["pending", "reason too short", "rejected", "reason visible"],
+      "status": "ЧАСТИЧНО",
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium assert the intercepted rejection body and resulting queue state", "backend routes.test.ts covers the admin import decision route"],
+      "remaining": "verify persisted rejection and audit record with isolated PostgreSQL"
+    },
+    {
+      "id": "AUTH-RETURN-LOGIN",
+      "route": "/{locale}/login?returnTo=...",
+      "role": "guest to customer",
+      "trigger": "enter credentials, recover from invalid OTP, then verify a valid OTP",
+      "expected": "successful auth returns to a validated same-locale internal target and preserves safe query context; unsafe/auth-loop values fall back to profile",
+      "states": ["SMS unavailable", "OTP error", "OTP success", "unsafe return target"],
+      "status": "ЧАСТИЧНО",
+      "evidence": ["safe-navigation.test.ts 18/18", "Playwright desktop/mobile controlled OTP returns to /ru/catalog?category=shoes&page=2", "AVERON_security_tests/e2e/auth-navigation.spec.ts: desktop/mobile internal query survives login navigation and reload; direct Uzbek auth entry rejects external returnTo and stored referrer"],
+      "remaining": "real Google provider journey and reset/checkout-specific auth return flows; registration purchase continuation is covered separately"
+    },
+    {
+      "id": "AUTH-REGISTER-PHONE-COUNTRY",
+      "route": "/{locale}/register",
+      "role": "guest",
+      "trigger": "paste an explicitly international phone number, then recover with a valid +998 number",
+      "expected": "reject unsupported country prefixes without rewriting the value or sending registration; announce the localized error and clear it after valid +998 input",
+      "states": ["initial", "unsupported country code", "valid +998 recovery"],
+      "status": "ЧАСТИЧНО",
+      "evidence": ["components/auth/UzbekPhoneInput.test.tsx and lib/phone.test.ts: 7 helper/component tests, including exact preservation of a previously valid number", "AVERON_security_tests/e2e/auth-navigation.spec.ts: desktop and mobile Chromium against current-source loopback Next dev; +1 paste leaves the prior +998 value intact, sends no registration request, and recovers on valid +998"],
+      "remaining": "authenticated server submission and SMS provider acceptance"
+    },
+    {
+      "id": "AUTH-REGISTER-PURCHASE-CONTINUATION",
+      "route": "/{locale}/catalog/{productId} -> /{locale}/register?returnTo=... -> product -> cart",
+      "role": "guest registering as customer",
+      "trigger": "select a quantity, start add-to-cart, register with a controlled OTP, and return to the product",
+      "expected": "restore the same product, variant and quantity, then add it to cart exactly once after successful registration",
+      "states": ["guest purchase prompt", "registration form", "OTP verification", "return to selected product", "cart mutation success"],
+      "status": "ВЫПОЛНЕНО ЛОКАЛЬНО",
+      "evidence": ["AVERON_security_tests/e2e/storefront-smoke.spec.ts: guest purchase resumes after registration and adds the selected product to cart once; desktop and mobile Chromium 2/2 against loopback product fixture and intercepted auth/cart API"],
+      "remaining": "repeat against isolated backend persistence; SMS provider and production acceptance are not covered"
+    },
+    {
+      "id": "ADMIN-PRODUCT-GRID",
+      "route": "/products",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "open product catalog at desktop or mobile viewport",
+      "expected": "product cards use responsive auto-fill tracks, remain readable and never create horizontal document overflow",
+      "states": ["loading", "one or more products", "empty", "error", "desktop", "mobile"],
+      "status": "ЧАСТИЧНО",
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop/mobile Chromium 2/2; loopback fixture has one product", "Chrome local admin 1632px computed four 348px tracks; 390x844 one track; document width equals viewport"],
+      "remaining": "verify empty/error grid states; five run-scoped response cards are covered without backend writes"
+    },
+    {
+      "id": "FR-TOUCH-ROTATE",
+      "route": "/{locale}/catalog/{productId}/fitting-room",
+      "role": "guest",
+      "trigger": "horizontal touch drag on the GLB canvas in the mobile browser",
+      "expected": "the rendered mannequin and model rotate within the existing clamp and the front action resets to 0 degrees",
+      "states": ["mobile touch start", "horizontal move", "rotated", "front reset"],
+      "status": "ВЫПОЛНЕНО локально",
+      "evidence": ["AVERON_security_tests/e2e/ui-workflow.spec.ts: mobile Chromium CDP touch events rotate the loopback GLB and the front action resets to 0 degrees"]
+    },
+    {
+      "id": "FR-TOUCH-SCROLL",
+      "route": "/{locale}/catalog/{productId}/fitting-room",
+      "role": "guest",
+      "trigger": "vertical touch drag over the 3D canvas on mobile",
+      "expected": "fitting-room content scrolls vertically while the model angle remains unchanged",
+      "states": ["at top", "vertical touch move", "content scrolled", "rotation unchanged"],
+      "status": "ВЫПОЛНЕНО локально",
+      "evidence": ["AVERON_security_tests/e2e/ui-workflow.spec.ts: mobile Chromium CDP touch advances the dialog inner scroll container with the rotation at 0 degrees"]
+    },
+    {
+      "id": "FR-MANNEQUIN-FRAME",
+      "route": "/{locale}/catalog/{productId}/fitting-room",
+      "role": "guest",
+      "trigger": "open the 3D fitting room at the 390x844 mobile viewport",
+      "expected": "the mannequin is framed head-to-feet within the viewer and its feet remain clear of the bottom rotation controls",
+      "states": ["mobile viewport", "GLB loaded", "front view", "rotation controls visible"],
+      "status": "ВЫПОЛНЕНО локально",
+      "evidence": ["Chrome DevTools responsive screenshot at 390x844 after the camera target and distance correction"]
+    },
+    {
+      "id": "ADMIN-CATALOG-HEADER-MOBILE",
+      "route": "/products",
+      "role": "SUPER_ADMIN fixture user",
+      "trigger": "render product catalog header below the small-screen breakpoint",
+      "expected": "catalog title remains readable without ellipsis and add-product action is placed below it",
+      "states": ["390x844 mobile", "localized title", "add action visible"],
+      "status": "ЧАСТИЧНО",
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts mobile Chromium asserts title scroll width and action placement"],
+      "remaining": "verify Uzbek and English title layout on mobile"
+    },
+    {
+      "id": "PRODUCT-ARTICLE-URL",
+      "route": "/{locale}/catalog/{productId}",
+      "role": "guest",
+      "trigger": "open a legacy product path or copy the public product identifier",
+      "expected": "product uses the stable AVR- plus 15-digit identifier in its article and canonical route while legacy URLs resolve",
+      "states": ["legacy ID", "readable public ID", "localized detail"],
+      "status": "ЧАСТИЧНО",
+      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium verify the AVR identifier and legacy fixture redirect"],
+      "remaining": "apply the additive database migration and verify old-ID lookup and sequential allocation against an isolated PostgreSQL database"
+    },
+    {
+      "id": "PRODUCT-COLOR-NAME",
+      "route": "/{locale}/catalog/{productId}",
+      "role": "guest",
+      "trigger": "select an available color swatch",
+      "expected": "color names use the active locale, show a useful swatch and update the selected color and variant",
+      "states": ["default color", "dark blue selected", "red available", "mobile", "desktop"],
+      "status": "ВЫПОЛНЕНО локально",
+      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium select dark blue and verify the selected color text"]
+    },
+    {
+      "id": "PRODUCT-COMPOSITION-CARE",
+      "route": "/{locale}/catalog/{productId}",
+      "role": "guest; product editor: ADMIN",
+      "trigger": "enter localized composition and care information in admin, then open the product detail",
+      "expected": "composition and care are stored as localized product attributes and rendered in the product information section",
+      "states": ["ru", "uz", "en", "empty optional fields"],
+      "status": "ЧАСТИЧНО",
+      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium render composition and care; admin form/API tests pass; backend route/schema tests pass"],
+      "remaining": "verify save and reload against an isolated PostgreSQL-backed admin session"
+    },
+    {
+      "id": "PRODUCT-PURCHASE-ROW",
+      "route": "/{locale}/catalog/{productId}",
+      "role": "guest or authenticated customer",
+      "trigger": "inspect quantity and add/sign-in action in the purchase panel",
+      "expected": "quantity control and primary purchase action share a horizontal row without document overflow",
+      "states": ["360x800 mobile", "390x844 mobile", "desktop", "long translated CTA"],
+      "status": "ВЫПОЛНЕНО локально",
+      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium assert horizontal placement, vertical overlap and no horizontal overflow"]
+    },
+    {
+      "id": "PRODUCT-REVIEWS-INVALID-RESPONSE",
+      "route": "/{locale}/catalog/{productId}#reviews",
+      "role": "guest",
+      "trigger": "load product reviews when the API returns an invalid 200 payload",
+      "expected": "keep the product detail and purchase panel usable; show a localized error only in the reviews section without an unhandled page error or 5xx",
+      "states": ["valid response", "invalid response", "desktop", "mobile"],
+      "status": "ВЫПОЛНЕНО локально",
+      "evidence": ["components/commerce/ProductReviews.test.tsx: malformed success payload maps to query error; 3/3 tests pass", "AVERON_security_tests/e2e/storefront-smoke.spec.ts: invalid reviews response preserves product detail on desktop/mobile Chromium 2/2"],
+      "remaining": "verify the response contract against a persisted isolated backend and cover production API version drift"
+    }
+  ]
+}

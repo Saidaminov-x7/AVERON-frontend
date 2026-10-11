@@ -11,6 +11,7 @@ import { ProductReviews } from '@/components/commerce/ProductReviews';
 import api from '@/lib/axios';
 import { getProduct, getProducts, productTitle, type StoreProduct } from '@/lib/products';
 import { useAuthStore } from '@/store/useAuthStore';
+import { formatUzs } from '@/lib/price';
 
 type TelegramWindow = Window & {
   Telegram?: {
@@ -118,11 +119,6 @@ function descriptionFor(product: StoreProduct, locale: Locale, unavailable: stri
   const value = descriptions?.[locale] ?? descriptions?.ru;
   if (typeof value === 'string') return value;
   return value?.text ?? unavailable;
-}
-
-function formatUzs(value: string | number, locale: Locale) {
-  const amount = Number(value);
-  return `${Number.isFinite(amount) ? amount.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU') : '0'} ${locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}`;
 }
 
 export function TelegramMiniApp({

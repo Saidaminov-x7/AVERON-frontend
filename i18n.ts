@@ -1,4 +1,5 @@
 import { getRequestConfig } from 'next-intl/server';
+import { repairMojibake } from './lib/repair-mojibake';
 
 const locales = ['uz', 'en', 'ru'];
 const defaultLocale = 'ru';
@@ -10,9 +11,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale = defaultLocale;
   }
 
+  const rawMessages = (await import(`./messages/${locale}.json`)).default;
   return {
     locale,
     timeZone: 'Asia/Tashkent',
-    messages: (await import(`./messages/${locale}.json`)).default,
+    messages: repairMojibake(repairMojibake(rawMessages)),
   };
 });

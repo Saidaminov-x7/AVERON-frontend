@@ -28,27 +28,10 @@ export const metadata: Metadata = {
   description: 'Shop clothing, shoes, and accessories with delivery across Uzbekistan.',
 };
 
-async function getServerSettings() {
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiUrl) throw new Error('no apiUrl');
-    const res = await fetch(`${apiUrl}/site-settings/public`, {
-      next: { revalidate: 30 },
-      signal: AbortSignal.timeout(3000),
-    });
-    if (!res.ok) throw new Error('settings fetch failed');
-    return await res.json();
-  } catch {
-    return {
-      mobilePinchZoomEnabled: true,
-    };
-  }
-}
-
 export async function generateViewport(): Promise<Viewport> {
-  const settings = await getServerSettings();
-  const allowZoom = settings.mobilePinchZoomEnabled !== false;
-  return { width: 'device-width', initialScale: 1, minimumScale: 1, maximumScale: allowZoom ? 5 : 1, userScalable: allowZoom, viewportFit: 'cover', themeColor: [{ media: '(prefers-color-scheme: light)', color: '#fafafa' }, { media: '(prefers-color-scheme: dark)', color: '#0f0f10' }] };
+  // Keep pinch-zoom available regardless of the legacy setting: disabling it
+  // prevents users with low vision from enlarging the page.
+  return { width: 'device-width', initialScale: 1, minimumScale: 1, maximumScale: 5, userScalable: true, viewportFit: 'cover', themeColor: [{ media: '(prefers-color-scheme: light)', color: '#fafafa' }, { media: '(prefers-color-scheme: dark)', color: '#0f0f10' }] };
 }
 
 export default async function RootLayout({
@@ -61,7 +44,7 @@ export default async function RootLayout({
     ? configuredMetrikaId
     : null;
   return (
-    <html suppressHydrationWarning className={inter.variable}>
+    <html lang="ru" suppressHydrationWarning className={inter.variable}>
       <head>
         <link rel="icon" href="/logotip.png" />
         <script

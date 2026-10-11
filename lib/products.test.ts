@@ -119,12 +119,12 @@ describe('categoryName', () => {
   });
 
   it('omits the first page from catalog links and retains active filters on later pages', () => {
-    const filters = { category: 'outerwear', country: 'CN', q: 'coat', page: '4' };
+    const filters = { category: 'outerwear', country: 'CN', q: 'coat', saleOnly: 'true', page: '4' };
 
     expect(buildCatalogPageSearchParams(filters, 1).toString())
-      .toBe('q=coat&country=CN&category=outerwear');
+      .toBe('q=coat&country=CN&category=outerwear&saleOnly=true');
     expect(buildCatalogPageSearchParams(filters, 3).toString())
-      .toBe('q=coat&country=CN&category=outerwear&page=3');
+      .toBe('q=coat&country=CN&category=outerwear&saleOnly=true&page=3');
   });
 });
 

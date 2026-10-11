@@ -14,6 +14,9 @@ import { googleAuth, getMe } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
 import { getErrorDetails } from '@/lib/errorDetails';
 import { ArrowRight, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
+import { normalizeUzbekPhoneInput } from '@/lib/phone';
+import { UzbekPhoneInput } from './UzbekPhoneInput';
+import { getSafeGoogleAuthDestination } from '@/lib/safe-navigation';
 
 interface GoogleAuthButtonProps {
   locale: string;
@@ -49,7 +52,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
 
   const [step, setStep] = useState<'idle' | 'phone' | 'otp' | 'loading' | 'done'>('idle');
   const [tokenValue, setTokenValue] = useState<string | null>(null);
-  const [phone, setPhone] = useState('+998');
+  const [phone, setPhone] = useState('+998 ');
   const [otpCode, setOtpCode] = useState('');
   const [confirmation, setConfirmation] = useState<ConfirmationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -70,11 +73,12 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
     if (token && user) {
       setAuth(user, token);
       setStep('done');
-      const redirectParam = typeof window !== 'undefined'
-        ? new URLSearchParams(window.location.search).get('redirect')
-        : null;
-      const redirect = redirectParam || '/profile';
-      const destination = redirect.startsWith('/') ? `/${locale}${redirect}` : `/${locale}/${redirect}`;
+      const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+      const destination = getSafeGoogleAuthDestination(
+        locale,
+        params?.get('returnTo'),
+        params?.get('redirect'),
+      );
       setTimeout(() => {
         router.push(destination);
       }, 300);
@@ -143,8 +147,13 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
       return;
     }
     try {
+      const canonicalPhone = normalizeUzbekPhoneInput(phone);
+      if (!canonicalPhone) {
+        setError('Неверный формат номера телефона');
+        return;
+      }
       const verifier = setupRecaptcha(auth);
-      const result = await signInWithPhoneNumber(auth, phone, verifier);
+      const result = await signInWithPhoneNumber(auth, canonicalPhone, verifier);
       setConfirmation(result);
       setStep('otp');
       setCountdown(60);
@@ -169,7 +178,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
       await confirmation.confirm(otpCode);
       await tryGoogleAuth({
         idToken: tokenValue,
-        phone: phone.trim(),
+        phone: normalizeUzbekPhoneInput(phone) ?? undefined,
       });
     } catch (e: unknown) {
       const { code, message } = getErrorDetails(e);
@@ -196,15 +205,18 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           </div>
         )}
         <div className="flex gap-2">
-          <input
+          <UzbekPhoneInput
+            locale={locale}
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onValueChange={setPhone}
+            aria-label="Номер телефона"
             placeholder="+998 90 123 45 67"
             className="h-10 flex-1 rounded-xl border border-stone-200 bg-white px-4 text-sm text-stone-900 placeholder-stone-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-stone-900 dark:text-white"
           />
           <button
             type="button"
             onClick={sendOtp}
+            disabled={!normalizeUzbekPhoneInput(phone)}
             className="flex h-10 items-center gap-1.5 rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white hover:bg-primary-500 transition-colors"
           >
             <ArrowRight size={16} />

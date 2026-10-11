@@ -30,8 +30,9 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-    "proxy.ts"
+    "proxy.ts",
+    ".next/averon-auth-r12-20261011/types/**/*.ts",
+    ".next/averon-auth-r12-20261011/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }
-

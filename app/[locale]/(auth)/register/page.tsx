@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import api from '@/lib/axios';
@@ -10,6 +10,10 @@ import { getLocalizedApiError } from '@/lib/localized-api-error';
 import { useSmsVerificationAvailability } from '@/hooks/useSmsVerificationAvailability';
 import { SmsUnavailableNotice } from '@/components/auth/SmsUnavailableNotice';
 import { Button } from '@/components/ui/Button';
+import { normalizeUzbekPhoneInput } from '@/lib/phone';
+import { UzbekPhoneInput } from '@/components/auth/UzbekPhoneInput';
+import { getSafeInternalReturnTo, getSafeReturnToQuery } from '@/lib/safe-navigation';
+import { repairMojibake } from '@/lib/repair-mojibake';
 
 const copy = {
   ru: {
@@ -97,8 +101,10 @@ const copy = {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = (useParams()?.locale as string) || 'ru';
-  const text = copy[locale as keyof typeof copy] ?? copy.ru;
+  const returnToQuery = getSafeReturnToQuery(searchParams.get('returnTo'), locale);
+  const text = repairMojibake(repairMojibake(copy[locale as keyof typeof copy] ?? copy.ru));
   const setAuth = useAuthStore((state) => state.setAuth);
   const smsAvailable = useSmsVerificationAvailability();
   const requestPending = useRef(false);
@@ -118,20 +124,22 @@ export default function RegisterPage() {
       return;
     }
     if (requestPending.current || smsAvailable !== true) return;
+    const canonicalPhone = normalizeUzbekPhoneInput(phone);
+    if (!canonicalPhone) return;
     requestPending.current = true;
     setLoading(true);
     setError('');
     try {
       if (step === 'form') {
-        await api.post('/auth/register/phone/request-code', { name, phone, password });
+        await api.post('/auth/register/phone/request-code', { name, phone: canonicalPhone, password });
         setStep('code');
       } else {
         const { data } = await api.post<{ accessToken: string; user: AuthUser }>(
           '/auth/register/phone/verify-code',
-          { phone, code },
+          { phone: canonicalPhone, code },
         );
         setAuth(data.user, data.accessToken);
-        router.replace(`/${locale}/profile`);
+        router.replace(getSafeInternalReturnTo(searchParams.get('returnTo'), locale) ?? `/${locale}/profile`);
       }
     } catch (value: unknown) {
       setError(getLocalizedApiError(value, locale, 'registration'));
@@ -189,14 +197,12 @@ export default function RegisterPage() {
             </label>
             <label className="block space-y-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">{text.phone}</span>
-              <input
+              <UzbekPhoneInput
+                locale={locale}
                 required
-                minLength={7}
-                maxLength={30}
                 value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-                autoComplete="tel"
-                inputMode="tel"
+                onValueChange={setPhone}
+                aria-label={text.phone}
                 className={field}
               />
             </label>
@@ -262,7 +268,7 @@ export default function RegisterPage() {
           loading={loading}
           loadingLabel={step === 'form' ? text.requesting : text.registering}
           disabled={loading || smsAvailable !== true || (step === 'form'
-            ? name.trim().length < 2 || password.length < 8 || confirm.length < 8
+            ? name.trim().length < 2 || !normalizeUzbekPhoneInput(phone) || password.length < 8 || confirm.length < 8
             : code.length !== 6)}
           className="h-12 w-full rounded-xl bg-primary-600 font-semibold text-white hover:bg-primary-500"
         >
@@ -284,7 +290,7 @@ export default function RegisterPage() {
       ) : null}
       <p className="text-center text-sm text-stone-500">
         {text.existingAccount}{' '}
-        <Link href={`/${locale}/login`} className="font-semibold text-primary-400">{text.login}</Link>
+        <Link href={`/${locale}/login${returnToQuery}`} className="font-semibold text-primary-400">{text.login}</Link>
       </p>
     </div>
   );

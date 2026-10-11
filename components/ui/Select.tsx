@@ -81,7 +81,7 @@ const SelectValue = forwardRef<HTMLSpanElement, SelectValueProps>(
     const selectedLabel = context?.value ? context.labelMap[context.value] : null;
 
     return (
-      <span ref={ref} className={cn('truncate', !selectedLabel && 'text-stone-400 dark:text-stone-500', className)} {...props}>
+      <span ref={ref} className={cn('truncate', !selectedLabel && 'text-stone-500 dark:!text-stone-300', className)} {...props}>
         {selectedLabel || placeholder}
       </span>
     );

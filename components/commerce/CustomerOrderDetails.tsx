@@ -10,6 +10,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { Button } from '@/components/ui/Button';
 import { cancelCustomerOrder, commerceQueryKeys, getCustomerOrder } from '@/lib/commerce-orders';
+import { formatUzs } from '@/lib/price';
 
 const copy = {
   ru: { title: 'Заказ', success: 'Заказ оформлен', successText: 'Номер заказа и итоговая сумма подтверждены сервером.', loading: 'Загружаем заказ…', error: 'Заказ не найден или у вас нет к нему доступа.', retry: 'Повторить', list: 'Мои заказы', number: 'Номер заказа', status: 'Статус', progress: 'История заказа', created: 'Заказ создан', createdOn: 'Создан', note: 'Комментарий', shipments: 'Отправления', provider: 'Перевозчик', trackingNumber: 'Трек-номер', shipmentStatus: 'Статус отправления', sentOn: 'Отправлено', arrivedOn: 'Прибыло', items: 'Товары', subtotal: 'Товары', discount: 'Скидка', delivery: 'Доставка', total: 'Итого', notPaid: 'Онлайн-оплата не выполнялась. Менеджер свяжется с вами для подтверждения заказа.', preorder: 'Предзаказ', preorderDate: 'Ожидаемая доступность', review: 'Оставить отзыв', yourReview: 'Ваш отзыв', cancel: 'Отменить заказ', confirmCancel: 'Да, отменить', cancelling: 'Отменяем…', keepOrder: 'Оставить заказ', cancelPrompt: 'Отменить можно только новый заказ. После отмены товар вернётся в доступный остаток.', cancelError: 'Не удалось отменить заказ. Возможно, его уже начали обрабатывать.' },
@@ -57,11 +58,6 @@ function formatOrderDateTime(value: string, locale: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return null;
   return date.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU');
-}
-
-function formatUzs(amount: string | number, locale: string) {
-  const value = Number(amount);
-  return `${Number.isFinite(value) ? value.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU') : '0'} ${locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}`;
 }
 
 function OrderDetailsContent({ success }: { success: boolean }) {

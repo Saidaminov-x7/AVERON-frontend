@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ProductCard } from "@/components/commerce/ProductCard";
+import { formatUzs } from "@/lib/price";
 import { CatalogAssistantError, requestStyleOutfit, type OutfitResult } from "@/lib/catalog-assistant";
 
 function suggestions(locale: string) {
@@ -103,7 +104,7 @@ export function StyleAssistant({
       {result && result.items.length > 0 ? (
         <>
           <p className="mt-4 text-sm text-stone-300">{result.explanation}</p>
-          <p className="mt-3 text-sm font-bold">{t("styleAssistantTotal")}: {Number(result.totalPriceUzs).toLocaleString(locale === "en" ? "en-US" : locale === "uz" ? "uz-UZ" : "ru-RU")} {locale === "en" ? "UZS" : locale === "uz" ? "so‘m" : "сум"}</p>
+          <p className="mt-3 text-sm font-bold">{t("styleAssistantTotal")}: {formatUzs(result.totalPriceUzs, locale)}</p>
           <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4" aria-live="polite">
             {result.items.map(({ product }) => <ProductCard key={product.id} product={product} locale={locale} />)}
           </div>

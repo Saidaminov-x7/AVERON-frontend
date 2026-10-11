@@ -24,6 +24,7 @@ import {
 } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { formatUzs } from '@/lib/price';
 
 type DraftItem = { product: StoreProduct; variantId: string | null };
 
@@ -62,11 +63,6 @@ const copy = {
     added: 'Outfit added to cart.', priceNote: 'The server confirms final prices and availability.',
   },
 } as const;
-
-function formatUzs(value: number, locale: string) {
-  const formatted = value.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU');
-  return `${formatted} ${locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}`;
-}
 
 function initialVariant(product: StoreProduct): string | null {
   const variants = product.variants ?? [];

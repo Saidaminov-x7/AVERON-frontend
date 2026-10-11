@@ -53,6 +53,58 @@ type OwnReview = Review & { id: string; status: 'PENDING' | 'PUBLISHED' | 'REJEC
 
 const fitValues: Fit[] = ['RUNS_SMALL', 'TRUE_TO_SIZE', 'RUNS_LARGE'];
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isNonNegativeCount(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
+function isReview(value: unknown): value is Review {
+  if (!isRecord(value) || !isRecord(value.author) || !Array.isArray(value.media)) return false;
+  if (
+    typeof value.rating !== 'number' || !Number.isFinite(value.rating) || value.rating < 1 || value.rating > 5
+    || (value.title !== null && typeof value.title !== 'string')
+    || typeof value.comment !== 'string'
+    || typeof value.verifiedPurchase !== 'boolean'
+    || (value.fitFeedback !== null && !fitValues.includes(value.fitFeedback as Fit))
+    || typeof value.createdAt !== 'string' || !Number.isFinite(Date.parse(value.createdAt))
+    || typeof value.author.name !== 'string'
+    || (value.author.avatar !== null && typeof value.author.avatar !== 'string')
+  ) return false;
+
+  if (value.id !== undefined && typeof value.id !== 'string') return false;
+  if (value.status !== undefined && !['PENDING', 'PUBLISHED', 'REJECTED'].includes(String(value.status))) return false;
+  if (value.purchasedVariant !== null) {
+    if (!isRecord(value.purchasedVariant)) return false;
+    if (value.purchasedVariant.size !== undefined && typeof value.purchasedVariant.size !== 'string') return false;
+    if (value.purchasedVariant.color !== undefined && typeof value.purchasedVariant.color !== 'string') return false;
+  }
+  return value.media.every((media) => isRecord(media) && typeof media.url === 'string' && typeof media.mimeType === 'string');
+}
+
+function parseReviewPage(value: unknown): ReviewPage {
+  if (!isRecord(value) || !isRecord(value.summary) || !isRecord(value.pagination) || !Array.isArray(value.items)) {
+    throw new Error('Invalid product reviews response');
+  }
+
+  const { summary, pagination, items } = value;
+  const validDistribution = (distribution: unknown) => isRecord(distribution)
+    && Object.values(distribution).every((count) => typeof count === 'number' && Number.isFinite(count) && count >= 0);
+  if (
+    (summary.averageRating !== null && (typeof summary.averageRating !== 'number' || !Number.isFinite(summary.averageRating)))
+    || !isNonNegativeCount(summary.reviewCount)
+    || !validDistribution(summary.distribution)
+    || !validDistribution(summary.fitDistribution)
+    || !isNonNegativeCount(pagination.page) || pagination.page < 1
+    || !isNonNegativeCount(pagination.pages)
+    || !items.every(isReview)
+  ) throw new Error('Invalid product reviews response');
+
+  return value as unknown as ReviewPage;
+}
+
 function safeAuthorName(name: string, anonymous: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (!parts.length) return anonymous;
@@ -91,7 +143,7 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
 
   const reviewsQuery = useQuery({
     queryKey: ['product-reviews', slug, page],
-    queryFn: async () => (await api.get<ReviewPage>(`/api/v1/products/${encodeURIComponent(slug)}/reviews`, { params: { page, limit: 10 } })).data,
+    queryFn: async () => parseReviewPage((await api.get<unknown>(`/api/v1/products/${encodeURIComponent(slug)}/reviews`, { params: { page, limit: 10 } })).data),
   });
   const eligibilityQuery = useQuery({
     queryKey: ['product-review-eligibility', slug],
@@ -223,12 +275,12 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
         <div className="flex items-center gap-2" aria-label={t('summary.label', { average: summary?.averageRating ?? '—', count: summary?.reviewCount ?? 0 })}>
           <Star className="fill-cyan-500 text-cyan-600" size={22} aria-hidden="true" />
           <span className="text-xl font-extrabold">{summary?.averageRating ?? '—'}</span>
-          <span className="text-sm text-stone-500">{t('summary.count', { count: summary?.reviewCount ?? 0 })}</span>
+          <span className="text-sm text-[var(--color-text-secondary)]">{t('summary.count', { count: summary?.reviewCount ?? 0 })}</span>
         </div>
       </div>
 
-      {reviewsQuery.isLoading ? <p role="status" className="py-6 text-sm text-stone-500">{t('loading')}</p>
-        : reviewsQuery.isError ? <p role="alert" className="py-6 text-sm text-rose-700">{t('errors.generic')}</p>
+      {reviewsQuery.isLoading ? <p role="status" className="py-6 text-sm text-[var(--color-text-secondary)]">{t('loading')}</p>
+        : reviewsQuery.isError ? <p role="alert" className="py-6 text-sm text-[var(--color-error)]">{t('errors.generic')}</p>
           : summary && (
             <div className="grid gap-5 border-b border-stone-200 py-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] dark:border-white/10">
               <div>
@@ -238,7 +290,7 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
                   return <div key={stars} className="grid grid-cols-[2.5rem_1fr_2rem] items-center gap-2 py-1 text-xs">
                     <span>{stars} <span aria-hidden="true">★</span></span>
                     <span className="h-2 overflow-hidden rounded-full bg-stone-200 dark:bg-stone-700"><span className="block h-full rounded-full bg-cyan-600" style={{ width }} /></span>
-                    <span className="text-right text-stone-500">{count}</span>
+                    <span className="text-right text-[var(--color-text-secondary)]">{count}</span>
                   </div>;
                 })}
               </div>
@@ -253,7 +305,7 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
           )}
 
       {formNotice && <p role="status" className="mt-4 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100">{formNotice}</p>}
-      {isAuthenticated && eligibilityQuery.isError && <p role="alert" className="mt-4 text-sm text-rose-700">{t('errors.generic')}</p>}
+      {isAuthenticated && eligibilityQuery.isError && <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">{t('errors.generic')}</p>}
       {isAuthenticated && purchases.length > 0 && (
         <div className="mt-5 space-y-3">
           {purchases.map((purchase) => {
@@ -261,7 +313,7 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
             return <div key={purchase.orderItemId} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-3 dark:border-white/10 dark:bg-stone-900">
               <div className="text-sm">
                 <p className="font-semibold">{purchase.purchasedVariant?.size ? `${t('purchasedSize')}: ${purchase.purchasedVariant.size}` : t('purchaseOrder', { number: purchase.orderNumber })}</p>
-                {purchase.reviewStatus && <p className="mt-1 text-xs text-stone-500">{t('yourReview')}: {reviewStatusLabel(purchase.reviewStatus)}</p>}
+                {purchase.reviewStatus && <p className="mt-1 text-xs text-[var(--color-text-secondary)]">{t('yourReview')}: {reviewStatusLabel(purchase.reviewStatus)}</p>}
               </div>
               <button type="button" onClick={() => startReview(purchase, relatedReview)} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-primary-700 px-4 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500">
                 {purchase.reviewId ? t('editReview') : t('leaveReview')}
@@ -272,10 +324,10 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
       )}
 
       {isAuthenticated && purchases.length === 0 && !eligibilityQuery.isLoading && (
-        <p className="mt-5 text-sm text-stone-500">{t('eligibility')}</p>
+        <p className="mt-5 text-sm text-[var(--color-text-secondary)]">{t('eligibility')}</p>
       )}
       {!isAuthenticated && <div className="mt-5 flex flex-wrap items-center gap-3">
-        <p className="text-sm text-stone-500">{t('signIn')}</p>
+        <p className="text-sm text-[var(--color-text-secondary)]">{t('signIn')}</p>
         <Link href={`/${locale}/login?returnTo=${encodeURIComponent(`/${locale}/catalog/${routeId}#reviews`)}`} className="inline-flex min-h-10 items-center rounded-lg border border-stone-300 px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 dark:border-white/20">{t('signInAction')}</Link>
       </div>}
 
@@ -314,7 +366,7 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
           </label>
           <label className="block text-sm font-semibold">{t('form.comment')}
             <textarea value={comment} onChange={(event) => setComment(event.target.value)} required minLength={3} maxLength={3000} rows={5} className="mt-1 w-full rounded-lg border border-stone-300 bg-transparent p-3 font-normal dark:border-white/20" />
-            <span className="mt-1 block text-right text-xs font-normal text-stone-500">{comment.length}/3000</span>
+            <span className="mt-1 block text-right text-xs font-normal text-[var(--color-text-secondary)]">{comment.length}/3000</span>
           </label>
           <div className="block text-sm font-semibold">
             <span>{t('form.fit')}</span>
@@ -333,12 +385,12 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
               <ImagePlus size={18} aria-hidden="true" />{t('form.addImages')}
               <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple className="sr-only" onChange={(event) => { onFilesSelected(event.target.files); event.currentTarget.value = ''; }} />
             </label>
-            <ul className="mt-2 space-y-1 text-xs text-stone-500">{files.map((file, index) => <li key={`${file.name}-${file.lastModified}`} className="flex items-center justify-between gap-2">
+            <ul className="mt-2 space-y-1 text-xs text-[var(--color-text-secondary)]">{files.map((file, index) => <li key={`${file.name}-${file.lastModified}`} className="flex items-center justify-between gap-2">
               <span className="truncate">{file.name}</span>
               <button type="button" onClick={() => setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="rounded p-1 text-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" aria-label={t('form.removeImage', { name: file.name })}><Trash2 size={16} /></button>
             </li>)}</ul>
           </div>
-          {formError && <p role="alert" className="text-sm font-medium text-rose-700 dark:text-rose-300">{formError}</p>}
+          {formError && <p role="alert" className="text-sm font-medium text-[var(--color-error)]">{formError}</p>}
           <div className="flex flex-wrap gap-3">
             <button type="submit" disabled={submitReview.isPending || !rating || comment.trim().length < 3 || (!ownReview && !selectedPurchase)} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary-700 px-5 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50">
               {submitReview.isPending ? t('form.submitting') : t('form.submit')}
@@ -346,7 +398,7 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
             {ownReview && <button type="button" disabled={deleteReview.isPending} onClick={() => deleteReview.mutate(ownReview.id)} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-rose-300 px-4 text-sm font-semibold text-rose-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 disabled:opacity-50"><Trash2 size={16} />{t('form.delete')}</button>}
             <button type="button" onClick={() => { setPurchaseId(''); setActiveReviewId(null); }} className="min-h-11 rounded-lg border border-stone-300 px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 dark:border-white/20">{t('form.close')}</button>
           </div>
-          {ownReview?.status === 'PUBLISHED' && <p className="text-xs text-stone-500">{t('form.reModeration')}</p>}
+          {ownReview?.status === 'PUBLISHED' && <p className="text-xs text-[var(--color-text-secondary)]">{t('form.reModeration')}</p>}
         </form>
       ) : null}
 
@@ -358,7 +410,7 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
                 {review.author.avatar && <Image src={review.author.avatar} alt="" width={40} height={40} unoptimized className="h-10 w-10 rounded-full object-cover" />}
                 <div>
                   <h3 className="font-bold">{safeAuthorName(review.author.name, t('anonymous'))}</h3>
-                  <time className="text-xs text-stone-500" dateTime={review.createdAt}>{formatDate(review.createdAt)}</time>
+                  <time className="text-xs text-[var(--color-text-secondary)]" dateTime={review.createdAt}>{formatDate(review.createdAt)}</time>
                 </div>
               </div>
               <div className="flex items-center gap-2" aria-label={t('reviewRating', { value: review.rating })}>
@@ -376,7 +428,7 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
             {review.media.length > 0 && <ul className="mt-3 flex flex-wrap gap-2">{review.media.map((media, index) => <li key={`${media.url}-${index}`}><Image src={media.url} alt={t('reviewImageAlt', { index: index + 1 })} width={160} height={160} unoptimized className="h-24 w-24 rounded-lg border border-stone-200 object-cover sm:h-32 sm:w-32 dark:border-white/10" /></li>)}</ul>}
           </article>
         ))}
-        {!reviewsQuery.isLoading && !reviewsQuery.isError && reviewsQuery.data?.items.length === 0 && <p className="py-6 text-sm text-stone-500">{t('empty')}</p>}
+        {!reviewsQuery.isLoading && !reviewsQuery.isError && reviewsQuery.data?.items.length === 0 && <p className="py-6 text-sm text-[var(--color-text-secondary)]">{t('empty')}</p>}
       </div>
       {(reviewsQuery.data?.pagination.pages ?? 0) > 1 && <nav className="mt-5 flex items-center justify-center gap-3" aria-label={t('pagination.label')}>
         <button type="button" disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="min-h-10 rounded-lg border border-stone-300 px-3 text-sm font-semibold disabled:opacity-40 dark:border-white/20">{t('pagination.previous')}</button>

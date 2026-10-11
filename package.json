@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "fixture:catalog": "node scripts/local-catalog-fixture.mjs",
+    "fixture:fitting-room": "node scripts/local-fitting-room-fixture.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -17,6 +19,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^5.9.1",
     "@react-oauth/google": "^0.13.5",
+    "@react-three/fiber": "^9.8.1",
     "@tanstack/react-query": "^5.101.4",
     "axios": "^1.20.0",
     "class-variance-authority": "^0.7.1",
@@ -35,6 +38,7 @@
     "react-markdown": "^10.1.0",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0",
+    "three": "^0.186.1",
     "zod": "^4.4.3",
     "zustand": "^5.0.15"
   },
@@ -47,6 +51,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.186.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.6",
     "jsdom": "^26.1.0",

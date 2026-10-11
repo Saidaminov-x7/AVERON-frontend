@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   getAuthHomeHref,
+  getSafeGoogleAuthDestination,
   getRouteFallback,
   getSafeInternalReferrer,
   getSafeInternalReturnTo,
+  getSafeReturnToQuery,
   getSafePreviousRoute,
   isAuthPathname,
   localizeHrefPreservingSafeQuery,
@@ -13,6 +15,14 @@ describe('safe internal navigation', () => {
   it('keeps a same-locale product path and its query/hash', () => {
     expect(getSafeInternalReturnTo('/uz/catalog/item-1?color=blue#details', 'uz'))
       .toBe('/uz/catalog/item-1?color=blue#details');
+  });
+
+  it('serializes only a safe same-locale return target for auth continuation links', () => {
+    expect(getSafeReturnToQuery('/ru/catalog/item-1?color=red', 'ru'))
+      .toBe('?returnTo=%2Fru%2Fcatalog%2Fitem-1%3Fcolor%3Dred');
+    expect(getSafeReturnToQuery('https://attacker.invalid/ru/catalog', 'ru')).toBe('');
+    expect(getSafeReturnToQuery('/uz/cart', 'ru')).toBe('');
+    expect(getSafeReturnToQuery('/ru/login', 'ru')).toBe('');
   });
 
   it.each([
@@ -51,6 +61,21 @@ describe('safe internal navigation', () => {
     expect(getRouteFallback('/en/register', 'en')).toBe('/en');
     expect(getRouteFallback('/en/catalog/product-1', 'en')).toBe('/en/catalog');
     expect(getRouteFallback('/en/checkout', 'en')).toBe('/en/cart');
+  });
+
+  it('keeps Google auth destinations localized and rejects external or auth-loop redirects', () => {
+    expect(getSafeGoogleAuthDestination('en', '/en/catalog/item-1?color=blue', null))
+      .toBe('/en/catalog/item-1?color=blue');
+    expect(getSafeGoogleAuthDestination('ru', null, '/profile'))
+      .toBe('/ru/profile');
+    expect(getSafeGoogleAuthDestination('uz', null, '/uz/orders/AV-1'))
+      .toBe('/uz/orders/AV-1');
+    expect(getSafeGoogleAuthDestination('en', '//evil.example/path', '//evil.example/path'))
+      .toBe('/en/profile');
+    expect(getSafeGoogleAuthDestination('en', '/en/login', '/en/login'))
+      .toBe('/en/profile');
+    expect(getSafeGoogleAuthDestination('en', null, '/ru/profile'))
+      .toBe('/en/profile');
   });
 
   it('allows only the intended auth back transitions', () => {

@@ -5,16 +5,20 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { AlertCircle } from 'lucide-react';
 import { ResetPasswordForm } from './components/ResetPasswordForm';
+import { getSafeInternalReturnTo, getSafeReturnToQuery } from '@/lib/safe-navigation';
 
 export default function ResetPasswordPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ token?: string }>;
+  searchParams: Promise<{ token?: string; returnTo?: string | string[] }>;
 }) {
-  const { token } = use(searchParams);
+  const { token, returnTo: rawReturnTo } = use(searchParams);
   const { locale } = use(params);
+  const returnToValue = Array.isArray(rawReturnTo) ? rawReturnTo[0] : rawReturnTo;
+  const returnTo = getSafeInternalReturnTo(returnToValue, locale) ?? undefined;
+  const returnToQuery = getSafeReturnToQuery(returnTo, locale);
   const t = useTranslations('ResetPassword');
 
   if (!token) {
@@ -32,7 +36,7 @@ export default function ResetPasswordPage({
           </div>
         </div>
         <Link
-          href={`/${locale}/forgot-password`}
+          href={`/${locale}/forgot-password${returnToQuery}`}
           className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 font-semibold text-white transition-all hover:bg-primary-500 shadow-lg shadow-primary-900/30"
         >
           {t('requestReset')}
@@ -41,5 +45,5 @@ export default function ResetPasswordPage({
     );
   }
 
-  return <ResetPasswordForm locale={locale} token={token} />;
+  return <ResetPasswordForm locale={locale} token={token} returnTo={returnTo} />;
 }

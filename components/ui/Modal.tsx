@@ -49,6 +49,9 @@ export const Modal: React.FC<ModalProps> = ({
           />
           <motion.div
             className={`relative w-full ${maxWidth} rounded-theme font-theme bg-white p-6 shadow-2xl dark:bg-[#1A1A1A] border border-stone-200 dark:border-white/10 z-10`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="averon-modal-title"
             initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.96 }}
@@ -57,7 +60,7 @@ export const Modal: React.FC<ModalProps> = ({
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-stone-100 dark:border-white/10">
               {title && (
                 <div className="text-lg font-bold text-stone-900 dark:text-white">
-                  {typeof title === 'string' ? <h3>{title}</h3> : title}
+                {typeof title === 'string' ? <h3 id="averon-modal-title">{title}</h3> : title}
                 </div>
               )}
               <button

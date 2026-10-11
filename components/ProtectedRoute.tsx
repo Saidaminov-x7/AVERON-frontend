@@ -4,7 +4,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useRouter, usePathname, useParams } from 'next/navigation';
+import { useRouter, usePathname, useParams, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { getSafeInternalReturnTo } from '@/lib/safe-navigation';
 
@@ -16,16 +16,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const params = useParams();
   const locale = (params?.locale as string) || 'ru';
+  const search = searchParams.toString();
+  const locationSuffix = `${search ? `?${search}` : ''}${typeof window === 'undefined' ? '' : window.location.hash}`;
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      const returnTo = getSafeInternalReturnTo(pathname, locale) ?? `/${locale}/profile`;
+      const returnTo = getSafeInternalReturnTo(`${pathname}${locationSuffix}`, locale) ?? `/${locale}/profile`;
       const redirectUrl = `/${locale}/login?returnTo=${encodeURIComponent(returnTo)}`;
       router.push(redirectUrl);
     }
-  }, [isAuthenticated, isLoading, router, pathname, locale]);
+  }, [isAuthenticated, isLoading, router, pathname, locale, locationSuffix]);
 
   if (isLoading) {
     return (

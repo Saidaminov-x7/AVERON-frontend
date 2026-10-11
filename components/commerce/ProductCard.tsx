@@ -6,7 +6,9 @@ import { ProductImage } from './ProductImage';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { productPlainText, productRouteId, productTitle, type StoreProduct } from '@/lib/products';
+import { calculateDiscountPercent, formatUzs } from '@/lib/price';
 import { ProductRichText } from './ProductRichText';
+import { FittingRoomTrigger } from './FittingRoomTrigger';
 import { addWishlistItem, removeWishlistItem } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -29,6 +31,13 @@ export function parseProductColor(value: string) {
   return { name, hex: /^#[0-9a-fA-F]{6}$/.test(hex ?? '') ? hex.toUpperCase() : '#D6D3D1' };
 }
 
+export function colorSwatchLabel(name: string, hex: string, locale: string) {
+  const isPlaceholder = /^(?:цвет|color|rang)\s+\d+$/iu.test(name.trim());
+  if (!isPlaceholder) return name;
+  const prefix = locale === 'en' ? 'Color' : locale === 'uz' ? 'Rang' : 'Цвет';
+  return `${prefix} ${hex}`;
+}
+
 export function ProductCard({
   product,
   locale,
@@ -41,11 +50,10 @@ export function ProductCard({
   const title = productTitle(product, locale);
   const plainTitle = productPlainText(title);
   const productHref = `/${locale}/catalog/${encodeURIComponent(productRouteId(product))}${catalogQuery ? `?${catalogQuery}` : ''}`;
-  const images = product.images?.map(({ url }) => url).filter(Boolean) ?? [];
+  const images = product.images?.filter(({ url }) => Boolean(url)) ?? [];
   const [imageIndex, setImageIndex] = useState(0);
   const [secondImageAvailable, setSecondImageAvailable] = useState(Boolean(images[1]));
-  const price = Number(product.salePriceUzs || 0).toLocaleString(locale === 'en' ? 'en-US' : 'ru-RU');
-  const currency = locale === 'en' ? 'UZS' : locale === 'uz' ? "so'm" : 'сум';
+  const price = formatUzs(product.salePriceUzs || 0, locale);
   const preorderOnly = product.recommendationAvailability
     ? product.recommendationAvailability.preorder
     : Boolean(product.availability?.preorderEligible && !product.availability.inStock);
@@ -96,10 +104,7 @@ export function ProductCard({
   const newLabel = locale === 'uz' ? 'Yangi' : locale === 'en' ? 'New' : 'Новинка';
   const currentPrice = Number(product.salePriceUzs);
   const compareAtPrice = Number(product.compareAtPriceUzs);
-  const discountPercent = Number.isFinite(currentPrice) && currentPrice > 0
-    && Number.isFinite(compareAtPrice) && compareAtPrice > currentPrice
-    ? Math.round((1 - currentPrice / compareAtPrice) * 100)
-    : null;
+  const discountPercent = calculateDiscountPercent(currentPrice, compareAtPrice);
   const discountLabel = locale === 'uz'
     ? `Chegirma ${discountPercent}%`
     : locale === 'en'
@@ -157,10 +162,11 @@ export function ProductCard({
       >
         <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-image-surface)]">
           <ProductImage
-            src={images[imageIndex] || images[0]}
+            src={images[imageIndex]?.url || images[0]?.url}
             alt={plainTitle}
             zoomOnHover={false}
-            fit="contain"
+            fit="cover"
+            coverCrop={images[imageIndex]?.coverCrop ?? images[0]?.coverCrop}
             onError={imageIndex === 1 ? () => {
               setSecondImageAvailable(false);
               setImageIndex(0);
@@ -180,9 +186,10 @@ export function ProductCard({
         <div className="pt-2">
           {colors.length > 0 && (
             <div className="mb-1.5 flex items-center gap-1" aria-label={locale === 'en' ? 'Available colors' : locale === 'uz' ? 'Mavjud ranglar' : 'Доступные цвета'}>
-              {colors.slice(0, 6).map(({ name, hex }) => (
-                <span key={`${name}-${hex}`} title={name} className="size-3.5 rounded-full border border-black/10 ring-1 ring-white" style={{ backgroundColor: hex }} />
-              ))}
+              {colors.slice(0, 6).map(({ name, hex }) => {
+                const label = colorSwatchLabel(name, hex, locale);
+                return <span key={`${name}-${hex}`} role="img" aria-label={label} title={label} className="size-3.5 rounded-full border border-[var(--color-border-hover)]" style={{ backgroundColor: hex }} />;
+              })}
               {colors.length > 6 ? <span className="ml-0.5 text-[11px] text-[var(--color-muted)]">+{colors.length - 6}</span> : null}
             </div>
           )}
@@ -194,11 +201,12 @@ export function ProductCard({
             <ProductRichText content={title} inline />
           </p>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <strong className={`text-sm font-semibold tabular-nums tracking-tight ${discountPercent !== null ? 'text-[var(--color-sale)]' : 'text-[var(--color-text)]'}`}>{price} {currency}</strong>
-            {discountPercent !== null ? <span className="text-xs tabular-nums text-[var(--color-muted)] line-through">{compareAtPrice.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')} {currency}</span> : null}
+            <strong className={`text-sm font-semibold tabular-nums tracking-tight ${discountPercent !== null ? 'text-[var(--color-sale)]' : 'text-[var(--color-text)]'}`}>{price}</strong>
+            {discountPercent !== null ? <span className="text-xs tabular-nums text-[var(--color-muted)] line-through">{formatUzs(compareAtPrice, locale)}</span> : null}
           </div>
         </div>
       </Link>
+      {product.fittingRoomAvailable && <div className="mt-2 max-w-40"><FittingRoomTrigger productId={product.id} locale={locale} imageUrl={product.images?.[0]?.url} compact /></div>}
       <div className="absolute right-2 top-2 flex gap-1.5 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
         <button
           type="button"

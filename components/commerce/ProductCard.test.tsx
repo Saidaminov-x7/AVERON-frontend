@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { isProductNew, ProductCard, type StoreProduct } from './ProductCard';
+import { colorSwatchLabel, isProductNew, ProductCard, type StoreProduct } from './ProductCard';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 
@@ -13,6 +13,28 @@ describe('ProductCard', () => {
   beforeEach(() => {
     useFavoritesStore.setState({ ids: [] });
     useCompareStore.setState({ ids: [] });
+  });
+
+  it('replaces generic color indexes with accessible color values and preserves real color names', () => {
+    expect(colorSwatchLabel('Цвет 1', '#000000', 'ru')).toBe('Цвет #000000');
+    expect(colorSwatchLabel('Color 2', '#ffffff', 'en')).toBe('Color #ffffff');
+    expect(colorSwatchLabel('Rang 3', '#ff0000', 'uz')).toBe('Rang #ff0000');
+    expect(colorSwatchLabel('Navy', '#000080', 'en')).toBe('Navy');
+  });
+
+  it('renders color swatches with useful accessible names and theme-neutral borders', () => {
+    render(<ProductCard product={{
+      ...product,
+      variants: [
+        { id: 'black-m', color: 'Цвет 1::#000000', size: 'M', stock: 2 },
+        { id: 'navy-l', color: 'Navy::#000080', size: 'L', stock: 1 },
+      ],
+    }} locale="ru" />);
+
+    expect(screen.getByRole('img', { name: 'Цвет #000000' })).toHaveAttribute('title', 'Цвет #000000');
+    expect(screen.getByRole('img', { name: 'Navy' })).toHaveAttribute('title', 'Navy');
+    expect(screen.getByRole('img', { name: 'Цвет #000000' }).className).not.toContain('ring-white');
+    expect(screen.queryByTitle('Цвет 1')).not.toBeInTheDocument();
   });
 
   it('shows only the second image on hover without zooming the card or image', () => {
@@ -35,6 +57,14 @@ describe('ProductCard', () => {
     expect(image).toHaveAttribute('src', '/first.jpg');
   });
 
+  it('applies persisted cover crop metadata to catalog cards while using the original image URL', () => {
+    render(<ProductCard product={{ ...product, images: [{ url: '/original.jpg', coverCrop: { x: 22, y: 76, zoom: 1.8 } }] }} locale="ru" />);
+    const image = screen.getByRole('img', { name: 'Красное платье' });
+    expect(image).toHaveAttribute('src', '/original.jpg');
+    expect(image).toHaveStyle({ objectPosition: '22% 76%', transform: 'scale(1.8)', transformOrigin: '22% 76%' });
+    expect(image).toHaveClass('object-cover');
+  });
+
   it('expires the new label after two weeks and ignores future dates', () => {
     const now = Date.UTC(2026, 0, 15);
     expect(isProductNew(new Date(now - 13 * 24 * 60 * 60 * 1000).toISOString(), now)).toBe(true);
@@ -50,6 +80,17 @@ describe('ProductCard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Добавить в избранное' }));
     expect(useFavoritesStore.getState().ids).toEqual(['product-1']);
     expect(screen.getByRole('button', { name: 'Убрать из избранного' })).toBeInTheDocument();
+  });
+
+  it('does not display a full 100% discount for a positive sale price', () => {
+    render(<ProductCard product={{
+      ...product,
+      salePriceUzs: 99_999,
+      compareAtPriceUzs: 99_999_999,
+    }} locale="ru" />);
+
+    expect(screen.getByText('−99%')).toBeInTheDocument();
+    expect(screen.queryByText('−100%')).not.toBeInTheDocument();
   });
 
   it('preserves catalog filters when linking to a product', () => {

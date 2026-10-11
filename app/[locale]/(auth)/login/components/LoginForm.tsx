@@ -10,7 +10,10 @@ import { SmsUnavailableNotice } from '@/components/auth/SmsUnavailableNotice';
 import { useSmsVerificationAvailability } from '@/hooks/useSmsVerificationAvailability';
 import { getLocalizedApiError } from '@/lib/localized-api-error';
 import { useAuthStore, type AuthUser } from '@/store/useAuthStore';
-import { getSafeInternalReturnTo } from '@/lib/safe-navigation';
+import { getSafeInternalReturnTo, getSafeReturnToQuery } from '@/lib/safe-navigation';
+import { normalizeUzbekPhoneInput } from '@/lib/phone';
+import { UzbekPhoneInput } from '@/components/auth/UzbekPhoneInput';
+import { repairMojibake } from '@/lib/repair-mojibake';
 
 const copies = {
   ru: { title: 'Вход в AVERON', intro: 'Введите номер и пароль. Затем подтвердите вход кодом из SMS.', sent: 'Код отправлен на', phone: 'Номер телефона', password: 'Пароль', forgot: 'Забыли пароль?', sms: 'Код из SMS', wait: 'Входим…', next: 'Продолжить', confirm: 'Подтвердить и войти', change: 'Изменить данные', noAccount: 'Нет аккаунта?', register: 'Зарегистрируйтесь', error: 'Не удалось выполнить запрос', checkingSms: 'Проверяем доступность SMS…', smsUnavailable: 'SMS недоступны' },
@@ -19,9 +22,10 @@ const copies = {
 } as const;
 
 export function LoginForm({ locale }: { locale: string }) {
-  const copy = copies[locale as keyof typeof copies] ?? copies.ru;
+  const copy = repairMojibake(repairMojibake(copies[locale as keyof typeof copies] ?? copies.ru));
   const router = useRouter();
   const searchParams = useSearchParams();
+  const returnToQuery = getSafeReturnToQuery(searchParams.get('returnTo'), locale);
   const setAuth = useAuthStore((state) => state.setAuth);
   const smsAvailable = useSmsVerificationAvailability();
   const requestPending = useRef(false);
@@ -35,17 +39,19 @@ export function LoginForm({ locale }: { locale: string }) {
 
   const submit = async () => {
     if (requestPending.current || smsAvailable !== true) return;
+    const canonicalPhone = normalizeUzbekPhoneInput(phone);
+    if (!canonicalPhone) return;
     requestPending.current = true;
     setLoading(true);
     setError('');
     try {
       if (step === 'credentials') {
-        await api.post('/auth/login/phone/request-code', { phone, password });
+        await api.post('/auth/login/phone/request-code', { phone: canonicalPhone, password });
         setStep('code');
       } else {
         const { data } = await api.post<{ accessToken: string; user: AuthUser }>(
           '/auth/login/phone/verify-code',
-          { phone, code },
+          { phone: canonicalPhone, code },
         );
         setAuth(data.user, data.accessToken);
         const destination = getSafeInternalReturnTo(searchParams.get('returnTo'), locale)
@@ -62,7 +68,7 @@ export function LoginForm({ locale }: { locale: string }) {
 
   const field = 'h-12 w-full rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20';
   const disabled = loading || smsAvailable !== true || (step === 'credentials'
-    ? !phone.trim() || !password
+    ? !normalizeUzbekPhoneInput(phone) || !password
     : code.length !== 6);
 
   return (
@@ -88,7 +94,7 @@ export function LoginForm({ locale }: { locale: string }) {
               <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">{copy.phone}</span>
               <div className="relative">
                 <Phone size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500" aria-hidden="true" />
-                <input value={phone} onChange={(event) => setPhone(event.target.value)} autoComplete="tel" inputMode="tel" className={`${field} pl-11 pr-4`} />
+                <UzbekPhoneInput locale={locale} aria-label={copy.phone} value={phone} onValueChange={setPhone} className={`${field} pl-11 pr-4`} />
               </div>
             </label>
             <label className="block space-y-2">
@@ -102,7 +108,7 @@ export function LoginForm({ locale }: { locale: string }) {
               </div>
             </label>
             <div className="flex justify-end">
-              <Link href={`/${locale}/forgot-password`} className="rounded-sm text-sm font-semibold text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{copy.forgot}</Link>
+              <Link href={`/${locale}/forgot-password${returnToQuery}`} className="rounded-sm text-sm font-semibold text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{copy.forgot}</Link>
             </div>
           </>
         ) : (
@@ -129,7 +135,7 @@ export function LoginForm({ locale }: { locale: string }) {
       ) : null}
       <p className="text-center text-sm text-stone-500">
         {copy.noAccount}{' '}
-        <Link href={`/${locale}/register`} className="rounded-sm font-semibold text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{copy.register}</Link>
+        <Link href={`/${locale}/register${returnToQuery}`} className="rounded-sm font-semibold text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{copy.register}</Link>
       </p>
     </div>
   );

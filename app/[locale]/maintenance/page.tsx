@@ -21,8 +21,7 @@ async function getSiteSettings() {
   }
   return {
     maintenanceMode: true,
-    maintenanceMessage:
-      'Сайт находится в разработке и временно недоступен. Мы проводим технические работы. Пожалуйста, зайдите позже!',
+    maintenanceMessage: null,
     maintenancePasswordEnabled: false,
   };
 }

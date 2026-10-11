@@ -40,7 +40,7 @@ export function CatalogSelect({
 
   return (
     <div className="min-w-0">
-      <span className="text-xs font-bold uppercase text-stone-500">{label}</span>
+      <span className="text-xs font-bold uppercase text-stone-600 dark:!text-stone-300">{label}</span>
       {value || name === 'country' ? <input type="hidden" name={name} value={value} /> : null}
       <Select value={value} onValueChange={updateValue}>
         <SelectTrigger aria-label={label} className="mt-2 normal-case">

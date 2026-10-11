@@ -37,8 +37,9 @@ export type StoreProduct = {
     available: boolean;
     preorder: boolean;
   };
+  fittingRoomAvailable?: boolean;
   country?: string | null;
-  images?: Array<{ id?: string; url: string; alt?: Record<string, string> }>;
+  images?: Array<{ id?: string; url: string; alt?: Record<string, string>; coverCrop?: { x: number; y: number; zoom: number } | null }>;
   category?: StoreCategory | null;
   material?: string | null;
   attributes?: Record<string, unknown> | null;
@@ -132,7 +133,7 @@ export interface ProductListResponse {
 
 export function buildCatalogSearchParams(filters: Record<string, string | string[] | undefined>) {
   const query = new URLSearchParams();
-  for (const key of ['q', 'country', 'category', 'audience', 'size', 'color', 'minPrice', 'maxPrice', 'sort', 'page']) {
+  for (const key of ['q', 'country', 'category', 'audience', 'size', 'color', 'minPrice', 'maxPrice', 'saleOnly', 'sort', 'page']) {
     const value = filters[key];
     if (typeof value === 'string' && (value.trim() || (key === 'country' && value === ''))) {
       query.set(key, value.trim());

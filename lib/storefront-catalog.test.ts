@@ -21,6 +21,7 @@ describe('storefront catalog requests', () => {
       page: '2',
       q: ' coat ',
       size: 'M',
+      saleOnly: 'true',
       sort: 'price_asc',
     }, fetcher);
 
@@ -31,6 +32,7 @@ describe('storefront catalog requests', () => {
     expect(request.searchParams.get('page')).toBe('2');
     expect(request.searchParams.get('q')).toBe('coat');
     expect(request.searchParams.get('size')).toBe('M');
+    expect(request.searchParams.get('saleOnly')).toBe('true');
     expect(request.searchParams.get('sort')).toBe('price_asc');
     expect(request.searchParams.get('limit')).toBe('24');
     expect(options).toMatchObject({ cache: 'no-store' });

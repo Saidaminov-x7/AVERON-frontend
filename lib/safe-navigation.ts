@@ -93,6 +93,26 @@ export function getSafeInternalReturnTo(value: string | null | undefined, locale
   }
 }
 
+export function getSafeReturnToQuery(value: string | null | undefined, locale: string): string {
+  const safeReturnTo = getSafeInternalReturnTo(value, locale);
+  return safeReturnTo ? `?${new URLSearchParams({ returnTo: safeReturnTo }).toString()}` : '';
+}
+
+export function getSafeGoogleAuthDestination(
+  locale: string,
+  returnTo: string | null | undefined,
+  legacyRedirect: string | null | undefined,
+): string {
+  const safeFallback = `/${supportedLocales.has(locale) ? locale : 'ru'}/profile`;
+  const safeReturnTo = getSafeInternalReturnTo(returnTo, locale);
+  if (safeReturnTo) return safeReturnTo;
+
+  if (!legacyRedirect || !legacyRedirect.startsWith('/') || legacyRedirect.startsWith('//')) return safeFallback;
+  const hasLocalePrefix = /^\/(?:ru|uz|en)(?:\/|$)/.test(legacyRedirect);
+  const localizedLegacyRedirect = hasLocalePrefix ? legacyRedirect : `/${locale}${legacyRedirect}`;
+  return getSafeInternalReturnTo(localizedLegacyRedirect, locale) ?? safeFallback;
+}
+
 export function getSafePreviousRoute(
   value: string | null | undefined,
   currentPathname: string,

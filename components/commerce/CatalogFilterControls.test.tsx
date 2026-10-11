@@ -96,6 +96,19 @@ describe('CatalogFilterControls', () => {
     expect(navigation.push).toHaveBeenCalledWith('/ru/catalog');
   });
 
+  it('hydrates the sale-only filter from the URL and removes it before applying', () => {
+    navigation.search = 'saleOnly=true&page=2';
+    renderControls();
+
+    const saleOnly = screen.getByRole('checkbox', { name: messages.catalog.saleOnly });
+    expect(saleOnly).toBeChecked();
+
+    fireEvent.click(saleOnly);
+    fireEvent.click(screen.getByRole('button', { name: messages.catalog.show }));
+
+    expect(navigation.push).toHaveBeenCalledWith('/ru/catalog?sort=newest');
+  });
+
   it('resynchronizes the draft when the URL changes externally', () => {
     const view = renderControls();
     expect(screen.getByRole('button', { name: 'Мужское' })).toHaveAttribute('aria-pressed', 'false');

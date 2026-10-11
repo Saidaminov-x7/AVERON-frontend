@@ -13,6 +13,7 @@ import { StyleAssistant } from "@/components/commerce/StyleAssistant";
 import { CatalogFilterLayout } from "@/components/commerce/CatalogFilterLayout";
 import { CatalogFilterControls } from "@/components/commerce/CatalogFilterControls";
 import { CatalogCountryDefaultResolver } from "@/components/commerce/CatalogCountryDefaultResolver";
+import { CatalogSortControl } from "@/components/commerce/CatalogSortControl";
 import type { CatalogFacets } from "@/lib/storefront-catalog";
 import {
   buildCatalogPageSearchParams,
@@ -135,6 +136,7 @@ function CatalogContent({
     ...(typeof f.country === "string" && f.country ? [[t("country"), f.country]] : []),
     ...(typeof f.size === "string" && f.size ? [[t("size"), f.size]] : []),
     ...(typeof f.color === "string" && f.color ? [[t("color"), f.color]] : []),
+    ...(f.saleOnly === "true" ? [[t("saleOnly"), t("saleOnly")]] : []),
     ...(Boolean(typeof f.minPrice === "string" && f.minPrice.trim()) || Boolean(typeof f.maxPrice === "string" && f.maxPrice.trim())
       ? [[t("price"), `${typeof f.minPrice === "string" && f.minPrice.trim() ? f.minPrice : "–"}–${typeof f.maxPrice === "string" && f.maxPrice.trim() ? f.maxPrice : "∞"} UZS`]]
       : []),
@@ -145,15 +147,15 @@ function CatalogContent({
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
-      <div className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-[1344px] px-4 py-8 sm:px-8 lg:px-12">
         <CatalogCountryDefaultResolver
           locale={locale}
           hasExplicitCountry={Object.prototype.hasOwnProperty.call(f, "country")}
         />
         <CatalogFilterLayout
           filters={
-            <div className="sticky top-24 flex h-full min-h-[calc(100vh-6rem)] flex-col border-t border-[var(--color-border)] bg-[var(--color-surface)] py-4">
-              <div className="flex items-center gap-2 border-b pb-4 font-bold dark:border-white/10">
+            <div className="sticky top-24 flex h-fit max-h-[calc(100vh-6rem)] flex-col overflow-y-auto rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4">
+              <div className="mb-4 flex items-center gap-2 border-b border-[var(--color-border)] pb-3 font-bold">
                 <Filter className="text-primary-700 dark:text-primary-300" size={18} />
                 {t("filters")}
               </div>
@@ -164,18 +166,21 @@ function CatalogContent({
           resultCount={data.pagination?.total ?? 0}
         >
           <>
-            <div className="mb-5 flex flex-wrap items-center gap-3">
-              <VisualSearch
-                locale={locale}
-                country={typeof f.country === "string" ? f.country : undefined}
-                category={typeof f.category === "string" ? f.category : undefined}
-              />
-              <CatalogAiSearch
-                locale={locale}
-                enabled={capabilities.aiSearch}
-                providerConfigured={capabilities.aiProviderConfigured}
-              />
-              <StyleAssistant locale={locale} enabled={capabilities.styleAssistant} />
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <VisualSearch
+                  locale={locale}
+                  country={typeof f.country === "string" ? f.country : undefined}
+                  category={typeof f.category === "string" ? f.category : undefined}
+                />
+                <CatalogAiSearch
+                  locale={locale}
+                  enabled={capabilities.aiSearch}
+                  providerConfigured={capabilities.aiProviderConfigured}
+                />
+                <StyleAssistant locale={locale} enabled={capabilities.styleAssistant} />
+              </div>
+              <CatalogSortControl />
             </div>
             {activeFilters.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-2" aria-label={t("activeFilters")}>
@@ -200,7 +205,7 @@ function CatalogContent({
                 </Link>
               </div>
             ) : products.length ? (
-              <div className="catalog-product-grid mt-5 grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:gap-x-5 2xl:grid-cols-4">
+              <div className="catalog-product-grid mt-5 grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-5">
                 {products.map((p) => (
                   <ProductCard
                     key={p.id}

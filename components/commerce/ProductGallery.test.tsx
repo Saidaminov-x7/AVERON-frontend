@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { ProductGallery } from './ProductGallery';
 
@@ -127,8 +127,12 @@ describe('ProductGallery', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open image full screen' }));
+    const opener = screen.getByRole('button', { name: 'Open image full screen' });
+    const previousOverflow = document.body.style.overflow;
+    fireEvent.click(opener);
     expect(screen.getByRole('dialog', { name: 'Product images' })).toBeInTheDocument();
+    expect(document.body.style.overflow).toBe('hidden');
+    expect(screen.getByRole('button', { name: 'Close image viewer' })).toHaveFocus();
     fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }));
     expect(screen.getByText('150%')).toBeInTheDocument();
 
@@ -139,6 +143,36 @@ describe('ProductGallery', () => {
 
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(screen.queryByRole('dialog', { name: 'Product images' })).not.toBeInTheDocument();
+    expect(document.body.style.overflow).toBe(previousOverflow);
+    expect(opener).toHaveFocus();
+  });
+
+  it('keeps keyboard focus inside the full-screen viewer', () => {
+    render(
+      <ProductGallery
+        images={[{ id: 'front', url: '/front.jpg' }, { id: 'back', url: '/back.jpg' }]}
+        productTitle="Coat"
+        locale="en"
+        label="Product images"
+        imageLabels={['Show image 1', 'Show image 2']}
+        previousLabel="Previous image"
+        nextLabel="Next image"
+        openImageLabel="Open image full screen"
+        closeViewerLabel="Close image viewer"
+        zoomInLabel="Zoom in"
+        zoomOutLabel="Zoom out"
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open image full screen' }));
+    const dialog = screen.getByRole('dialog', { name: 'Product images' });
+    const first = within(dialog).getByRole('button', { name: 'Zoom in' });
+    const last = within(dialog).getByRole('button', { name: 'Next image' });
+    last.focus();
+    fireEvent.keyDown(last, { key: 'Tab' });
+    expect(first).toHaveFocus();
+    fireEvent.keyDown(first, { key: 'Tab', shiftKey: true });
+    expect(last).toHaveFocus();
   });
 
   it('supports pinch-to-zoom on touch screens', () => {

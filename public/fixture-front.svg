@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+  <rect width="800" height="1000" fill="#e7edf5"/>
+  <path d="M280 180 400 130l120 50 100 170-90 55-40-80v420H310V325l-40 80-90-55z" fill="#3562c7"/>
+  <path d="M400 130v615m-22-540h44" fill="none" stroke="#dce7ff" stroke-width="8"/>
+  <text x="400" y="930" text-anchor="middle" font-family="sans-serif" font-size="30" fill="#27364d">LOCAL FRONT PHOTO</text>
+</svg>

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { getSafeErrorReportPath, sanitizeErrorReportText } from '@/lib/safe-error-report';
+import './[locale]/globals.css';
 
 export default function GlobalError({
   error,
@@ -32,16 +33,39 @@ export default function GlobalError({
     }
   }, [error]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    const storageKey = 'ijara_theme_preference';
+    let preference: string | null = null;
+    try {
+      preference = window.localStorage.getItem(storageKey);
+    } catch {
+      // System theme remains available when browser storage is disabled.
+    }
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const applyTheme = () => {
+      const isDark = preference === 'dark' || (preference !== 'light' && media.matches);
+      root.classList.toggle('dark', isDark);
+      root.classList.toggle('light', !isDark);
+    };
+
+    applyTheme();
+    if (preference === 'dark' || preference === 'light') return;
+    media.addEventListener('change', applyTheme);
+    return () => media.removeEventListener('change', applyTheme);
+  }, []);
+
   return (
     <html lang="ru">
       <body className="min-h-screen bg-[var(--color-bg)] p-4 text-[var(--color-text)]">
         <main className="grid min-h-[calc(100vh-2rem)] place-items-center">
           <section className="averon-panel grid w-full max-w-4xl overflow-hidden md:grid-cols-[.72fr_1fr]">
-            <div className="flex min-h-64 flex-col justify-between bg-[var(--color-primary)] p-8 text-white md:min-h-[420px] md:p-12">
+            <div className="flex min-h-64 flex-col justify-between bg-[var(--color-primary)] p-8 text-[var(--color-on-primary)] md:min-h-[420px] md:p-12">
               <span className="text-xs font-bold tracking-[.2em]">AVERON</span>
               <div>
                 <p className="text-7xl font-semibold leading-none tracking-[-.08em] sm:text-8xl">500</p>
-                <p className="mt-4 max-w-xs text-sm leading-6 text-white/75">Мы уже получили отчёт и работаем над исправлением.</p>
+                <p className="mt-4 max-w-xs text-sm leading-6 opacity-80">Мы уже получили отчёт и работаем над исправлением.</p>
               </div>
             </div>
             <div className="flex flex-col justify-center bg-[var(--color-surface)] p-8 md:p-12">
@@ -53,8 +77,8 @@ export default function GlobalError({
                 </svg>
               </div>
               <p className="averon-kicker">Сервис временно недоступен</p>
-              <h1 className="averon-title mt-3 text-3xl sm:text-4xl">Что-то пошло не так</h1>
-              <p className="mt-4 max-w-md text-sm leading-6 text-[var(--color-muted)]">
+              <h1 className="averon-title mt-3 text-3xl text-[var(--color-text)] sm:text-4xl">Что-то пошло не так</h1>
+              <p className="mt-4 max-w-md text-sm leading-6 text-[var(--color-text-secondary)]">
                 Произошла непредвиденная ошибка. Попробуйте повторить действие или вернитесь на главную.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">

@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getSharedWishlist } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { ProductImage } from '@/components/commerce/ProductImage';
+import { formatUzs } from '@/lib/price';
 
 const copy = {
   ru: { title: 'Избранное', loading: 'Загрузка списка…', unavailable: 'Список недоступен или доступ отключён.', empty: 'В этом списке пока нет доступных товаров.', view: 'Посмотреть товар', available: 'В наличии', unavailableProduct: 'Сейчас недоступен' },
@@ -41,7 +42,7 @@ export default function SharedWishlistPage() {
               <div className="aspect-[4/5] w-full"><ProductImage src={item.imageUrl ?? undefined} alt={item.title} /></div>
               <div className="p-4">
                 <h2 className="line-clamp-2 font-semibold">{item.title}</h2>
-                <p className="mt-2 font-bold">{Number(item.priceUzs).toLocaleString(locale)} {locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}</p>
+                <p className="mt-2 font-bold">{formatUzs(item.priceUzs, locale)}</p>
                 <p className="mt-1 text-sm">{item.available ? text.available : text.unavailableProduct}</p>
                 <Link href={`/${locale}/catalog/${encodeURIComponent(item.publicId || item.slug)}`} className="mt-3 inline-flex min-h-10 items-center font-semibold text-primary-700 underline underline-offset-4">
                   {text.view}

@@ -114,7 +114,7 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
           });
         }}
         className={BTN_CLASS + ' gap-2 !w-auto px-3 text-sm font-semibold ' + (open ? '!border-primary-500 !text-primary-600 dark:!text-primary-400' : '')}
-        aria-label={t('language')}
+        aria-label={`${t('language')}: ${current.short}`}
         aria-expanded={open}
         aria-haspopup="menu"
       >
@@ -363,7 +363,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             className="flex items-center gap-1.5 rounded-sm text-sm text-stone-400 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
             <div className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
-            <span className="font-semibold tracking-tight text-[var(--color-text)]">{settings?.siteName || 'AVERON'}</span>
+            <span className="font-semibold tracking-tight text-[var(--color-text)]">AVERON</span>
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -393,7 +393,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               href={to('/')}
               className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
             >
-              <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">{settings?.siteName || 'AVERON'}</span>
+              <span className="text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">AVERON</span>
             </Link>
 
             <nav className="hidden items-center gap-0.5 lg:flex" aria-label={t('menu')}>
@@ -422,6 +422,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 <input
                   ref={inputRef}
                   type="search"
+                  name="q"
                   value={query}
                   onChange={(e) => handleQuery(e.target.value)}
                   placeholder={t('searchPlaceholder')}
@@ -545,6 +546,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <input
                 ref={inputRef}
                 type="search"
+                name="q"
                 value={query}
                 onChange={(e) => handleQuery(e.target.value)}
                 placeholder={t('searchPlaceholder')}
@@ -596,14 +598,14 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'var(--ease-drawer)',
         }}
         className={
-          `fixed inset-0 z-[61] flex h-dvh w-full flex-col overflow-y-auto bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
+          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-[min(92vw,25rem)] max-w-full flex-col overflow-hidden border-l border-[var(--color-border)] bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] shadow-2xl transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
           (mobileOpen ? 'translate-x-0' : 'translate-x-full')
         }
       >
-        <div className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface)] px-5">
+        <div className="z-10 flex h-14 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4">
           <div className="flex min-w-0 items-baseline gap-2 min-[360px]:gap-3">
             <Link href={to('/')} onClick={closeMobileMenu} className="truncate text-base font-black tracking-[0.16em] text-[var(--color-text)] min-[360px]:text-lg min-[360px]:tracking-[0.2em]">
-              {settings?.siteName || 'AVERON'}
+              AVERON
             </Link>
             <span className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)] min-[280px]:inline">{t('menu')}</span>
           </div>
@@ -618,18 +620,19 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </button>
         </div>
 
-        <div className="mx-auto w-full max-w-xl flex-none px-5 pb-8 pt-6">
+        <div className="mx-auto min-h-0 w-full max-w-xl flex-1 overflow-y-auto overscroll-contain px-4 pb-4 pt-3">
           <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative">
             <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
             <input
               type="search"
+              name="q"
               value={query}
               onChange={(e) => handleMobileQuery(e.target.value)}
               placeholder={t('searchPlaceholder')}
               aria-label={t('search')}
               autoComplete="off"
               enterKeyHint="search"
-              className="h-12 w-full border-0 border-b border-[var(--color-border)] bg-transparent pl-9 pr-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-primary)]"
+              className="h-10 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-soft)] pl-9 pr-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
             />
           </form>
           {mobileSuggestions.length > 0 && (
@@ -648,17 +651,17 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             </div>
           )}
 
-          <section className="mt-5" aria-labelledby="mobile-markets-title">
+          <section className="mt-4" aria-labelledby="mobile-markets-title">
             <p id="mobile-markets-title" className="px-1 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">
               {marketCopy.markets}
             </p>
-            <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-0">
+            <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1">
               {countryLinks.map(({ href, label }) => (
                 <Link
                   key={href}
                   href={to(href)}
                   onClick={closeMobileMenu}
-                  className="flex min-h-12 items-center justify-between border-b border-[var(--color-border)] px-0 text-sm font-medium text-[var(--color-text)] hover:text-[var(--color-muted)]"
+                  className="flex min-h-10 items-center justify-between rounded-md border border-[var(--color-border)] px-2.5 text-[13px] font-medium text-[var(--color-text)] transition-colors hover:bg-[var(--color-surface-soft)]"
                 >
                   <span>{label}</span>
                   <ChevronRight size={15} className="text-[var(--color-muted)]" aria-hidden="true" />
@@ -667,9 +670,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             </div>
           </section>
 
-          <nav aria-label={t('menu')} className="mt-8 border-t border-[var(--color-border)]">
+          <nav aria-label={t('menu')} className="mt-4 border-t border-[var(--color-border)]">
             <div>
-              {visibleNavLinks.map(({ href, label }, index) => {
+              {visibleNavLinks.map(({ href, label }) => {
                 const active = isActive(href);
                 return (
                   <Link
@@ -678,15 +681,15 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     onClick={closeMobileMenu}
                     aria-current={active ? 'page' : undefined}
                     className={
-                      'group flex min-h-[64px] items-center gap-4 border-b border-[var(--color-border)] px-0 transition-colors ' +
+                      'group flex min-h-[46px] items-center gap-3 border-b border-[var(--color-border)] px-1 transition-colors ' +
                       (active
                         ? 'text-[var(--color-text)]'
                         : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]')
                     }
                   >
-                    <span className="w-6 shrink-0 text-[10px] font-semibold tabular-nums tracking-[.12em] text-[var(--color-muted)]" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-                    <span className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">{label}</span>
-                    <ChevronRight size={16} className="shrink-0 text-[var(--color-muted)] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                    <span className={'h-5 w-1 shrink-0 rounded-full ' + (active ? 'bg-[var(--color-primary)]' : 'bg-transparent')} aria-hidden="true" />
+                    <span className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-tight">{label}</span>
+                    <ChevronRight size={15} className="shrink-0 text-[var(--color-muted)] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                   </Link>
                 );
               })}
@@ -704,9 +707,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             if (utilityLinks.length === 0) return null;
 
             return (
-              <div className="mt-8">
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">{t('menu')}</p>
-                <div className="grid grid-cols-2 gap-x-6">
+              <div className="mt-4 border-t border-[var(--color-border)] pt-3">
+                <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">{t('menu')}</p>
+                <div className="grid grid-cols-2 gap-2">
                   {utilityLinks.map(({ href, label, icon, count }) => {
                     const active = isActive(href);
                     return (
@@ -717,13 +720,13 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                         aria-current={active ? 'page' : undefined}
                         aria-label={count > 0 ? `${label}, ${count}` : label}
                         className={
-                          'flex min-h-12 items-center gap-2 border-b px-0 transition-colors ' +
+                          'flex min-h-10 items-center gap-2 rounded-md border border-[var(--color-border)] px-2 transition-colors hover:bg-[var(--color-surface-soft)] ' +
                           (active
-                            ? 'border-[var(--color-text)] text-[var(--color-text)]'
-                            : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)]')
+                            ? 'border-[var(--color-primary)] text-[var(--color-text)]'
+                            : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]')
                         }
                       >
-                        <span className="relative flex h-8 w-8 shrink-0 items-center justify-start text-[var(--color-text)]" aria-hidden="true">
+                        <span className="relative flex h-6 w-6 shrink-0 items-center justify-center text-[var(--color-text)]" aria-hidden="true">
                           {icon}
                           {count > 0 && (
                             <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-text)] px-1 text-[9px] font-bold leading-none text-[var(--color-surface)]">
@@ -731,7 +734,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                             </span>
                           )}
                         </span>
-                        <span className="min-w-0 truncate text-xs font-semibold">{label}</span>
+                        <span className="min-w-0 truncate text-[12px] font-semibold">{label}</span>
                       </Link>
                     );
                   })}
@@ -741,8 +744,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           })()}
         </div>
 
-        <div className="mx-auto w-full max-w-xl shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-5 pb-5 pt-4">
-          <div className="mb-3 flex items-center justify-between">
+        <div className="z-10 mx-auto w-full max-w-xl shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-4 pb-3 pt-2.5 shadow-[0_-8px_24px_rgba(0,0,0,0.04)]">
+          <div className="mb-2 flex items-center justify-between">
             <span className="text-xs font-medium text-[var(--color-text-secondary)]">{t('langAndTheme')}</span>
             <div className="flex items-center gap-2">
               <LanguagePicker onSelect={closeMobileMenu} />
@@ -776,11 +779,11 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
+            <div className="grid grid-cols-2 gap-2">
               <Link
                 href={to('/login')}
                 onClick={closeMobileMenu}
-                className="averon-secondary-button h-11 gap-2"
+                className="averon-secondary-button h-10 gap-2 text-sm"
               >
                 <LogIn size={15} />
                 {t('login')}
@@ -788,7 +791,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <Link
                 href={to('/register')}
                 onClick={closeMobileMenu}
-                className="averon-primary-button h-11"
+                className="averon-primary-button h-10 text-sm"
               >
                 {t('register')}
               </Link>

@@ -69,6 +69,16 @@ describe('ProductReviews', () => {
     expect(screen.getByText('The fabric and fit are excellent.')).toBeInTheDocument();
   });
 
+  it('keeps the product page usable when the reviews endpoint returns an invalid success payload', async () => {
+    mocks.get.mockResolvedValueOnce({ data: { summary: { reviewCount: 0 } } });
+
+    renderReviews();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(enMessages.productReviews.errors.generic);
+    expect(screen.getByRole('heading', { name: enMessages.productReviews.title })).toBeInTheDocument();
+    expect(screen.queryByText('Great fit')).not.toBeInTheDocument();
+  });
+
   it('offers review submission only for backend-eligible purchases', async () => {
     mocks.auth.isAuthenticated = true;
     mocks.get.mockImplementation(async (url: string) => {

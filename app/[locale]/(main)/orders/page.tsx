@@ -7,6 +7,7 @@ import { ArrowRight, PackageCheck, RefreshCw } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { commerceQueryKeys, getCustomerOrders } from '@/lib/commerce-orders';
+import { formatUzs } from '@/lib/price';
 
 const copy = {
   ru: { title: 'Мои заказы', empty: 'У вас пока нет заказов', emptyText: 'Оформленные заказы появятся здесь.', shop: 'Перейти в каталог', retry: 'Повторить', error: 'Не удалось загрузить заказы.', total: 'Сумма', status: 'Статус', date: 'Дата', open: 'Подробнее' },
@@ -29,11 +30,6 @@ const statusCopy: Record<string, Record<'ru' | 'uz' | 'en', string>> = {
   COMPLETED: { ru: 'Завершён', uz: 'Yakunlandi', en: 'Completed' },
   CANCELLED: { ru: 'Отменён', uz: 'Bekor qilindi', en: 'Cancelled' },
 };
-
-function formatUzs(amount: string | number, locale: string) {
-  const value = Number(amount);
-  return `${Number.isFinite(value) ? value.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU') : '0'} ${locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}`;
-}
 
 function OrdersContent() {
   const locale = useLocale() as 'ru' | 'uz' | 'en';

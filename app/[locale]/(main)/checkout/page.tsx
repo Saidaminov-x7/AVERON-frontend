@@ -13,13 +13,16 @@ import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { createCheckout, commerceQueryKeys, getCommerceErrorCode, validatePromoCode } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
+import { formatUzbekPhoneInput, normalizeUzbekPhoneInput } from '@/lib/phone';
+import { UzbekPhoneInput } from '@/components/auth/UzbekPhoneInput';
+import { formatUzs } from '@/lib/price';
 
 const copy = {
   ru: {
     title: 'Оформление заказа', contact: 'Контактные данные', name: 'Имя и фамилия', phone: 'Телефон',
     delivery: 'Адрес доставки', city: 'Город', address: 'Улица, дом', apartment: 'Квартира / офис (необязательно)',
     entrance: 'Подъезд (необязательно)', floor: 'Этаж (необязательно)', comment: 'Комментарий курьеру (необязательно)',
-    total: 'Итого по корзине', submit: 'Подтвердить заказ', back: 'Вернуться в корзину',
+    total: 'Итого по корзине', items: 'Товары в заказе', submit: 'Подтвердить заказ', back: 'Вернуться в корзину',
     subtotal: 'Сумма товаров', promo: 'Промокод', applyPromo: 'Применить', applyingPromo: 'Проверяем…', removePromo: 'Удалить',
     placingOrder: 'Оформляем заказ…',
     discount: 'Скидка', finalTotal: 'Итого со скидкой', promoApplied: 'Скидка применена. Итог будет подтверждён сервером.',
@@ -44,7 +47,7 @@ const copy = {
     title: 'Buyurtmani rasmiylashtirish', contact: 'Aloqa ma’lumotlari', name: 'Ism va familiya', phone: 'Telefon',
     delivery: 'Yetkazib berish manzili', city: 'Shahar', address: 'Ko‘cha, uy', apartment: 'Kvartira / ofis (ixtiyoriy)',
     entrance: 'Kirish yo‘lagi (ixtiyoriy)', floor: 'Qavat (ixtiyoriy)', comment: 'Kuryerga izoh (ixtiyoriy)',
-    total: 'Savatcha jami', submit: 'Buyurtmani tasdiqlash', back: 'Savatchaga qaytish',
+    total: 'Savatcha jami', items: 'Buyurtmadagi mahsulotlar', submit: 'Buyurtmani tasdiqlash', back: 'Savatchaga qaytish',
     subtotal: 'Mahsulotlar summasi', promo: 'Promokod', applyPromo: 'Qo‘llash', applyingPromo: 'Tekshirilmoqda…', removePromo: 'Olib tashlash',
     placingOrder: 'Buyurtma rasmiylashtirilmoqda…',
     discount: 'Chegirma', finalTotal: 'Chegirmadan keyingi jami', promoApplied: 'Chegirma qo‘llandi. Yakuniy summa serverda tasdiqlanadi.',
@@ -69,7 +72,7 @@ const copy = {
     title: 'Checkout', contact: 'Contact details', name: 'Full name', phone: 'Phone',
     delivery: 'Delivery address', city: 'City', address: 'Street and building',
     apartment: 'Apartment / office (optional)', entrance: 'Entrance (optional)', floor: 'Floor (optional)',
-    comment: 'Delivery note (optional)', total: 'Cart total', submit: 'Place order', back: 'Back to cart',
+    comment: 'Delivery note (optional)', total: 'Cart total', items: 'Items in your order', submit: 'Place order', back: 'Back to cart',
     subtotal: 'Subtotal', promo: 'Promo code', applyPromo: 'Apply', applyingPromo: 'Checking…', removePromo: 'Remove',
     placingOrder: 'Placing order…',
     discount: 'Discount', finalTotal: 'Total after discount', promoApplied: 'Discount applied. The server will confirm the final total.',
@@ -92,11 +95,6 @@ const copy = {
   },
 } as const;
 
-function formatUzs(amount: string | number, locale: string) {
-  const value = Number(amount);
-  return `${Number.isFinite(value) ? value.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU') : '0'} ${locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}`;
-}
-
 function CheckoutContent() {
   const locale = useLocale();
   const text = copy[locale as keyof typeof copy] ?? copy.ru;
@@ -104,12 +102,13 @@ function CheckoutContent() {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const { data: cart, isLoading: isCartLoading, isError: isCartError, refetch } = useCommerceCart();
-  const [contact, setContact] = useState({ name: user?.name ?? '', phone: user?.phone ?? '' });
+  const [contact, setContact] = useState({ name: user?.name ?? '', phone: formatUzbekPhoneInput(user?.phone ?? '') });
   const [deliveryAddress, setDeliveryAddress] = useState({ city: '', address: '', apartment: '', entrance: '', floor: '', comment: '' });
   const [promoInput, setPromoInput] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountPercent: number } | null>(null);
   const [promoError, setPromoError] = useState('');
   const idempotencyKey = useRef<string | null>(null);
+  const submissionInFlight = useRef(false);
   const promoValidation = useMutation({
     mutationFn: validatePromoCode,
     onSuccess: (promo) => {
@@ -137,6 +136,9 @@ function CheckoutContent() {
       await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.cart });
       router.push(`/${locale}/checkout/success/${encodeURIComponent(order.orderNumber)}`);
     },
+    onError: () => {
+      submissionInFlight.current = false;
+    },
   });
 
   const changeDetails = <K extends 'contact' | 'deliveryAddress'>(
@@ -154,12 +156,15 @@ function CheckoutContent() {
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (checkout.isPending) return;
+    if (checkout.isPending || submissionInFlight.current) return;
+    const canonicalPhone = normalizeUzbekPhoneInput(contact.phone);
+    if (!canonicalPhone) return;
     const quantity = cart?.items.reduce((total, item) => total + item.quantity, 0) ?? 0;
     trackCommerceEvent({ eventName: 'begin_checkout', ...(quantity > 0 ? { metadata: { quantity } } : {}) });
     if (!idempotencyKey.current) idempotencyKey.current = crypto.randomUUID();
+    submissionInFlight.current = true;
     checkout.mutate({
-      contact: { name: contact.name.trim(), phone: contact.phone.trim() },
+      contact: { name: contact.name.trim(), phone: canonicalPhone },
       deliveryAddress: {
         city: deliveryAddress.city.trim(),
         address: deliveryAddress.address.trim(),
@@ -204,7 +209,7 @@ function CheckoutContent() {
                   <input required minLength={2} maxLength={100} autoComplete="name" value={contact.name} onChange={(event) => changeDetails('contact', 'name', event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-950" />
                 </label>
                 <label className="block text-sm font-medium">{text.phone}
-                  <input required minLength={7} maxLength={30} autoComplete="tel" inputMode="tel" value={contact.phone} onChange={(event) => changeDetails('contact', 'phone', event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-950" />
+                  <UzbekPhoneInput locale={locale} required aria-label={text.phone} value={contact.phone} onValueChange={(value) => changeDetails('contact', 'phone', value)} className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-950" />
                 </label>
               </fieldset>
               <fieldset className="space-y-4 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
@@ -229,6 +234,21 @@ function CheckoutContent() {
             </div>
             <aside className="h-fit rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
               <h2 className="text-lg font-bold">{text.total}</h2>
+              <ul aria-label={text.items} className="mt-4 divide-y divide-stone-200 dark:divide-white/10">
+                {cart?.items.map((item) => {
+                  const variant = [item.variant?.color, item.variant?.size].filter(Boolean).join(' · ');
+                  return (
+                    <li key={item.id} className="flex justify-between gap-4 py-3 text-sm first:pt-0 last:pb-0">
+                      <span className="min-w-0">
+                        <span className="block font-semibold">{item.title}</span>
+                        {variant && <span className="mt-0.5 block text-xs text-stone-500 dark:text-stone-300">{variant}</span>}
+                        <span className="mt-0.5 block text-xs text-stone-500 dark:text-stone-300">× {item.quantity}</span>
+                      </span>
+                      <span className="shrink-0 font-semibold">{formatUzs(item.lineTotalUzs, locale)}</span>
+                    </li>
+                  );
+                })}
+              </ul>
               <div className="mt-3 space-y-2 text-sm">
                 <div className="flex justify-between gap-3"><span>{text.subtotal}</span><span>{formatUzs(cart?.subtotalUzs ?? 0, locale)}</span></div>
                 {appliedPromo && <div className="flex justify-between gap-3 text-emerald-700"><span>{text.discount} ({appliedPromo.discountPercent}%)</span><span>−{formatUzs(discount, locale)}</span></div>}
