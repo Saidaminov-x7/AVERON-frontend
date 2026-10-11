@@ -14,7 +14,10 @@ describe('SEO route metadata', () => {
   it('keeps generated sitemap URLs on the approved public routes and origin', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ items: [{ slug: 'sample-product' }] }),
+      json: async () => ({ items: [
+        { slug: 'sample-product' },
+        { slug: 'sample-numbered-product', publicId: 'AVR-000000000000001' },
+      ] }),
     }));
 
     const entries = await sitemap();
@@ -23,6 +26,7 @@ describe('SEO route metadata', () => {
     expect(urls.length).toBeGreaterThan(0);
     expect(urls.every((url) => url.startsWith('https://averon.uz/'))).toBe(true);
     expect(urls).toContain('https://averon.uz/ru/catalog/sample-product');
+    expect(urls).toContain('https://averon.uz/ru/catalog/AVR-000000000000001');
     expect(urls.some((url) => /\/(?:listings|account|admin)(?:\/|$)/.test(url))).toBe(false);
   });
 });

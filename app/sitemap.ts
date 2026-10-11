@@ -30,7 +30,8 @@ function getItems(payload: unknown): SitemapProduct[] {
     /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test((item as { slug: string }).slug) &&
     ((item as { publicId?: unknown }).publicId == null ||
       (typeof (item as { publicId?: unknown }).publicId === 'string' &&
-        /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test((item as { publicId: string }).publicId))),
+        (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test((item as { publicId: string }).publicId) ||
+          /^AVR-\d{15}$/.test((item as { publicId: string }).publicId)))),
   );
 }
 
