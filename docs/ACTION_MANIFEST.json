@@ -225,8 +225,8 @@
       "expected": "multipart GLB reaches loopback fixture, appears as NEEDS_REVIEW, then becomes APPROVED after explicit review action",
       "states": ["ready", "uploading", "needs review", "approved"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests e2e/ui-workflow.spec.ts; desktop and mobile Chromium pass; verifies request bytes/query/review payload"],
-      "remaining": "test real backend multipart validation, private storage, database audit persistence and public ACL"
+      "evidence": ["AVERON_security_tests e2e/ui-workflow.spec.ts; desktop and mobile Chromium pass; verifies request bytes/query/review payload", "GitHub Actions 38156122788 isolated PostgreSQL job verifies pending GLB asset review and audit persistence"],
+      "remaining": "exercise authenticated backend multipart validation and actual private object storage/public ACL; the database test uses a fixture file key, not uploaded bytes"
     },
     {
       "id": "ADMIN-IMPORT-DETAILS",
@@ -236,8 +236,8 @@
       "expected": "show source description, attributes, variants, country, source URL and review state without changing status",
       "states": ["pending", "details open", "closed"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium use run-scoped data and intercept only the loopback admin-import API calls"],
-      "remaining": "verify the same details against a persisted parser-to-backend import row"
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium use run-scoped data and intercept only the loopback admin-import API calls", "GitHub Actions 38156122788 isolated PostgreSQL job verifies persisted ImportedProduct source metadata and normalized payload"],
+      "remaining": "verify parser-created rows through the authenticated import API and admin details page; the database fixture creates the row directly"
     },
     {
       "id": "ADMIN-IMPORT-APPROVE-DRAFT",
@@ -247,8 +247,8 @@
       "expected": "send canonical RU/UZ/EN translations, country, positive UZS price and publish=false; move only this pending import to approved draft state",
       "states": ["pending", "invalid required fields", "approval pending", "approved draft"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium assert the intercepted approval payload and resulting queue state", "backend routes.test.ts and parser-import.test.ts pass in the targeted API run"],
-      "remaining": "prove product/import/audit writes and concurrent review behavior with isolated PostgreSQL"
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium assert the intercepted approval payload and resulting queue state", "backend routes.test.ts and parser-import.test.ts pass in the targeted API run", "GitHub Actions 38156122788 isolated PostgreSQL job verifies linked product/import/audit writes and conditional concurrent-review guard"],
+      "remaining": "exercise the authenticated approve endpoint against PostgreSQL; database verification currently reproduces the transaction shape directly rather than calling the route"
     },
     {
       "id": "ADMIN-IMPORT-REJECT",
@@ -258,8 +258,8 @@
       "expected": "reject only the selected pending import, require a reason and show the stored reason in the rejected queue",
       "states": ["pending", "reason too short", "rejected", "reason visible"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium assert the intercepted rejection body and resulting queue state", "backend routes.test.ts covers the admin import decision route"],
-      "remaining": "verify persisted rejection and audit record with isolated PostgreSQL"
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium assert the intercepted rejection body and resulting queue state", "backend routes.test.ts covers the admin import decision route", "GitHub Actions 38156122788 isolated PostgreSQL job verifies persisted rejection reason, timestamp and audit record"],
+      "remaining": "exercise the authenticated reject endpoint against PostgreSQL; database verification currently reproduces the conditional transaction directly rather than calling the route"
     },
     {
       "id": "AUTH-RETURN-LOGIN",
@@ -354,8 +354,8 @@
       "expected": "product uses the stable AVR- plus 15-digit identifier in its article and canonical route while legacy URLs resolve",
       "states": ["legacy ID", "readable public ID", "localized detail"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium verify the AVR identifier and legacy fixture redirect"],
-      "remaining": "apply the additive database migration and verify old-ID lookup and sequential allocation against an isolated PostgreSQL database"
+      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium verify the AVR identifier and legacy fixture redirect", "GitHub Actions 38156122788 applies the additive migration to an isolated pre-change PostgreSQL schema and verifies legacy lookup plus sequential AVR allocation", "app/seo.test.ts accepts the new readable public ID in sitemap URLs"],
+      "remaining": "apply through the approved staging deployment and verify live legacy redirects/article allocation; production migration and rollout have not been run"
     },
     {
       "id": "PRODUCT-COLOR-NAME",
@@ -375,8 +375,8 @@
       "expected": "composition and care are stored as localized product attributes and rendered in the product information section",
       "states": ["ru", "uz", "en", "empty optional fields"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium render composition and care; admin form/API tests pass; backend route/schema tests pass"],
-      "remaining": "verify save and reload against an isolated PostgreSQL-backed admin session"
+      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium render composition and care; admin form/API tests pass; backend route/schema tests pass", "GitHub Actions 38156122788 saves and reloads localized composition/care JSON against isolated PostgreSQL"],
+      "remaining": "verify the authenticated admin save endpoint and subsequent product read against PostgreSQL; current DB check uses Prisma directly"
     },
     {
       "id": "PRODUCT-PURCHASE-ROW",
