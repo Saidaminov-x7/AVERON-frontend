@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { StatusPage } from './StatusPage';
 
 vi.mock('@/components/navigation/SmartBackButton', () => ({
-  SmartBackButton: ({ label }: { label: string }) => <a href="/">{label}</a>,
+  SmartBackButton: ({ label }: { label: string }) => <span>{label}</span>,
 }));
 
 describe('StatusPage theme contrast', () => {
