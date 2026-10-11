@@ -343,8 +343,8 @@
       "expected": "catalog title remains readable without ellipsis and add-product action is placed below it",
       "states": ["390x844 mobile", "localized title", "add action visible"],
       "status": "ВЫПОЛНЕНО ЛОКАЛЬНО",
-      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: authenticated mobile Chromium verifies Uzbek and English catalog titles, non-ellipsis geometry, add-action placement and no horizontal overflow; GitHub Actions run 38151615643"],
-      "remaining": "Production deployment not verified; browser evidence uses an isolated loopback fixture"
+      "evidence": ["Registration phone-country validation is covered by the frontend form behavior and phone-password-security.test.ts / phone-otp.test.ts unit tests; latest local run passed 7/7", "apps/api/scripts/check-commerce-http-db.ts now exercises valid +998 registration, rejection of unsupported prefixes and OTPs, PostgreSQL user/session persistence, and Redis OTP/cooldown in isolated integration CI"],
+      "remaining": "The new PostgreSQL+Redis registration integration is implemented but NOT TESTED: GitHub Actions run 38162821558 was blocked before runner startup by account billing; local PostgreSQL/Redis are unavailable. Staging/live registration and SMS delivery remain unverified"
     },
     {
       "id": "PRODUCT-ARTICLE-URL",
