@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { CheckCircle2 } from "lucide-react";
 import { FittingRoomTrigger } from "@/components/commerce/FittingRoomTrigger";
 import { externalBaseURL } from "@/lib/axios";
 import { SITE_URL } from "@/lib/siteUrl";
@@ -293,7 +292,6 @@ export default async function ProductPage({
     colors: t("colors"),
     descriptionFallback: t("descriptionFallback"),
     gallery: t("gallery"),
-    confirmed: t("confirmed"),
   };
   const catalogQuery = buildCatalogSearchParams(filters).toString();
   const initialOrderNumber = typeof filters.reviewOrderNumber === "string"
@@ -426,10 +424,6 @@ export default async function ProductPage({
               </Link>
             </section>
 
-            <p className="mt-5 flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
-              <CheckCircle2 size={16} className="text-[var(--color-success)]" />
-              {copy.confirmed}
-            </p>
           </section>
         </div>
       </div>
