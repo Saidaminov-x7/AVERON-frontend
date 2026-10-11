@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-10",
+  "updatedAt": "2026-10-11",
   "scopeStatus": "ЧАСТИЧНО",
   "notes": [
     "The manifest is expanded package by package; absence is not evidence of a working action.",
@@ -301,9 +301,9 @@
       "trigger": "open product catalog at desktop or mobile viewport",
       "expected": "product cards use responsive auto-fill tracks, remain readable and never create horizontal document overflow",
       "states": ["loading", "one or more products", "empty", "error", "desktop", "mobile"],
-      "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop/mobile Chromium 2/2; loopback fixture has one product", "Chrome local admin 1632px computed four 348px tracks; 390x844 one track; document width equals viewport"],
-      "remaining": "verify empty/error grid states; five run-scoped response cards are covered without backend writes"
+      "status": "ВЫПОЛНЕНО ЛОКАЛЬНО",
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: five fixture cards, responsive grid and no-overflow desktop/mobile checks", "GitHub Actions 38150816752: authenticated desktop/mobile Playwright verified empty catalog, accessible 503 error, retry and recovered empty state; no backend writes"],
+      "remaining": "Production catalog data and deployment remain unverified; browser evidence uses isolated fixture data"
     },
     {
       "id": "FR-TOUCH-ROTATE",
