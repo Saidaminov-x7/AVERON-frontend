@@ -342,9 +342,9 @@
       "trigger": "render product catalog header below the small-screen breakpoint",
       "expected": "catalog title remains readable without ellipsis and add-product action is placed below it",
       "states": ["390x844 mobile", "localized title", "add action visible"],
-      "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts mobile Chromium asserts title scroll width and action placement"],
-      "remaining": "verify Uzbek and English title layout on mobile"
+      "status": "ВЫПОЛНЕНО ЛОКАЛЬНО",
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: authenticated mobile Chromium verifies Uzbek and English catalog titles, non-ellipsis geometry, add-action placement and no horizontal overflow; GitHub Actions run 38151615643"],
+      "remaining": "Production deployment not verified; browser evidence uses an isolated loopback fixture"
     },
     {
       "id": "PRODUCT-ARTICLE-URL",
