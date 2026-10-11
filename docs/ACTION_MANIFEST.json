@@ -354,8 +354,8 @@
       "expected": "product uses the stable AVR- plus 15-digit identifier in its article and canonical route while legacy URLs resolve",
       "states": ["legacy ID", "readable public ID", "localized detail"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium verify the AVR identifier and legacy fixture redirect", "GitHub Actions 38156122788 applies the additive migration to an isolated pre-change PostgreSQL schema and verifies legacy lookup plus sequential AVR allocation", "app/seo.test.ts accepts the new readable public ID in sitemap URLs"],
-      "remaining": "apply through the approved staging deployment and verify live legacy redirects/article allocation; production migration and rollout have not been run"
+      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium verify the AVR identifier and legacy fixture redirect", "GitHub Actions 38161407131 applies the additive migration to an isolated pre-change PostgreSQL schema and verifies legacy lookup plus sequential AVR allocation", "app/seo.test.ts accepts the new readable public ID in sitemap URLs", "Chrome check of READY Vercel deployment plus read-only public product GET against Railway production: current backend still returns legacy slug publicId and UUID internal id; new identifier migration is not active there"],
+      "remaining": "deploy the reviewed backend migration through the approved staging path, verify legacy redirects/article allocation there, then separately authorize production rollout; production remains on the legacy identifier contract"
     },
     {
       "id": "PRODUCT-COLOR-NAME",
