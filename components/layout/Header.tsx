@@ -363,7 +363,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             className="flex items-center gap-1.5 rounded-sm text-sm text-stone-400 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
             <div className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
-            <span className="font-semibold tracking-tight text-[var(--color-text)]">{settings?.siteName || 'AVERON'}</span>
+            <span className="font-semibold tracking-tight text-[var(--color-text)]">AVERON</span>
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -393,7 +393,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               href={to('/')}
               className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
             >
-              <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">{settings?.siteName || 'AVERON'}</span>
+              <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">AVERON</span>
             </Link>
 
             <nav className="hidden items-center gap-0.5 lg:flex" aria-label={t('menu')}>
@@ -603,7 +603,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         <div className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface)] px-5">
           <div className="flex min-w-0 items-baseline gap-2 min-[360px]:gap-3">
             <Link href={to('/')} onClick={closeMobileMenu} className="truncate text-base font-black tracking-[0.16em] text-[var(--color-text)] min-[360px]:text-lg min-[360px]:tracking-[0.2em]">
-              {settings?.siteName || 'AVERON'}
+              AVERON
             </Link>
             <span className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)] min-[280px]:inline">{t('menu')}</span>
           </div>

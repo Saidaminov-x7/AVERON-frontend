@@ -199,7 +199,7 @@ export function ProductGallery({
         aria-label={label}
         tabIndex={0}
         style={{ aspectRatio: photoAspectRatios[selectedImage.url] }}
-        className="relative max-h-[min(80svh,900px)] aspect-square overflow-hidden bg-[var(--color-surface-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary)] sm:aspect-[4/5]"
+        className="relative max-h-[min(80svh,900px)] aspect-square overflow-hidden bg-[var(--color-surface-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary)] sm:aspect-[4/5] lg:max-h-[min(90svh,900px)]"
         onTouchStart={(event) => setTouchStartX(event.touches[0]?.clientX ?? null)}
         onTouchEnd={handleTouchEnd}
         onKeyDown={(event) => {

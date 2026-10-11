@@ -171,6 +171,7 @@
     "color": "Цвет",
     "anyColor": "Любой цвет",
     "price": "Цена, сум",
+    "saleOnly": "Только со скидкой",
     "from": "От",
     "to": "До",
     "sort": "Сортировка",
@@ -276,6 +277,7 @@
   },
   "productDetail": {
     "back": "Назад в каталог",
+    "article": "Артикул",
     "verified": "AVERON · ПРОВЕРЕНО",
     "descriptionTitle": "Описание товара",
     "compositionTitle": "Состав",

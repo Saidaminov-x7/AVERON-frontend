@@ -171,6 +171,7 @@
     "color": "Rang",
     "anyColor": "Istalgan rang",
     "price": "Narx, so‘m",
+    "saleOnly": "Faqat chegirmali",
     "from": "Dan",
     "to": "Gacha",
     "sort": "Saralash",
@@ -276,6 +277,7 @@
   },
   "productDetail": {
     "back": "Katalogga qaytish",
+    "article": "Artikul",
     "verified": "AVERON · TEKSHIRILGAN",
     "descriptionTitle": "Mahsulot tavsifi",
     "compositionTitle": "Tarkibi",

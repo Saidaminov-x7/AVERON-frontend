@@ -97,14 +97,9 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-      {/* Декоративный фон */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
-      </div>
-
-      <div className="max-w-lg w-full space-y-6 animate-in fade-in zoom-in duration-300 relative z-10">
-        <div className="relative mx-auto w-24 h-24 rounded-3xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center text-primary-400">
-          <Hammer className="w-12 h-12 animate-bounce" />
+      <div className="max-w-lg w-full space-y-6 animate-in fade-in duration-200 relative z-10">
+        <div className="relative mx-auto w-20 h-20 border border-white/20 bg-white/5 flex items-center justify-center text-white">
+          <Hammer className="w-10 h-10" />
           <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-bold text-xs">
             !
           </div>

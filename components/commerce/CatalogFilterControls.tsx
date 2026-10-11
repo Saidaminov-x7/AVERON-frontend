@@ -7,6 +7,7 @@ import { CatalogSelect } from './CatalogSelect';
 import type { CatalogFacets } from '@/lib/storefront-catalog';
 import { categoryName, type StoreCategory } from '@/lib/products';
 import { Button } from '@/components/ui/Button';
+import { useCatalogFilterDrawer } from './catalog-filter-drawer-context';
 
 type FilterValues = {
   q: string;
@@ -17,10 +18,11 @@ type FilterValues = {
   color: string;
   minPrice: string;
   maxPrice: string;
+  saleOnly: string;
   sort: string;
 };
 
-const keys = ['q', 'category', 'audience', 'country', 'size', 'color', 'minPrice', 'maxPrice', 'sort'] as const;
+const keys = ['q', 'category', 'audience', 'country', 'size', 'color', 'minPrice', 'maxPrice', 'saleOnly', 'sort'] as const;
 const controlClass = 'h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-primary-600/15';
 
 function valuesFromSearch(search: URLSearchParams): FilterValues {
@@ -61,6 +63,7 @@ function CatalogFilterDraft({
   onReset?: () => void;
 }) {
   const t = useTranslations('catalog');
+  const drawer = useCatalogFilterDrawer();
   const id = useId();
   const router = useRouter();
   const pathname = usePathname();
@@ -94,18 +97,20 @@ function CatalogFilterDraft({
       query.set(key, value);
     });
     const suffix = query.toString();
+    drawer?.close();
     startTransition(() => router.push(`${pathname}${suffix ? `?${suffix}` : ''}`));
   };
 
   const reset = () => {
-    setDraft({ q: '', category: '', audience: '', country: '', size: '', color: '', minPrice: '', maxPrice: '', sort: 'newest' });
+    setDraft({ q: '', category: '', audience: '', country: '', size: '', color: '', minPrice: '', maxPrice: '', saleOnly: '', sort: 'newest' });
     setFilterError('');
     onReset?.();
+    drawer?.close();
     startTransition(() => router.push(`/${locale}/catalog`));
   };
   const active = keys.some((key) => key === 'sort'
     ? draft.sort !== 'newest'
-    : Boolean(draft[key].trim()));
+    : Boolean((draft[key] ?? '').trim()));
   const categoriesOptions = [
     { value: '', label: t('all') },
     ...(draft.category && !categories.some((category) => category.slug === draft.category)
@@ -152,6 +157,15 @@ function CatalogFilterDraft({
         <CatalogSelect name="size" label={t('size')} value={draft.size} placeholder={t('anySize')} options={[{ value: '', label: t('anySize') }, ...sizes.map((value) => ({ value, label: value }))]} onValueChange={(value) => set('size', value)} />
         <CatalogSelect name="color" label={t('color')} value={draft.color} placeholder={t('anyColor')} options={[{ value: '', label: t('anyColor') }, ...colors.map((value) => ({ value, label: value }))]} onValueChange={(value) => set('color', value)} />
       </div>
+      <label className="mt-5 flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)]">
+        <input
+          type="checkbox"
+          checked={draft.saleOnly === 'true'}
+          onChange={(event) => set('saleOnly', event.target.checked ? 'true' : '')}
+          className="size-4 accent-[var(--color-primary)]"
+        />
+        <span>{t('saleOnly')}</span>
+      </label>
       {facetsError && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">{locale === 'uz' ? 'O‘lcham va ranglar ro‘yxatini yuklab bo‘lmadi.' : locale === 'en' ? 'Available sizes and colors could not be loaded.' : 'Не удалось загрузить доступные размеры и цвета.'}</p>}
       <p className="mt-5 text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('price')}</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
@@ -173,8 +187,10 @@ function CatalogFilterDraft({
           onValueChange={(value) => set('sort', value)}
         />
       </div>
-      <Button type="submit" loading={isPending} loadingLabel={t('applying')} className="mt-5 w-full" aria-live="polite">{t('show')}</Button>
-      <Button type="button" variant="outline" disabled={!active || isPending} onClick={reset} className="mt-2 w-full">{t('reset')}</Button>
+      <div className={drawer?.stickyActions ? 'sticky bottom-0 z-10 -mx-4 mt-5 flex gap-2 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 pb-[calc(.75rem+env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0' : 'mt-5'}>
+        <Button type="submit" loading={isPending} loadingLabel={t('applying')} className="w-full" aria-live="polite">{t('show')}</Button>
+        <Button type="button" variant="outline" disabled={!active || isPending} onClick={reset} className="w-full">{t('reset')}</Button>
+      </div>
     </form>
   );
 }

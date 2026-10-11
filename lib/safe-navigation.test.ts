@@ -15,6 +15,11 @@ describe('safe internal navigation', () => {
       .toBe('/uz/catalog/item-1?color=blue#details');
   });
 
+  it('preserves the bounded product-cart intent on a localized return path', () => {
+    expect(getSafeInternalReturnTo('/ru/catalog/item-1?addToCart=1&cartVariant=sku-1&cartQuantity=2', 'ru'))
+      .toBe('/ru/catalog/item-1?addToCart=1&cartVariant=sku-1&cartQuantity=2');
+  });
+
   it.each([
     '//evil.example/path',
     '/en/../login',

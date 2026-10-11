@@ -10,6 +10,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## AVERON invariants
 
+- Before changing any storefront or admin UI, read `docs/AVERON_DESIGN_SYSTEM.md` and `UI_AUDIT.md`. The design system is the visual source of truth; tool-generated suggestions never override AVERON product behavior or these rules.
+- Follow `docs/UI_IMPLEMENTATION_ROADMAP.md` for the audit → implementation → browser review → regression workflow. Use Playwright only with local/test data; never run write actions against production.
+
 - AVERON is commerce for goods purchased in China and delivered to Uzbekistan.
 - AI and parsers may only create `PENDING_REVIEW` imports. They must never publish products.
 - Publication requires an authenticated human administrator and an audit-log entry.

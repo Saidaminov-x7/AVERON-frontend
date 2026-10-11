@@ -10,6 +10,7 @@ import { ProductRichText } from './ProductRichText';
 import { addWishlistItem, removeWishlistItem } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
+import { FittingRoomTrigger } from './FittingRoomTrigger';
 import { useEffect, useRef, useState } from 'react';
 
 export type { StoreProduct } from '@/lib/products';
@@ -199,6 +200,7 @@ export function ProductCard({
           </div>
         </div>
       </Link>
+      {product.fittingRoomAvailable && <div className="mt-2 max-w-40"><FittingRoomTrigger productId={product.id} locale={locale} imageUrl={product.images?.[0]?.url} compact /></div>}
       <div className="absolute right-2 top-2 flex gap-1.5 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
         <button
           type="button"

@@ -4,6 +4,17 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import { getSafeErrorReportPath, sanitizeErrorReportText } from '@/lib/safe-error-report';
 
+const themeBootstrap = `(() => {
+  try {
+    const preference = localStorage.getItem('ijara_theme_preference');
+    const isDark = preference === 'dark' || (preference !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('dark', isDark);
+    document.documentElement.classList.toggle('light', !isDark);
+  } catch {
+    // Keep the server-rendered fallback usable when browser storage is unavailable.
+  }
+})();`;
+
 export default function GlobalError({
   error,
   reset,
@@ -33,15 +44,18 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html lang="ru">
-      <body className="min-h-screen bg-[var(--color-bg)] p-4 text-[var(--color-text)]">
+    <html lang="ru" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+      </head>
+      <body suppressHydrationWarning className="min-h-screen bg-[var(--color-bg)] p-4 text-[var(--color-text)]">
         <main className="grid min-h-[calc(100vh-2rem)] place-items-center">
           <section className="averon-panel grid w-full max-w-4xl overflow-hidden md:grid-cols-[.72fr_1fr]">
-            <div className="flex min-h-64 flex-col justify-between bg-[var(--color-primary)] p-8 text-white md:min-h-[420px] md:p-12">
+            <div className="flex min-h-64 flex-col justify-between bg-[var(--color-primary)] p-8 text-[var(--color-on-primary)] md:min-h-[420px] md:p-12">
               <span className="text-xs font-bold tracking-[.2em]">AVERON</span>
               <div>
                 <p className="text-7xl font-semibold leading-none tracking-[-.08em] sm:text-8xl">500</p>
-                <p className="mt-4 max-w-xs text-sm leading-6 text-white/75">Мы уже получили отчёт и работаем над исправлением.</p>
+                <p className="mt-4 max-w-xs text-sm leading-6 opacity-75">Мы уже получили отчёт и работаем над исправлением.</p>
               </div>
             </div>
             <div className="flex flex-col justify-center bg-[var(--color-surface)] p-8 md:p-12">

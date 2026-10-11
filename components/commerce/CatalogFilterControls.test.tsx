@@ -96,6 +96,20 @@ describe('CatalogFilterControls', () => {
     expect(navigation.push).toHaveBeenCalledWith('/ru/catalog');
   });
 
+  it('applies and clears the sale-only checkbox as a real URL filter', () => {
+    navigation.search = 'saleOnly=true&page=3';
+    renderControls();
+    const checkbox = screen.getByRole('checkbox', { name: 'Только со скидкой' });
+    expect(checkbox).toBeChecked();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Показать товары' }));
+    expect(navigation.push).toHaveBeenCalledWith('/ru/catalog?saleOnly=true&sort=newest');
+
+    navigation.push.mockReset();
+    fireEvent.click(screen.getByRole('button', { name: 'Сбросить' }));
+    expect(navigation.push).toHaveBeenCalledWith('/ru/catalog');
+  });
+
   it('resynchronizes the draft when the URL changes externally', () => {
     const view = renderControls();
     expect(screen.getByRole('button', { name: 'Мужское' })).toHaveAttribute('aria-pressed', 'false');

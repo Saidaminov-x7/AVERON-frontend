@@ -17,6 +17,7 @@ export type StoreProduct = {
   id: string;
   slug: string;
   createdAt?: string;
+  fittingRoomAvailable?: boolean;
   publicId?: string | null;
   sizeChartType?: 'CLOTHING' | 'SHOES' | 'KIDS_CLOTHING' | null;
   sizeChart?: ProductSizeChartRow[] | null;
@@ -155,6 +156,7 @@ export function buildCatalogSearchParams(filters: Record<string, string | string
       query.set(key, value.trim());
     }
   }
+  if (filters.saleOnly === 'true') query.set('saleOnly', 'true');
   return query;
 }
 

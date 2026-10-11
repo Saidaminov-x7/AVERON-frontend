@@ -9,4 +9,14 @@ describe('catalog loading state', () => {
     expect(container.querySelector('main')).toHaveAttribute('aria-busy', 'true');
     expect(screen.getByRole('status')).toHaveTextContent('Загрузка каталога');
   });
+
+  it('reserves the same mobile and desktop grid and image ratio as product cards', () => {
+    const { container } = render(<CatalogLoading />);
+    const grid = container.querySelector('.grid');
+    const hasProductImageRatio = Array.from(container.querySelectorAll('[class]'))
+      .some((element) => element.className.toString().includes('aspect-[3/4]'));
+
+    expect(grid).toHaveClass('grid-cols-2', 'lg:grid-cols-3', '2xl:grid-cols-4');
+    expect(hasProductImageRatio).toBe(true);
+  });
 });
