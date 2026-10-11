@@ -291,7 +291,7 @@
       "expected": "restore the same product, variant and quantity, then add it to cart exactly once after successful registration",
       "states": ["guest purchase prompt", "registration form", "OTP verification", "return to selected product", "cart mutation success"],
       "status": "ВЫПОЛНЕНО ЛОКАЛЬНО",
-      "evidence": ["AVERON_security_tests/e2e/storefront-smoke.spec.ts: guest purchase resumes after registration and adds the selected product to cart once; desktop and mobile Chromium 2/2 against loopback product fixture and intercepted auth/cart API"],
+      "evidence": ["AVERON_security_tests/e2e/storefront-smoke.spec.ts: guest purchase resumes after registration and adds the selected product to cart once; re-run on 2026-10-11 passed desktop and mobile Chromium 2/2 against an isolated loopback catalog fixture and intercepted auth/cart API; verifies canonical product URL, dark-blue variant, quantity 2, normalized +998 phone and exactly one cart POST"],
       "remaining": "repeat against isolated backend persistence; SMS provider and production acceptance are not covered"
     },
     {
