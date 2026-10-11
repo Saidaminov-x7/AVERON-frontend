@@ -236,7 +236,7 @@
       "expected": "show source description, attributes, variants, country, source URL and review state without changing status",
       "states": ["pending", "details open", "closed"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium use run-scoped data and intercept only the loopback admin-import API calls", "2026-10-11 local current-source Playwright rerun: details, localized source description, attributes, source URL, and unchanged pending state pass desktop/mobile (2/2) using loopback SUPER_ADMIN auth and controlled import API fixture", "GitHub Actions 38161407131: parser import created through its protected HTTP endpoint; authenticated admin list returns pending source metadata and normalized attributes on isolated PostgreSQL"],
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium use run-scoped data and intercept only the loopback admin-import API calls", "2026-10-11 local current-source Playwright rerun: details, localized source description, attributes, source URL, and unchanged pending state pass desktop/mobile (2/2) using loopback SUPER_ADMIN auth and controlled import API fixture", "2026-10-12 targeted backend parser-import and commerce routes tests passed 28/28 with database and Redis configured only as unused loopback test URLs", "GitHub Actions 38161407131: parser import created through its protected HTTP endpoint; authenticated admin list returns pending source metadata and normalized attributes on isolated PostgreSQL"],
       "remaining": "admin details rendering is still verified with loopback browser fixtures, not a live admin-to-backend session; staging/live import data remains unverified"
     },
     {
@@ -247,7 +247,7 @@
       "expected": "send canonical RU/UZ/EN translations, country, positive UZS price and publish=false; move only this pending import to approved draft state",
       "states": ["pending", "invalid required fields", "approval pending", "approved draft"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium assert the intercepted approval payload and resulting queue state", "2026-10-11 local current-source Playwright rerun: required localized titles and price validation, publish=false payload, approved-draft state, and approved queue pass desktop/mobile (2/2) using a loopback fixture", "backend routes.test.ts and parser-import.test.ts pass in the targeted API run", "GitHub Actions 38161407131: authenticated approve HTTP endpoint writes DRAFT product, linked import decision and reviewer audit on isolated PostgreSQL"],
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium assert the intercepted approval payload and resulting queue state", "2026-10-11 local current-source Playwright rerun: required localized titles and price validation, publish=false payload, approved-draft state, and approved queue pass desktop/mobile (2/2) using a loopback fixture", "2026-10-12 targeted backend parser-import and commerce routes tests passed 28/28 with database and Redis configured only as unused loopback test URLs", "GitHub Actions 38161407131: authenticated approve HTTP endpoint writes DRAFT product, linked import decision and reviewer audit on isolated PostgreSQL"],
       "remaining": "end-to-end admin browser against authenticated staging API and concurrent real-user review remain unverified"
     },
     {
@@ -258,7 +258,7 @@
       "expected": "reject only the selected pending import, require a reason and show the stored reason in the rejected queue",
       "states": ["pending", "reason too short", "rejected", "reason visible"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium assert the intercepted rejection body and resulting queue state", "2026-10-11 local current-source Playwright rerun: short reason stays disabled, valid reason is submitted, rejected queue shows it, and exact review action passes desktop/mobile (2/2) using a loopback fixture", "backend routes.test.ts covers the admin import decision route", "GitHub Actions 38161407131: authenticated reject HTTP endpoint persists reason, reviewer, timestamp and audit record on isolated PostgreSQL"],
+      "evidence": ["AVERON_security_tests/e2e/admin-routes-smoke.spec.ts: desktop and mobile Chromium assert the intercepted rejection body and resulting queue state", "2026-10-11 local current-source Playwright rerun: short reason stays disabled, valid reason is submitted, rejected queue shows it, and exact review action passes desktop/mobile (2/2) using a loopback fixture", "2026-10-12 targeted backend parser-import and commerce routes tests passed 28/28 with database and Redis configured only as unused loopback test URLs", "GitHub Actions 38161407131: authenticated reject HTTP endpoint persists reason, reviewer, timestamp and audit record on isolated PostgreSQL"],
       "remaining": "end-to-end admin browser against authenticated staging API and concurrent real-user review remain unverified"
     },
     {
