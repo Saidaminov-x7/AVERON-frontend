@@ -269,8 +269,8 @@
       "expected": "successful auth returns to a validated same-locale internal target and preserves safe query context; unsafe/auth-loop values fall back to profile",
       "states": ["SMS unavailable", "OTP error", "OTP success", "unsafe return target"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["safe-navigation.test.ts 18/18", "Playwright desktop/mobile controlled OTP returns to /ru/catalog?category=shoes&page=2", "AVERON_security_tests/e2e/auth-navigation.spec.ts: desktop/mobile internal query survives login navigation and reload; direct Uzbek auth entry rejects external returnTo and stored referrer"],
-      "remaining": "real Google provider journey and reset/checkout-specific auth return flows; registration purchase continuation is covered separately"
+      "evidence": ["safe-navigation.test.ts 18/18", "2026-10-12 local current-source auth-navigation Playwright rerun passed desktop/mobile 10/10: query-preserving back navigation, external returnTo/referrer rejection, reset-password return links and checkout return links", "Earlier Playwright controlled OTP test returns to /ru/catalog?category=shoes&page=2"],
+      "remaining": "real credential/OTP login and Google provider journey; reset form submission was intercepted locally, not persisted by backend; registration purchase continuation is covered separately"
     },
     {
       "id": "AUTH-REGISTER-PHONE-COUNTRY",
@@ -280,7 +280,7 @@
       "expected": "reject unsupported country prefixes without rewriting the value or sending registration; announce the localized error and clear it after valid +998 input",
       "states": ["initial", "unsupported country code", "valid +998 recovery"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["components/auth/UzbekPhoneInput.test.tsx and lib/phone.test.ts: 7 helper/component tests, including exact preservation of a previously valid number", "AVERON_security_tests/e2e/auth-navigation.spec.ts: desktop and mobile Chromium against current-source loopback Next dev; +1 paste leaves the prior +998 value intact, sends no registration request, and recovers on valid +998"],
+      "evidence": ["components/auth/UzbekPhoneInput.test.tsx and lib/phone.test.ts: 7 helper/component tests, including exact preservation of a previously valid number", "2026-10-12 local current-source auth-navigation Playwright rerun passed desktop/mobile 10/10; +1 paste preserves the previous +998 value, sends no registration request, and valid +998 recovers; external requests blocked"],
       "remaining": "authenticated server submission and SMS provider acceptance"
     },
     {
