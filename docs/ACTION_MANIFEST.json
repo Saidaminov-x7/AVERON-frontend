@@ -205,7 +205,7 @@
       "expected": "right-side drawer opens, language action remains available, and close button/Escape restore the page without horizontal overflow",
       "states": ["closed", "open", "language changed", "Escape closed", "button closed"],
       "status": "ВЫПОЛНЕНО",
-      "evidence": ["AVERON_security_tests e2e/admin-sidebar.spec.ts mobile Chromium 390x844", "admin-sidebar-mobile-open.png", "admin-sidebar-mobile-closed.png"]
+      "evidence": ["2026-10-12 AVERON_security_tests e2e/admin-sidebar.spec.ts passed desktop/mobile Chromium (2 applicable tests; 2 expected project skips) against loopback admin and API fixture", "Mobile drawer geometry and fixed footer/navigation scroll verified at 320x568, 360x640 and 390x844; SVG flags RU/UZ/EN loaded; keyboard, outside-space menu placement, all language selections and light/dark contrast passed", "admin-sidebar-mobile-open.png", "admin-sidebar-mobile-closed.png"]
     },
     {
       "id": "ADMIN-SIDEBAR-LOCALE-LABELS",
