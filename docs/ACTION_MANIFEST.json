@@ -354,7 +354,7 @@
       "expected": "product uses the stable AVR- plus 15-digit identifier in its article and canonical route while legacy URLs resolve",
       "states": ["legacy ID", "readable public ID", "localized detail"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium verify the AVR identifier and legacy fixture redirect", "GitHub Actions 38161407131 applies the additive migration to an isolated pre-change PostgreSQL schema and verifies legacy lookup plus sequential AVR allocation", "app/seo.test.ts accepts the new readable public ID in sitemap URLs", "Chrome check of READY Vercel deployment plus read-only public product GET against Railway production: current backend still returns legacy slug publicId and UUID internal id; new identifier migration is not active there"],
+      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: re-run 2026-10-12 passed desktop and mobile Chromium 2/2 against loopback catalog fixture; verified legacy fixture redirect to AVR-000000000000001", "GitHub Actions 38161407131 applies the additive migration to an isolated pre-change PostgreSQL schema and verifies legacy lookup plus sequential AVR allocation", "app/seo.test.ts accepts the new readable public ID in sitemap URLs", "Chrome check of READY Vercel deployment plus read-only public product GET against Railway production: current backend still returns legacy slug publicId and UUID internal id; new identifier migration is not active there"],
       "remaining": "deploy the reviewed backend migration through the approved staging path, verify legacy redirects/article allocation there, then separately authorize production rollout; production remains on the legacy identifier contract"
     },
     {
@@ -375,7 +375,7 @@
       "expected": "composition and care are stored as localized product attributes and rendered in the product information section",
       "states": ["ru", "uz", "en", "empty optional fields"],
       "status": "ЧАСТИЧНО",
-      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: desktop and mobile Chromium render composition and care; admin form/API tests pass; backend route/schema tests pass", "GitHub Actions 38161407131: authenticated product PUT and public product GET persist and return localized composition/care through Fastify against isolated PostgreSQL"],
+      "evidence": ["AVERON_security_tests/e2e/product-detail-metadata.spec.ts: re-run 2026-10-12 passed desktop and mobile Chromium 2/2; rendered localized Russian composition and care on the public fixture", "Admin form/API tests pass; backend route/schema tests pass", "GitHub Actions 38161407131: authenticated product PUT and public product GET persist and return localized composition/care through Fastify against isolated PostgreSQL"],
       "remaining": "staging/live admin save followed by storefront read remains unverified"
     },
     {
