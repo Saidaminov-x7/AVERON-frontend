@@ -52,6 +52,7 @@ type ReviewPage = {
 type OwnReview = Review & { id: string; status: 'PENDING' | 'PUBLISHED' | 'REJECTED' };
 
 const fitValues: Fit[] = ['RUNS_SMALL', 'TRUE_TO_SIZE', 'RUNS_LARGE'];
+const reviewStatuses = ['PENDING', 'PUBLISHED', 'REJECTED'] as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -59,6 +60,32 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isNonNegativeCount(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
+function isPurchase(value: unknown): value is Purchase {
+  if (!isRecord(value)) return false;
+  if (
+    typeof value.orderItemId !== 'string' || !value.orderItemId
+    || typeof value.orderNumber !== 'string' || !value.orderNumber
+    || (value.reviewId !== null && typeof value.reviewId !== 'string')
+    || (value.reviewStatus !== null && !reviewStatuses.includes(value.reviewStatus as typeof reviewStatuses[number]))
+  ) return false;
+  if (value.purchasedVariant !== null) {
+    if (!isRecord(value.purchasedVariant)) return false;
+    if (value.purchasedVariant.size !== undefined && typeof value.purchasedVariant.size !== 'string') return false;
+    if (value.purchasedVariant.color !== undefined && typeof value.purchasedVariant.color !== 'string') return false;
+  }
+  return true;
+}
+
+function parsePurchases(value: unknown): Purchase[] {
+  const items = Array.isArray(value)
+    ? value
+    : isRecord(value) && Array.isArray(value.items)
+      ? value.items
+      : null;
+  if (!items || !items.every(isPurchase)) throw new Error('Invalid review eligibility response');
+  return items;
 }
 
 function isReview(value: unknown): value is Review {
@@ -148,7 +175,7 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
   const eligibilityQuery = useQuery({
     queryKey: ['product-review-eligibility', slug],
     enabled: isAuthenticated,
-    queryFn: async () => (await api.get<Purchase[]>(`/api/v1/products/${encodeURIComponent(slug)}/reviews/eligibility`)).data,
+    queryFn: async () => parsePurchases((await api.get<unknown>(`/api/v1/products/${encodeURIComponent(slug)}/reviews/eligibility`)).data),
   });
   const purchases = eligibilityQuery.data ?? [];
   const selectedPurchase = purchases.find((item) => item.orderItemId === purchaseId) ?? purchases.find((item) => item.orderNumber === initialOrderNumber && !item.reviewId) ?? purchases.find((item) => !item.reviewId);

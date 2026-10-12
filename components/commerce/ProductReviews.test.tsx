@@ -105,4 +105,23 @@ describe('ProductReviews', () => {
     expect(screen.getByLabelText('5 out of 5 stars')).toBeInTheDocument();
     expect(screen.getByLabelText('Your review', { exact: false })).toBeInTheDocument();
   });
+
+  it('keeps the product page usable when eligibility arrives in a paginated items envelope', async () => {
+    mocks.auth.isAuthenticated = true;
+    mocks.get.mockImplementation(async (url: string) => {
+      if (url.endsWith('/reviews/eligibility')) return { data: { items: [], pagination: { page: 1, pages: 1 } } };
+      return {
+        data: {
+          summary: { averageRating: null, reviewCount: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }, fitDistribution: {} },
+          items: [],
+          pagination: { page: 1, pages: 0 },
+        },
+      };
+    });
+
+    renderReviews();
+
+    expect(await screen.findByText(enMessages.productReviews.eligibility)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: enMessages.productReviews.title })).toBeInTheDocument();
+  });
 });

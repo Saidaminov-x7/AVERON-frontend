@@ -61,7 +61,7 @@ export default function GlobalError({
       <body className="min-h-screen bg-[var(--color-bg)] p-4 text-[var(--color-text)]">
         <main className="grid min-h-[calc(100vh-2rem)] place-items-center">
           <section className="averon-panel grid w-full max-w-4xl overflow-hidden md:grid-cols-[.72fr_1fr]">
-            <div className="flex min-h-64 flex-col justify-between bg-[var(--color-primary)] p-8 text-[var(--color-on-primary)] md:min-h-[420px] md:p-12">
+            <div className="flex min-h-64 flex-col justify-between bg-[var(--color-surface-soft)] p-8 text-[var(--color-text)] md:min-h-[420px] md:p-12">
               <span className="text-xs font-bold tracking-[.2em]">AVERON</span>
               <div>
                 <p className="text-7xl font-semibold leading-none tracking-[-.08em] sm:text-8xl">500</p>
