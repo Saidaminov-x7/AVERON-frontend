@@ -1,6 +1,6 @@
-/** @type {import("tailwindcss").Config} */
-const config = {
-  // Включаем темную тему через CSS-класс (на теге <html>)
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  // Enable dark mode through the CSS class on the html element.
   darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,7 +10,7 @@ const config = {
   theme: {
     extend: {
       colors: {
-        // Акцентный primary — динамический через CSS-переменные (DesignTokensInjector)
+        // The accent is dynamically supplied through CSS variables.
         primary: {
           DEFAULT: "var(--color-primary)",
           50: "color-mix(in srgb, var(--color-primary) 5%, white)",
@@ -36,5 +36,3 @@ const config = {
   },
   plugins: [],
 };
-
-module.exports = config;
