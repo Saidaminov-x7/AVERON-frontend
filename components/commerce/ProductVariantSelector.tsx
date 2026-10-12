@@ -3,6 +3,14 @@
 interface ProductVariant { id: string; color?: string | null; size?: string | null; stock?: number; available?: boolean; }
 interface ProductVariantSelectorProps { variants: ProductVariant[]; selectedSize: string; selectedColor: string; label: string; sizeLabel: string; colorLabel: string; chooseLabel: string; formatColorLabel: (color: string) => string; availabilityLabel: (available: boolean) => string; onChange: (selection: { size: string; color: string }) => void; }
 
+export function parseVariantColor(value: string, fallbackName: string) {
+  const [rawName, rawHex] = value.split('::').map((part) => part.trim());
+  const candidateHex = rawHex ?? rawName;
+  const hex = /^#[0-9a-fA-F]{6}$/.test(candidateHex ?? '') ? candidateHex.toUpperCase() : null;
+  const name = hex && (!rawName || rawName === candidateHex) ? fallbackName : rawName || fallbackName;
+  return { name, hex };
+}
+
 export function isVariantUnavailable(available?: boolean, stock?: number) {
   return available === false || (available !== true && typeof stock === 'number' && stock <= 0);
 }

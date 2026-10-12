@@ -297,7 +297,7 @@ export function AddToCart({
           }}
         />
       )}
-      <div className="flex flex-wrap items-end gap-3">
+      <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[auto_minmax(0,1fr)]">
         <div className="space-y-1.5">
           <p className="text-sm font-semibold">{text.quantity}</p>
           <QuantityStepper

@@ -2,8 +2,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 // Указываем путь к файлу конфигурации (если он лежит в корне как i18n.ts)
 const withNextIntl = createNextIntlPlugin('./i18n.ts');
-const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production-128zjje.up.railway.app';
-const backendOrigin = new URL(backendUrl).origin;
+const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -39,7 +38,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://mc.yandex.ru https://yastatic.net https://accounts.google.com https://apis.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://accounts.google.com; img-src 'self' data: https: blob: https://mc.yandex.ru https://yastatic.net " + backendOrigin + "; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://mc.yandex.ru https://*.yandex.ru https://yastatic.net https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseio.com https://*.firebasestorage.app https://*.tile.openstreetmap.org https://tile.openstreetmap.org " + backendUrl + " https://api.cloudflare.com; frame-src 'self' https://mc.yandex.ru https://accounts.google.com https://*.firebaseapp.com https://challenges.cloudflare.com https://www.google.com; child-src 'self' blob: https://mc.yandex.ru; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;" + (process.env.CSP_REPORT_URI ? " report-uri " + process.env.CSP_REPORT_URI + ";" : '')
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://accounts.google.com; img-src 'self' data: https: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseio.com https://*.firebasestorage.app https://*.tile.openstreetmap.org https://tile.openstreetmap.org " + backendUrl + " https://api.cloudflare.com; frame-src 'self' https://accounts.google.com https://*.firebaseapp.com https://challenges.cloudflare.com https://www.google.com; child-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;" + (process.env.CSP_REPORT_URI ? " report-uri " + process.env.CSP_REPORT_URI + ";" : '')
           },
           {
             key: 'X-Frame-Options',

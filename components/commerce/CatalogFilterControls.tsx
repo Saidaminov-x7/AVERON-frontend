@@ -135,7 +135,7 @@ function CatalogFilterDraft({
   const colors = [...new Set([...(draft.color ? [draft.color] : []), ...facets.colors])];
 
   return (
-    <form onSubmit={apply} aria-busy={isPending}>
+    <form onSubmit={apply} aria-busy={isPending} className="flex h-full flex-col">
       <label className="text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]" htmlFor={`${id}-search`}>{t('search')}</label>
       <input id={`${id}-search`} className={`${controlClass} mt-2`} value={draft.q} onChange={(event) => set('q', event.target.value)} placeholder={t('placeholder')} />
       <div className="mt-5">
