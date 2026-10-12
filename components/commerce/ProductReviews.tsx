@@ -112,11 +112,22 @@ function isReview(value: unknown): value is Review {
 }
 
 function parseReviewPage(value: unknown): ReviewPage {
-  if (!isRecord(value) || !isRecord(value.summary) || !isRecord(value.pagination) || !Array.isArray(value.items)) {
+  if (!isRecord(value) || !isRecord(value.pagination) || !Array.isArray(value.items)) {
     throw new Error('Invalid product reviews response');
   }
 
-  const { summary, pagination, items } = value;
+  const { pagination, items } = value;
+  const summary = value.summary ?? (
+    items.length === 0 && pagination.total === 0
+      ? {
+          averageRating: null,
+          reviewCount: 0,
+          distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+          fitDistribution: { RUNS_SMALL: 0, TRUE_TO_SIZE: 0, RUNS_LARGE: 0 },
+        }
+      : null
+  );
+  if (!isRecord(summary)) throw new Error('Invalid product reviews response');
   const validDistribution = (distribution: unknown) => isRecord(distribution)
     && Object.values(distribution).every((count) => typeof count === 'number' && Number.isFinite(count) && count >= 0);
   if (
@@ -129,7 +140,7 @@ function parseReviewPage(value: unknown): ReviewPage {
     || !items.every(isReview)
   ) throw new Error('Invalid product reviews response');
 
-  return value as unknown as ReviewPage;
+  return { ...value, summary } as unknown as ReviewPage;
 }
 
 function safeAuthorName(name: string, anonymous: string) {

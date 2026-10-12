@@ -79,6 +79,16 @@ describe('ProductReviews', () => {
     expect(screen.queryByText('Great fit')).not.toBeInTheDocument();
   });
 
+  it('renders the empty state when a zero-review page omits optional summary aggregates', async () => {
+    mocks.get.mockResolvedValueOnce({ data: { items: [], pagination: { page: 1, limit: 100, total: 0, pages: 1 } } });
+
+    renderReviews();
+
+    expect(await screen.findByText(enMessages.productReviews.empty)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: enMessages.productReviews.title })).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('offers review submission only for backend-eligible purchases', async () => {
     mocks.auth.isAuthenticated = true;
     mocks.get.mockImplementation(async (url: string) => {
