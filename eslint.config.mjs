@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Repository-local agent skills are tooling, not application source.
+    ".agents/**",
   ]),
 ]);
 

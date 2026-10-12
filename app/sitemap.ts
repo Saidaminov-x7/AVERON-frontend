@@ -1,10 +1,10 @@
 import type { MetadataRoute } from 'next';
+import { externalBaseURL } from '@/lib/axios';
+import { SITE_URL } from '@/lib/siteUrl';
 
 // Product URLs come from the live catalog API. Resolve the sitemap at request
 // time so build-time page generation cannot trigger API throttling or omit products.
 export const revalidate = 0;
-import { externalBaseURL } from '@/lib/axios';
-import { SITE_URL } from '@/lib/siteUrl';
 
 const LOCALES = ['ru', 'uz', 'en'] as const;
 const STATIC_PATHS = [

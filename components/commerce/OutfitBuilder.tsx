@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import Image from 'next/image';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getProduct, getProducts, productRouteId, productTitle, type StoreProduct } from '@/lib/products';
 import { Button } from '@/components/ui/Button';

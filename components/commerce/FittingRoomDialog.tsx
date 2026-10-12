@@ -183,7 +183,7 @@ export function FittingRoomDialog({ productId, locale, imageUrl, onClose }: { pr
         {!collapsed && <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-5">
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_250px]">
             <section aria-label={copy.title}>
-              {initialError ? <div role="alert" className="grid min-h-[320px] place-items-center bg-[var(--color-surface-soft)] p-6 text-center text-sm text-[var(--color-text-secondary)]">{imageUrl && <Image src={imageUrl} alt="" width={640} height={800} unoptimized className="max-h-[min(48vh,420px)] object-contain" />}{copy.unavailable}</div>
+              {initialError ? <div role="alert" className="grid min-h-[320px] place-items-center bg-[var(--color-surface-soft)] p-6 text-center text-sm text-[var(--color-text-secondary)]">{imageUrl && <Image src={imageUrl} alt="" width={800} height={800} unoptimized className="max-h-[min(48vh,420px)] w-auto object-contain" />}{copy.unavailable}</div>
                 : initialProduct ? <FittingRoomViewer assets={shownItems.map((item) => item.asset)} fallbackImageUrl={imageUrl ?? initialProduct.imageUrl} labels={{ loading: copy.loading, unavailable: copy.unavailable, front: copy.front, left: copy.left, right: copy.right, webgl: copy.webgl }} />
                   : <div role="status" className="grid min-h-[320px] place-items-center text-sm text-[var(--color-text-secondary)]">{copy.loading}</div>}
               <p className="px-4 pt-3 text-xs leading-5 text-[var(--color-text-secondary)] sm:px-0">{copy.disclaimer}</p>
@@ -197,7 +197,7 @@ export function FittingRoomDialog({ productId, locale, imageUrl, onClose }: { pr
                   const exactAsset = item.asset.variantId === item.variantId;
                   return <li key={item.asset.garmentLayer} className="border-b border-[var(--color-border)] pb-3">
                     <div className="flex gap-3">
-                      <div className="size-16 shrink-0 overflow-hidden bg-[var(--color-surface-soft)]">{item.product.imageUrl && <Image src={item.product.imageUrl} alt="" width={64} height={64} unoptimized className="size-full object-cover" />}</div>
+                      <div className="relative size-16 shrink-0 overflow-hidden bg-[var(--color-surface-soft)]">{item.product.imageUrl && <Image src={item.product.imageUrl} alt="" fill sizes="64px" unoptimized className="object-cover" />}</div>
                       <div className="min-w-0 flex-1"><p className="text-[11px] text-[var(--color-text-secondary)]">{copy.layer[item.asset.garmentLayer]}</p><p className="mt-1 line-clamp-2 text-sm font-medium">{item.product.title}</p><p className="mt-1 text-sm font-semibold">{formatPrice(Number(variant?.salePriceUzs ?? item.product.salePriceUzs))}</p></div>
                       <button type="button" aria-label={`${copy.remove}: ${item.product.title}`} onClick={() => removeProduct(item.asset.garmentLayer)} className="grid size-11 shrink-0 place-items-center text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-soft)]"><Trash2 size={16} /></button>
                     </div>
@@ -222,7 +222,7 @@ export function FittingRoomDialog({ productId, locale, imageUrl, onClose }: { pr
                 const asset = pickAsset(product, currentVariant?.id ?? null);
                 if (!layer || !asset) return null;
                 return <li key={product.id} className="min-w-0">
-                  <div className="aspect-[3/4] bg-[var(--color-surface-soft)]">{product.imageUrl && <Image src={product.imageUrl} alt="" width={360} height={480} unoptimized className="size-full object-cover" />}</div>
+                  <div className="relative aspect-[3/4] bg-[var(--color-surface-soft)]">{product.imageUrl && <Image src={product.imageUrl} alt="" fill sizes="(max-width: 640px) 45vw, 180px" unoptimized className="object-cover" />}</div>
                   <p className="mt-2 line-clamp-2 text-xs font-medium">{product.title}</p>
                   <p className="mt-1 text-xs tabular-nums text-[var(--color-text-secondary)]">{formatPrice(Number(currentVariant?.salePriceUzs ?? product.salePriceUzs))}</p>
                   <button type="button" onClick={() => addProduct(product)} className="mt-2 min-h-10 w-full border border-[var(--color-border)] px-2 text-xs font-semibold hover:border-[#244FC7] hover:text-[#244FC7] dark:hover:border-[#8EA5FF] dark:hover:text-[#8EA5FF]">{copy.add} · {copy.layer[layer]}</button>
