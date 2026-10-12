@@ -1,6 +1,5 @@
-import type { Config } from "tailwindcss";
-
-const config: Config = {
+/** @type {import("tailwindcss").Config} */
+const config = {
   // Включаем темную тему через CSS-класс (на теге <html>)
   darkMode: "class",
   content: [
@@ -38,4 +37,4 @@ const config: Config = {
   plugins: [],
 };
 
-export default config;
+module.exports = config;

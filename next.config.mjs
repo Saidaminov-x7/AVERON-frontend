@@ -7,6 +7,8 @@ const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-pr
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Keep Turbopack rooted in this app rather than a parent user's lockfile.
+  turbopack: { root: process.cwd() },
   images: {
     remotePatterns: [
       {

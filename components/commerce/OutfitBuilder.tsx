@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -253,7 +254,7 @@ function OutfitBuilderContent() {
             <h2 className="font-bold">{text.result}</h2>
             <ul className="mt-3 space-y-3">{results.map((product) => (
               <li key={product.id} className="flex items-center gap-3">
-                {product.images?.[0]?.url && <img src={product.images[0].url} alt="" className="size-12 rounded-lg object-cover" />}
+                {product.images?.[0]?.url && <Image src={product.images[0].url} alt="" width={48} height={48} unoptimized className="size-12 rounded-lg object-cover" />}
                 <span className="min-w-0 flex-1 truncate">{productTitle(product, locale)}</span>
                 <button type="button" onClick={() => addProduct(product)} className="min-h-10 rounded-lg border px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{replaceAt === null ? text.add : text.replace}</button>
               </li>
@@ -265,7 +266,7 @@ function OutfitBuilderContent() {
             {items.length === 0 ? <p className="rounded-2xl border border-dashed border-stone-300 p-8 text-center text-stone-500">{text.empty}</p> :
               items.map((item, index) => (
                 <article key={`${item.product.id}:${index}`} className="flex flex-col gap-4 rounded-2xl border border-stone-200 bg-white p-4 sm:flex-row sm:items-center dark:border-white/10 dark:bg-stone-900">
-                  {item.product.images?.[0]?.url && <img src={item.product.images[0].url} alt="" className="size-20 rounded-xl object-cover" />}
+                  {item.product.images?.[0]?.url && <Image src={item.product.images[0].url} alt="" width={80} height={80} unoptimized className="size-20 rounded-xl object-cover" />}
                   <div className="min-w-0 flex-1">
                     <a href={`/${locale}/catalog/${encodeURIComponent(productRouteId(item.product))}`} className="font-bold hover:underline">{productTitle(item.product, locale)}</a>
                     <p className="mt-1 text-sm text-stone-500">{formatUzs(Number(item.product.variants?.find((variant) => variant.id === item.variantId)?.salePriceUzs ?? item.product.salePriceUzs ?? 0), locale)}</p>
