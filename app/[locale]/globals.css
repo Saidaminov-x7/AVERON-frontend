@@ -235,6 +235,8 @@
   border-radius: var(--radius-control);
   font-family: var(--font-family);
 }
+/* Explicit full-round controls (such as product color swatches) keep their circle shape. */
+.averon-site-shell .rounded-full { border-radius: 9999px; }
 .averon-site-shell button:not([class*="h-7"]):not([class*="h-8"]):not([class*="h-9"]):not([class*="size-"]):not([class*="absolute"]) {
   min-height: 44px;
 }
