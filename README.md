@@ -22,8 +22,7 @@ pnpm dev
 ```
 
 Configure the storefront API URL in the local environment file.
-`NEXT_PUBLIC_YANDEX_METRIKA_ID` is optional; leave it unset to disable
-Yandex.Metrika. Canonical metadata is pinned to `https://averon.uz` so local
+Canonical metadata is pinned to `https://averon.uz` so local
 and preview environment values cannot publish preview hosts to search engines.
 Public configuration values are not secrets.
 
