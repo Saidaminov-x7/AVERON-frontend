@@ -4,7 +4,7 @@ import { RotateCcw } from 'lucide-react';
 import { StatusPage } from './StatusPage';
 
 vi.mock('@/components/navigation/SmartBackButton', () => ({
-  SmartBackButton: () => <a href="/">Home</a>,
+  SmartBackButton: () => <span>Home</span>,
 }));
 
 describe('StatusPage theme contrast', () => {
