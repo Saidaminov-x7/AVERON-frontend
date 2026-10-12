@@ -215,9 +215,12 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
               className="relative max-h-full max-w-full flex items-center justify-center transition-transform duration-200 ease-out"
               style={{ transform: `scale(${zoomLevel})` }}
             >
-              <img
+              <Image
                 src={images[lightboxIndex]}
                 alt={`${alt} — полноэкранное фото ${lightboxIndex + 1}`}
+                width={1600}
+                height={1600}
+                unoptimized
                 className="max-h-[75vh] max-w-[90vw] object-contain rounded-xl shadow-2xl"
               />
             </div>
@@ -265,7 +268,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
                       : 'border-transparent opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <img src={src} alt="" className="h-full w-full object-cover" />
+                  <Image src={src} alt="" width={80} height={56} unoptimized className="h-full w-full object-cover" />
                 </button>
               ))}
             </div>

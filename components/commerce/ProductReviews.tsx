@@ -98,7 +98,10 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
     enabled: isAuthenticated,
     queryFn: async () => (await api.get<Purchase[]>(`/api/v1/products/${encodeURIComponent(slug)}/reviews/eligibility`)).data,
   });
-  const purchases = Array.isArray(eligibilityQuery.data) ? eligibilityQuery.data : [];
+  const purchases = useMemo(
+    () => Array.isArray(eligibilityQuery.data) ? eligibilityQuery.data : [],
+    [eligibilityQuery.data],
+  );
   const selectedPurchase = purchases.find((item) => item.orderItemId === purchaseId) ?? purchases.find((item) => item.orderNumber === initialOrderNumber && !item.reviewId) ?? purchases.find((item) => !item.reviewId);
   const ownReviewIds = useMemo(
     () => [...new Set(purchases.flatMap((purchase) => purchase.reviewId ? [purchase.reviewId] : []))],
