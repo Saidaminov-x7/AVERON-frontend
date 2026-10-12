@@ -2,7 +2,7 @@ import type { StoreProduct } from "@/lib/products";
 
 const apiBaseUrl = (
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://averon-backend-production-128zjje.up.railway.app"
+  "https://averon-backend-production.up.railway.app"
 ).replace(/\/+$/, "");
 
 export type CommerceCapabilities = {

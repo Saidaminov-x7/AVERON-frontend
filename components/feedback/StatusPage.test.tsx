@@ -4,11 +4,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { StatusPage } from './StatusPage';
 
 vi.mock('@/components/navigation/SmartBackButton', () => ({
-  SmartBackButton: ({ label }: { label: string }) => <span>{label}</span>,
+  SmartBackButton: ({ label }: { label: string }) => <button type="button">{label}</button>,
 }));
 
 describe('StatusPage theme contrast', () => {
-  it('uses the contrasting foreground token for its primary error panel', () => {
+  it('uses theme surfaces and text tokens for the error panel in both themes', () => {
     const markup = renderToStaticMarkup(
       <StatusPage
         code="500"
@@ -20,8 +20,9 @@ describe('StatusPage theme contrast', () => {
       />,
     );
 
-    expect(markup).toContain('bg-[var(--color-primary)]');
-    expect(markup).toContain('text-[var(--color-on-primary)]');
-    expect(markup).not.toContain('text-white/70');
+    expect(markup).toContain('bg-[var(--color-surface-soft)]');
+    expect(markup).toContain('text-[var(--color-text)]');
+    expect(markup).toContain('text-[var(--color-text-secondary)]');
+    expect(markup).not.toContain('text-[var(--color-on-primary)]');
   });
 });

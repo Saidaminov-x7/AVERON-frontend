@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store/useAuthStore';
 
-const externalBaseURL = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production-128zjje.up.railway.app';
+const externalBaseURL = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
 export { externalBaseURL };
 const baseURL = typeof window !== 'undefined' ? '/api/backend' : externalBaseURL;
 const PROACTIVE_REFRESH_BEFORE_MS = 5 * 60 * 1000; // 5 minutes

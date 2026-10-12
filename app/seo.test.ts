@@ -1,12 +1,16 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import robots from './robots';
-import sitemap from './sitemap';
+import sitemap, { revalidate } from './sitemap';
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
 describe('SEO route metadata', () => {
+  it('keeps the product sitemap request-time rendered while caching catalog fetches', () => {
+    expect(revalidate).toBe(0);
+  });
+
   it('points robots.txt at the approved production sitemap', () => {
     expect(robots().sitemap).toBe('https://averon.uz/sitemap.xml');
   });

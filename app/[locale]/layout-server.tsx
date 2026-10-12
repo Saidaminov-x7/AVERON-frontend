@@ -6,7 +6,7 @@ const locales = ['uz', 'en', 'ru'];
 
 async function getServerSiteSettings() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production-128zjje.up.railway.app';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
     const res = await fetch(`${apiUrl}/site-settings/public`, {
       next: { revalidate: 60 },
       signal: AbortSignal.timeout(3000),

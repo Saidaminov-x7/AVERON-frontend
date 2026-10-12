@@ -19,7 +19,7 @@ export async function proxy(request: NextRequest) {
 
   // Maintenance mode check via backend API
   const isMaintenancePage = pathname.includes('/maintenance');
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production-128zjje.up.railway.app';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
 
   const bypassCookie = request.cookies.get('maintenance_bypass')?.value;
   const locale = locales.find((l) => pathname.startsWith(`/${l}`)) || defaultLocale;
