@@ -1,11 +1,12 @@
 'use client';
 
 import { Component, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
-import type { ErrorInfo, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { BufferGeometry, CatmullRomCurve3, Float32BufferAttribute, MeshStandardMaterial, TubeGeometry, Vector3 } from 'three';
 import type { Object3D } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import Image from 'next/image';
 import { clampFittingRotation, type FittingAsset } from '@/lib/fitting-room';
 
 const ROTATION_SENSITIVITY = 0.006;
@@ -128,7 +129,7 @@ function Garment({ asset, onLoaded }: { asset: FittingAsset; onLoaded: (assetId:
 class ViewerErrorBoundary extends Component<{ children: ReactNode; fallback: ReactNode; onError: () => void }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
-  componentDidCatch(_error: Error, _info: ErrorInfo) { this.props.onError(); }
+  componentDidCatch() { this.props.onError(); }
   render() { return this.state.failed ? this.props.fallback : this.props.children; }
 }
 
@@ -167,20 +168,20 @@ export function FittingRoomViewer({
   }, [canvas]);
 
   if (webglLost || visibleAssets.length !== allAssets.length) {
-    return <div role="status" className="grid min-h-[320px] place-items-center bg-[var(--color-surface-soft)] p-6 text-center text-sm text-[var(--color-text-secondary)]">{fallbackImageUrl && <img src={fallbackImageUrl} alt="" className="max-h-[min(48vh,420px)] object-contain" />}{webglLost ? labels.webgl : labels.unavailable}</div>;
+    return <div role="status" className="grid min-h-[320px] place-items-center bg-[var(--color-surface-soft)] p-6 text-center text-sm text-[var(--color-text-secondary)]">{fallbackImageUrl && <Image src={fallbackImageUrl} alt="" width={640} height={800} unoptimized className="max-h-[min(48vh,420px)] object-contain" />}{webglLost ? labels.webgl : labels.unavailable}</div>;
   }
 
   const moveRotation = (delta: number) => setRotation((current) => clampFittingRotation(current + delta));
 
   return (
     <div className="relative h-[min(54vh,560px)] min-h-[320px] touch-pan-y overflow-hidden bg-[var(--color-surface-soft)] sm:min-h-[420px]">
-      <ViewerErrorBoundary key={assetSignature} onError={() => setFailedSignature(assetSignature)} fallback={<div role="alert" className="grid h-full min-h-[320px] place-items-center p-6 text-center text-sm text-[var(--color-text-secondary)]">{fallbackImageUrl && <img src={fallbackImageUrl} alt="" className="max-h-[min(48vh,420px)] object-contain" />}{labels.unavailable}</div>}>
+      <ViewerErrorBoundary key={assetSignature} onError={() => setFailedSignature(assetSignature)} fallback={<div role="alert" className="grid h-full min-h-[320px] place-items-center p-6 text-center text-sm text-[var(--color-text-secondary)]">{fallbackImageUrl && <Image src={fallbackImageUrl} alt="" width={640} height={800} unoptimized className="max-h-[min(48vh,420px)] object-contain" />}{labels.unavailable}</div>}>
         <Canvas
           shadows
           frameloop="demand"
           dpr={[1, 1.5]}
           camera={{ position: [0, 1.15, 4.1], fov: 31 }}
-          fallback={<div role="status" className="grid h-full place-items-center p-6 text-center text-sm">{fallbackImageUrl && <img src={fallbackImageUrl} alt="" className="max-h-[min(48vh,420px)] object-contain" />}{labels.webgl}</div>}
+          fallback={<div role="status" className="grid h-full place-items-center p-6 text-center text-sm">{fallbackImageUrl && <Image src={fallbackImageUrl} alt="" width={640} height={800} unoptimized className="max-h-[min(48vh,420px)] object-contain" />}{labels.webgl}</div>}
           onCreated={({ gl }) => setCanvas(gl.domElement)}
           onPointerDown={(event) => {
             setPointerX(event.clientX);
