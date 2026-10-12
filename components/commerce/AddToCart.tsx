@@ -246,7 +246,7 @@ export function AddToCart({
         {showCompareAtPrice && (
           <>
             <del className="text-sm text-[var(--color-muted)]">{formatMoneyUzs(productCompareAtPrice!, locale)}</del>
-            <span className="bg-[var(--color-error)] px-2 py-1 text-xs font-semibold text-white">
+            <span className="bg-[var(--color-error)] px-2 py-1 text-xs font-semibold text-[#541a16]">
               {text.discount.replace('{percent}', String(discountPercent))}
             </span>
           </>

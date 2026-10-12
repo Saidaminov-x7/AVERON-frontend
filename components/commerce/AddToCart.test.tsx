@@ -54,7 +54,7 @@ describe('AddToCart availability', () => {
 
     expect(screen.getByText('125,000 UZS')).toBeInTheDocument();
     expect(screen.getByText('200,000 UZS')).toHaveAttribute('class', expect.stringContaining('text-[var(--color-muted)]'));
-    expect(screen.getByText('38% off')).toBeInTheDocument();
+    expect(screen.getByText('38% off')).toHaveClass('text-[#541a16]');
   });
 
   it('shows only the backend-provided availability flag', () => {
