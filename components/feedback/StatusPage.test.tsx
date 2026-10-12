@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { RotateCcw } from 'lucide-react';
 import { StatusPage } from './StatusPage';
 
 vi.mock('@/components/navigation/SmartBackButton', () => ({
@@ -14,7 +15,7 @@ describe('StatusPage theme contrast', () => {
         eyebrow="Service unavailable"
         title="Something went wrong"
         description="Please try again."
-        icon={() => null}
+        icon={RotateCcw}
         homeLabel="Home"
       />,
     );
