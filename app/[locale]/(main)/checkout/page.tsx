@@ -19,7 +19,7 @@ const copy = {
     title: 'Оформление заказа', contact: 'Контактные данные', name: 'Имя и фамилия', phone: 'Телефон',
     delivery: 'Адрес доставки', city: 'Город', address: 'Улица, дом', apartment: 'Квартира / офис (необязательно)',
     entrance: 'Подъезд (необязательно)', floor: 'Этаж (необязательно)', comment: 'Комментарий курьеру (необязательно)',
-    total: 'Итого по корзине', submit: 'Подтвердить заказ', back: 'Вернуться в корзину',
+    total: 'Итого по корзине', orderItems: 'Товары в заказе', submit: 'Подтвердить заказ', back: 'Вернуться в корзину',
     subtotal: 'Сумма товаров', promo: 'Промокод', applyPromo: 'Применить', applyingPromo: 'Проверяем…', removePromo: 'Удалить',
     placingOrder: 'Оформляем заказ…',
     discount: 'Скидка', finalTotal: 'Итого со скидкой', promoApplied: 'Скидка применена. Итог будет подтверждён сервером.',
@@ -32,6 +32,7 @@ const copy = {
       PRODUCT_NOT_AVAILABLE: 'Один из товаров больше недоступен. Вернитесь в корзину.',
       VARIANT_NOT_AVAILABLE: 'Выбранный вариант больше недоступен. Проверьте корзину.',
       INSUFFICIENT_STOCK: 'Количество товара изменилось. Проверьте корзину.',
+      CART_ITEM_LIMIT: 'В корзине слишком много разных товаров. Удалите лишние позиции и повторите оформление.',
       CHECKOUT_CONFLICT: 'Корзина изменилась во время оформления. Проверьте её и повторите попытку.',
       IDEMPOTENCY_CONFLICT: 'Этот ключ уже использован для другого запроса. Измените данные и попробуйте снова.',
       INVALID_QUANTITY: 'В корзине указано недопустимое количество.',
@@ -44,7 +45,7 @@ const copy = {
     title: 'Buyurtmani rasmiylashtirish', contact: 'Aloqa ma’lumotlari', name: 'Ism va familiya', phone: 'Telefon',
     delivery: 'Yetkazib berish manzili', city: 'Shahar', address: 'Ko‘cha, uy', apartment: 'Kvartira / ofis (ixtiyoriy)',
     entrance: 'Kirish yo‘lagi (ixtiyoriy)', floor: 'Qavat (ixtiyoriy)', comment: 'Kuryerga izoh (ixtiyoriy)',
-    total: 'Savatcha jami', submit: 'Buyurtmani tasdiqlash', back: 'Savatchaga qaytish',
+    total: 'Savatcha jami', orderItems: 'Buyurtmadagi mahsulotlar', submit: 'Buyurtmani tasdiqlash', back: 'Savatchaga qaytish',
     subtotal: 'Mahsulotlar summasi', promo: 'Promokod', applyPromo: 'Qo‘llash', applyingPromo: 'Tekshirilmoqda…', removePromo: 'Olib tashlash',
     placingOrder: 'Buyurtma rasmiylashtirilmoqda…',
     discount: 'Chegirma', finalTotal: 'Chegirmadan keyingi jami', promoApplied: 'Chegirma qo‘llandi. Yakuniy summa serverda tasdiqlanadi.',
@@ -57,6 +58,7 @@ const copy = {
       PRODUCT_NOT_AVAILABLE: 'Mahsulotlardan biri endi mavjud emas. Savatchaga qayting.',
       VARIANT_NOT_AVAILABLE: 'Tanlangan variant endi mavjud emas. Savatchani tekshiring.',
       INSUFFICIENT_STOCK: 'Mahsulot miqdori o‘zgardi. Savatchani tekshiring.',
+      CART_ITEM_LIMIT: 'Savatchada turli mahsulotlar juda ko‘p. Ortiqcha pozitsiyalarni olib tashlab, qayta urinib ko‘ring.',
       CHECKOUT_CONFLICT: 'Rasmiylashtirish vaqtida savatcha o‘zgardi. Tekshirib, qayta urinib ko‘ring.',
       IDEMPOTENCY_CONFLICT: 'Ushbu kalit boshqa so‘rov uchun ishlatilgan. Ma’lumotlarni o‘zgartirib, qayta urinib ko‘ring.',
       INVALID_QUANTITY: 'Savatchadagi miqdor noto‘g‘ri.',
@@ -69,7 +71,7 @@ const copy = {
     title: 'Checkout', contact: 'Contact details', name: 'Full name', phone: 'Phone',
     delivery: 'Delivery address', city: 'City', address: 'Street and building',
     apartment: 'Apartment / office (optional)', entrance: 'Entrance (optional)', floor: 'Floor (optional)',
-    comment: 'Delivery note (optional)', total: 'Cart total', submit: 'Place order', back: 'Back to cart',
+    comment: 'Delivery note (optional)', total: 'Cart total', orderItems: 'Items in your order', submit: 'Place order', back: 'Back to cart',
     subtotal: 'Subtotal', promo: 'Promo code', applyPromo: 'Apply', applyingPromo: 'Checking…', removePromo: 'Remove',
     placingOrder: 'Placing order…',
     discount: 'Discount', finalTotal: 'Total after discount', promoApplied: 'Discount applied. The server will confirm the final total.',
@@ -82,6 +84,7 @@ const copy = {
       PRODUCT_NOT_AVAILABLE: 'A product is no longer available. Return to your cart.',
       VARIANT_NOT_AVAILABLE: 'The selected option is no longer available. Review your cart.',
       INSUFFICIENT_STOCK: 'Stock changed. Please check your cart.',
+      CART_ITEM_LIMIT: 'Your cart has too many different items. Remove some items and try checkout again.',
       CHECKOUT_CONFLICT: 'Your cart changed during checkout. Review it and try again.',
       IDEMPOTENCY_CONFLICT: 'This key was already used for a different request. Update your details and retry.',
       INVALID_QUANTITY: 'The cart contains an invalid quantity.',
@@ -110,6 +113,7 @@ function CheckoutContent() {
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountPercent: number } | null>(null);
   const [promoError, setPromoError] = useState('');
   const idempotencyKey = useRef<string | null>(null);
+  const checkoutSubmitInFlight = useRef(false);
   const promoValidation = useMutation({
     mutationFn: validatePromoCode,
     onSuccess: (promo) => {
@@ -137,6 +141,9 @@ function CheckoutContent() {
       await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.cart });
       router.push(`/${locale}/checkout/success/${encodeURIComponent(order.orderNumber)}`);
     },
+    onSettled: () => {
+      checkoutSubmitInFlight.current = false;
+    },
   });
 
   const changeDetails = <K extends 'contact' | 'deliveryAddress'>(
@@ -154,7 +161,8 @@ function CheckoutContent() {
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (checkout.isPending) return;
+    if (checkoutSubmitInFlight.current || checkout.isPending) return;
+    checkoutSubmitInFlight.current = true;
     const quantity = cart?.items.reduce((total, item) => total + item.quantity, 0) ?? 0;
     trackCommerceEvent({ eventName: 'begin_checkout', ...(quantity > 0 ? { metadata: { quantity } } : {}) });
     if (!idempotencyKey.current) idempotencyKey.current = crypto.randomUUID();
@@ -229,6 +237,21 @@ function CheckoutContent() {
             </div>
             <aside className="h-fit rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
               <h2 className="text-lg font-bold">{text.total}</h2>
+              <ul aria-label={text.orderItems} className="mt-3 divide-y divide-stone-200 text-sm dark:divide-white/10">
+                {cart?.items.map((item) => {
+                  const optionSummary = [item.variant?.color?.split('::')[0], item.variant?.size].filter(Boolean).join(' · ');
+                  return (
+                    <li key={item.id} className="flex items-start justify-between gap-4 py-3">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-[var(--color-text)]">{item.title}</p>
+                        {optionSummary && <p className="mt-1 text-[var(--color-text-secondary)]">{optionSummary}</p>}
+                        <p className="mt-1 text-[var(--color-text-secondary)]">× {item.quantity}</p>
+                      </div>
+                      <p className="shrink-0 font-semibold">{formatUzs(item.lineTotalUzs, locale)}</p>
+                    </li>
+                  );
+                })}
+              </ul>
               <div className="mt-3 space-y-2 text-sm">
                 <div className="flex justify-between gap-3"><span>{text.subtotal}</span><span>{formatUzs(cart?.subtotalUzs ?? 0, locale)}</span></div>
                 {appliedPromo && <div className="flex justify-between gap-3 text-emerald-700"><span>{text.discount} ({appliedPromo.discountPercent}%)</span><span>−{formatUzs(discount, locale)}</span></div>}

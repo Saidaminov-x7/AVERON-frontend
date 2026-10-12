@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import api from '@/lib/axios';
@@ -10,6 +10,7 @@ import { getLocalizedApiError } from '@/lib/localized-api-error';
 import { useSmsVerificationAvailability } from '@/hooks/useSmsVerificationAvailability';
 import { SmsUnavailableNotice } from '@/components/auth/SmsUnavailableNotice';
 import { Button } from '@/components/ui/Button';
+import { getSafeInternalReturnTo } from '@/lib/safe-navigation';
 
 const copy = {
   ru: {
@@ -97,6 +98,7 @@ const copy = {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = (useParams()?.locale as string) || 'ru';
   const text = copy[locale as keyof typeof copy] ?? copy.ru;
   const setAuth = useAuthStore((state) => state.setAuth);
@@ -131,7 +133,8 @@ export default function RegisterPage() {
           { phone, code },
         );
         setAuth(data.user, data.accessToken);
-        router.replace(`/${locale}/profile`);
+        const destination = getSafeInternalReturnTo(searchParams.get('returnTo'), locale) ?? `/${locale}/profile`;
+        router.replace(destination);
       }
     } catch (value: unknown) {
       setError(getLocalizedApiError(value, locale, 'registration'));

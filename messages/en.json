@@ -171,6 +171,7 @@
     "color": "Color",
     "anyColor": "Any color",
     "price": "Price, UZS",
+    "saleOnly": "On sale only",
     "from": "From",
     "to": "To",
     "sort": "Sort",
@@ -276,6 +277,7 @@
   },
   "productDetail": {
     "back": "Back to catalog",
+    "article": "Article",
     "verified": "AVERON · VERIFIED",
     "descriptionTitle": "Product description",
     "compositionTitle": "Composition",

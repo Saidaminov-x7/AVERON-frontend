@@ -74,6 +74,13 @@ describe('categoryName', () => {
       const query = buildCatalogSearchParams({ country: '' });
       expect(query.toString()).toBe('country=');
     });
+
+    it('preserves the sale-only filter for product requests and pagination links', () => {
+      const filters = { saleOnly: 'true', page: '2' };
+      expect(buildProductSearchParams(filters).toString()).toBe('page=2&saleOnly=true&limit=24');
+      expect(buildCatalogPageSearchParams(filters, 3).toString()).toBe('page=3&saleOnly=true');
+      expect(buildCatalogSearchParams({ saleOnly: 'false' }).has('saleOnly')).toBe(false);
+    });
   });
 
   it('falls back to the existing category translations and slug', () => {

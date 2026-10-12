@@ -18,12 +18,12 @@ export default function Loading() {
           <Skeleton className="h-10 w-full max-w-md" />
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:gap-x-5 2xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, index) => (
-            <div key={index} className="overflow-hidden rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900">
-              <Skeleton className="aspect-[4/5] w-full rounded-xl" />
-              <Skeleton className="mt-4 h-5 w-3/4" />
-              <Skeleton className="mt-2 h-4 w-1/2" />
+            <div key={index} className="min-w-0">
+              <Skeleton className="aspect-[3/4] w-full" />
+              <Skeleton className="mt-3 h-4 w-3/4" />
+              <Skeleton className="mt-2 h-5 w-1/2" />
             </div>
           ))}
         </div>

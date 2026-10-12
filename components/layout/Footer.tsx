@@ -71,7 +71,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
   const documentLinks = DOCUMENT_LINKS.map(([key, href]) => [t(key), href] as const);
 
   return (
-    <footer className="w-full border-t border-[var(--color-border)] bg-[var(--color-surface-soft)]">
+    <footer className="w-full border-t border-[var(--color-border)] bg-[var(--color-surface)]">
       <div className="mx-auto max-w-[1440px] px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-12 sm:pb-[calc(3rem+env(safe-area-inset-bottom))] lg:px-8">
         <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-[1.25fr_repeat(3,1fr)] lg:gap-10">
           <div className="min-w-0">

@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { CheckCircle2 } from "lucide-react";
 import { externalBaseURL } from "@/lib/axios";
 import { SITE_URL } from "@/lib/siteUrl";
 import { AddToCart } from "@/components/commerce/AddToCart";
+import { FittingRoomTrigger } from "@/components/commerce/FittingRoomTrigger";
 import { ProductGallery } from "@/components/commerce/ProductGallery";
 import { ProductRichText } from "@/components/commerce/ProductRichText";
 import { ProductReviews } from "@/components/commerce/ProductReviews";
@@ -16,6 +16,7 @@ import { ProductRecommendations } from "@/components/commerce/ProductRecommendat
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import { ProductViewTracker } from "@/components/analytics/ProductViewTracker";
 import { ProductLoadFailure } from "@/components/commerce/ProductLoadFailure";
+import { resolveProductAssetUrl } from "@/lib/product-images";
 import { SmartBackButton } from "@/components/navigation/SmartBackButton";
 import {
   buildCatalogSearchParams,
@@ -88,7 +89,7 @@ async function loadFallbackRecommendations(product: StoreProduct): Promise<Store
       .filter(({ score }) => score >= 3)
       .sort((left, right) => right.score - left.score || left.candidate.id.localeCompare(right.candidate.id))
       .slice(0, 8)
-      .map(({ candidate }) => candidate);
+      .map(({ candidate }) => withResolvedProductImages(candidate));
   } catch {
     return [];
   }
@@ -118,6 +119,16 @@ function isStoreProduct(value: unknown): value is ProductDetail {
     typeof product.description !== "object" || Array.isArray(product.description)
   )) return false;
   return true;
+}
+
+function withResolvedProductImages(product: ProductDetail): ProductDetail {
+  return {
+    ...product,
+    images: product.images?.map((image) => ({
+      ...image,
+      url: resolveProductAssetUrl(image.url),
+    })),
+  };
 }
 
 async function loadProduct(slug: string): Promise<ProductDetail | null> {
@@ -155,7 +166,7 @@ async function loadProduct(slug: string): Promise<ProductDetail | null> {
     throw new ProductRequestError("malformed");
   }
   if (!isStoreProduct(payload)) throw new ProductRequestError("malformed");
-  return payload;
+  return withResolvedProductImages(payload);
 }
 
 function getProductDescription(product: StoreProduct, locale: string) {
@@ -277,7 +288,7 @@ export default async function ProductPage({
   const plainTitle = productPlainText(title);
   const copy = {
     back: t("back"),
-    verified: t("verified"),
+    article: t("article"),
     descriptionTitle: t("descriptionTitle"),
     compositionTitle: t("compositionTitle"),
     careTitle: t("careTitle"),
@@ -290,7 +301,6 @@ export default async function ProductPage({
     colors: t("colors"),
     descriptionFallback: t("descriptionFallback"),
     gallery: t("gallery"),
-    confirmed: t("confirmed"),
   };
   const catalogQuery = buildCatalogSearchParams(filters).toString();
   const initialOrderNumber = typeof filters.reviewOrderNumber === "string"
@@ -363,7 +373,7 @@ export default async function ProductPage({
             <span className="truncate text-[var(--color-text)]">{plainTitle}</span>
           </nav>
         </div>
-        <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,.85fr)] lg:gap-10 xl:gap-14">
+        <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(340px,.95fr)] lg:gap-6 xl:gap-6">
           <div className="min-w-0">
             <ProductGallery
               images={product.images ?? []}
@@ -380,15 +390,14 @@ export default async function ProductPage({
             />
           </div>
           <section className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[.12em] text-[var(--color-text-secondary)]">
-              {copy.verified}
-            </p>
             <h1 className="averon-title mt-2 text-2xl leading-tight sm:text-3xl lg:text-[2rem]">
               <ProductRichText content={title} inline />
             </h1>
 
-            {(product.category || product.country) && (
+            {(product.publicId || product.category || product.country) && (
               <section aria-label={copy.productDetails} className="mt-3 flex flex-wrap gap-x-2 text-xs text-[var(--color-text-secondary)]">
+                {product.publicId ? <span>{copy.article}: {product.publicId}</span> : null}
+                {product.publicId && (product.category || product.country) ? <span aria-hidden="true">·</span> : null}
                 {product.category ? <span>{categoryName(product.category, locale)}</span> : null}
                 {product.country ? <><span aria-hidden="true">·</span><span>{product.country}</span></> : null}
               </section>
@@ -405,6 +414,7 @@ export default async function ProductPage({
                 productAvailability={product.availability}
                 variants={product.variants ?? []}
               />
+              {Boolean(product.fittingRoomAvailable) && <FittingRoomTrigger productId={String(product.id)} locale={locale} imageUrl={productImages?.[0]} />}
               <Link
                 href={`/${locale}/outfits?product=${encodeURIComponent(product.slug)}`}
                 className="averon-secondary-button mt-3 h-11 w-full"
@@ -413,10 +423,6 @@ export default async function ProductPage({
               </Link>
             </section>
 
-            <p className="mt-5 flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
-              <CheckCircle2 size={16} className="text-[var(--color-success)]" />
-              {copy.confirmed}
-            </p>
           </section>
         </div>
       </div>
