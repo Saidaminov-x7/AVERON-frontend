@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { trackCommerceEvent } from './commerceAnalytics';
+import { isAnalyticsHostEnabled, trackCommerceEvent } from './commerceAnalytics';
 
 vi.mock('@/lib/axios', () => ({ externalBaseURL: 'https://api.example.test' }));
 
@@ -41,5 +41,21 @@ describe('trackCommerceEvent', () => {
     trackCommerceEvent({ eventName: 'page_view' });
 
     expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it('does not send analytics from generated Vercel previews', () => {
+    expect(isAnalyticsHostEnabled('averon-frontend-3oeel5ucs-vosilhojas-projects.vercel.app')).toBe(false);
+    expect(isAnalyticsHostEnabled('averon-frontend-three.vercel.app')).toBe(true);
+    expect(isAnalyticsHostEnabled('averon.uz')).toBe(true);
+  });
+
+  it('does not emit commerce events from generated Vercel previews', () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('location', new URL('https://averon-frontend-3oeel5ucs-vosilhojas-projects.vercel.app/ru'));
+
+    trackCommerceEvent({ eventName: 'page_view' });
+
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

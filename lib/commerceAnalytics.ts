@@ -45,6 +45,13 @@ type CommerceEvent =
 const recentEvents = new Map<string, number>();
 const EVENT_DEDUPE_MS = 2_000;
 
+export function isAnalyticsHostEnabled(hostname: string) {
+  const normalizedHost = hostname.trim().toLowerCase();
+  const isVercelPreview = normalizedHost.endsWith('.vercel.app')
+    && normalizedHost !== 'averon-frontend-three.vercel.app';
+  return !isVercelPreview;
+}
+
 function getDeviceId() {
   let deviceId = localStorage.getItem('averon_device_id');
   if (!deviceId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(deviceId)) {
@@ -55,7 +62,7 @@ function getDeviceId() {
 }
 
 export function trackCommerceEvent(event: CommerceEvent, pathOverride?: string) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || !isAnalyticsHostEnabled(window.location.hostname)) return;
   const path = pathOverride ?? window.location.pathname;
   const dedupeKey = JSON.stringify([event.eventName, path, event.metadata ?? {}, 'orderId' in event ? event.orderId : null]);
   const now = Date.now();
