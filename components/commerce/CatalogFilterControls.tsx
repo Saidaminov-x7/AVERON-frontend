@@ -135,29 +135,31 @@ function CatalogFilterDraft({
   const colors = [...new Set([...(draft.color ? [draft.color] : []), ...facets.colors])];
 
   return (
-    <form onSubmit={apply} aria-busy={isPending} className="flex h-full flex-col">
-      <label className="text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]" htmlFor={`${id}-search`}>{t('search')}</label>
-      <input id={`${id}-search`} className={`${controlClass} mt-2`} value={draft.q} onChange={(event) => set('q', event.target.value)} placeholder={t('placeholder')} />
-      <div className="mt-5">
+    <form onSubmit={apply} aria-busy={isPending} className="flex h-full flex-col gap-3">
+      <div>
+        <label className="text-xs font-semibold uppercase tracking-[.06em] text-[var(--color-muted)]" htmlFor={`${id}-search`}>{t('search')}</label>
+        <input id={`${id}-search`} className={`${controlClass} mt-2`} value={draft.q} onChange={(event) => set('q', event.target.value)} placeholder={t('placeholder')} />
+      </div>
+      <div>
         <CatalogSelect name="category" label={t('category')} value={draft.category} placeholder={t('all')} options={categoriesOptions} onValueChange={(value) => set('category', value)} />
         {categoriesError && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">{locale === 'uz' ? 'Toifalarni yuklab bo‘lmadi.' : locale === 'en' ? 'Categories could not be loaded.' : 'Не удалось загрузить категории.'}</p>}
       </div>
-      <fieldset className="mt-5">
-        <legend className="text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('audience')}</legend>
+      <fieldset>
+        <legend className="text-xs font-semibold uppercase tracking-[.06em] text-[var(--color-muted)]">{t('audience')}</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {audiences.map(([value, label]) => (
             <Button key={value || 'all'} variant={draft.audience === value ? 'default' : 'outline'} type="button" aria-pressed={draft.audience === value} onClick={() => set('audience', value)} className="min-h-11 px-3 text-sm">{label}</Button>
           ))}
         </div>
       </fieldset>
-      <div className="mt-5">
+      <div>
         <CatalogSelect name="country" label={t('country')} value={draft.country} placeholder={t('allCountries')} options={countries.map(([value, label]) => ({ value, label }))} onValueChange={(value) => set('country', value)} />
       </div>
-      <div className="mt-5 grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1">
         <CatalogSelect name="size" label={t('size')} value={draft.size} placeholder={t('anySize')} options={[{ value: '', label: t('anySize') }, ...sizes.map((value) => ({ value, label: value }))]} onValueChange={(value) => set('size', value)} />
         <CatalogSelect name="color" label={t('color')} value={draft.color} placeholder={t('anyColor')} options={[{ value: '', label: t('anyColor') }, ...colors.map((value) => ({ value, label: value }))]} onValueChange={(value) => set('color', value)} />
       </div>
-      <label className="mt-5 flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)]">
+      <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)]">
         <input
           type="checkbox"
           checked={draft.saleOnly === 'true'}
@@ -167,12 +169,14 @@ function CatalogFilterDraft({
         <span>{t('saleOnly')}</span>
       </label>
       {facetsError && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">{locale === 'uz' ? 'O‘lcham va ranglar ro‘yxatini yuklab bo‘lmadi.' : locale === 'en' ? 'Available sizes and colors could not be loaded.' : 'Не удалось загрузить доступные размеры и цвета.'}</p>}
-      <p className="mt-5 text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('price')}</p>
-      <div className="mt-2 grid grid-cols-2 gap-2">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[.06em] text-[var(--color-muted)]">{t('price')}</p>
+        <div className="mt-2 grid grid-cols-2 gap-2">
         {(['minPrice', 'maxPrice'] as const).map((key) => <input key={key} className={controlClass} aria-label={key === 'minPrice' ? t('from') : t('to')} type="text" inputMode="decimal" value={draft[key]} onChange={(event) => set(key, event.target.value)} placeholder={key === 'minPrice' ? t('from') : t('to')} />)}
+        </div>
       </div>
       {filterError && <p className="mt-2 text-xs text-red-700 dark:text-red-300" role="alert">{filterError}</p>}
-      <div className="mt-5">
+      <div>
         <CatalogSelect
           name="sort"
           label={t('sort')}
@@ -187,7 +191,7 @@ function CatalogFilterDraft({
           onValueChange={(value) => set('sort', value)}
         />
       </div>
-      <div className={drawer?.stickyActions ? 'sticky bottom-0 z-10 -mx-4 mt-5 flex gap-2 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 pb-[calc(.75rem+env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0' : 'mt-5'}>
+      <div className={drawer?.stickyActions ? 'sticky bottom-0 z-10 -mx-4 mt-1 flex gap-2 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 pb-[calc(.75rem+env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0' : 'mt-1'}>
         <Button type="submit" loading={isPending} loadingLabel={t('applying')} className="w-full" aria-live="polite">{t('show')}</Button>
         <Button type="button" variant="outline" disabled={!active || isPending} onClick={reset} className="w-full">{t('reset')}</Button>
       </div>
