@@ -54,7 +54,7 @@ export function CatalogFilterLayout({
           <span>{t('filters')}</span>
         </Button>
       </div>
-      <div data-catalog-filters-visible={desktopOpen} className={desktopOpen ? 'grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)]' : 'grid gap-8'}>
+      <div data-catalog-filters-visible={desktopOpen} className={desktopOpen ? 'grid gap-6 lg:grid-cols-[19rem_minmax(0,1fr)]' : 'grid gap-6'}>
         {desktopOpen && <aside className="hidden lg:block">{filters}</aside>}
         <div className="min-w-0">{children}</div>
       </div>

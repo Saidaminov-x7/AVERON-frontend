@@ -153,9 +153,9 @@ function CatalogContent({
         <CatalogFilterLayout
           closeLabel={locale === "uz" ? "Yopish" : locale === "en" ? "Close" : "Закрыть"}
           filters={
-            <div className="catalog-filter-panel">
-              <div className="catalog-filter-panel__header">
-                <Filter className="text-[var(--color-text)]" size={16} />
+            <div className="sticky top-24 max-h-[calc(100dvh-7rem)] overflow-y-auto rounded-[12px] border border-[var(--color-border)] bg-[var(--color-bg)] p-4">
+              <div className="mb-4 flex items-center gap-2 border-b border-[var(--color-border)] pb-3 font-bold">
+                <Filter className="text-primary-700 dark:text-primary-300" size={18} />
                 {t("filters")}
               </div>
               <CatalogFilterControls locale={locale} categories={categories} categoriesError={categoriesError} facets={facets} facetsError={facetsError} />
@@ -181,7 +181,7 @@ function CatalogContent({
             {activeFilters.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-2" aria-label={t("activeFilters")}>
                 {activeFilters.map(([label, value], index) => (
-                  <span key={`${label}-${index}`} className="catalog-filter-chip inline-flex max-w-full items-center gap-1.5 px-2.5 py-1 text-xs font-medium">
+                  <span key={`${label}-${index}`} className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 dark:border-white/10 dark:bg-slate-800 dark:text-slate-200">
                     <span className="text-slate-500 dark:text-slate-400">{label}:</span>
                     <span className="truncate">{value}</span>
                   </span>
