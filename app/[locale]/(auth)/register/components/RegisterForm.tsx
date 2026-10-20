@@ -151,14 +151,14 @@ export function RegisterForm({ locale }: RegisterFormProps) {
         {settings?.googleAuthEnabled !== false && (
           <>
             <div className="relative my-4 flex items-center justify-center">
-              <div className="absolute w-full border-t border-gray-200 dark:border-gray-700" />
-              <span className="relative bg-white dark:bg-gray-900 px-4 text-sm text-gray-500">или</span>
+              <div className="absolute w-full border-t border-line dark:border-line" />
+              <span className="relative bg-white dark:bg-surface-soft px-4 text-sm text-muted">или</span>
             </div>
             <GoogleAuthButton locale={locale} />
           </>
         )}
       </CardContent>
-      <CardFooter className="text-sm text-stone-500 dark:text-stone-400">
+      <CardFooter className="text-sm text-muted dark:text-ink-soft">
         <p>
           {t('haveAccount')}{' '}
           <button

@@ -81,7 +81,7 @@ export default function DynamicPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-900 text-stone-300">
+      <div className="min-h-screen flex items-center justify-center bg-surface-soft text-ink-soft">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
           <span className="text-sm">Загрузка страницы...</span>
@@ -92,13 +92,13 @@ export default function DynamicPage() {
 
   if (error || !page) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-stone-900 text-stone-100 px-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-surface-soft text-ink-soft px-4">
         <div className="max-w-md w-full text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-red-500/10 text-red-400 mx-auto flex items-center justify-center border border-red-500/20">
+          <div className="w-16 h-16 rounded-full bg-surface-soft text-error mx-auto flex items-center justify-center border border-line">
             <AlertCircle size={32} />
           </div>
           <h1 className="text-2xl font-bold">404 — Страница не найдена</h1>
-          <p className="text-stone-400 text-sm">
+          <p className="text-ink-soft text-sm">
             {error || 'Запрашиваемая страница не существует или была снята с публикации.'}
           </p>
           <div>
@@ -117,28 +117,28 @@ export default function DynamicPage() {
   if (page.isUnderMaintenance) {
     return (
       <main className="mx-auto flex min-h-[50vh] max-w-2xl flex-col items-center justify-center px-4 py-16 text-center">
-        <AlertCircle className="mb-4 h-10 w-10 text-amber-500" />
-        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">Страница временно недоступна</h1>
-        <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">Мы обновляем этот раздел. Попробуйте зайти немного позже.</p>
+        <AlertCircle className="mb-4 h-10 w-10 text-warning" />
+        <h1 className="text-2xl font-bold text-ink dark:text-white">Страница временно недоступна</h1>
+        <p className="mt-3 text-sm text-muted dark:text-ink-soft">Мы обновляем этот раздел. Попробуйте зайти немного позже.</p>
       </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-surface-soft text-ink-soft py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <Link
           href={`/${locale}`}
-          className="inline-flex items-center gap-2 text-sm text-stone-400 hover:text-primary-400 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-primary-400 transition-colors"
         >
           <ArrowLeft size={16} /> Назад на сайт
         </Link>
 
-        <header className="border-b border-stone-800 pb-6 space-y-3">
+        <header className="border-b border-line pb-6 space-y-3">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             {page.title}
           </h1>
-          <div className="flex flex-wrap items-center gap-4 text-xs text-stone-400">
+          <div className="flex flex-wrap items-center gap-4 text-xs text-ink-soft">
             {page.author?.name && (
               <span className="flex items-center gap-1.5">
                 <User size={14} className="text-primary-500" />
@@ -146,7 +146,7 @@ export default function DynamicPage() {
               </span>
             )}
             <span className="flex items-center gap-1.5">
-              <Calendar size={14} className="text-stone-500" />
+              <Calendar size={14} className="text-muted" />
               {new Date(page.updatedAt).toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', {
                 year: 'numeric',
                 month: 'long',
@@ -159,7 +159,7 @@ export default function DynamicPage() {
         {sections.length > 0 ? (
           <DynamicSectionRenderer sections={sections} locale={locale} />
         ) : (
-          <article className="prose prose-invert prose-stone max-w-none text-stone-300 leading-relaxed space-y-4">
+          <article className="prose prose-invert prose-stone max-w-none text-ink-soft leading-relaxed space-y-4">
             <ReactMarkdown>{page.content}</ReactMarkdown>
           </article>
         )}

@@ -145,7 +145,7 @@ function CatalogContent({
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
-      <div className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
         <CatalogCountryDefaultResolver
           locale={locale}
           hasExplicitCountry={Object.prototype.hasOwnProperty.call(f, "country")}
@@ -181,27 +181,27 @@ function CatalogContent({
             {activeFilters.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-2" aria-label={t("activeFilters")}>
                 {activeFilters.map(([label, value], index) => (
-                  <span key={`${label}-${index}`} className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 dark:border-white/10 dark:bg-slate-800 dark:text-slate-200">
-                    <span className="text-slate-500 dark:text-slate-400">{label}:</span>
+                  <span key={`${label}-${index}`} className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface-soft px-3 py-1 text-xs font-medium text-ink-soft dark:border-white/10 dark:bg-surface-soft dark:text-ink-soft">
+                    <span className="text-muted dark:text-ink-soft">{label}:</span>
                     <span className="truncate">{value}</span>
                   </span>
                 ))}
               </div>
             ) : null}
             {catalogError ? (
-              <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-6 py-14 text-center dark:border-amber-900/60 dark:bg-amber-950/20" role="alert">
+              <div className="mt-5 rounded-2xl border border-line bg-surface-soft px-6 py-14 text-center dark:border-line dark:bg-surface-soft" role="alert">
                 <h2 className="text-xl font-bold">
                   {locale === "uz" ? "Mahsulotlarni yuklab bo‘lmadi" : locale === "en" ? "Products could not be loaded" : "Не удалось загрузить товары"}
                 </h2>
-                <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
+                <p className="mt-2 text-sm text-muted dark:text-ink-soft">
                   {locale === "uz" ? "Iltimos, birozdan so‘ng qayta urinib ko‘ring." : locale === "en" ? "Please try again in a moment." : "Попробуйте обновить страницу чуть позже."}
                 </p>
-                <Link href={`/${locale}/catalog${catalogQuery ? `?${catalogQuery}` : ""}`} className="mt-5 inline-flex h-11 items-center justify-center rounded-xl bg-primary-700 px-5 text-sm font-bold text-white">
+                <Link href={`/${locale}/catalog${catalogQuery ? `?${catalogQuery}` : ""}`} className="averon-primary-button mt-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 ring-offset-[var(--color-bg)]">
                   {locale === "uz" ? "Qayta urinish" : locale === "en" ? "Try again" : "Повторить"}
                 </Link>
               </div>
             ) : products.length ? (
-              <div className="catalog-product-grid mt-5 grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:gap-x-5 2xl:grid-cols-4">
+              <div className="catalog-product-grid mt-5 grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:gap-x-5 min-[1400px]:grid-cols-4">
                 {products.map((p) => (
                   <ProductCard
                     key={p.id}
@@ -212,10 +212,10 @@ function CatalogContent({
                 ))}
               </div>
             ) : (
-              <div className="mt-5 rounded-2xl border border-dashed border-stone-300 bg-white px-6 py-16 text-center dark:border-white/15 dark:bg-stone-900">
+              <div className="mt-5 rounded-2xl border border-dashed border-line bg-white px-6 py-16 text-center dark:border-white/15 dark:bg-surface-soft">
                 <Search className="mx-auto text-primary-700 dark:text-primary-300" size={36} />
                 <h2 className="mt-4 text-xl font-bold">{t("empty")}</h2>
-                <p className="mt-2 text-sm text-stone-500">{t("emptyText")}</p>
+                <p className="mt-2 text-sm text-muted">{t("emptyText")}</p>
               </div>
             )}
             {!catalogError && pageCount > 1 ? (
@@ -224,18 +224,18 @@ function CatalogContent({
                   href={pageHref(page - 1)}
                   aria-disabled={page <= 1}
                   tabIndex={page <= 1 ? -1 : undefined}
-                  className={`inline-flex h-10 items-center rounded-xl border px-4 text-sm font-semibold ${page <= 1 ? "pointer-events-none opacity-40" : "hover:border-primary-600 hover:text-primary-700"} border-stone-300 dark:border-white/15`}
+                  className={`inline-flex h-10 items-center rounded-xl border px-4 text-sm font-semibold ${page <= 1 ? "pointer-events-none opacity-40" : "hover:border-primary-600 hover:text-primary-700"} border-line dark:border-white/15`}
                 >
                   {locale === "en" ? "Previous" : locale === "uz" ? "Oldingi" : "Назад"}
                 </Link>
-                <span className="min-w-16 text-center text-sm text-stone-500">
+                <span className="min-w-16 text-center text-sm text-muted">
                   {page} / {pageCount}
                 </span>
                 <Link
                   href={pageHref(page + 1)}
                   aria-disabled={page >= pageCount}
                   tabIndex={page >= pageCount ? -1 : undefined}
-                  className={`inline-flex h-10 items-center rounded-xl border px-4 text-sm font-semibold ${page >= pageCount ? "pointer-events-none opacity-40" : "hover:border-primary-600 hover:text-primary-700"} border-stone-300 dark:border-white/15`}
+                  className={`inline-flex h-10 items-center rounded-xl border px-4 text-sm font-semibold ${page >= pageCount ? "pointer-events-none opacity-40" : "hover:border-primary-600 hover:text-primary-700"} border-line dark:border-white/15`}
                 >
                   {locale === "en" ? "Next" : locale === "uz" ? "Keyingi" : "Дальше"}
                 </Link>

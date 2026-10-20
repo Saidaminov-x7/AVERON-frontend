@@ -25,7 +25,7 @@ export function SearchInput({ locale, className = '', placeholder = 'Поиск.
   return (
     <form onSubmit={handleSubmit} className={`relative flex items-center w-full ${className}`}>
       <div className="absolute left-0 pl-4 flex items-center pointer-events-none">
-        <Search className="h-4.5 w-4.5 text-stone-400" />
+        <Search className="h-4.5 w-4.5 text-ink-soft" />
       </div>
       
       <input
@@ -41,7 +41,7 @@ export function SearchInput({ locale, className = '', placeholder = 'Поиск.
         <button
           type="button"
           onClick={() => setQuery('')}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:text-stone-300"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-muted dark:text-ink-soft"
         >
           <X size={16} />
         </button>

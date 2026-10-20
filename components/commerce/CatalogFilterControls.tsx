@@ -23,7 +23,7 @@ type FilterValues = {
 };
 
 const keys = ['q', 'category', 'audience', 'country', 'size', 'color', 'minPrice', 'maxPrice', 'saleOnly', 'sort'] as const;
-const controlClass = 'h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-primary-600/15';
+const controlClass = 'h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/15';
 
 function valuesFromSearch(search: URLSearchParams): FilterValues {
   return Object.fromEntries(keys.map((key) => [key, search.get(key) ?? (key === 'sort' ? 'newest' : '')])) as FilterValues;
@@ -140,38 +140,48 @@ function CatalogFilterDraft({
       <input id={`${id}-search`} className={`${controlClass} mt-2`} value={draft.q} onChange={(event) => set('q', event.target.value)} placeholder={t('placeholder')} />
       <div className="mt-5">
         <CatalogSelect name="category" label={t('category')} value={draft.category} placeholder={t('all')} options={categoriesOptions} onValueChange={(value) => set('category', value)} />
-        {categoriesError && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">{locale === 'uz' ? 'Toifalarni yuklab bo‘lmadi.' : locale === 'en' ? 'Categories could not be loaded.' : 'Не удалось загрузить категории.'}</p>}
+        {categoriesError && <p className="mt-2 text-xs text-warning dark:text-warning" role="status">{t('categoriesUnavailable')}</p>}
       </div>
       <fieldset className="mt-5">
         <legend className="text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('audience')}</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {audiences.map(([value, label]) => (
-            <Button key={value || 'all'} variant={draft.audience === value ? 'default' : 'outline'} type="button" aria-pressed={draft.audience === value} onClick={() => set('audience', value)} className="min-h-11 px-3 text-sm">{label}</Button>
+            <button
+              key={value || 'all'}
+              type="button"
+              aria-pressed={draft.audience === value}
+              onClick={() => set('audience', value)}
+              className={`min-h-11 border-b px-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] ${draft.audience === value ? 'border-[var(--color-text)] font-semibold text-[var(--color-text)]' : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]'}`}
+            >
+              {label}
+            </button>
           ))}
         </div>
       </fieldset>
       <div className="mt-5">
         <CatalogSelect name="country" label={t('country')} value={draft.country} placeholder={t('allCountries')} options={countries.map(([value, label]) => ({ value, label }))} onValueChange={(value) => set('country', value)} />
       </div>
-      <div className="mt-5 grid grid-cols-2 gap-2">
-        <CatalogSelect name="size" label={t('size')} value={draft.size} placeholder={t('anySize')} options={[{ value: '', label: t('anySize') }, ...sizes.map((value) => ({ value, label: value }))]} onValueChange={(value) => set('size', value)} />
-        <CatalogSelect name="color" label={t('color')} value={draft.color} placeholder={t('anyColor')} options={[{ value: '', label: t('anyColor') }, ...colors.map((value) => ({ value, label: value }))]} onValueChange={(value) => set('color', value)} />
+      <div className="@container mt-5 [&_.averon-control-button]:h-auto [&_.averon-control-button]:min-h-11 [&_.averon-control-button]:py-2 [&_.averon-control-button>span.truncate]:min-w-0 [&_.averon-control-button>span.truncate]:flex-1 [&_.averon-control-button>span.truncate]:whitespace-normal [&_.averon-control-button>span.truncate]:break-words [&_.averon-control-button>span.truncate]:[overflow:visible] [&_.averon-control-button>span.truncate]:[text-overflow:clip]">
+        <div className="grid grid-cols-1 gap-2 @[336px]:grid-cols-2">
+          <CatalogSelect name="size" label={t('size')} value={draft.size} placeholder={t('anySize')} options={[{ value: '', label: t('anySize') }, ...sizes.map((value) => ({ value, label: value }))]} onValueChange={(value) => set('size', value)} />
+          <CatalogSelect name="color" label={t('color')} value={draft.color} placeholder={t('anyColor')} options={[{ value: '', label: t('anyColor') }, ...colors.map((value) => ({ value, label: value }))]} onValueChange={(value) => set('color', value)} />
+        </div>
       </div>
       <label className="mt-5 flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)]">
         <input
           type="checkbox"
           checked={draft.saleOnly === 'true'}
           onChange={(event) => set('saleOnly', event.target.checked ? 'true' : '')}
-          className="size-4 accent-[var(--color-primary)]"
+          className="size-4 accent-[var(--color-accent)]"
         />
         <span>{t('saleOnly')}</span>
       </label>
-      {facetsError && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300" role="status">{locale === 'uz' ? 'O‘lcham va ranglar ro‘yxatini yuklab bo‘lmadi.' : locale === 'en' ? 'Available sizes and colors could not be loaded.' : 'Не удалось загрузить доступные размеры и цвета.'}</p>}
+      {facetsError && <p className="mt-2 text-xs text-warning dark:text-warning" role="status">{t('facetsUnavailable')}</p>}
       <p className="mt-5 text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('price')}</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
         {(['minPrice', 'maxPrice'] as const).map((key) => <input key={key} className={controlClass} aria-label={key === 'minPrice' ? t('from') : t('to')} type="text" inputMode="decimal" value={draft[key]} onChange={(event) => set(key, event.target.value)} placeholder={key === 'minPrice' ? t('from') : t('to')} />)}
       </div>
-      {filterError && <p className="mt-2 text-xs text-red-700 dark:text-red-300" role="alert">{filterError}</p>}
+      {filterError && <p className="mt-2 text-xs text-error dark:text-error" role="alert">{filterError}</p>}
       <div className="mt-5">
         <CatalogSelect
           name="sort"
@@ -187,9 +197,9 @@ function CatalogFilterDraft({
           onValueChange={(value) => set('sort', value)}
         />
       </div>
-      <div className={drawer?.stickyActions ? 'sticky bottom-0 z-10 -mx-4 mt-5 flex gap-2 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 pb-[calc(.75rem+env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0' : 'mt-5'}>
-        <Button type="submit" loading={isPending} loadingLabel={t('applying')} className="w-full" aria-live="polite">{t('show')}</Button>
-        <Button type="button" variant="outline" disabled={!active || isPending} onClick={reset} className="w-full">{t('reset')}</Button>
+      <div className={drawer?.stickyActions ? 'sticky bottom-0 z-10 -mx-4 mt-5 flex flex-col gap-2 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 pb-[calc(.75rem+env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:flex-row sm:border-0 sm:bg-transparent sm:p-0' : 'mt-5'}>
+        <Button type="submit" size="lg" loading={isPending} loadingLabel={t('applying')} className="w-full" aria-live="polite">{t('show')}</Button>
+        <Button type="button" variant="outline" size="lg" disabled={!active || isPending} onClick={reset} className="w-full">{t('reset')}</Button>
       </div>
     </form>
   );

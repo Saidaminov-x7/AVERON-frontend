@@ -8,7 +8,7 @@ export function SmsUnavailableNotice({ locale }: { locale: string }) {
       : 'Подтверждение по SMS сейчас недоступно. Попробуйте позже.';
 
   return (
-    <p className="rounded-xl border border-default bg-warning px-4 py-3 text-sm text-warning" role="status">
+    <p className="rounded-xl border border-line bg-surface-soft px-4 py-3 text-sm text-warning" role="status">
       {message}
     </p>
   );

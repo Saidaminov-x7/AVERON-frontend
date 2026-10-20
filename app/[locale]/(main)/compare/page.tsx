@@ -41,17 +41,17 @@ export default function ComparePage() {
 
   if (loading)
     return (
-      <div className="flex min-h-[60dvh] items-center justify-center gap-3 text-stone-500">
+      <div className="flex min-h-[60dvh] items-center justify-center gap-3 text-muted">
         <LoaderCircle className="animate-spin" />
         {t("loading")}
       </div>
     );
   if (error)
     return (
-      <div className="mx-auto max-w-3xl px-4 py-20 text-center text-red-500">
+      <div className="mx-auto max-w-3xl px-4 py-20 text-center text-error">
         <div>
           <p>{error}</p>
-          <button type="button" onClick={() => window.location.reload()} className="mt-4 rounded-lg border border-stone-300 px-4 py-2 text-sm font-semibold dark:border-white/15">
+          <button type="button" onClick={() => window.location.reload()} className="mt-4 rounded-lg border border-line px-4 py-2 text-sm font-semibold dark:border-white/15">
             {t("retry")}
           </button>
         </div>
@@ -62,7 +62,7 @@ export default function ComparePage() {
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
         <Scale size={42} className="mx-auto text-primary-700" />
         <h1 className="mt-5 text-2xl font-bold">{t("emptyTitle")}</h1>
-        <p className="mt-2 text-stone-500">
+        <p className="mt-2 text-muted">
           {t("emptyBody")}
         </p>
         <Link
@@ -116,13 +116,13 @@ export default function ComparePage() {
         </div>
         <button
           onClick={clear}
-          className="inline-flex h-11 items-center gap-2 rounded-xl border border-red-500/30 px-4 text-sm font-semibold text-red-500"
+          className="inline-flex h-11 items-center gap-2 rounded-xl border border-line px-4 text-sm font-semibold text-error"
         >
           <Trash2 size={16} />
           {t("clear")}
         </button>
       </div>
-      <div className="mt-8 overflow-x-auto rounded-2xl border border-stone-200 dark:border-white/10">
+      <div className="mt-8 overflow-x-auto rounded-2xl border border-line dark:border-white/10">
         <div
           style={{
             minWidth: `${Math.max(720, 180 + products.length * 230)}px`,
@@ -134,13 +134,13 @@ export default function ComparePage() {
               gridTemplateColumns: `180px repeat(${products.length}, minmax(210px, 1fr))`,
             }}
           >
-            <div className="border-b border-r border-stone-200 p-4 font-bold dark:border-white/10">
+            <div className="border-b border-r border-line p-4 font-bold dark:border-white/10">
               {t("product")}
             </div>
             {products.map((product) => (
               <div
                 key={product.id}
-                className="relative border-b border-r border-stone-200 p-4 dark:border-white/10"
+                className="relative border-b border-r border-line p-4 dark:border-white/10"
               >
                 <button
                   onClick={() => remove(product.id)}
@@ -149,7 +149,7 @@ export default function ComparePage() {
                 >
                   <X size={16} />
                 </button>
-                <div className="h-40 overflow-hidden rounded-xl bg-stone-100 dark:bg-stone-800">
+                <div className="h-40 overflow-hidden rounded-xl bg-surface-soft dark:bg-surface-soft">
                   <ProductImage
                     src={product.images?.[0]?.url}
                     alt={productTitle(product, locale)}
@@ -169,14 +169,14 @@ export default function ComparePage() {
             {rows.flatMap(([label, getValue]) => [
               <div
                 key={`${label}-label`}
-                className="border-b border-r border-stone-200 p-4 text-sm font-semibold text-stone-500 dark:border-white/10"
+                className="border-b border-r border-line p-4 text-sm font-semibold text-muted dark:border-white/10"
               >
                 {label}
               </div>,
               ...products.map((product) => (
                 <div
                   key={`${label}-${product.id}`}
-                  className="border-b border-r border-stone-200 p-4 text-sm dark:border-white/10"
+                  className="border-b border-r border-line p-4 text-sm dark:border-white/10"
                 >
                   {getValue(product)}
                 </div>

@@ -77,7 +77,7 @@ export function SmartBackButton({ fallbackHref, label: explicitLabel, variant = 
     ? 'averon-primary-button'
     : variant === 'secondary'
       ? 'averon-secondary-button'
-      : 'inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-semibold text-stone-600 transition-colors hover:text-stone-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:text-stone-300 dark:hover:text-white';
+      : 'inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-semibold text-muted transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:text-ink-soft dark:hover:text-white';
   return (
     <button
       type="button"

@@ -58,7 +58,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
   if (step === 'done') {
     return (
       <div className="space-y-6 text-center">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400"><LockKeyhole aria-hidden="true" /></div>
+        <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-surface-soft text-success"><LockKeyhole aria-hidden="true" /></div>
         <h1 className="text-2xl font-bold text-white">{t.done}</h1>
         <Link href={`/${locale}/login`} className="flex h-12 items-center justify-center rounded-xl bg-primary-600 font-semibold text-white">{t.login}</Link>
       </div>
@@ -69,31 +69,31 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">{t.title}</h1>
-        <p className="mt-2 text-sm text-stone-400">{step === 'phone' ? t.intro : `${t.code} ${phone}`}</p>
+        <p className="mt-2 text-sm text-ink-soft">{step === 'phone' ? t.intro : `${t.code} ${phone}`}</p>
       </div>
-      {smsAvailable === false ? <SmsUnavailableNotice locale={locale} /> : smsAvailable === null ? <p className="text-sm text-stone-400" role="status">{t.checking}</p> : null}
-      {error ? <div className="flex gap-2 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400" role="alert"><AlertCircle size={17} aria-hidden="true" />{error}</div> : null}
+      {smsAvailable === false ? <SmsUnavailableNotice locale={locale} /> : smsAvailable === null ? <p className="text-sm text-ink-soft" role="status">{t.checking}</p> : null}
+      {error ? <div className="flex gap-2 rounded-xl border border-line bg-surface-soft p-3 text-sm text-error" role="alert"><AlertCircle size={17} aria-hidden="true" />{error}</div> : null}
       <form onSubmit={(event) => void submit(event)} className="space-y-4">
         {step === 'phone' ? (
           <label className="block">
-            <span className="text-xs font-semibold uppercase text-stone-400">{t.phone}</span>
+            <span className="text-xs font-semibold uppercase text-ink-soft">{t.phone}</span>
             <div className="relative mt-2">
-              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500" size={17} aria-hidden="true" />
+              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" size={17} aria-hidden="true" />
               <input value={phone} onChange={(event) => setPhone(event.target.value)} inputMode="tel" autoComplete="tel" className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-11 pr-4 text-white outline-none focus:border-primary-500" />
             </div>
           </label>
         ) : (
           <>
             <label className="block">
-              <span className="text-xs font-semibold uppercase text-stone-400">{t.sms}</span>
+              <span className="text-xs font-semibold uppercase text-ink-soft">{t.sms}</span>
               <input value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" className="mt-2 h-14 w-full rounded-xl border border-white/10 bg-white/5 text-center text-2xl font-bold tracking-[.4em] text-white outline-none focus:border-primary-500" />
             </label>
             {[t.password, t.confirm].map((label, index) => (
               <label key={label} className="block">
-                <span className="text-xs font-semibold uppercase text-stone-400">{label}</span>
+                <span className="text-xs font-semibold uppercase text-ink-soft">{label}</span>
                 <div className="relative mt-2">
                   <input type={show ? 'text' : 'password'} value={index ? confirm : password} onChange={(event) => index ? setConfirm(event.target.value) : setPassword(event.target.value)} autoComplete={index ? 'new-password' : 'new-password'} className="h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-11 text-white outline-none focus:border-primary-500" />
-                  {index === 0 ? <button type="button" onClick={() => setShow((visible) => !visible)} aria-label={show ? 'Hide password' : 'Show password'} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm text-stone-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{show ? <EyeOff size={17} /> : <Eye size={17} />}</button> : null}
+                  {index === 0 ? <button type="button" onClick={() => setShow((visible) => !visible)} aria-label={show ? 'Hide password' : 'Show password'} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{show ? <EyeOff size={17} /> : <Eye size={17} />}</button> : null}
                 </div>
               </label>
             ))}
@@ -109,7 +109,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
           {smsAvailable === false ? t.unavailable : step === 'phone' ? t.send : t.save}
         </Button>
       </form>
-      {step === 'code' ? <button type="button" onClick={() => setStep('phone')} className="mx-auto flex min-h-10 items-center gap-2 rounded-sm text-sm text-stone-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"><ArrowLeft size={15} aria-hidden="true" />{t.back}</button> : null}
+      {step === 'code' ? <button type="button" onClick={() => setStep('phone')} className="mx-auto flex min-h-10 items-center gap-2 rounded-sm text-sm text-ink-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"><ArrowLeft size={15} aria-hidden="true" />{t.back}</button> : null}
     </div>
   );
 }

@@ -107,18 +107,18 @@ export default function AIAssistant() {
     e.preventDefault();
     void submit();
   };
-  if (authLoading || (canUseAI && historyLoading)) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white dark:bg-stone-900"><span className="text-sm text-stone-500">AVERON…</span></main>;
-  if (!canUseAI) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white p-6 dark:bg-stone-900"><div className="max-w-md text-center"><Bot className="mx-auto mb-4 text-primary-500" size={42}/><h1 className="text-xl font-bold text-stone-900 dark:text-white">AVERON AI</h1><p className="mt-2 text-sm text-stone-500">{tSignedOut("signInPrompt")}</p><Link href={`/${locale}/login`} className="mt-5 inline-flex h-11 items-center rounded-xl bg-primary-600 px-6 font-semibold text-white">{tSignedOut("signIn")}</Link></div></main>;
+  if (authLoading || (canUseAI && historyLoading)) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white dark:bg-surface-soft"><span className="text-sm text-muted">AVERON…</span></main>;
+  if (!canUseAI) return <main className="flex h-[calc(100dvh-80px)] items-center justify-center bg-white p-6 dark:bg-surface-soft"><div className="max-w-md text-center"><Bot className="mx-auto mb-4 text-primary-500" size={42}/><h1 className="text-xl font-bold text-ink dark:text-white">AVERON AI</h1><p className="mt-2 text-sm text-muted">{tSignedOut("signInPrompt")}</p><Link href={`/${locale}/login`} className="mt-5 inline-flex h-11 items-center rounded-xl bg-primary-600 px-6 font-semibold text-white">{tSignedOut("signIn")}</Link></div></main>;
   return (
-    <main className="flex h-[calc(100dvh-80px)] w-full overflow-hidden bg-white text-stone-950 dark:bg-stone-900 dark:text-white">
+    <main className="flex h-[calc(100dvh-80px)] w-full overflow-hidden bg-white text-ink dark:bg-surface-soft dark:text-white">
       <section className="flex h-full w-full flex-col">
-        <header className="flex items-center gap-3 border-b border-stone-200 p-4 dark:border-white/10 sm:px-6">
+        <header className="flex items-center gap-3 border-b border-line p-4 dark:border-white/10 sm:px-6">
           <div className="flex size-11 items-center justify-center rounded-xl bg-primary-600 text-white">
             <Bot size={22} />
           </div>
           <div>
             <h1 className="font-bold">AVERON AI</h1>
-            <p className="text-xs text-stone-500">{t.sub}</p>
+            <p className="text-xs text-muted">{t.sub}</p>
           </div>
         </header>
         <div className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-6">
@@ -128,22 +128,22 @@ export default function AIAssistant() {
               className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-6 ${m.role === "user" ? "bg-primary-600 text-white" : "bg-stone-100 dark:bg-stone-800"}`}
+                className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-6 ${m.role === "user" ? "bg-primary-600 text-white" : "bg-surface-soft dark:bg-surface-soft"}`}
               >
                 {m.content}
               </div>
             </div>
           ))}
-          {loading && <div className="text-sm text-stone-400">{t.busy}</div>}
+          {loading && <div className="text-sm text-ink-soft">{t.busy}</div>}
           <div ref={endRef} />
         </div>
-        <div className="border-t border-stone-200 p-3 dark:border-white/10 sm:p-4">
+        <div className="border-t border-line p-3 dark:border-white/10 sm:p-4">
           <div className="mb-3 flex gap-2 overflow-x-auto">
             {t.suggestions.map((x) => (
               <button
                 key={x}
                 onClick={() => void submit(x)}
-                className="whitespace-nowrap rounded-full border border-stone-300 px-3 py-2 text-xs dark:border-white/15"
+                className="whitespace-nowrap rounded-full border border-line px-3 py-2 text-xs dark:border-white/15"
               >
                 <Sparkles className="mr-1 inline" size={13} />
                 {x}
@@ -155,7 +155,7 @@ export default function AIAssistant() {
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder={t.placeholder}
-              className="h-12 flex-1 rounded-xl border border-stone-300 bg-transparent px-4 text-sm outline-none focus:border-primary-500 dark:border-white/15"
+              className="h-12 flex-1 rounded-xl border border-line bg-transparent px-4 text-sm outline-none focus:border-primary-500 dark:border-white/15"
             />
             <button
               disabled={loading}

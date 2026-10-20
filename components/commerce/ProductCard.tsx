@@ -6,6 +6,7 @@ import { ProductImage } from './ProductImage';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { productPlainText, productRouteId, productTitle, type StoreProduct } from '@/lib/products';
+import { resolveProductAssetUrl } from '@/lib/product-images';
 import { ProductRichText } from './ProductRichText';
 import { addWishlistItem, removeWishlistItem } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
@@ -42,7 +43,7 @@ export function ProductCard({
   const title = productTitle(product, locale);
   const plainTitle = productPlainText(title);
   const productHref = `/${locale}/catalog/${encodeURIComponent(productRouteId(product))}${catalogQuery ? `?${catalogQuery}` : ''}`;
-  const images = product.images?.map(({ url }) => url).filter(Boolean) ?? [];
+  const images = product.images?.map(({ url }) => resolveProductAssetUrl(url)).filter(Boolean) ?? [];
   const [imageIndex, setImageIndex] = useState(0);
   const [secondImageAvailable, setSecondImageAvailable] = useState(Boolean(images[1]));
   const price = Number(product.salePriceUzs || 0).toLocaleString(locale === 'en' ? 'en-US' : 'ru-RU');
@@ -161,7 +162,7 @@ export function ProductCard({
             src={images[imageIndex] || images[0]}
             alt={plainTitle}
             zoomOnHover={false}
-            fit="contain"
+            fit="cover"
             onError={imageIndex === 1 ? () => {
               setSecondImageAvailable(false);
               setImageIndex(0);
@@ -191,11 +192,11 @@ export function ProductCard({
             {discountPercent !== null ? <span aria-label={discountLabel} className="text-[10px] font-bold uppercase tracking-[.04em] text-[var(--color-sale)]">−{discountPercent}%</span> : null}
             {isNew ? <span className="text-[10px] font-bold uppercase tracking-[.04em] text-[var(--color-text)]">{newLabel}</span> : null}
           </div>
-          <p className="line-clamp-2 text-[13px] font-normal leading-[1.35] text-[var(--color-text)] sm:text-[15px]">
+          <p className="line-clamp-2 text-sm font-normal leading-[1.4] text-[var(--color-text)] sm:text-[15px]">
             <ProductRichText content={title} inline />
           </p>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <strong className={`text-sm font-semibold tabular-nums tracking-tight ${discountPercent !== null ? 'text-[var(--color-sale)]' : 'text-[var(--color-text)]'}`}>{price} {currency}</strong>
+            <strong className={`text-base font-semibold tabular-nums tracking-tight ${discountPercent !== null ? 'text-[var(--color-sale)]' : 'text-[var(--color-text)]'}`}>{price} {currency}</strong>
             {discountPercent !== null ? <span className="text-xs tabular-nums text-[var(--color-muted)] line-through">{compareAtPrice.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')} {currency}</span> : null}
           </div>
         </div>
@@ -226,7 +227,7 @@ export function ProductCard({
           <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
         </button>
       </div>
-      {favoriteError && <p role="alert" className="mt-2 px-1 text-xs text-rose-700 dark:text-rose-300">{locale === 'uz' ? 'Tanlanganlarni yangilab bo‘lmadi.' : locale === 'en' ? 'Could not update wishlist.' : 'Не удалось обновить избранное.'}</p>}
+      {favoriteError && <p role="alert" className="mt-2 px-1 text-xs text-error dark:text-error">{locale === 'uz' ? 'Tanlanganlarni yangilab bo‘lmadi.' : locale === 'en' ? 'Could not update wishlist.' : 'Не удалось обновить избранное.'}</p>}
       {compareLimitError && <p role="status" className="mt-2 px-1 text-xs text-[var(--color-text-secondary)]">{labels.compareLimit}</p>}
     </article>
   );

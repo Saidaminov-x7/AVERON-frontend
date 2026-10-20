@@ -105,13 +105,13 @@ export function CatalogAiSearch({
   const chips = result ? intentChips(result.intent, locale) : [];
 
   return (
-    <section className="mt-6 rounded-2xl border border-primary-200 bg-gradient-to-br from-white to-primary-50/60 p-5 shadow-sm dark:border-primary-900/60 dark:from-stone-900 dark:to-primary-950/20" aria-labelledby="ai-catalog-search-title">
+    <section className="mt-6 rounded-2xl border border-primary-200 bg-gradient-to-br from-white to-primary-50/60 p-5 shadow-sm dark:border-primary-900/60 dark:from-primary dark:to-primary-950/20" aria-labelledby="ai-catalog-search-title">
       <h2 id="ai-catalog-search-title" className="text-xl font-extrabold">{t("aiSearchTitle")}</h2>
-      <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">{t("aiSearchIntro")}</p>
-      {!providerConfigured ? <p className="mt-3 text-sm text-amber-800 dark:text-amber-300" role="status">{t("aiSearchProviderMissing")}</p> : null}
+      <p className="mt-1 text-sm text-muted dark:text-ink-soft">{t("aiSearchIntro")}</p>
+      {!providerConfigured ? <p className="mt-3 text-sm text-warning dark:text-warning" role="status">{t("aiSearchProviderMissing")}</p> : null}
       <form onSubmit={submit} className="mt-4 flex flex-col gap-2 sm:flex-row">
         <input
-          className="h-12 min-w-0 flex-1 rounded-xl border border-stone-300 bg-white px-4 text-sm outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-600/15 dark:border-white/15 dark:bg-stone-950"
+          className="h-12 min-w-0 flex-1 rounded-xl border border-line bg-white px-4 text-sm outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-600/15 dark:border-white/15 dark:bg-surface-soft"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder={t("aiSearchPlaceholder")}
@@ -129,9 +129,9 @@ export function CatalogAiSearch({
       </form>
 
       {loading ? <p className="mt-4 text-sm" role="status" aria-live="polite">{t("aiSearchLoading")}</p> : null}
-      {disabled ? <p className="mt-4 text-sm text-amber-800 dark:text-amber-300" role="status">{t("aiSearchError")}</p> : null}
-      {error ? <p className="mt-4 text-sm text-red-700 dark:text-red-300" role="alert">{t("aiSearchError")}</p> : null}
-      {result?.meta.fallbackUsed ? <p className="mt-4 text-sm text-amber-800 dark:text-amber-300" role="status">{t("aiSearchFallback")}</p> : null}
+      {disabled ? <p className="mt-4 text-sm text-warning dark:text-warning" role="status">{t("aiSearchError")}</p> : null}
+      {error ? <p className="mt-4 text-sm text-error dark:text-error" role="alert">{t("aiSearchError")}</p> : null}
+      {result?.meta.fallbackUsed ? <p className="mt-4 text-sm text-warning dark:text-warning" role="status">{t("aiSearchFallback")}</p> : null}
       {result && chips.length > 0 ? (
         <div className="mt-4 flex flex-wrap gap-2" aria-label={t("aiSearchResults")}>
           {chips.map((chip, index) => (
@@ -140,14 +140,14 @@ export function CatalogAiSearch({
               type="button"
               onClick={() => removeChip(chip)}
               aria-label={`${t("aiSearchRemoveFilter")}: ${chip.label}`}
-              className="rounded-full border border-primary-200 bg-white px-3 py-1.5 text-xs font-semibold text-primary-900 hover:border-primary-500 dark:border-primary-900 dark:bg-stone-900 dark:text-primary-200"
+              className="rounded-full border border-primary-200 bg-white px-3 py-1.5 text-xs font-semibold text-primary-900 hover:border-primary-500 dark:border-primary-900 dark:bg-surface-soft dark:text-primary-200"
             >
               {chip.label} <span aria-hidden="true">×</span>
             </button>
           ))}
         </div>
       ) : null}
-      {result && result.items.length === 0 ? <p className="mt-4 text-sm text-stone-600 dark:text-stone-300" role="status">{t("aiSearchEmpty")}</p> : null}
+      {result && result.items.length === 0 ? <p className="mt-4 text-sm text-muted dark:text-ink-soft" role="status">{t("aiSearchEmpty")}</p> : null}
       {result && result.items.length > 0 ? (
         <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4" aria-live="polite">
           {result.items.map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}

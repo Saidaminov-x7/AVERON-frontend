@@ -166,7 +166,7 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
               }
             >
               <span className="ml-2 flex-1">{label}</span>
-              <span className="text-[10px] text-stone-400">{short}</span>
+              <span className="text-[10px] text-ink-soft">{short}</span>
             </button>
           );
         })}
@@ -356,11 +356,11 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
   if (isAuthPage) {
     return (
-      <header className="sticky top-0 z-40 flex h-[calc(5rem+env(safe-area-inset-top))] w-full items-center border-b border-stone-200/80 bg-white/95 pt-[env(safe-area-inset-top)] dark:border-white/10 dark:bg-[#1A1A1A]/95 sm:h-20 sm:pt-0">
+      <header className="sticky top-0 z-40 flex h-[calc(5rem+env(safe-area-inset-top))] w-full items-center border-b border-line bg-surface/95 pt-[env(safe-area-inset-top)] dark:border-white/10 dark:bg-surface/95 sm:h-20 sm:pt-0">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href={to('/')}
-            className="flex items-center gap-1.5 rounded-sm text-sm text-stone-400 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            className="flex items-center gap-1.5 rounded-sm text-sm text-ink-soft transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
             <div className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
             <span className="font-semibold tracking-tight text-[var(--color-text)]">AVERON</span>
@@ -393,7 +393,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               href={to('/')}
               className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
             >
-              <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">AVERON</span>
+              <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-ink dark:text-white">AVERON</span>
             </Link>
 
             <nav className="hidden items-center gap-0.5 lg:flex" aria-label={t('menu')}>
@@ -405,7 +405,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                       'whitespace-nowrap border-b-2 border-transparent px-2.5 py-2 text-[13px] font-semibold transition-colors ' +
                       (isActive(href)
                         ? 'border-[var(--color-text)] text-[var(--color-text)]'
-                        : 'text-stone-600 hover:text-stone-950 dark:text-stone-400 dark:hover:text-white')
+                        : 'text-muted hover:text-ink dark:text-ink-soft dark:hover:text-white')
                     }
                   >
                     {label}
@@ -541,7 +541,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         {searchOpen && (
           <div id="mobile-header-search" className="averon-menu-surface absolute inset-x-4 top-full z-50 p-3 lg:hidden">
             <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
-              <Search size={16} className="pointer-events-none absolute left-3 text-stone-400" />
+              <Search size={16} className="pointer-events-none absolute left-3 text-ink-soft" />
               <input
                 ref={inputRef}
                 type="search"
@@ -553,7 +553,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               />
             </form>
             {suggestions.length > 0 && (
-              <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-stone-200 dark:border-white/10">
+              <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-line dark:border-white/10">
                 {suggestions.map((item, i) => (
                   <button
                     key={`${item.href}-${i}`}

@@ -255,13 +255,13 @@ export function AddToCart({
   return (
     <div className="mt-4 space-y-4">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1" aria-live="polite">
-        <p className="text-3xl font-bold tracking-tight text-[var(--color-text)]">
+        <p className="text-2xl font-semibold tracking-tight text-[var(--color-text)]">
           {formatUzs(selectedPrice, locale, text.currency)}
         </p>
         {showCompareAtPrice && (
           <>
             <del className="text-sm text-[var(--color-muted)]">{formatUzs(productCompareAtPrice!, locale, text.currency)}</del>
-            <span className="bg-[var(--color-error)] px-2 py-1 text-xs font-semibold text-white">
+            <span className="text-xs font-medium text-[var(--color-sale)]">
               {text.discount.replace('{percent}', String(discountPercent))}
             </span>
           </>
@@ -340,8 +340,8 @@ export function AddToCart({
           {text.buy}
         </Button>
       )}
-      {added && <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{text.added} · <Link href={`/${locale}/cart`} className="underline underline-offset-2">{text.goCart}</Link></p>}
-      {error && <p role="alert" className="text-sm text-rose-700 dark:text-rose-300">{error}</p>}
+      {added && <p role="status" className="text-sm font-medium text-success dark:text-success">{text.added} · <Link href={`/${locale}/cart`} className="underline underline-offset-2">{text.goCart}</Link></p>}
+      {error && <p role="alert" className="text-sm text-error dark:text-error">{error}</p>}
       <Modal isOpen={authPromptOpen} onClose={() => setAuthPromptOpen(false)} title={text.signInTitle} closeLabel={text.close}>
         <p className="mb-5 text-sm text-[var(--color-text-secondary)]">{text.signInDescription}</p>
         <div className="grid grid-cols-2 gap-3">

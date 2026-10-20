@@ -19,13 +19,13 @@ export function LanguageSwitcher({ locale }: { locale: string }) {
   };
 
   return (
-    <div className="flex gap-1 rounded-lg bg-stone-100 p-1 dark:bg-stone-800">
+    <div className="flex gap-1 rounded-lg bg-surface-soft p-1 dark:bg-surface-soft">
       {locales.map((loc) => (
         <Button
           key={loc}
           variant={locale === loc ? 'default' : 'ghost'}
           onClick={() => handleLocaleChange(loc)}
-          className={`px-3 py-1 text-sm ${locale === loc ? 'bg-white dark:bg-stone-700' : ''}`}
+          className={`px-3 py-1 text-sm ${locale === loc ? 'bg-white dark:bg-surface-soft' : ''}`}
           aria-label={{ru: 'Русский', uz: 'O‘zbekcha', en: 'English'}[loc]}
         >
           <LanguageFlag locale={loc} className="h-4 w-6" />

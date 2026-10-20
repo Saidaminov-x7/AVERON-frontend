@@ -18,17 +18,17 @@ export function InfoPage({
   const t = useTranslations('infoPages');
 
   return (
-    <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
+    <main className="min-h-screen bg-surface-soft text-ink dark:bg-surface-soft dark:text-white">
       <section className="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
         <p className="text-xs font-bold uppercase tracking-[.2em] text-primary-700">{eyebrow}</p>
         <h1 className="mt-3 max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl">{title}</h1>
-        <p className="mt-5 max-w-2xl text-base leading-7 text-stone-500">{description}</p>
+        <p className="mt-5 max-w-2xl text-base leading-7 text-muted">{description}</p>
         <div className="mt-10 grid gap-4 md:grid-cols-2">
           {items.map((item) => (
-            <article key={item.title} className="rounded-2xl border border-stone-200 bg-white p-6 dark:border-white/10 dark:bg-stone-900">
+            <article key={item.title} className="rounded-2xl border border-line bg-white p-6 dark:border-white/10 dark:bg-surface-soft">
               <CheckCircle2 className="text-primary-700" size={22} />
               <h2 className="mt-4 text-lg font-bold">{item.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-stone-500">{item.text}</p>
+              <p className="mt-2 text-sm leading-6 text-muted">{item.text}</p>
             </article>
           ))}
         </div>

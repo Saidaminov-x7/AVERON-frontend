@@ -230,7 +230,7 @@ export function ProductGallery({
             key={selectedImage.url}
             src={selectedImage.url}
             alt={selectedAlt}
-            fit="contain"
+            fit="cover"
             zoomOnHover={false}
             onLoad={(width, height) => {
               const ratio = width / height;
@@ -281,7 +281,7 @@ export function ProductGallery({
               <ProductImage
                 src={image.url}
                 alt=""
-                fit="contain"
+                fit="cover"
                 zoomOnHover={false}
               />
             </button>
@@ -293,7 +293,7 @@ export function ProductGallery({
           role="dialog"
           aria-modal="true"
           aria-label={label}
-          className="fixed inset-0 z-[100] flex flex-col bg-neutral-950 text-white"
+          className="fixed inset-0 z-[100] flex flex-col bg-image-surface text-white"
           onClick={(event) => {
             if (event.target === event.currentTarget) setViewerOpen(false);
           }}

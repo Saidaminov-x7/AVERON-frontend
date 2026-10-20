@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 export default function Loading() {
   return (
     <main
-      className="min-h-screen bg-stone-50 px-4 py-10 text-stone-950 dark:bg-stone-950 dark:text-white sm:px-6 lg:px-8"
+      className="min-h-screen bg-surface-soft px-4 py-10 text-ink dark:bg-surface-soft dark:text-white sm:px-6 lg:px-8"
       aria-busy="true"
       aria-live="polite"
     >
@@ -18,7 +18,7 @@ export default function Loading() {
           <Skeleton className="h-10 w-full max-w-md" />
         </div>
 
-        <div className="grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:gap-x-5 2xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:gap-x-5 min-[1400px]:grid-cols-4">
           {Array.from({ length: 8 }).map((_, index) => (
             <div key={index} className="min-w-0">
               <Skeleton className="aspect-[3/4] w-full" />

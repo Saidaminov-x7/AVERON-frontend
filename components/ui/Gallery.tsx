@@ -92,7 +92,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
   return (
     <>
       <div className="relative group">
-        <div ref={emblaRef} className="overflow-hidden rounded-2xl bg-stone-900">
+        <div ref={emblaRef} className="overflow-hidden rounded-2xl bg-surface-soft">
           <div className="flex">
             {images.map((src, i) => (
               <div
@@ -132,7 +132,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
               type="button"
               onClick={scrollPrev}
               aria-label="Предыдущее фото"
-              className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-stone-700 shadow-md transition-all duration-200 hover:bg-white hover:scale-105 active:scale-95 cursor-pointer dark:bg-stone-800/90 dark:text-stone-200"
+              className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ink-soft shadow-md transition-all duration-200 hover:bg-white hover:scale-105 active:scale-95 cursor-pointer dark:bg-surface-soft dark:text-ink-soft"
             >
               <ChevronLeft size={18} />
             </button>
@@ -140,7 +140,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
               type="button"
               onClick={scrollNext}
               aria-label="Следующее фото"
-              className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-stone-700 shadow-md transition-all duration-200 hover:bg-white hover:scale-105 active:scale-95 cursor-pointer dark:bg-stone-800/90 dark:text-stone-200"
+              className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ink-soft shadow-md transition-all duration-200 hover:bg-white hover:scale-105 active:scale-95 cursor-pointer dark:bg-surface-soft dark:text-ink-soft"
             >
               <ChevronRight size={18} />
             </button>

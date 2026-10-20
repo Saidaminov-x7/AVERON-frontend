@@ -77,8 +77,8 @@ const FormLabel = forwardRef<
     <label
       ref={ref}
       className={cn(
-        'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-stone-700 dark:text-stone-300',
-        error && 'text-red-500 dark:text-red-400',
+        'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-ink-soft dark:text-ink-soft',
+        error && 'text-error dark:text-error',
         className
       )}
       htmlFor={formItemId}
@@ -115,7 +115,7 @@ const FormDescription = forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
       <p
         ref={ref}
         id={formDescriptionId}
-        className={cn('text-sm text-stone-500 dark:text-stone-400', className)}
+        className={cn('text-sm text-muted dark:text-ink-soft', className)}
         {...props}
       />
     );
@@ -136,7 +136,7 @@ const FormMessage = forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLPa
       <p
         ref={ref}
         id={formMessageId}
-        className={cn('text-sm font-medium text-red-500 dark:text-red-400', className)}
+        className={cn('text-sm font-medium text-error dark:text-error', className)}
         {...props}
       >
         {body}
@@ -155,4 +155,4 @@ export {
   FormDescription,
   FormMessage,
   FormField,
-};
+};

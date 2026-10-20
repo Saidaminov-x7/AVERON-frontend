@@ -78,12 +78,12 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
     return (
       <div className="space-y-6 text-center animate-in fade-in duration-300">
         <div className="flex flex-col items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <CheckCircle2 size={32} className="text-emerald-400" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-soft border border-line">
+            <CheckCircle2 size={32} className="text-success" />
           </div>
           <div className="space-y-1.5">
             <h2 className="text-xl font-bold text-white">{t('successTitle')}</h2>
-            <p className="text-sm text-stone-400">{t('successMessage')}</p>
+            <p className="text-sm text-ink-soft">{t('successMessage')}</p>
           </div>
         </div>
         <button
@@ -106,11 +106,11 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">{t('title')}</h1>
         </div>
-        <p className="text-sm text-stone-400">{t('subtitle')}</p>
+        <p className="text-sm text-ink-soft">{t('subtitle')}</p>
       </div>
 
       {serverError && (
-        <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400 animate-in fade-in duration-200">
+        <div className="flex items-start gap-3 rounded-xl border border-line bg-surface-soft px-4 py-3 text-sm text-error animate-in fade-in duration-200">
           <AlertCircle size={16} className="mt-0.5 shrink-0" />
           <span>{serverError}</span>
         </div>
@@ -123,7 +123,7 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-semibold text-stone-400 uppercase tracking-wider">
+                <FormLabel className="text-xs font-semibold text-ink-soft uppercase tracking-wider">
                   {t('newPassword')}
                 </FormLabel>
                 <FormControl>
@@ -137,13 +137,13 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
                     <button
                       type="button"
                       onClick={() => setShowPassword((prev) => !prev)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300 transition-colors"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink-soft transition-colors"
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </FormControl>
-                <FormMessage className="text-xs text-red-400" />
+                <FormMessage className="text-xs text-error" />
               </FormItem>
             )}
           />
@@ -153,7 +153,7 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-semibold text-stone-400 uppercase tracking-wider">
+                <FormLabel className="text-xs font-semibold text-ink-soft uppercase tracking-wider">
                   {t('confirmPassword')}
                 </FormLabel>
                 <FormControl>
@@ -167,13 +167,13 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300 transition-colors"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink-soft transition-colors"
                     >
                       {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </FormControl>
-                <FormMessage className="text-xs text-red-400" />
+                <FormMessage className="text-xs text-error" />
               </FormItem>
             )}
           />

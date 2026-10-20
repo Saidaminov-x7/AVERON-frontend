@@ -32,12 +32,12 @@ export default function SharedWishlistPage() {
     <main className="mx-auto min-h-[60dvh] max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <h1 className="mb-8 text-3xl font-bold">{text.title}</h1>
       {wishlist.isPending && <p role="status">{text.loading}</p>}
-      {wishlist.isError && <p role="alert" className="rounded-xl border border-stone-200 p-6">{text.unavailable}</p>}
+      {wishlist.isError && <p role="alert" className="rounded-xl border border-line p-6">{text.unavailable}</p>}
       {wishlist.data && wishlist.data.items.length === 0 && <p>{text.empty}</p>}
       {wishlist.data && wishlist.data.items.length > 0 && (
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {wishlist.data.items.map((item) => (
-            <li key={item.id} className="overflow-hidden rounded-2xl border border-stone-200 bg-white dark:border-white/10 dark:bg-stone-900">
+            <li key={item.id} className="overflow-hidden rounded-2xl border border-line bg-white dark:border-white/10 dark:bg-surface-soft">
               <div className="aspect-[4/5] w-full"><ProductImage src={item.imageUrl ?? undefined} alt={item.title} /></div>
               <div className="p-4">
                 <h2 className="line-clamp-2 font-semibold">{item.title}</h2>

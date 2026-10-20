@@ -238,19 +238,19 @@ function OutfitBuilderContent() {
   };
 
   return (
-    <main className="min-h-[70vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
+    <main className="min-h-[70vh] bg-surface-soft text-ink dark:bg-surface-soft dark:text-white">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_280px]">
         <section>
           <h1 className="text-3xl font-extrabold">{text.title}</h1>
-          <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">{text.intro}</p>
+          <p className="mt-2 text-sm text-muted dark:text-ink-soft">{text.intro}</p>
           <div className="mt-6 flex flex-col gap-2 sm:flex-row">
             <label className="sr-only" htmlFor="outfit-product-search">{text.search}</label>
             <input id="outfit-product-search" value={search} onChange={(event) => setSearch(event.target.value)}
               onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); void searchProducts(); } }}
-              placeholder={text.search} className="min-h-11 flex-1 rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-900" />
+              placeholder={text.search} className="min-h-11 flex-1 rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
             <Button type="button" loading={searchPending} loadingLabel={text.searching} onClick={() => void searchProducts()} className="min-h-11 rounded-xl bg-primary-700 px-5 font-bold text-white focus-visible:ring-primary-500">{text.find}</Button>
           </div>
-          {results.length > 0 && <div className="mt-4 rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900">
+          {results.length > 0 && <div className="mt-4 rounded-2xl border border-line bg-white p-4 dark:border-white/10 dark:bg-surface-soft">
             <h2 className="font-bold">{text.result}</h2>
             <ul className="mt-3 space-y-3">{results.map((product) => (
               <li key={product.id} className="flex items-center gap-3">
@@ -260,16 +260,16 @@ function OutfitBuilderContent() {
               </li>
             ))}</ul>
           </div>}
-          {results.length === 0 && search.trim() && <p className="mt-3 text-sm text-stone-500">{text.none}</p>}
+          {results.length === 0 && search.trim() && <p className="mt-3 text-sm text-muted">{text.none}</p>}
 
           <div className="mt-8 space-y-3">
-            {items.length === 0 ? <p className="rounded-2xl border border-dashed border-stone-300 p-8 text-center text-stone-500">{text.empty}</p> :
+            {items.length === 0 ? <p className="rounded-2xl border border-dashed border-line p-8 text-center text-muted">{text.empty}</p> :
               items.map((item, index) => (
-                <article key={`${item.product.id}:${index}`} className="flex flex-col gap-4 rounded-2xl border border-stone-200 bg-white p-4 sm:flex-row sm:items-center dark:border-white/10 dark:bg-stone-900">
+                <article key={`${item.product.id}:${index}`} className="flex flex-col gap-4 rounded-2xl border border-line bg-white p-4 sm:flex-row sm:items-center dark:border-white/10 dark:bg-surface-soft">
                   {item.product.images?.[0]?.url && <Image src={item.product.images[0].url} alt="" width={80} height={80} unoptimized className="size-20 rounded-xl object-cover" />}
                   <div className="min-w-0 flex-1">
                     <a href={`/${locale}/catalog/${encodeURIComponent(productRouteId(item.product))}`} className="font-bold hover:underline">{productTitle(item.product, locale)}</a>
-                    <p className="mt-1 text-sm text-stone-500">{formatUzs(Number(item.product.variants?.find((variant) => variant.id === item.variantId)?.salePriceUzs ?? item.product.salePriceUzs ?? 0), locale)}</p>
+                    <p className="mt-1 text-sm text-muted">{formatUzs(Number(item.product.variants?.find((variant) => variant.id === item.variantId)?.salePriceUzs ?? item.product.salePriceUzs ?? 0), locale)}</p>
                     {(item.product.variants?.length ?? 0) > 0 && <div className="mt-2 max-w-sm text-sm">
                       <span>{text.variant}</span>
                       <Select value={item.variantId ?? ''} onValueChange={(value) => setItems((current) => current.map((entry, itemIndex) =>
@@ -291,22 +291,22 @@ function OutfitBuilderContent() {
                 </article>
               ))}
           </div>
-          <p className="mt-4 text-sm text-stone-500">{text.priceNote}</p>
+          <p className="mt-4 text-sm text-muted">{text.priceNote}</p>
         </section>
 
-        <aside className="h-fit rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+        <aside className="h-fit rounded-2xl border border-line bg-white p-5 dark:border-white/10 dark:bg-surface-soft">
           <label htmlFor="outfit-name" className="block text-sm font-semibold">{text.name}</label>
-          <input id="outfit-name" maxLength={80} value={name} onChange={(event) => setName(event.target.value)} className="mt-2 min-h-10 w-full rounded-lg border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-950" />
-          <p className="mt-5 text-sm text-stone-500">{text.total}</p>
+          <input id="outfit-name" maxLength={80} value={name} onChange={(event) => setName(event.target.value)} className="mt-2 min-h-10 w-full rounded-lg border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
+          <p className="mt-5 text-sm text-muted">{text.total}</p>
           <p className="mt-1 text-2xl font-extrabold">{formatUzs(total, locale)}</p>
-          <Button type="button" loading={saveMutation.isPending} loadingLabel={text.saving} disabled={!items.length} onClick={() => saveMutation.mutate()} className="mt-5 min-h-11 w-full rounded-xl border px-3 font-bold text-stone-900 dark:text-stone-100">{outfitId ? text.update : text.save}</Button>
+          <Button type="button" loading={saveMutation.isPending} loadingLabel={text.saving} disabled={!items.length} onClick={() => saveMutation.mutate()} className="mt-5 min-h-11 w-full rounded-xl border px-3 font-bold text-ink dark:text-ink-soft">{outfitId ? text.update : text.save}</Button>
           <Button type="button" loading={cartPending} loadingLabel={text.addingCart} disabled={!items.length || cartPending || saveMutation.isPending} onClick={() => void addToCart()} className="mt-2 min-h-11 w-full rounded-xl bg-primary-700 px-3 font-bold text-white">{text.cart}</Button>
-          {outfitId && <Button type="button" loading={deletePending} loadingLabel={text.deleting} disabled={deletePending} onClick={() => void removeSaved()} variant="outline" className="mt-2 min-h-10 w-full rounded-xl border-rose-300 px-3 text-sm text-rose-700">{text.delete}</Button>}
+          {outfitId && <Button type="button" loading={deletePending} loadingLabel={text.deleting} disabled={deletePending} onClick={() => void removeSaved()} variant="outline" className="mt-2 min-h-10 w-full rounded-xl border-line px-3 text-sm text-error">{text.delete}</Button>}
           {message && <p role="status" className="mt-4 text-sm">{message}</p>}
-          {rejected.length > 0 && <ul className="mt-2 list-inside list-disc text-xs text-rose-700">{rejected.map((item) => <li key={`${item.productId}:${item.variantId}`}>{item.code}</li>)}</ul>}
+          {rejected.length > 0 && <ul className="mt-2 list-inside list-disc text-xs text-error">{rejected.map((item) => <li key={`${item.productId}:${item.variantId}`}>{item.code}</li>)}</ul>}
           <h2 className="mt-7 font-bold">{text.saved}</h2>
           <div className="mt-2 space-y-2">{savedQuery.data?.map((outfit) =>
-            <Button key={outfit.id} type="button" loading={openingOutfit === outfit.id} loadingLabel={text.loading} disabled={openingOutfit !== null} onClick={() => void openOutfit(outfit)} variant="ghost" className="block min-h-10 w-full rounded-lg bg-stone-100 px-3 text-left text-sm dark:bg-white/5">{outfit.name}</Button>,
+            <Button key={outfit.id} type="button" loading={openingOutfit === outfit.id} loadingLabel={text.loading} disabled={openingOutfit !== null} onClick={() => void openOutfit(outfit)} variant="ghost" className="block min-h-10 w-full rounded-lg bg-surface-soft px-3 text-left text-sm dark:bg-white/5">{outfit.name}</Button>,
           )}</div>
           <button type="button" onClick={() => { setOutfitId(null); setName(''); setItems([]); setMessage(''); }} className="mt-3 min-h-10 w-full rounded-lg border px-3 text-sm">{text.start}</button>
         </aside>
