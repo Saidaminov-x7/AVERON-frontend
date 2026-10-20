@@ -5,9 +5,9 @@ import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { BufferGeometry, CatmullRomCurve3, Float32BufferAttribute, MeshStandardMaterial, TubeGeometry, Vector3 } from 'three';
-import type { Object3D } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { clampFittingRotation, type FittingAsset } from '@/lib/fitting-room';
+import { Button } from '@/components/ui/Button';
+import { clampFittingRotation, rotateFittingWithArrow, shouldFallbackToFittingPhoto, type FittingAsset } from '@/lib/fitting-room';
 
 const ROTATION_SENSITIVITY = 0.006;
 
@@ -99,30 +99,13 @@ function Mannequin() {
   );
 }
 
-function disposeObject(root: Object3D) {
-  root.traverse((object) => {
-    const mesh = object as Object3D & { geometry?: BufferGeometry; material?: unknown };
-    mesh.geometry?.dispose();
-    const materials = Array.isArray(mesh.material) ? mesh.material : mesh.material ? [mesh.material] : [];
-    for (const material of materials) {
-      if (material && typeof material === 'object' && 'dispose' in material && typeof material.dispose === 'function') {
-        for (const value of Object.values(material)) {
-          if (value && typeof value === 'object' && 'isTexture' in value && value.isTexture === true && 'dispose' in value && typeof value.dispose === 'function') value.dispose();
-        }
-        material.dispose();
-      }
-    }
-  });
-}
-
 function Garment({ asset, onLoaded }: { asset: FittingAsset; onLoaded: (assetId: string) => void }) {
   const gltf = useLoader(GLTFLoader, asset.url);
   const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
-  useEffect(() => () => {
-    disposeObject(scene);
-    useLoader.clear(GLTFLoader, asset.url);
-  }, [asset.url, scene]);
-  useEffect(() => onLoaded(asset.id), [asset.id, onLoaded]);
+  useEffect(() => {
+    onLoaded(asset.id);
+    return () => useLoader.clear(GLTFLoader, asset.url);
+  }, [asset.id, asset.url, onLoaded]);
   return <primitive object={scene} position={[asset.positionX, asset.positionY, asset.positionZ]} scale={asset.scale} />;
 }
 
@@ -137,16 +120,19 @@ export function FittingRoomViewer({
   assets,
   labels,
   fallbackImageUrl,
+  hasMissingGarment = false,
 }: {
   assets: FittingAsset[];
-  labels: { loading: string; unavailable: string; front: string; left: string; right: string; webgl: string };
+  labels: { loading: string; unavailable: string; front: string; left: string; right: string; webgl: string; photoFallback: string; productPhoto: string; retry: string; viewerControl: string };
   fallbackImageUrl?: string | null;
+  hasMissingGarment?: boolean;
 }) {
   const [rotation, setRotation] = useState(0);
   const [pointerX, setPointerX] = useState<number | null>(null);
   const [webglLost, setWebglLost] = useState(false);
   const [failedSignature, setFailedSignature] = useState<string | null>(null);
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
   const allAssets = assets;
   const visibleAssets = useMemo(() => assets.filter((asset) => asset.mannequinVersion === 'averon-neutral-v1'), [assets]);
   const assetSignature = useMemo(() => visibleAssets.map((asset) => `${asset.id}:${asset.url}`).join('|'), [visibleAssets]);
@@ -167,21 +153,43 @@ export function FittingRoomViewer({
     return () => canvas.removeEventListener('webglcontextlost', handleLost);
   }, [canvas]);
 
-  if (webglLost || visibleAssets.length !== allAssets.length) {
-    return <div role="status" className="grid min-h-[320px] place-items-center bg-[var(--color-surface-soft)] p-6 text-center text-sm text-[var(--color-text-secondary)]">{fallbackImageUrl && <Image src={fallbackImageUrl} alt="" width={800} height={800} unoptimized className="max-h-[min(48vh,420px)] w-auto object-contain" />}{webglLost ? labels.webgl : labels.unavailable}</div>;
+  const retryViewer = () => {
+    setWebglLost(false);
+    setFailedSignature(null);
+    setLoadedAssets({ signature: '', ids: new Set() });
+    setRetryKey((current) => current + 1);
+  };
+
+  if (shouldFallbackToFittingPhoto(allAssets, hasMissingGarment)) {
+    return <div role="status" className="grid min-h-[320px] place-items-center gap-3 bg-[var(--color-surface-soft)] p-6 text-center text-sm text-[var(--color-text-secondary)]">{fallbackImageUrl && <Image src={fallbackImageUrl} alt={labels.productPhoto} width={800} height={800} unoptimized className="max-h-[min(48vh,420px)] w-auto object-contain" />}<p>{labels.photoFallback}</p></div>;
+  }
+  if (webglLost || viewerFailed) {
+    return <div role="status" className="grid min-h-[320px] place-items-center gap-3 bg-[var(--color-surface-soft)] p-6 text-center text-sm text-[var(--color-text-secondary)]">{fallbackImageUrl && <Image src={fallbackImageUrl} alt={labels.productPhoto} width={800} height={800} unoptimized className="max-h-[min(48vh,420px)] w-auto object-contain" />}<p>{webglLost ? labels.webgl : labels.unavailable}</p><Button type="button" variant="outline" size="lg" onClick={retryViewer}>{labels.retry}</Button></div>;
   }
 
   const moveRotation = (delta: number) => setRotation((current) => clampFittingRotation(current + delta));
 
   return (
-    <div className="relative h-[min(54vh,560px)] min-h-[320px] touch-pan-y overflow-hidden bg-[var(--color-surface-soft)] sm:min-h-[420px]">
-      <ViewerErrorBoundary key={assetSignature} onError={() => setFailedSignature(assetSignature)} fallback={<div role="alert" className="grid h-full min-h-[320px] place-items-center p-6 text-center text-sm text-[var(--color-text-secondary)]">{fallbackImageUrl && <Image src={fallbackImageUrl} alt="" width={800} height={800} unoptimized className="max-h-[min(48vh,420px)] w-auto object-contain" />}{labels.unavailable}</div>}>
+    <div
+      tabIndex={0}
+      role="group"
+      aria-label={labels.viewerControl}
+      onKeyDown={(event) => {
+        if (event.target !== event.currentTarget) return;
+        const nextRotation = rotateFittingWithArrow(rotation, event.key);
+        if (nextRotation === rotation) return;
+        event.preventDefault();
+        setRotation(nextRotation);
+      }}
+      className="relative h-[min(54vh,560px)] min-h-[320px] touch-pan-y overflow-hidden bg-[var(--color-surface-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-accent)] sm:min-h-[420px]"
+    >
+      <ViewerErrorBoundary key={`${assetSignature}:${retryKey}`} onError={() => setFailedSignature(assetSignature)} fallback={<div role="alert" className="grid h-full min-h-[320px] place-items-center p-6 text-center text-sm text-[var(--color-text-secondary)]">{fallbackImageUrl && <Image src={fallbackImageUrl} alt={labels.productPhoto} width={800} height={800} unoptimized className="max-h-[min(48vh,420px)] w-auto object-contain" />}{labels.unavailable}</div>}>
         <Canvas
           shadows
           frameloop="demand"
           dpr={[1, 1.5]}
           camera={{ position: [0, 1.15, 4.1], fov: 31 }}
-          fallback={<div role="status" className="grid h-full place-items-center p-6 text-center text-sm">{fallbackImageUrl && <Image src={fallbackImageUrl} alt="" width={800} height={800} unoptimized className="max-h-[min(48vh,420px)] w-auto object-contain" />}{labels.webgl}</div>}
+          fallback={<div role="status" className="grid h-full place-items-center p-6 text-center text-sm">{fallbackImageUrl && <Image src={fallbackImageUrl} alt={labels.productPhoto} width={800} height={800} unoptimized className="max-h-[min(48vh,420px)] w-auto object-contain" />}{labels.webgl}</div>}
           onCreated={({ gl }) => setCanvas(gl.domElement)}
           onPointerDown={(event) => {
             setPointerX(event.clientX);
@@ -213,9 +221,9 @@ export function FittingRoomViewer({
       </ViewerErrorBoundary>
       {!modelsLoaded && !viewerFailed && !webglLost && <div role="status" aria-live="polite" className="pointer-events-none absolute inset-x-0 top-3 text-center text-xs text-[var(--color-text-secondary)]">{labels.loading}</div>}
       <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-2">
-        <button type="button" className="pointer-events-auto grid size-11 place-items-center border border-[var(--color-border)] bg-[var(--color-surface)] text-xl text-[var(--color-text)]" aria-label={labels.left} onClick={() => moveRotation(-0.16)}>‹</button>
-        <button type="button" className="pointer-events-auto min-w-24 border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-xs font-semibold text-[var(--color-text)]" onClick={() => setRotation(0)}>{labels.front}</button>
-        <button type="button" className="pointer-events-auto grid size-11 place-items-center border border-[var(--color-border)] bg-[var(--color-surface)] text-xl text-[var(--color-text)]" aria-label={labels.right} onClick={() => moveRotation(0.16)}>›</button>
+        <button type="button" className="pointer-events-auto grid size-11 place-items-center rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] text-xl text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]" aria-label={labels.left} onClick={() => moveRotation(-0.16)}>‹</button>
+        <button type="button" className="pointer-events-auto min-h-11 min-w-24 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-xs font-semibold text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]" onClick={() => setRotation(0)}>{labels.front}</button>
+        <button type="button" className="pointer-events-auto grid size-11 place-items-center rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] text-xl text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]" aria-label={labels.right} onClick={() => moveRotation(0.16)}>›</button>
       </div>
       <span className="absolute left-3 top-3 bg-[var(--color-surface)] px-2 py-1 text-xs tabular-nums text-[var(--color-text-secondary)]">{Math.round(rotation * 180 / Math.PI)}°</span>
     </div>

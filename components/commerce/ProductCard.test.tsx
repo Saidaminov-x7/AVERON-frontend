@@ -25,14 +25,15 @@ describe('ProductCard', () => {
     const card = screen.getByRole('article');
     const image = screen.getByRole('img', { name: 'Красное платье' });
 
-    expect(image).toHaveAttribute('src', '/first.jpg');
+    expect(image).toHaveAttribute('src', 'http://127.0.0.1:8080/first.jpg');
+    expect(image).toHaveClass('object-cover');
     fireEvent.mouseEnter(card);
-    expect(image).toHaveAttribute('src', '/second.jpg');
+    expect(image).toHaveAttribute('src', 'http://127.0.0.1:8080/second.jpg');
     expect(image).not.toHaveClass('group-hover:scale-[1.03]');
     expect(card.className).not.toContain('hover:-translate');
 
     fireEvent.mouseLeave(card);
-    expect(image).toHaveAttribute('src', '/first.jpg');
+    expect(image).toHaveAttribute('src', 'http://127.0.0.1:8080/first.jpg');
   });
 
   it('expires the new label after two weeks and ignores future dates', () => {

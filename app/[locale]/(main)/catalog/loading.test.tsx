@@ -16,7 +16,7 @@ describe('catalog loading state', () => {
     const hasProductImageRatio = Array.from(container.querySelectorAll('[class]'))
       .some((element) => element.className.toString().includes('aspect-[3/4]'));
 
-    expect(grid).toHaveClass('grid-cols-2', 'lg:grid-cols-3', '2xl:grid-cols-4');
+    expect(grid).toHaveClass('grid-cols-2', 'lg:grid-cols-3', 'min-[1400px]:grid-cols-4');
     expect(hasProductImageRatio).toBe(true);
   });
 });

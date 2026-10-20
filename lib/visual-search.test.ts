@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { externalBaseURL } from "@/lib/axios";
 import {
   loadCommerceCapabilities,
   loadSimilarProducts,
@@ -83,6 +84,8 @@ describe("commerce visual-search API", () => {
 
     expect(result).toEqual({ items: [], meta: { limit: 12 } });
     const [url, init] = fetcher.mock.calls[0] as [string, RequestInit];
+    expect(new URL(url).origin).toBe(externalBaseURL);
+    expect(new URL(url).origin).toBe("http://127.0.0.1:8080");
     expect(url).toMatch(/\/api\/v1\/products\/visual-search\?country=CN&category=coats&limit=12$/);
     expect(init.method).toBe("POST");
     expect(init.body).toBeInstanceOf(FormData);
@@ -104,6 +107,8 @@ describe("commerce visual-search API", () => {
       meta: { limit: 20 },
     });
     const [url, init] = fetcher.mock.calls[0] as [string, RequestInit];
+    expect(new URL(url).origin).toBe(externalBaseURL);
+    expect(new URL(url).origin).toBe("http://127.0.0.1:8080");
     expect(url).toMatch(/\/api\/v1\/products\/visual-search$/);
     expect([...(init.body as FormData).keys()]).toEqual(["image"]);
   });

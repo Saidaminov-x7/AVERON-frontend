@@ -25,7 +25,7 @@ describe('ProductGallery', () => {
 
     expect(screen.getByRole('img', { name: 'Front view' })).toBeInTheDocument();
     expect(screen.getByText('1 / 2')).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: 'Front view' })).toHaveClass('object-contain');
+    expect(screen.getByRole('img', { name: 'Front view' })).toHaveClass('object-cover');
     expect(screen.getByRole('img', { name: 'Front view' })).not.toHaveClass('group-hover:scale-[1.03]');
     fireEvent.click(screen.getByRole('button', { name: 'Next image' }));
     expect(screen.getByRole('img', { name: 'Back view' })).toBeInTheDocument();
@@ -100,7 +100,7 @@ describe('ProductGallery', () => {
       fireEvent.load(image);
 
       expect(frame).toHaveStyle({ aspectRatio: ratio });
-      expect(image).toHaveClass('object-contain');
+      expect(image).toHaveClass('object-cover');
       if (index < orientations.length - 1) {
         fireEvent.click(screen.getByRole('button', { name: 'Next image' }));
       }

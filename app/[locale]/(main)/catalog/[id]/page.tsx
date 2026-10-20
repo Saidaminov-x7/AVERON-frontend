@@ -373,7 +373,7 @@ export default async function ProductPage({
             <span className="truncate text-[var(--color-text)]">{plainTitle}</span>
           </nav>
         </div>
-        <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(340px,.95fr)] lg:gap-6 xl:gap-6">
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(360px,.8fr)] lg:gap-8 xl:gap-12">
           <div className="min-w-0">
             <ProductGallery
               images={product.images ?? []}

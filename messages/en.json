@@ -184,6 +184,8 @@
     "applying": "Applying filters…",
     "invalidPrice": "Enter a valid price using numbers only.",
     "priceRangeError": "The minimum price cannot exceed the maximum price.",
+    "categoriesUnavailable": "Categories could not be loaded.",
+    "facetsUnavailable": "Available sizes and colors could not be loaded.",
     "reset": "Reset",
     "products": "Products",
     "empty": "No matching products yet",

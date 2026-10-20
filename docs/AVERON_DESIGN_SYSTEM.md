@@ -43,8 +43,8 @@ Base unit: 4px. Use `4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64 / 80 / 96px`.
 |---|---:|---:|---:|
 | Mobile: 320–767px | 16px (12px only for dense utility rows) | fluid | 2 |
 | Tablet: 768–1023px | 24px | fluid | 3 |
-| Desktop: 1024–1535px | 32px | max 1440px | 3 with filters; 4 when filters are hidden and card minimum width remains 220px |
-| Wide: 1536px+ | 48px | max 1440px | 4 |
+| Desktop: 1024–1399px | 32px | max 1440px | 3 with filters; 4 when filters are hidden and card minimum width remains 220px |
+| Wide desktop: 1400px+ | 48px | max 1440px | 4 when card minimum width remains 220px, including with filters visible |
 
 Catalog gaps: 12px mobile, 20px tablet/desktop. Product page: gallery and purchase panel in a two-column layout from 1024px, with the gallery receiving approximately 60% of the content width. Cart/checkout may use a two-column summary layout from 1024px. All grid children must be allowed to shrink (`min-width: 0`). No page may create horizontal viewport overflow at 320px.
 

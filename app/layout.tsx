@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { SITE_URL } from '@/lib/siteUrl';
+import { externalBaseURL } from '@/lib/axios';
 import './[locale]/globals.css';
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-inter', display: 'swap' });
@@ -30,9 +31,7 @@ export const metadata: Metadata = {
 
 async function getServerSettings() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiUrl) throw new Error('no apiUrl');
-    const res = await fetch(`${apiUrl}/site-settings/public`, {
+    const res = await fetch(`${externalBaseURL}/site-settings/public`, {
       next: { revalidate: 30 },
       signal: AbortSignal.timeout(3000),
     });

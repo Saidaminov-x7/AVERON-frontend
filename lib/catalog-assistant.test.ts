@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { externalBaseURL } from "@/lib/axios";
 import {
   loadCompleteTheLook,
   requestStyleOutfit,
@@ -26,6 +27,8 @@ describe("catalog assistant API", () => {
       meta: { aiUsed: true, fallbackUsed: false },
     });
     const [url, request] = fetcher.mock.calls[0] as [string, RequestInit];
+    expect(new URL(url).origin).toBe(externalBaseURL);
+    expect(new URL(url).origin).toBe("http://127.0.0.1:8080");
     expect(url).toMatch(/\/api\/v1\/products\/ai-search$/);
     expect(JSON.parse(String(request.body))).toEqual({
       query: "black shirt",
@@ -63,7 +66,7 @@ describe("catalog assistant API", () => {
       meta: { fallbackUsed: true },
     });
     expect(fetcher).toHaveBeenCalledWith(
-      expect.stringMatching(/\/api\/v1\/style-assistant\/outfits$/),
+      expect.stringMatching(/^http:\/\/127\.0\.0\.1:8080\/api\/v1\/style-assistant\/outfits$/),
       expect.objectContaining({ method: "POST", cache: "no-store" }),
     );
 
@@ -80,7 +83,7 @@ describe("catalog assistant API", () => {
       { role: "shoes", reason: "", product },
     ]);
     expect(fetcher).toHaveBeenCalledWith(
-      expect.stringMatching(/\/api\/v1\/products\/base%20trousers\/complete-the-look$/),
+      expect.stringMatching(/^http:\/\/127\.0\.0\.1:8080\/api\/v1\/products\/base%20trousers\/complete-the-look$/),
       expect.objectContaining({ cache: "no-store" }),
     );
   });
