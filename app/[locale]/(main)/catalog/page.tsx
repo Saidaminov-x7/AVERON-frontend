@@ -153,8 +153,8 @@ function CatalogContent({
         <CatalogFilterLayout
           closeLabel={locale === "uz" ? "Yopish" : locale === "en" ? "Close" : "Закрыть"}
           filters={
-            <div className="sticky top-24 border-t border-[var(--color-border)] bg-[var(--color-surface)] py-4">
-              <div className="flex items-center gap-2 border-b pb-4 font-bold dark:border-white/10">
+            <div className="sticky top-24 max-h-[calc(100dvh-7rem)] overflow-y-auto rounded-[12px] border border-[var(--color-border)] bg-[var(--color-bg)] p-4">
+              <div className="mb-4 flex items-center gap-2 border-b border-[var(--color-border)] pb-3 font-bold">
                 <Filter className="text-primary-700 dark:text-primary-300" size={18} />
                 {t("filters")}
               </div>

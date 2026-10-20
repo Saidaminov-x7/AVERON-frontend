@@ -23,7 +23,7 @@ type FilterValues = {
 };
 
 const keys = ['q', 'category', 'audience', 'country', 'size', 'color', 'minPrice', 'maxPrice', 'saleOnly', 'sort'] as const;
-const controlClass = 'h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/15';
+const controlClass = 'h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/15';
 
 function valuesFromSearch(search: URLSearchParams): FilterValues {
   return Object.fromEntries(keys.map((key) => [key, search.get(key) ?? (key === 'sort' ? 'newest' : '')])) as FilterValues;
@@ -146,15 +146,16 @@ function CatalogFilterDraft({
         <legend className="text-[length:var(--font-size-caption)] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('audience')}</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {audiences.map(([value, label]) => (
-            <button
+            <Button
               key={value || 'all'}
+              variant="ghost"
               type="button"
               aria-pressed={draft.audience === value}
               onClick={() => set('audience', value)}
-              className={`min-h-11 border-b px-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] ${draft.audience === value ? 'border-[var(--color-text)] font-semibold text-[var(--color-text)]' : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]'}`}
+              className={`min-h-11 w-full justify-start rounded-none border-b px-2 text-left text-sm ${draft.audience === value ? 'border-[var(--color-text)] font-semibold text-[var(--color-text)]' : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]'}`}
             >
               {label}
-            </button>
+            </Button>
           ))}
         </div>
       </fieldset>
