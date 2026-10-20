@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { getSafeErrorReportPath, sanitizeErrorReportText } from '@/lib/safe-error-report';
+import { externalBaseURL } from '@/lib/axios';
 
 const themeBootstrap = `(() => {
   try {
@@ -24,9 +25,8 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     try {
-      const backendBaseUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (backendBaseUrl) {
-        fetch(`${backendBaseUrl}/error-reports`, {
+      if (externalBaseURL) {
+        fetch(`${externalBaseURL}/error-reports`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -59,7 +59,7 @@ export default function GlobalError({
               </div>
             </div>
             <div className="flex flex-col justify-center bg-[var(--color-surface)] p-8 md:p-12">
-              <div className="mb-7 flex h-12 w-12 items-center justify-center border border-[var(--color-border)] text-[var(--color-error)]">
+              <div className="mb-8 flex h-12 w-12 items-center justify-center border border-[var(--color-border)] text-[var(--color-error)]">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="12" y1="8" x2="12" y2="12" />

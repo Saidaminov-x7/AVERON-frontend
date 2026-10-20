@@ -2,6 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import messages from '@/messages/ru.json';
+import uzMessages from '@/messages/uz.json';
+import enMessages from '@/messages/en.json';
 import { CatalogFilterControls } from './CatalogFilterControls';
 
 const navigation = vi.hoisted(() => ({
@@ -36,14 +38,18 @@ vi.mock('./CatalogSelect', () => ({
   ),
 }));
 
-function renderControls() {
+function renderControls(
+  locale = 'ru',
+  localeMessages = messages,
+  facets: { sizes: string[]; colors: string[] } = { sizes: [], colors: [] },
+) {
   return render(
-    <NextIntlClientProvider locale="ru" messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={localeMessages}>
       <CatalogFilterControls
-        locale="ru"
+        locale={locale}
         categories={[]}
         categoriesError={false}
-        facets={{ sizes: [], colors: [] }}
+        facets={facets}
         facetsError={false}
       />
     </NextIntlClientProvider>,
@@ -128,5 +134,30 @@ describe('CatalogFilterControls', () => {
     );
 
     expect(screen.getByRole('button', { name: 'Мужское' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('stacks narrow size and color controls, then uses columns when their container is wide enough', () => {
+    const { container } = renderControls();
+    const responsiveGroup = container.querySelector('[class*="@container"]');
+
+    expect(responsiveGroup).toHaveClass('mt-5');
+    expect(responsiveGroup?.firstElementChild).toHaveClass('grid-cols-1', '@[336px]:grid-cols-2');
+  });
+
+  it.each([
+    ['ru', messages, 'Очень длинное название размера для теста переполнения', 'Сложный локализованный цвет для проверки полной подписи'],
+    ['uz', uzMessages, 'Kiyim o‘lchamining juda uzun sinov nomi', 'Rangning to‘liq ko‘rinishini tekshiruvchi uzun nom'],
+    ['en', enMessages, 'A deliberately long clothing size label for wrapping', 'A deliberately long color label for wrapping'],
+  ])('keeps localized size/color placeholder and selected values available (%s)', (locale, localeMessages, longSize, longColor) => {
+    renderControls(locale, localeMessages, { sizes: [longSize], colors: [longColor] });
+    const size = screen.getByRole('combobox', { name: localeMessages.catalog.size });
+    const color = screen.getByRole('combobox', { name: localeMessages.catalog.color });
+
+    expect(size).toHaveDisplayValue(localeMessages.catalog.anySize);
+    expect(color).toHaveDisplayValue(localeMessages.catalog.anyColor);
+    fireEvent.change(size, { target: { value: longSize } });
+    fireEvent.change(color, { target: { value: longColor } });
+    expect(size).toHaveDisplayValue(longSize);
+    expect(color).toHaveDisplayValue(longColor);
   });
 });

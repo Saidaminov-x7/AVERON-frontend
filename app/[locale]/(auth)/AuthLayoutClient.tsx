@@ -31,7 +31,7 @@ function AuthLayoutInner({ children }: Pick<AuthLayoutProps, 'children'>) {
           </div>
         </div>
       </div>
-      <p className="relative z-10 mt-5 text-[11px] uppercase tracking-[.12em] text-[var(--color-muted)]">
+      <p className="relative z-10 mt-5 text-[length:var(--font-size-caption)] uppercase tracking-[.12em] text-[var(--color-muted)]">
         © 2026 AVERON
       </p>
     </div>

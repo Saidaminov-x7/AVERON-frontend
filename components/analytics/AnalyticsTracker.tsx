@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { trackCommerceEvent, type CommerceEventMetadata } from '@/lib/commerceAnalytics';
 import { externalBaseURL } from '@/lib/axios';
+import { canSendAnalytics } from '@/lib/analyticsPolicy';
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
@@ -12,7 +13,7 @@ export function AnalyticsTracker() {
   const queryString = searchParams.toString();
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!canSendAnalytics()) return;
 
     const privateRoute = /^\/(?:ru|uz|en)\/(?:login|register|forgot-password|reset-password|profile|cart|checkout|orders(?:\/|$)|favorites|compare|outfits|wishlist\/shared(?:\/|$)|mini-app)(?:\/|$)/;
     if (

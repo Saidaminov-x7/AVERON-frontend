@@ -12,7 +12,7 @@ export function StatusPage({ code, eyebrow, title, description, icon: Icon, onRe
         <div className="relative flex min-h-64 flex-col justify-between overflow-hidden bg-[var(--color-surface-soft)] p-8 text-[var(--color-text)] md:min-h-[440px] md:p-12">
           <div className="absolute -right-16 -top-16 h-64 w-64 border border-[var(--color-border)]" /><div className="absolute -bottom-20 -left-20 h-72 w-72 border border-[var(--color-border)]" />
           <div className="relative flex items-center gap-3 text-xs font-bold tracking-[.22em]"><span>AVERON</span><span className="h-1.5 w-1.5 bg-[var(--color-primary)]" /></div>
-          <div className="relative"><p className="text-[5.5rem] font-semibold leading-none tracking-[-.08em] md:text-[7rem]">{code}</p><p className="mt-4 max-w-xs text-sm leading-6 text-[var(--color-text-secondary)]">Цифровой магазин продолжает работать — эта страница просто недоступна.</p></div>
+          <div className="relative"><p className="text-[length:var(--font-size-display)] font-semibold leading-none tracking-[-.08em] md:text-[length:var(--font-size-display)]">{code}</p><p className="mt-4 max-w-xs text-sm leading-6 text-[var(--color-text-secondary)]">Цифровой магазин продолжает работать — эта страница просто недоступна.</p></div>
         </div>
         <div className="flex flex-col justify-center bg-[var(--color-surface)] p-8 md:p-12">
           <div className="mb-8 flex h-12 w-12 items-center justify-center border border-[var(--color-border)] text-[var(--color-primary)]"><Icon size={22} strokeWidth={1.7} /></div>

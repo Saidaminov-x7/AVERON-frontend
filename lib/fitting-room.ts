@@ -8,6 +8,12 @@ export function clampFittingRotation(value: number) {
   return Math.max(MIN_FITTING_ROTATION, Math.min(MAX_FITTING_ROTATION, value));
 }
 
+export function rotateFittingWithArrow(value: number, key: string) {
+  if (key === 'ArrowLeft') return clampFittingRotation(value - 0.16);
+  if (key === 'ArrowRight') return clampFittingRotation(value + 0.16);
+  return value;
+}
+
 export type FittingAsset = {
   id: string;
   variantId: string | null;
@@ -19,6 +25,27 @@ export type FittingAsset = {
   scale: number;
   url: string;
 };
+
+export function shouldFallbackToFittingPhoto(
+  assets: readonly Pick<FittingAsset, 'mannequinVersion'>[],
+  hasMissingGarment = false,
+): boolean {
+  return hasMissingGarment || assets.length === 0 || assets.some((asset) => asset.mannequinVersion !== 'averon-neutral-v1');
+}
+
+export function getFittingFallbackImageUrl(
+  items: readonly { asset: Pick<FittingAsset, 'mannequinVersion'> | null; imageUrl: string | null }[],
+  defaultImageUrl?: string | null,
+) {
+  return items.find((item) => !item.asset || item.asset.mannequinVersion !== 'averon-neutral-v1')?.imageUrl ?? defaultImageUrl ?? null;
+}
+
+export function getVariantFittingAsset<T extends Pick<FittingAsset, 'variantId'>>(
+  assets: readonly T[],
+  variantId: string | null,
+): T | undefined {
+  return assets.find((asset) => asset.variantId === variantId);
+}
 
 export type FittingProduct = {
   id: string;

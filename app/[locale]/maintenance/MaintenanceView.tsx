@@ -96,11 +96,11 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
   };
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+    <div className="min-h-screen bg-surface-soft text-ink-soft flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
       <div className="max-w-lg w-full space-y-6 animate-in fade-in duration-200 relative z-10">
         <div className="relative mx-auto w-20 h-20 border border-white/20 bg-white/5 flex items-center justify-center text-white">
           <Hammer className="w-10 h-10" />
-          <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-bold text-xs">
+          <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-surface-soft text-ink flex items-center justify-center font-bold text-xs">
             !
           </div>
         </div>
@@ -109,14 +109,14 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
             Технические работы
           </h1>
-          <p className="text-stone-400 text-base leading-relaxed">
+          <p className="text-ink-soft text-base leading-relaxed">
             {settings.maintenanceMessage ||
               'Сайт находится в разработке. Мы скоро вернемся с обновленной версией!'}
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-stone-900/60 border border-stone-800 text-xs text-stone-400 flex items-center justify-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+        <div className="p-4 rounded-2xl bg-surface-soft border border-line text-xs text-ink-soft flex items-center justify-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-warning shrink-0" />
           <span>Все сервисы платформы временно приостановлены для обновления</span>
         </div>
 
@@ -133,7 +133,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
           {settings.maintenancePasswordEnabled && (
             <button
               onClick={() => setShowPasswordModal(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-200 text-sm font-semibold transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-surface-soft hover:bg-surface-soft border border-line text-ink-soft text-sm font-semibold transition-all"
             >
               <KeyRound className="w-4 h-4 text-primary-400" />
               Ввести пароль
@@ -145,10 +145,10 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
       {/* Модальное окно ввода пароля */}
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-2xl bg-stone-900 border border-stone-800 p-6 shadow-2xl text-left space-y-4">
+          <div className="relative w-full max-w-md rounded-2xl bg-surface-soft border border-line p-6 shadow-2xl text-left space-y-4">
             <button
               onClick={() => setShowPasswordModal(false)}
-              className="absolute top-4 right-4 text-stone-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-ink-soft hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -159,13 +159,13 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
               </div>
               <div>
                 <h3 className="font-bold text-lg text-white">Доступ по паролю</h3>
-                <p className="text-xs text-stone-400">Введите пароль для раннего доступа к сайту</p>
+                <p className="text-xs text-ink-soft">Введите пароль для раннего доступа к сайту</p>
               </div>
             </div>
 
             <form onSubmit={handlePasswordSubmit} className="space-y-4 pt-2">
               <div>
-                <label className="block text-xs font-medium text-stone-300 mb-1.5">
+                <label className="block text-xs font-medium text-ink-soft mb-2">
                   Пароль обхода
                 </label>
                 <input
@@ -175,13 +175,13 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
                   placeholder="Введите пароль..."
                   autoFocus
                   required
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white placeholder-stone-500 text-sm focus:outline-none focus:border-primary-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-surface-soft border border-line text-white placeholder-stone-500 text-sm focus:outline-none focus:border-primary-500 transition-colors"
                 />
               </div>
 
               {passwordError && (
-                <div className="p-3 rounded-xl bg-red-950/50 border border-red-800 text-xs text-red-300 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 shrink-0 text-red-400" />
+                <div className="p-3 rounded-xl bg-surface-soft border border-line text-xs text-error flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-error" />
                   <span>{passwordError}</span>
                 </div>
               )}
@@ -190,14 +190,14 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
                 <button
                   type="button"
                   onClick={() => setShowPasswordModal(false)}
-                  className="px-4 py-2 rounded-xl text-stone-400 hover:text-white text-sm font-medium transition-colors"
+                  className="px-4 py-2 rounded-xl text-ink-soft hover:text-white text-sm font-medium transition-colors"
                 >
                   Отмена
                 </button>
                 <button
                   type="submit"
                   disabled={isVerifying || !password.trim()}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all disabled:opacity-50"
                 >
                   {isVerifying ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />

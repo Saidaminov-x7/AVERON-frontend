@@ -1,9 +1,7 @@
 import type { StoreProduct } from "@/lib/products";
+import { externalBaseURL } from "@/lib/axios";
 
-const apiBaseUrl = (
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://averon-backend-production.up.railway.app"
-).replace(/\/+$/, "");
+const apiBaseUrl = externalBaseURL.replace(/\/+$/, "");
 
 export type CommerceCapabilities = {
   visualSearch: boolean;

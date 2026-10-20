@@ -81,7 +81,7 @@ const SelectValue = forwardRef<HTMLSpanElement, SelectValueProps>(
     const selectedLabel = context?.value ? context.labelMap[context.value] : null;
 
     return (
-      <span ref={ref} className={cn('truncate', !selectedLabel && 'text-stone-400 dark:text-stone-500', className)} {...props}>
+      <span ref={ref} className={cn('truncate', !selectedLabel && 'text-ink-soft dark:text-muted', className)} {...props}>
         {selectedLabel || placeholder}
       </span>
     );
@@ -213,7 +213,7 @@ SelectContent.displayName = 'SelectContent';
 
 const SelectLabel = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('px-2 py-1.5 text-xs font-semibold text-stone-500 dark:text-stone-400', className)} {...props} />
+    <div ref={ref} className={cn('px-2 py-2 text-xs font-semibold text-muted dark:text-ink-soft', className)} {...props} />
   )
 );
 SelectLabel.displayName = 'SelectLabel';
@@ -256,7 +256,7 @@ SelectItem.displayName = 'SelectItem';
 
 const SelectSeparator = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('-mx-1 my-1 h-px bg-stone-100 dark:bg-stone-700', className)} {...props} />
+    <div ref={ref} className={cn('-mx-1 my-1 h-px bg-surface-soft dark:bg-surface-soft', className)} {...props} />
   )
 );
 SelectSeparator.displayName = 'SelectSeparator';

@@ -47,13 +47,13 @@ export function ProductSizeChart({
         <table className="w-full min-w-[420px] border-collapse text-left text-xs">
           <thead>
             <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-soft)] text-[var(--color-text-secondary)]">
-              {activeColumns.map((index) => <th key={headers[index]} scope="col" className="border-r border-[var(--color-border)] px-3 py-2.5 font-semibold last:border-r-0">{headers[index]}</th>)}
+              {activeColumns.map((index) => <th key={headers[index]} scope="col" className="border-r border-[var(--color-border)] px-3 py-3 font-semibold last:border-r-0">{headers[index]}</th>)}
             </tr>
           </thead>
           <tbody>
             {sizeChart.map((row, rowIndex) => (
               <tr key={row.size} className="border-b border-[var(--color-border)] last:border-0">
-                {activeColumns.map((index) => <td key={headers[index]} className={`border-r border-[var(--color-border)] px-3 py-2.5 text-[var(--color-text)] last:border-r-0 ${rowIndex % 2 ? 'bg-[var(--color-surface-soft)]/45' : ''}`}>{valueFor(row, index) ?? '—'}</td>)}
+                {activeColumns.map((index) => <td key={headers[index]} className={`border-r border-[var(--color-border)] px-3 py-3 text-[var(--color-text)] last:border-r-0 ${rowIndex % 2 ? 'bg-[var(--color-surface-soft)]/45' : ''}`}>{valueFor(row, index) ?? '—'}</td>)}
               </tr>
             ))}
           </tbody>

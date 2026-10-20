@@ -184,6 +184,8 @@
     "applying": "Filtrlar qo‘llanmoqda…",
     "invalidPrice": "Narxni faqat raqamlar bilan kiriting.",
     "priceRangeError": "Minimal narx maksimal narxdan katta bo‘lishi mumkin emas.",
+    "categoriesUnavailable": "Toifalarni yuklab bo‘lmadi.",
+    "facetsUnavailable": "Mavjud o‘lcham va ranglarni yuklab bo‘lmadi.",
     "reset": "Tozalash",
     "products": "Mahsulotlar",
     "empty": "Mos mahsulotlar topilmadi",

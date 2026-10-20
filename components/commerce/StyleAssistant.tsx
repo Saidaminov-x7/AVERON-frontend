@@ -66,10 +66,10 @@ export function StyleAssistant({
   }
 
   return (
-    <section className="mt-6 rounded-2xl border border-stone-200 bg-stone-950 p-5 text-white shadow-sm dark:border-white/10" aria-labelledby="averon-style-assistant-title">
+    <section className="mt-6 rounded-2xl border border-line bg-surface-soft p-5 text-white shadow-sm dark:border-white/10" aria-labelledby="averon-style-assistant-title">
       <p className="text-xs font-bold uppercase tracking-[.18em] text-primary-300">AVERON</p>
       <h2 id="averon-style-assistant-title" className="mt-2 text-xl font-extrabold">{t("styleAssistantTitle")}</h2>
-      <p className="mt-1 text-sm text-stone-300">{t("styleAssistantIntro")}</p>
+      <p className="mt-1 text-sm text-ink-soft">{t("styleAssistantIntro")}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         {suggestions(locale).map((value) => (
           <button key={value} type="button" onClick={() => void suggest(value)} disabled={loading} className="min-h-10 rounded-full border border-white/20 px-3 text-xs font-semibold transition hover:border-primary-300 hover:text-primary-200 disabled:opacity-50">
@@ -79,7 +79,7 @@ export function StyleAssistant({
       </div>
       <form onSubmit={submit} className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto]">
         <textarea
-          className="min-h-20 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-stone-400 focus:border-primary-300 focus:ring-2 focus:ring-primary-300/20"
+          className="min-h-20 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-ink-soft focus:border-primary-300 focus:ring-2 focus:ring-primary-300/20"
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
           placeholder={t("styleAssistantPlaceholder")}
@@ -90,19 +90,19 @@ export function StyleAssistant({
           {loading ? t("styleAssistantLoading") : t("styleAssistantSubmit")}
         </button>
       </form>
-      {loading ? <p className="mt-4 text-sm text-stone-300" role="status" aria-live="polite">{t("styleAssistantLoading")}</p> : null}
-      {disabled ? <p className="mt-4 text-sm text-amber-300" role="status">{t("styleAssistantError")}</p> : null}
-      {error ? <p className="mt-4 text-sm text-rose-300" role="alert">{t("styleAssistantError")}</p> : null}
-      {result?.meta.fallbackUsed ? <p className="mt-4 text-sm text-amber-300" role="status">{t("styleAssistantFallback")}</p> : null}
-      {result && !result.complete ? <p className="mt-4 text-sm text-amber-200" role="status">{t("styleAssistantPartial")}</p> : null}
+      {loading ? <p className="mt-4 text-sm text-ink-soft" role="status" aria-live="polite">{t("styleAssistantLoading")}</p> : null}
+      {disabled ? <p className="mt-4 text-sm text-warning" role="status">{t("styleAssistantError")}</p> : null}
+      {error ? <p className="mt-4 text-sm text-error" role="alert">{t("styleAssistantError")}</p> : null}
+      {result?.meta.fallbackUsed ? <p className="mt-4 text-sm text-warning" role="status">{t("styleAssistantFallback")}</p> : null}
+      {result && !result.complete ? <p className="mt-4 text-sm text-warning" role="status">{t("styleAssistantPartial")}</p> : null}
       {result && result.items.length === 0 ? (
-        <p className="mt-4 text-sm text-stone-300" role="status">
+        <p className="mt-4 text-sm text-ink-soft" role="status">
           {result.withinBudget ? t("styleAssistantEmpty") : t("styleAssistantBudgetEmpty")}
         </p>
       ) : null}
       {result && result.items.length > 0 ? (
         <>
-          <p className="mt-4 text-sm text-stone-300">{result.explanation}</p>
+          <p className="mt-4 text-sm text-ink-soft">{result.explanation}</p>
           <p className="mt-3 text-sm font-bold">{t("styleAssistantTotal")}: {Number(result.totalPriceUzs).toLocaleString(locale === "en" ? "en-US" : locale === "uz" ? "uz-UZ" : "ru-RU")} {locale === "en" ? "UZS" : locale === "uz" ? "so‘m" : "сум"}</p>
           <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4" aria-live="polite">
             {result.items.map(({ product }) => <ProductCard key={product.id} product={product} locale={locale} />)}

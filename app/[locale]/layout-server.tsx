@@ -1,13 +1,13 @@
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import LocaleLayout from './layout-client';
+import { externalBaseURL } from '@/lib/axios';
 
 const locales = ['uz', 'en', 'ru'];
 
 async function getServerSiteSettings() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
-    const res = await fetch(`${apiUrl}/site-settings/public`, {
+    const res = await fetch(`${externalBaseURL}/site-settings/public`, {
       next: { revalidate: 60 },
       signal: AbortSignal.timeout(3000),
     });

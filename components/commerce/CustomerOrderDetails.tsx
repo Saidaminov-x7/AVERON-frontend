@@ -100,27 +100,27 @@ function OrderDetailsContent({ success }: { success: boolean }) {
       : [];
 
   return (
-    <main className="min-h-[65vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
+    <main className="min-h-[65vh] bg-surface-soft text-ink dark:bg-surface-soft dark:text-white">
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
         <SmartBackButton fallbackHref={`/${locale}/orders`} />
         {query.isLoading ? (
           <p role="status" className="mt-8">{text.loading}</p>
         ) : query.isError ? (
-          <div role="alert" className="mt-8 rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-800 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-200">
+          <div role="alert" className="mt-8 rounded-2xl border border-line bg-surface-soft p-6 text-error dark:border-line dark:bg-surface-soft dark:text-error">
             <p>{text.error}</p>
             <button type="button" onClick={() => void query.refetch()} className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl border border-current px-4 font-semibold">
               <RefreshCw size={16} />{text.retry}
             </button>
           </div>
         ) : query.data ? (
-          <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6 dark:border-white/10 dark:bg-stone-900">
-            {success && <div className="mb-6 flex gap-3 rounded-xl bg-emerald-50 p-4 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200"><CheckCircle2 className="mt-0.5 shrink-0" /><div><h1 className="font-bold">{text.success}</h1><p className="mt-1 text-sm">{text.successText}</p></div></div>}
+          <section className="mt-6 rounded-2xl border border-line bg-white p-6 dark:border-white/10 dark:bg-surface-soft">
+            {success && <div className="mb-6 flex gap-3 rounded-xl bg-surface-soft p-4 text-success dark:bg-surface-soft dark:text-success"><CheckCircle2 className="mt-1 shrink-0" /><div><h1 className="font-bold">{text.success}</h1><p className="mt-1 text-sm">{text.successText}</p></div></div>}
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <h1 className="text-2xl font-extrabold">{text.title} #{query.data.orderNumber}</h1>
-              <span className="rounded-full bg-stone-100 px-3 py-1 text-sm font-semibold dark:bg-white/10">{statusLabel(query.data.status, locale)}</span>
+              <span className="rounded-full bg-surface-soft px-3 py-1 text-sm font-semibold dark:bg-white/10">{statusLabel(query.data.status, locale)}</span>
             </div>
-            <p className="mt-2 text-sm text-stone-500">{text.number}: {query.data.orderNumber}</p>
-            <section className="mt-7 rounded-xl border border-stone-200 p-4 dark:border-white/10" aria-label={text.progress}>
+            <p className="mt-2 text-sm text-muted">{text.number}: {query.data.orderNumber}</p>
+            <section className="mt-8 rounded-xl border border-line p-4 dark:border-white/10" aria-label={text.progress}>
               <h2 className="font-bold">{text.progress}</h2>
               <ol className="mt-4 space-y-4">
                 {historyEvents.map((event, index) => {
@@ -128,13 +128,13 @@ function OrderDetailsContent({ success }: { success: boolean }) {
                   const isCurrent = event.status === query.data.status && index === historyEvents.length - 1;
                   return (
                     <li key={`${event.status}-${event.createdAt}-${index}`} aria-current={isCurrent ? 'step' : undefined} className="flex items-start gap-3">
-                      <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${isCurrent ? 'bg-emerald-700 text-white' : 'border border-stone-300 text-stone-400 dark:border-stone-600'}`}>
+                      <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${isCurrent ? 'bg-surface-soft text-white' : 'border border-line text-ink-soft dark:border-line'}`}>
                         {isCurrent ? <CheckCircle2 size={15} aria-hidden="true" /> : <Circle size={12} aria-hidden="true" />}
                       </span>
                       <div>
-                        <p className={`text-sm ${isCurrent ? 'font-bold' : 'font-medium text-stone-600 dark:text-stone-300'}`}>{statusLabel(event.status, locale)}</p>
-                        {formattedDate && <p className="mt-1 text-xs text-stone-500">{text.createdOn}: <time dateTime={event.createdAt}>{formattedDate}</time></p>}
-                        {event.note && <p className="mt-1 text-xs text-stone-500">{text.note}: {event.note}</p>}
+                        <p className={`text-sm ${isCurrent ? 'font-bold' : 'font-medium text-muted dark:text-ink-soft'}`}>{statusLabel(event.status, locale)}</p>
+                        {formattedDate && <p className="mt-1 text-xs text-muted">{text.createdOn}: <time dateTime={event.createdAt}>{formattedDate}</time></p>}
+                        {event.note && <p className="mt-1 text-xs text-muted">{text.note}: {event.note}</p>}
                       </div>
                     </li>
                   );
@@ -142,27 +142,27 @@ function OrderDetailsContent({ success }: { success: boolean }) {
               </ol>
             </section>
             {query.data.delivery && (
-              <section className="mt-5 rounded-xl border border-stone-200 p-4 dark:border-white/10" aria-label={deliveryText.title}>
+              <section className="mt-5 rounded-xl border border-line p-4 dark:border-white/10" aria-label={deliveryText.title}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h2 className="font-bold">{deliveryText.title}</h2>
-                  <span className="rounded-full bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-900 dark:bg-sky-950/60 dark:text-sky-100">
+                  <span className="rounded-full bg-surface-soft px-3 py-1 text-sm font-semibold text-info dark:bg-surface-soft dark:text-info">
                     {deliveryStatusCopy[query.data.delivery.status]?.[locale] ?? query.data.delivery.status}
                   </span>
                 </div>
                 <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-                  <div><dt className="text-xs text-stone-500">{deliveryText.method}</dt><dd>{query.data.delivery.method === 'PICKUP' ? deliveryText.pickup : deliveryText.courier}</dd></div>
-                  {query.data.delivery.provider && <div><dt className="text-xs text-stone-500">{deliveryText.provider}</dt><dd>{query.data.delivery.provider}</dd></div>}
-                  {query.data.delivery.trackingNumber && <div className="min-w-0"><dt className="text-xs text-stone-500">{deliveryText.tracking}</dt><dd className="break-all font-mono">{query.data.delivery.trackingNumber}</dd></div>}
+                  <div><dt className="text-xs text-muted">{deliveryText.method}</dt><dd>{query.data.delivery.method === 'PICKUP' ? deliveryText.pickup : deliveryText.courier}</dd></div>
+                  {query.data.delivery.provider && <div><dt className="text-xs text-muted">{deliveryText.provider}</dt><dd>{query.data.delivery.provider}</dd></div>}
+                  {query.data.delivery.trackingNumber && <div className="min-w-0"><dt className="text-xs text-muted">{deliveryText.tracking}</dt><dd className="break-all font-mono">{query.data.delivery.trackingNumber}</dd></div>}
                   {query.data.delivery.estimatedDeliveryAt && formatOrderDateTime(query.data.delivery.estimatedDeliveryAt, locale) && (
-                    <div><dt className="text-xs text-stone-500">{deliveryText.estimate}</dt><dd><time dateTime={query.data.delivery.estimatedDeliveryAt}>{formatOrderDateTime(query.data.delivery.estimatedDeliveryAt, locale)}</time></dd></div>
+                    <div><dt className="text-xs text-muted">{deliveryText.estimate}</dt><dd><time dateTime={query.data.delivery.estimatedDeliveryAt}>{formatOrderDateTime(query.data.delivery.estimatedDeliveryAt, locale)}</time></dd></div>
                   )}
                 </dl>
                 {query.data.delivery.history.length > 0 && (
-                  <ol className="mt-4 space-y-3 border-l-2 border-stone-200 pl-4 dark:border-stone-700">
+                  <ol className="mt-4 space-y-3 border-l-2 border-line pl-4 dark:border-line">
                     {query.data.delivery.history.map((event, index) => (
                       <li key={`${event.status}-${event.createdAt}-${index}`} className="relative text-sm">
                         <span className="font-semibold">{deliveryStatusCopy[event.status]?.[locale] ?? event.status}</span>
-                        <time className="ml-2 text-xs text-stone-500" dateTime={event.createdAt}>{formatOrderDateTime(event.createdAt, locale)}</time>
+                        <time className="ml-2 text-xs text-muted" dateTime={event.createdAt}>{formatOrderDateTime(event.createdAt, locale)}</time>
                       </li>
                     ))}
                   </ol>
@@ -170,7 +170,7 @@ function OrderDetailsContent({ success }: { success: boolean }) {
               </section>
             )}
             {(query.data.shipments?.length ?? 0) > 0 && (
-              <section className="mt-5 rounded-xl border border-stone-200 p-4 dark:border-white/10" aria-label={text.shipments}>
+              <section className="mt-5 rounded-xl border border-line p-4 dark:border-white/10" aria-label={text.shipments}>
                 <h2 className="font-bold">{text.shipments}</h2>
                 <ul className="mt-3 space-y-4">
                   {query.data.shipments!.map((shipment, index) => (
@@ -185,18 +185,18 @@ function OrderDetailsContent({ success }: { success: boolean }) {
                 </ul>
               </section>
             )}
-            <h2 className="mt-7 font-bold">{text.items}</h2>
+            <h2 className="mt-8 font-bold">{text.items}</h2>
             <ul className="mt-3 divide-y divide-stone-200 dark:divide-white/10">
               {query.data.items.map((item, index) => (
                 <li key={`${item.title}-${index}`} className="flex justify-between gap-4 py-3 text-sm">
                   <span>
                     {item.title}{item.variantSnapshot && [item.variantSnapshot.color, item.variantSnapshot.size].filter(Boolean).length ? ` · ${[item.variantSnapshot.color, item.variantSnapshot.size].filter(Boolean).join(' · ')}` : ''} × {item.quantity}
-                    {item.isPreorder && <span className="ml-2 inline-flex rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold text-sky-800 dark:bg-sky-950/60 dark:text-sky-200">{text.preorder}</span>}
+                    {item.isPreorder && <span className="ml-2 inline-flex rounded-full bg-surface-soft px-2 py-1 text-xs font-semibold text-info dark:bg-surface-soft dark:text-info">{text.preorder}</span>}
                     {item.isPreorder && item.estimatedAvailableAt && formatOrderDateTime(item.estimatedAvailableAt, locale) && (
-                      <span className="mt-1 block text-xs text-stone-500">{text.preorderDate}: {formatOrderDateTime(item.estimatedAvailableAt, locale)}</span>
+                      <span className="mt-1 block text-xs text-muted">{text.preorderDate}: {formatOrderDateTime(item.estimatedAvailableAt, locale)}</span>
                     )}
                     {item.reviewEligible && item.reviewToken && item.productSlug && (
-                      <Link href={`/${locale}/catalog/${encodeURIComponent(item.productSlug)}?reviewOrderNumber=${encodeURIComponent(query.data.orderNumber)}#reviews`} className="mt-2 inline-flex min-h-9 items-center rounded-lg border border-primary-700 px-3 text-xs font-bold text-primary-800 hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 dark:border-primary-300 dark:text-primary-200 dark:hover:bg-white/10">
+                      <Link href={`/${locale}/catalog/${encodeURIComponent(item.productSlug)}?reviewOrderNumber=${encodeURIComponent(query.data.orderNumber)}#reviews`} className="mt-2 inline-flex min-h-9 items-center rounded-lg border border-primary-700 px-3 text-xs font-bold text-primary-800 hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-primary-300 dark:text-primary-200 dark:hover:bg-white/10">
                         {item.reviewStatus ? text.yourReview : text.review}
                       </Link>
                     )}
@@ -205,41 +205,41 @@ function OrderDetailsContent({ success }: { success: boolean }) {
                 </li>
               ))}
             </ul>
-            <dl className="mt-5 space-y-2 border-t border-stone-200 pt-4 text-sm dark:border-white/10">
+            <dl className="mt-5 space-y-2 border-t border-line pt-4 text-sm dark:border-white/10">
               <div className="flex justify-between gap-3"><dt>{text.subtotal}</dt><dd>{formatUzs(query.data.subtotal, locale)}</dd></div>
               {Number(query.data.discount) > 0 && <div className="flex justify-between gap-3"><dt>{text.discount}</dt><dd>-{formatUzs(query.data.discount, locale)}</dd></div>}
               <div className="flex justify-between gap-3"><dt>{text.delivery}</dt><dd>{formatUzs(query.data.deliveryCost, locale)}</dd></div>
-              <div className="flex justify-between gap-3 border-t border-stone-200 pt-3 text-base font-extrabold dark:border-white/10"><dt>{text.total}</dt><dd>{formatUzs(query.data.totalRevenue, locale)}</dd></div>
+              <div className="flex justify-between gap-3 border-t border-line pt-3 text-base font-extrabold dark:border-white/10"><dt>{text.total}</dt><dd>{formatUzs(query.data.totalRevenue, locale)}</dd></div>
             </dl>
             {(query.data.status === 'CREATED' || query.data.status === 'CONFIRMED') && (
-              <p className="mt-5 rounded-xl bg-stone-50 p-3 text-sm text-stone-600 dark:bg-stone-950 dark:text-stone-300">{text.notPaid}</p>
+              <p className="mt-5 rounded-xl bg-surface-soft p-3 text-sm text-muted dark:bg-surface-soft dark:text-ink-soft">{text.notPaid}</p>
             )}
             {query.data.status === 'CREATED' && (
-              <div className="mt-5 border-t border-stone-200 pt-4 dark:border-white/10">
+              <div className="mt-5 border-t border-line pt-4 dark:border-white/10">
                 {confirmCancellation ? (
                   <div className="space-y-3" role="group" aria-label={text.cancel}>
-                    <p className="text-sm text-stone-600 dark:text-stone-300">{text.cancelPrompt}</p>
+                    <p className="text-sm text-muted dark:text-ink-soft">{text.cancelPrompt}</p>
                     <div className="flex flex-wrap gap-3">
                       <Button
                         type="button"
                         loading={cancellation.isPending}
                         loadingLabel={text.cancelling}
                         onClick={() => cancellation.mutate()}
-                        className="min-h-10 rounded-xl bg-rose-700 px-4 text-sm font-bold text-white hover:bg-rose-800 focus-visible:ring-rose-500"
+                        className="min-h-10 rounded-xl bg-error px-4 text-sm font-bold text-on-primary hover:bg-error focus-visible:ring-primary"
                       >
                         {text.confirmCancel}
                       </Button>
-                      <button type="button" disabled={cancellation.isPending} onClick={() => setConfirmCancellation(false)} className="min-h-10 rounded-xl border border-stone-300 px-4 text-sm font-semibold hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 disabled:opacity-50 dark:border-white/15 dark:hover:bg-white/5">
+                      <button type="button" disabled={cancellation.isPending} onClick={() => setConfirmCancellation(false)} className="min-h-10 rounded-xl border border-line px-4 text-sm font-semibold hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 dark:border-white/15 dark:hover:bg-white/5">
                         {text.keepOrder}
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => setConfirmCancellation(true)} className="min-h-10 rounded-xl border border-rose-300 px-4 text-sm font-semibold text-rose-700 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-rose-900 dark:text-rose-300 dark:hover:bg-rose-950/30">
+                  <button type="button" onClick={() => setConfirmCancellation(true)} className="min-h-10 rounded-xl border border-line px-4 text-sm font-semibold text-error hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-line dark:text-error dark:hover:bg-surface-soft">
                     {text.cancel}
                   </button>
                 )}
-                {cancellation.isError && <p role="alert" className="mt-3 text-sm text-rose-700 dark:text-rose-300">{text.cancelError}</p>}
+                {cancellation.isError && <p role="alert" className="mt-3 text-sm text-error dark:text-error">{text.cancelError}</p>}
               </div>
             )}
           </section>

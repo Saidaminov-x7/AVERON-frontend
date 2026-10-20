@@ -185,13 +185,13 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
     return (
       <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-200">
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-stone-900 dark:text-white">Подтверждение номера телефона</p>
-          <p className="text-xs text-stone-500 dark:text-stone-400">
+          <p className="text-sm font-semibold text-ink dark:text-white">Подтверждение номера телефона</p>
+          <p className="text-xs text-muted dark:text-ink-soft">
             Для завершения регистрации подтвердите номер телефона по SMS
           </p>
         </div>
         {error && (
-          <div className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-xs text-red-500">
+          <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-soft px-3 py-3 text-xs text-error">
             <AlertCircle size={14} /> {error}
           </div>
         )}
@@ -200,12 +200,12 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+998 90 123 45 67"
-            className="h-10 flex-1 rounded-xl border border-stone-200 bg-white px-4 text-sm text-stone-900 placeholder-stone-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-stone-900 dark:text-white"
+            className="h-10 flex-1 rounded-xl border border-line bg-white px-4 text-sm text-ink placeholder-stone-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-surface-soft dark:text-white"
           />
           <button
             type="button"
             onClick={sendOtp}
-            className="flex h-10 items-center gap-1.5 rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white hover:bg-primary-500 transition-colors"
+            className="flex h-10 items-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white hover:bg-primary-500 transition-colors"
           >
             <ArrowRight size={16} />
           </button>
@@ -219,11 +219,11 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
     return (
       <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-200">
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-stone-900 dark:text-white">Введите код из SMS</p>
-          <p className="text-xs text-stone-500 dark:text-stone-400">Отправлен на {phone}</p>
+          <p className="text-sm font-semibold text-ink dark:text-white">Введите код из SMS</p>
+          <p className="text-xs text-muted dark:text-ink-soft">Отправлен на {phone}</p>
         </div>
         {error && (
-          <div className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-xs text-red-500">
+          <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-soft px-3 py-3 text-xs text-error">
             <AlertCircle size={14} /> {error}
           </div>
         )}
@@ -232,7 +232,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
           placeholder="6-значный код"
           maxLength={6}
-          className="h-10 w-full rounded-xl border border-stone-200 bg-white px-4 text-center text-lg font-mono font-bold tracking-widest text-stone-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-stone-900 dark:text-white"
+          className="h-10 w-full rounded-xl border border-line bg-white px-4 text-center text-lg font-mono font-bold tracking-widest text-ink outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-surface-soft dark:text-white"
         />
         <div className="flex gap-2">
           <button
@@ -247,7 +247,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
             type="button"
             onClick={sendOtp}
             disabled={countdown > 0}
-            className="flex h-10 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 text-xs text-stone-600 hover:text-stone-900 disabled:opacity-40 dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 transition-colors"
+            className="flex h-10 items-center gap-2 rounded-xl border border-line bg-white px-3 text-xs text-muted hover:text-ink disabled:opacity-40 dark:border-white/10 dark:bg-surface-soft dark:text-ink-soft transition-colors"
           >
             <RefreshCw size={13} />
             {countdown > 0 ? `${countdown}с` : 'Ещё раз'}
@@ -268,7 +268,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
   return (
     <div className="w-full space-y-2">
       {error && (
-        <div className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-500">
+        <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-soft px-3 py-2 text-xs text-error">
           <AlertCircle size={14} /> {error}
         </div>
       )}
@@ -280,7 +280,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           setStep('loading');
           loginWithGoogle();
         }}
-        className="flex h-10 w-full items-center justify-center gap-2.5 rounded-xl border border-stone-200 bg-white px-4 text-sm font-semibold text-stone-700 shadow-xs transition-colors hover:bg-stone-50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800"
+        className="flex h-10 w-full items-center justify-center gap-3 rounded-xl border border-line bg-white px-4 text-sm font-semibold text-ink-soft shadow-xs transition-colors hover:bg-surface-soft active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-surface-soft dark:text-ink-soft dark:hover:bg-surface-soft"
       >
         {step === 'loading' ? (
           <svg className="h-4 w-4 animate-spin text-primary-600" viewBox="0 0 24 24" fill="none">

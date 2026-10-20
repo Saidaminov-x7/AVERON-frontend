@@ -230,7 +230,7 @@ export function ProductGallery({
             key={selectedImage.url}
             src={selectedImage.url}
             alt={selectedAlt}
-            fit="contain"
+            fit="cover"
             zoomOnHover={false}
             onLoad={(width, height) => {
               const ratio = width / height;
@@ -261,7 +261,7 @@ export function ProductGallery({
             </button>
           </>
         )}
-        <span className="absolute bottom-2 right-2 z-10 rounded-sm bg-[var(--color-surface)]/95 px-2 py-1 text-[11px] font-medium tabular-nums text-[var(--color-text)] sm:bottom-3 sm:right-3" aria-live="polite">
+        <span className="absolute bottom-2 right-2 z-10 rounded-sm bg-[var(--color-surface)]/95 px-2 py-1 text-[length:var(--font-size-caption)] font-medium tabular-nums text-[var(--color-text)] sm:bottom-3 sm:right-3" aria-live="polite">
           {selectedIndex + 1} / {images.length}
         </span>
       </div>
@@ -281,7 +281,7 @@ export function ProductGallery({
               <ProductImage
                 src={image.url}
                 alt=""
-                fit="contain"
+                fit="cover"
                 zoomOnHover={false}
               />
             </button>
@@ -293,7 +293,7 @@ export function ProductGallery({
           role="dialog"
           aria-modal="true"
           aria-label={label}
-          className="fixed inset-0 z-[100] flex flex-col bg-neutral-950 text-white"
+          className="fixed inset-0 z-[100] flex flex-col bg-image-surface text-white"
           onClick={(event) => {
             if (event.target === event.currentTarget) setViewerOpen(false);
           }}

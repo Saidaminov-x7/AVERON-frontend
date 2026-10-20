@@ -1,6 +1,7 @@
 // lib/firebase.ts
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { shouldUseFirebaseAuthEmulator } from './firebaseAuthPolicy';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -28,4 +29,16 @@ const app = requiredFirebaseConfig.every(Boolean)
     : initializeApp(firebaseConfig)
   : null;
 
-export const firebaseAuth = app ? getAuth(app) : null;
+const auth = app ? getAuth(app) : null;
+const useAuthEmulator = shouldUseFirebaseAuthEmulator({
+  NODE_ENV: process.env.NODE_ENV,
+  VITEST: process.env.VITEST,
+  JEST_WORKER_ID: process.env.JEST_WORKER_ID,
+  NEXT_PUBLIC_AVERON_RUNTIME_TARGET: process.env.NEXT_PUBLIC_AVERON_RUNTIME_TARGET,
+});
+
+if (auth && useAuthEmulator) {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+}
+
+export const firebaseAuth = auth;

@@ -356,7 +356,7 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, '\\u003c') }}
       />
-      <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
+      <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <SmartBackButton fallbackHref={catalogHref} />
           <nav aria-label={copy.productDetails} className="hidden min-w-0 items-center gap-2 truncate text-xs text-[var(--color-muted)] sm:flex">
@@ -373,7 +373,7 @@ export default async function ProductPage({
             <span className="truncate text-[var(--color-text)]">{plainTitle}</span>
           </nav>
         </div>
-        <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(340px,.95fr)] lg:gap-6 xl:gap-6">
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(360px,.8fr)] lg:gap-8 xl:gap-12">
           <div className="min-w-0">
             <ProductGallery
               images={product.images ?? []}
@@ -390,7 +390,7 @@ export default async function ProductPage({
             />
           </div>
           <section className="min-w-0">
-            <h1 className="averon-title mt-2 text-2xl leading-tight sm:text-3xl lg:text-[2rem]">
+            <h1 className="averon-title mt-2 text-2xl leading-tight font-semibold sm:text-3xl lg:text-[length:var(--font-size-h2)]">
               <ProductRichText content={title} inline />
             </h1>
 
@@ -426,7 +426,7 @@ export default async function ProductPage({
           </section>
         </div>
       </div>
-      <section className="mx-auto max-w-[1440px] px-4 pb-12 sm:px-6 lg:px-10">
+      <section className="mx-auto max-w-[1440px] px-4 pb-12 sm:px-6 lg:px-8">
         <div className="border-t border-[var(--color-border)] pt-8 sm:pt-10">
           <div className={`grid items-start gap-8 ${product.sizeChartType ? 'lg:grid-cols-2 lg:gap-0' : ''}`}>
             <div className={`min-w-0 ${product.sizeChartType ? 'lg:border-r lg:border-[var(--color-border)] lg:pr-8' : ''}`}>
@@ -434,7 +434,7 @@ export default async function ProductPage({
                 <h2 id="product-description-title" className="text-xl font-semibold tracking-tight text-[var(--color-text)] sm:text-2xl">
                   {copy.descriptionTitle}
                 </h2>
-                <div className="mt-4 max-w-[72ch] whitespace-pre-line break-words text-[15px] leading-7 text-[var(--color-text-secondary)]">
+                <div className="mt-4 max-w-[72ch] whitespace-pre-line break-words text-[length:var(--font-size-body)] leading-6 text-[var(--color-text-secondary)]">
                   <ProductRichText content={description} />
                 </div>
               </article>
