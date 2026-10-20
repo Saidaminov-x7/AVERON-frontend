@@ -191,7 +191,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           </p>
         </div>
         {error && (
-          <div className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-xs text-red-500">
+          <div className="flex items-center gap-2 rounded-xl border border-default bg-error px-3 py-2.5 text-xs text-error">
             <AlertCircle size={14} /> {error}
           </div>
         )}
@@ -223,7 +223,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           <p className="text-xs text-stone-500 dark:text-stone-400">Отправлен на {phone}</p>
         </div>
         {error && (
-          <div className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-xs text-red-500">
+          <div className="flex items-center gap-2 rounded-xl border border-default bg-error px-3 py-2.5 text-xs text-error">
             <AlertCircle size={14} /> {error}
           </div>
         )}
@@ -268,7 +268,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
   return (
     <div className="w-full space-y-2">
       {error && (
-        <div className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-500">
+        <div className="flex items-center gap-2 rounded-xl border border-default bg-error px-3 py-2 text-xs text-error">
           <AlertCircle size={14} /> {error}
         </div>
       )}
