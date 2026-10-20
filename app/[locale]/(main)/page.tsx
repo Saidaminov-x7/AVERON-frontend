@@ -106,7 +106,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@graph': [{ '@type': 'Organization', name: 'AVERON', url: SITE_URL }, { '@type': 'WebSite', name: 'AVERON', url: `${SITE_URL}/${locale}`, inLanguage: locale }] }).replace(/</g, '\\u003c') }} />
-      <div className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto flex min-h-9 max-w-[1440px] items-center justify-between px-4 text-[length:var(--font-size-caption)] font-semibold uppercase tracking-[.08em] sm:px-8 lg:px-12"><span className="truncate">{c.route}</span><span className="hidden text-[var(--color-muted)] md:block">RU · UZ · EN</span></div></div>
+      <div className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto flex min-h-9 max-w-[1440px] items-center justify-between gap-3 px-4 py-2 text-[length:var(--font-size-caption)] font-semibold uppercase leading-4 tracking-[.08em] sm:px-8 lg:px-12"><span className="min-w-0 flex-1 whitespace-normal break-words">{c.route}</span><span className="hidden shrink-0 text-[var(--color-muted)] md:block">RU · UZ · EN</span></div></div>
 
       <section className="mx-auto max-w-[1440px] px-4 py-6 sm:px-8 lg:px-12">
         <div className="bg-[var(--color-surface-soft)] px-6 py-10 sm:px-10 sm:py-12 lg:px-12">

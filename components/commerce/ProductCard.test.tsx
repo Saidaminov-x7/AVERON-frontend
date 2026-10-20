@@ -80,11 +80,13 @@ describe('ProductCard', () => {
     expect(useCompareStore.getState().ids).toEqual([]);
   });
 
-  it('keeps the favorite action the same size on hover as comparison', () => {
+  it('keeps compare and favorite actions at a 44px touch target', () => {
     render(<ProductCard product={product} locale="ru" />);
 
     const favoriteButton = screen.getByRole('button', { name: 'Добавить в избранное' });
-    expect(favoriteButton).toHaveClass('size-9', 'transition-colors');
+    const compareButton = screen.getByRole('button', { name: 'Добавить к сравнению' });
+    expect(favoriteButton).toHaveClass('size-11', 'transition-colors');
+    expect(compareButton).toHaveClass('size-11', 'transition-colors');
     expect(favoriteButton.className).not.toContain('hover:scale');
   });
 

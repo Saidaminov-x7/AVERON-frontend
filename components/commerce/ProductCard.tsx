@@ -208,7 +208,7 @@ export function ProductCard({
           aria-label={labels.compare}
           aria-pressed={isCompared}
           onClick={toggleComparedProduct}
-          className={`flex size-9 items-center justify-center rounded-sm ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] ${compareButtonStateClass}`}
+          className={`flex size-11 items-center justify-center rounded-sm ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] ${compareButtonStateClass}`}
         >
           <Scale size={17} />
         </button>
@@ -218,7 +218,7 @@ export function ProductCard({
           aria-pressed={isFavorite}
           disabled={favoritePending}
           onClick={() => void toggleFavoriteProduct()}
-          className={`flex size-9 items-center justify-center rounded-sm ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] disabled:cursor-wait disabled:opacity-60 ${
+          className={`flex size-11 items-center justify-center rounded-sm ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] disabled:cursor-wait disabled:opacity-60 ${
             isFavorite
               ? 'bg-[var(--color-text)] text-[var(--color-surface)] ring-[var(--color-text)]'
               : 'bg-[var(--color-surface)] text-[var(--color-text)] ring-[var(--color-border)] hover:bg-[var(--color-surface-soft)] hover:ring-[var(--color-border-hover)]'
