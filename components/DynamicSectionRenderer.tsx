@@ -220,7 +220,7 @@ export function DynamicSectionRenderer({
                     <h2 className="mb-4 text-2xl font-extrabold tracking-tight sm:text-3xl md:text-4xl">{title}</h2>
                     <p className="mb-2 md:mb-0 text-sm sm:text-base text-primary-100">{text}</p>
                   </div>
-                  <Button size="lg" className="bg-surface text-primary-900 hover:bg-surface-soft font-semibold shrink-0" asChild>
+                  <Button size="lg" className="bg-surface text-ink hover:bg-surface-soft font-semibold shrink-0" asChild>
                     <Link href={`/${locale}${buttonLink.startsWith('/') ? buttonLink : `/${buttonLink}`}`}>
                       {buttonText}
                     </Link>
@@ -332,7 +332,7 @@ export function DynamicSectionRenderer({
                     >
                       <summary className="flex cursor-pointer items-center justify-between gap-3 font-semibold text-ink dark:text-white">
                         <span>{item.question}</span>
-                        <span className="shrink-0 rounded-full bg-surface-soft p-1.5 text-ink dark:bg-surface/10 dark:text-white transition group-open:-rotate-180">
+                        <span className="shrink-0 rounded-full bg-surface-soft p-2 text-ink dark:bg-surface/10 dark:text-white transition group-open:-rotate-180">
                           <Icons.ChevronDown size={16} />
                         </span>
                       </summary>
@@ -380,17 +380,17 @@ export function DynamicSectionRenderer({
                 {(c.workingHours || c.socials?.telegram || c.socials?.instagram) && (
                   <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-muted dark:text-ink-soft">
                     {c.workingHours && (
-                      <span className="flex items-center gap-1.5">
+                      <span className="flex items-center gap-2">
                         <Icons.Clock size={14} /> {c.workingHours}
                       </span>
                     )}
                     {c.socials?.telegram && (
-                      <a href={c.socials.telegram} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-primary-600">
+                      <a href={c.socials.telegram} target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary-600">
                         <DynamicIcon name="Send" size={14} /> Telegram
                       </a>
                     )}
                     {c.socials?.instagram && (
-                      <a href={c.socials.instagram} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-primary-600">
+                      <a href={c.socials.instagram} target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary-600">
                         <DynamicIcon name="Instagram" size={14} /> Instagram
                       </a>
                     )}

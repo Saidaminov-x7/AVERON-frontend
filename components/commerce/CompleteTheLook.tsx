@@ -36,7 +36,7 @@ export function CompleteTheLook({
     <section className="mt-12 border-t border-line pt-8 dark:border-white/10" aria-labelledby="complete-the-look-title">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="complete-the-look-title" className="text-2xl font-extrabold">{t("completeTheLookTitle")}</h2>
-        <button type="button" onClick={() => void findLook()} disabled={state === "loading"} aria-busy={state === "loading"} className="min-h-11 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-primary-700 disabled:cursor-wait disabled:opacity-60">
+        <button type="button" onClick={() => void findLook()} disabled={state === "loading"} aria-busy={state === "loading"} className="min-h-11 rounded-xl bg-primary-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-700 disabled:cursor-wait disabled:opacity-60">
           {state === "loading" ? t("completeTheLookLoading") : t("completeTheLookAction")}
         </button>
       </div>

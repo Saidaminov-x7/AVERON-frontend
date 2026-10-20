@@ -174,7 +174,7 @@ function ProfileContent() {
 
   return (
     <main className="mx-auto min-w-0 max-w-7xl overflow-hidden px-4 py-8 sm:px-6 lg:px-8">
-      <section className="rounded-3xl border border-line bg-white p-5 sm:p-7 dark:border-white/10 dark:bg-surface-soft">
+      <section className="rounded-3xl border border-line bg-white p-5 sm:p-8 dark:border-white/10 dark:bg-surface-soft">
         <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
           <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-700">
             <User size={30} />
@@ -184,7 +184,7 @@ function ProfileContent() {
               <h1 className="max-w-full break-words text-2xl font-bold">
                 {user?.name || t("accountName")}
               </h1>
-              <span className="rounded-full bg-surface-soft px-2.5 py-1 text-xs font-bold text-success">
+              <span className="rounded-full bg-surface-soft px-3 py-1 text-xs font-bold text-success">
                 <ShieldCheck className="mr-1 inline" size={13} />
                 {t("active")}
               </span>

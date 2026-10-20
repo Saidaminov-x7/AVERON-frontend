@@ -41,7 +41,7 @@ export default async function AboutPage({
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-center lg:gap-14">
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-center lg:gap-12">
           <div className="py-2">
             <p className="averon-kicker">{t("eyebrow")}</p>
             <h1 className="averon-title mt-5 max-w-3xl text-4xl leading-[1.08] sm:text-6xl lg:text-7xl">
@@ -60,7 +60,7 @@ export default async function AboutPage({
             </div>
           </div>
 
-          <aside className="averon-panel overflow-hidden p-5 sm:p-7" aria-label={t("journeyTitle")}>
+          <aside className="averon-panel overflow-hidden p-5 sm:p-8" aria-label={t("journeyTitle")}>
             <div className="flex items-center gap-3">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface-soft)] text-[var(--color-text)]">
                 <Globe2 size={19} aria-hidden="true" />
@@ -75,7 +75,7 @@ export default async function AboutPage({
               {countries.map((country) => (
                 <span
                   key={country}
-                  className="rounded-full border border-[var(--color-border)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)]"
+                  className="rounded-full border border-[var(--color-border)] px-3 py-2 text-xs font-medium text-[var(--color-text-secondary)]"
                 >
                   {country}
                 </span>
@@ -134,7 +134,7 @@ export default async function AboutPage({
           })}
         </div>
 
-        <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-14">
+        <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-12">
           <div className="max-w-xl">
             <p className="averon-kicker">{t("principle")}</p>
             <h2 className="averon-title mt-3 text-3xl sm:text-4xl">{t("principleTitle")}</h2>
@@ -145,14 +145,14 @@ export default async function AboutPage({
           <ul className="averon-panel grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
             {benefits.map((x) => (
               <li key={x} className="flex items-start gap-3 text-sm font-medium">
-                <CheckCircle2 className="mt-0.5 shrink-0 text-[var(--color-text-secondary)]" size={18} aria-hidden="true" />
+                <CheckCircle2 className="mt-1 shrink-0 text-[var(--color-text-secondary)]" size={18} aria-hidden="true" />
                 {x}
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="mt-12 flex flex-col gap-5 border-t border-[var(--color-border)] pt-7 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-5 border-t border-[var(--color-border)] pt-8 sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-xl">
             <h2 className="averon-title text-2xl">{t("cta")}</h2>
             <p className="mt-2 text-sm text-[var(--color-text-secondary)]">{t("ctaText")}</p>

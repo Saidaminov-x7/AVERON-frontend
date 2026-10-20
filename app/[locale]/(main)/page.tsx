@@ -64,7 +64,7 @@ function ProductShelf({ title, href, products, locale, allLabel }: {
         </Link>
       </div>
       {products.length > 0 ? (
-        <div className="grid grid-cols-2 gap-x-3 gap-y-7 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-3">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-3">
           {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
         </div>
       ) : null}
@@ -106,13 +106,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@graph': [{ '@type': 'Organization', name: 'AVERON', url: SITE_URL }, { '@type': 'WebSite', name: 'AVERON', url: `${SITE_URL}/${locale}`, inLanguage: locale }] }).replace(/</g, '\\u003c') }} />
-      <div className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto flex min-h-9 max-w-[1440px] items-center justify-between px-4 text-[10px] font-semibold uppercase tracking-[.08em] sm:px-8 lg:px-12"><span className="truncate">{c.route}</span><span className="hidden text-[var(--color-muted)] md:block">RU · UZ · EN</span></div></div>
+      <div className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto flex min-h-9 max-w-[1440px] items-center justify-between px-4 text-[length:var(--font-size-caption)] font-semibold uppercase tracking-[.08em] sm:px-8 lg:px-12"><span className="truncate">{c.route}</span><span className="hidden text-[var(--color-muted)] md:block">RU · UZ · EN</span></div></div>
 
       <section className="mx-auto max-w-[1440px] px-4 py-6 sm:px-8 lg:px-12">
-        <div className="bg-[var(--color-surface-soft)] px-6 py-9 sm:px-10 sm:py-11 lg:px-12">
+        <div className="bg-[var(--color-surface-soft)] px-6 py-10 sm:px-10 sm:py-12 lg:px-12">
           <h1 className="averon-title max-w-3xl text-3xl leading-tight sm:text-4xl">{t('heroTitle')}</h1>
           <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--color-muted)] sm:text-base">{t('heroBody')}</p>
-          <Link href={to('/how-to-order')} className="mt-6 inline-flex items-center gap-2 border-b border-current pb-0.5 text-sm font-semibold hover:opacity-60">
+          <Link href={to('/how-to-order')} className="mt-6 inline-flex items-center gap-2 border-b border-current pb-1 text-sm font-semibold hover:opacity-60">
             {locale === 'en' ? 'How to order' : locale === 'uz' ? 'Qanday buyurtma berish' : 'Как заказать'} <ArrowRight size={14} />
           </Link>
         </div>

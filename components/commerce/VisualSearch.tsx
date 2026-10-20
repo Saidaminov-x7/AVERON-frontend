@@ -184,7 +184,7 @@ export function VisualSearch({ locale, country, category }: Props) {
             aria-labelledby="visual-search-title"
             aria-busy={loading}
             onKeyDown={onDialogKeyDown}
-            className="max-h-[95dvh] w-full max-w-3xl overflow-y-auto rounded-t-3xl bg-white p-5 text-ink shadow-2xl dark:bg-surface-soft dark:text-white sm:rounded-3xl sm:p-7"
+            className="max-h-[95dvh] w-full max-w-3xl overflow-y-auto rounded-t-3xl bg-white p-5 text-ink shadow-2xl dark:bg-surface-soft dark:text-white sm:rounded-3xl sm:p-8"
           >
             <div className="flex items-start justify-between gap-4">
               <div>

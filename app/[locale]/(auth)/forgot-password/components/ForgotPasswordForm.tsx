@@ -79,7 +79,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
             <span className="text-xs font-semibold uppercase text-ink-soft">{t.phone}</span>
             <div className="relative mt-2">
               <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" size={17} aria-hidden="true" />
-              <input value={phone} onChange={(event) => setPhone(event.target.value)} inputMode="tel" autoComplete="tel" className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-11 pr-4 text-white outline-none focus:border-primary-500" />
+              <input value={phone} onChange={(event) => setPhone(event.target.value)} inputMode="tel" autoComplete="tel" className="h-12 w-full rounded-xl border border-white/10 bg-white/5 pl-12 pr-4 text-white outline-none focus:border-primary-500" />
             </div>
           </label>
         ) : (
@@ -92,8 +92,8 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
               <label key={label} className="block">
                 <span className="text-xs font-semibold uppercase text-ink-soft">{label}</span>
                 <div className="relative mt-2">
-                  <input type={show ? 'text' : 'password'} value={index ? confirm : password} onChange={(event) => index ? setConfirm(event.target.value) : setPassword(event.target.value)} autoComplete={index ? 'new-password' : 'new-password'} className="h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-11 text-white outline-none focus:border-primary-500" />
-                  {index === 0 ? <button type="button" onClick={() => setShow((visible) => !visible)} aria-label={show ? 'Hide password' : 'Show password'} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{show ? <EyeOff size={17} /> : <Eye size={17} />}</button> : null}
+                  <input type={show ? 'text' : 'password'} value={index ? confirm : password} onChange={(event) => index ? setConfirm(event.target.value) : setPassword(event.target.value)} autoComplete={index ? 'new-password' : 'new-password'} className="h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-12 text-white outline-none focus:border-primary-500" />
+                  {index === 0 ? <button type="button" onClick={() => setShow((visible) => !visible)} aria-label={show ? 'Hide password' : 'Show password'} className="absolute right-3 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-sm text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{show ? <EyeOff size={17} /> : <Eye size={17} />}</button> : null}
                 </div>
               </label>
             ))}
@@ -104,7 +104,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
           loading={loading}
           loadingLabel={t.wait}
           disabled={loading || smsAvailable !== true || (step === 'code' && (code.length !== 6 || password.length < 8))}
-          className="h-12 w-full rounded-xl bg-primary-600 font-semibold text-white hover:bg-primary-500"
+          className="h-12 w-full rounded-xl font-semibold"
         >
           {smsAvailable === false ? t.unavailable : step === 'phone' ? t.send : t.save}
         </Button>

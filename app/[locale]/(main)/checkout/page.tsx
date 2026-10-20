@@ -209,19 +209,19 @@ function CheckoutContent() {
               <fieldset className="space-y-4 rounded-2xl border border-line bg-white p-5 dark:border-white/10 dark:bg-surface-soft">
                 <legend className="px-1 text-lg font-bold">{text.contact}</legend>
                 <label className="block text-sm font-medium">{text.name}
-                  <input required minLength={2} maxLength={100} autoComplete="name" value={contact.name} onChange={(event) => changeDetails('contact', 'name', event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
+                  <input required minLength={2} maxLength={100} autoComplete="name" value={contact.name} onChange={(event) => changeDetails('contact', 'name', event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
                 </label>
                 <label className="block text-sm font-medium">{text.phone}
-                  <input required minLength={7} maxLength={30} autoComplete="tel" inputMode="tel" value={contact.phone} onChange={(event) => changeDetails('contact', 'phone', event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
+                  <input required minLength={7} maxLength={30} autoComplete="tel" inputMode="tel" value={contact.phone} onChange={(event) => changeDetails('contact', 'phone', event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
                 </label>
               </fieldset>
               <fieldset className="space-y-4 rounded-2xl border border-line bg-white p-5 dark:border-white/10 dark:bg-surface-soft">
                 <legend className="px-1 text-lg font-bold">{text.delivery}</legend>
                 <label className="block text-sm font-medium">{text.city}
-                  <input required minLength={2} maxLength={100} autoComplete="address-level2" value={deliveryAddress.city} onChange={(event) => changeDetails('deliveryAddress', 'city', event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
+                  <input required minLength={2} maxLength={100} autoComplete="address-level2" value={deliveryAddress.city} onChange={(event) => changeDetails('deliveryAddress', 'city', event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
                 </label>
                 <label className="block text-sm font-medium">{text.address}
-                  <input required minLength={4} maxLength={300} autoComplete="street-address" value={deliveryAddress.address} onChange={(event) => changeDetails('deliveryAddress', 'address', event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
+                  <input required minLength={4} maxLength={300} autoComplete="street-address" value={deliveryAddress.address} onChange={(event) => changeDetails('deliveryAddress', 'address', event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
                 </label>
                 {([
                   ['apartment', text.apartment, 'address-line2'],
@@ -230,7 +230,7 @@ function CheckoutContent() {
                   ['comment', text.comment, ''],
                 ] as const).map(([key, label, autocomplete]) => (
                   <label key={key} className="block text-sm font-medium">{label}
-                    <input maxLength={key === 'comment' ? 500 : 50} autoComplete={autocomplete || undefined} value={deliveryAddress[key]} onChange={(event) => changeDetails('deliveryAddress', key, event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
+                    <input maxLength={key === 'comment' ? 500 : 50} autoComplete={autocomplete || undefined} value={deliveryAddress[key]} onChange={(event) => changeDetails('deliveryAddress', key, event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
                   </label>
                 ))}
               </fieldset>

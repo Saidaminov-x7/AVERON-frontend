@@ -119,7 +119,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
           type="button"
           onClick={() => openLightbox(currentIndex)}
           aria-label="Открыть во весь экран"
-          className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 text-white text-xs font-semibold backdrop-blur-md transition-all shadow-md cursor-pointer"
+          className="absolute bottom-3 right-3 flex items-center gap-2 px-3 py-2 rounded-xl bg-black/60 hover:bg-black/80 text-white text-xs font-semibold backdrop-blur-md transition-all shadow-md cursor-pointer"
         >
           <Maximize2 size={14} />
           <span>{currentIndex + 1} / {images.length}</span>

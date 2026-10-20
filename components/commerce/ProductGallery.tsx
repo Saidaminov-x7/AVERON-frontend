@@ -261,7 +261,7 @@ export function ProductGallery({
             </button>
           </>
         )}
-        <span className="absolute bottom-2 right-2 z-10 rounded-sm bg-[var(--color-surface)]/95 px-2 py-1 text-[11px] font-medium tabular-nums text-[var(--color-text)] sm:bottom-3 sm:right-3" aria-live="polite">
+        <span className="absolute bottom-2 right-2 z-10 rounded-sm bg-[var(--color-surface)]/95 px-2 py-1 text-[length:var(--font-size-caption)] font-medium tabular-nums text-[var(--color-text)] sm:bottom-3 sm:right-3" aria-live="polite">
           {selectedIndex + 1} / {images.length}
         </span>
       </div>

@@ -181,7 +181,7 @@ function CatalogContent({
             {activeFilters.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-2" aria-label={t("activeFilters")}>
                 {activeFilters.map(([label, value], index) => (
-                  <span key={`${label}-${index}`} className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface-soft px-3 py-1 text-xs font-medium text-ink-soft dark:border-white/10 dark:bg-surface-soft dark:text-ink-soft">
+                  <span key={`${label}-${index}`} className="inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface-soft px-3 py-1 text-xs font-medium text-ink-soft dark:border-white/10 dark:bg-surface-soft dark:text-ink-soft">
                     <span className="text-muted dark:text-ink-soft">{label}:</span>
                     <span className="truncate">{value}</span>
                   </span>
@@ -189,7 +189,7 @@ function CatalogContent({
               </div>
             ) : null}
             {catalogError ? (
-              <div className="mt-5 rounded-2xl border border-line bg-surface-soft px-6 py-14 text-center dark:border-line dark:bg-surface-soft" role="alert">
+              <div className="mt-5 rounded-2xl border border-line bg-surface-soft px-6 py-12 text-center dark:border-line dark:bg-surface-soft" role="alert">
                 <h2 className="text-xl font-bold">
                   {locale === "uz" ? "Mahsulotlarni yuklab bo‘lmadi" : locale === "en" ? "Products could not be loaded" : "Не удалось загрузить товары"}
                 </h2>
@@ -201,7 +201,7 @@ function CatalogContent({
                 </Link>
               </div>
             ) : products.length ? (
-              <div className="catalog-product-grid mt-5 grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:gap-x-5 min-[1400px]:grid-cols-4">
+              <div className="catalog-product-grid mt-5 grid grid-cols-2 gap-x-3 gap-y-8 lg:grid-cols-3 xl:gap-x-5 min-[1400px]:grid-cols-4">
                 {products.map((p) => (
                   <ProductCard
                     key={p.id}

@@ -169,30 +169,30 @@ export function ProductCard({
             } : undefined}
           />
           {(preorderOnly || unavailable) && (
-            <span className="absolute left-2 top-2 bg-[var(--color-overlay)] px-1.5 py-1 text-[9px] font-semibold uppercase tracking-[.06em] text-white">
+            <span className="absolute left-2 top-2 bg-[var(--color-overlay)] px-2 py-1 text-[length:var(--font-size-caption)] font-semibold uppercase tracking-[.06em] text-white">
               {availabilityLabel}
             </span>
           )}
           {secondImageAvailable ? (
-            <div className="absolute bottom-2 left-2 flex gap-1 bg-[var(--color-overlay)] px-1.5 py-1" aria-hidden="true">
+            <div className="absolute bottom-2 left-2 flex gap-1 bg-[var(--color-overlay)] px-2 py-1" aria-hidden="true">
               {images.map((_, index) => <span key={index} className={`h-1 w-1/2 rounded-full transition-colors ${imageIndex === index ? 'bg-white' : 'bg-white/45'}`} />)}
             </div>
           ) : null}
         </div>
         <div className="pt-2">
           {colors.length > 0 && (
-            <div className="mb-1.5 flex items-center gap-1" aria-label={locale === 'en' ? 'Available colors' : locale === 'uz' ? 'Mavjud ranglar' : 'Доступные цвета'}>
+            <div className="mb-2 flex items-center gap-1" aria-label={locale === 'en' ? 'Available colors' : locale === 'uz' ? 'Mavjud ranglar' : 'Доступные цвета'}>
               {colors.slice(0, 6).map(({ name, hex }) => (
                 <span key={`${name}-${hex}`} title={name} className="size-3.5 rounded-full border border-black/10 ring-1 ring-white" style={{ backgroundColor: hex }} />
               ))}
-              {colors.length > 6 ? <span className="ml-0.5 text-[11px] text-[var(--color-muted)]">+{colors.length - 6}</span> : null}
+              {colors.length > 6 ? <span className="ml-1 text-[length:var(--font-size-caption)] text-[var(--color-muted)]">+{colors.length - 6}</span> : null}
             </div>
           )}
           <div className="mb-1 flex min-h-4 items-center gap-2">
-            {discountPercent !== null ? <span aria-label={discountLabel} className="text-[10px] font-bold uppercase tracking-[.04em] text-[var(--color-sale)]">−{discountPercent}%</span> : null}
-            {isNew ? <span className="text-[10px] font-bold uppercase tracking-[.04em] text-[var(--color-text)]">{newLabel}</span> : null}
+            {discountPercent !== null ? <span aria-label={discountLabel} className="text-[length:var(--font-size-caption)] font-bold uppercase tracking-[.04em] text-[var(--color-sale)]">−{discountPercent}%</span> : null}
+            {isNew ? <span className="text-[length:var(--font-size-caption)] font-bold uppercase tracking-[.04em] text-[var(--color-text)]">{newLabel}</span> : null}
           </div>
-          <p className="line-clamp-2 text-sm font-normal leading-[1.4] text-[var(--color-text)] sm:text-[15px]">
+          <p className="line-clamp-2 text-sm font-normal leading-[1.4] text-[var(--color-text)] sm:text-[length:var(--font-size-body)]">
             <ProductRichText content={title} inline />
           </p>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
@@ -202,7 +202,7 @@ export function ProductCard({
         </div>
       </Link>
       {product.fittingRoomAvailable && <div className="mt-2 max-w-40"><FittingRoomTrigger productId={product.id} locale={locale} imageUrl={product.images?.[0]?.url} compact /></div>}
-      <div className="absolute right-2 top-2 flex gap-1.5 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+      <div className="absolute right-2 top-2 flex gap-2 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
         <button
           type="button"
           aria-label={labels.compare}

@@ -114,13 +114,13 @@ function OrderDetailsContent({ success }: { success: boolean }) {
           </div>
         ) : query.data ? (
           <section className="mt-6 rounded-2xl border border-line bg-white p-6 dark:border-white/10 dark:bg-surface-soft">
-            {success && <div className="mb-6 flex gap-3 rounded-xl bg-surface-soft p-4 text-success dark:bg-surface-soft dark:text-success"><CheckCircle2 className="mt-0.5 shrink-0" /><div><h1 className="font-bold">{text.success}</h1><p className="mt-1 text-sm">{text.successText}</p></div></div>}
+            {success && <div className="mb-6 flex gap-3 rounded-xl bg-surface-soft p-4 text-success dark:bg-surface-soft dark:text-success"><CheckCircle2 className="mt-1 shrink-0" /><div><h1 className="font-bold">{text.success}</h1><p className="mt-1 text-sm">{text.successText}</p></div></div>}
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <h1 className="text-2xl font-extrabold">{text.title} #{query.data.orderNumber}</h1>
               <span className="rounded-full bg-surface-soft px-3 py-1 text-sm font-semibold dark:bg-white/10">{statusLabel(query.data.status, locale)}</span>
             </div>
             <p className="mt-2 text-sm text-muted">{text.number}: {query.data.orderNumber}</p>
-            <section className="mt-7 rounded-xl border border-line p-4 dark:border-white/10" aria-label={text.progress}>
+            <section className="mt-8 rounded-xl border border-line p-4 dark:border-white/10" aria-label={text.progress}>
               <h2 className="font-bold">{text.progress}</h2>
               <ol className="mt-4 space-y-4">
                 {historyEvents.map((event, index) => {
@@ -185,13 +185,13 @@ function OrderDetailsContent({ success }: { success: boolean }) {
                 </ul>
               </section>
             )}
-            <h2 className="mt-7 font-bold">{text.items}</h2>
+            <h2 className="mt-8 font-bold">{text.items}</h2>
             <ul className="mt-3 divide-y divide-stone-200 dark:divide-white/10">
               {query.data.items.map((item, index) => (
                 <li key={`${item.title}-${index}`} className="flex justify-between gap-4 py-3 text-sm">
                   <span>
                     {item.title}{item.variantSnapshot && [item.variantSnapshot.color, item.variantSnapshot.size].filter(Boolean).length ? ` · ${[item.variantSnapshot.color, item.variantSnapshot.size].filter(Boolean).join(' · ')}` : ''} × {item.quantity}
-                    {item.isPreorder && <span className="ml-2 inline-flex rounded-full bg-surface-soft px-2 py-0.5 text-xs font-semibold text-info dark:bg-surface-soft dark:text-info">{text.preorder}</span>}
+                    {item.isPreorder && <span className="ml-2 inline-flex rounded-full bg-surface-soft px-2 py-1 text-xs font-semibold text-info dark:bg-surface-soft dark:text-info">{text.preorder}</span>}
                     {item.isPreorder && item.estimatedAvailableAt && formatOrderDateTime(item.estimatedAvailableAt, locale) && (
                       <span className="mt-1 block text-xs text-muted">{text.preorderDate}: {formatOrderDateTime(item.estimatedAvailableAt, locale)}</span>
                     )}

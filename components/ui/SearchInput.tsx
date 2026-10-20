@@ -33,8 +33,8 @@ export function SearchInput({ locale, className = '', placeholder = 'Поиск.
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
-        // Установлена сбалансированная высота h-12 и удобный отступ слева pl-11
-        className={`w-full h-12 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] py-2 pl-11 pr-4 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] transition-shadow duration-200 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${isMobile ? 'pr-10' : ''}`}
+        // Установлена сбалансированная высота h-12 и удобный отступ слева pl-12
+        className={`w-full h-12 rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] py-2 pl-12 pr-4 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] transition-shadow duration-200 focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${isMobile ? 'pr-10' : ''}`}
       />
       
       {isMobile && query && (

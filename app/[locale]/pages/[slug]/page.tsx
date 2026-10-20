@@ -104,7 +104,7 @@ export default function DynamicPage() {
           <div>
             <Link
               href={`/${locale}`}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-colors"
             >
               <ArrowLeft size={16} /> На главную
             </Link>
@@ -140,12 +140,12 @@ export default function DynamicPage() {
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-xs text-ink-soft">
             {page.author?.name && (
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-2">
                 <User size={14} className="text-primary-500" />
                 {page.author.name}
               </span>
             )}
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-2">
               <Calendar size={14} className="text-muted" />
               {new Date(page.updatedAt).toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', {
                 year: 'numeric',

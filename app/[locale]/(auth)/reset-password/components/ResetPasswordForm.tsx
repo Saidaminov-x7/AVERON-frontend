@@ -81,7 +81,7 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-soft border border-line">
             <CheckCircle2 size={32} className="text-success" />
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <h2 className="text-xl font-bold text-white">{t('successTitle')}</h2>
             <p className="text-sm text-ink-soft">{t('successMessage')}</p>
           </div>
@@ -99,7 +99,7 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         <div className="flex items-center gap-2 mb-1">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500/10 border border-primary-500/20">
             <KeyRound size={16} className="text-primary-400" />
@@ -111,7 +111,7 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
 
       {serverError && (
         <div className="flex items-start gap-3 rounded-xl border border-line bg-surface-soft px-4 py-3 text-sm text-error animate-in fade-in duration-200">
-          <AlertCircle size={16} className="mt-0.5 shrink-0" />
+          <AlertCircle size={16} className="mt-1 shrink-0" />
           <span>{serverError}</span>
         </div>
       )}
@@ -131,13 +131,13 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
                     <input
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-                      className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-11 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20"
+                      className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-12 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20"
                       {...field}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((prev) => !prev)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink-soft transition-colors"
+                      className="absolute right-3.5 top-1/2 grid size-11 -translate-y-1/2 place-items-center text-muted hover:text-ink-soft transition-colors"
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -161,13 +161,13 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-                      className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-11 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20"
+                      className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-12 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20"
                       {...field}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink-soft transition-colors"
+                      className="absolute right-3.5 top-1/2 grid size-11 -translate-y-1/2 place-items-center text-muted hover:text-ink-soft transition-colors"
                     >
                       {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>

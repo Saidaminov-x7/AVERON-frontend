@@ -24,7 +24,7 @@ export default function ResetPasswordPage({
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-soft border border-line">
             <AlertCircle size={32} className="text-error" />
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <h2 className="text-xl font-bold text-white">{t('invalidLinkTitle')}</h2>
             <p className="text-sm text-ink-soft">
               {t('invalidLinkMessage')}

@@ -140,7 +140,7 @@ export function CatalogAiSearch({
               type="button"
               onClick={() => removeChip(chip)}
               aria-label={`${t("aiSearchRemoveFilter")}: ${chip.label}`}
-              className="rounded-full border border-primary-200 bg-white px-3 py-1.5 text-xs font-semibold text-primary-900 hover:border-primary-500 dark:border-primary-900 dark:bg-surface-soft dark:text-primary-200"
+              className="rounded-full border border-primary-200 bg-white px-3 py-2 text-xs font-semibold text-primary-900 hover:border-primary-500 dark:border-primary-900 dark:bg-surface-soft dark:text-primary-200"
             >
               {chip.label} <span aria-hidden="true">×</span>
             </button>

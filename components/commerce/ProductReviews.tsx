@@ -247,7 +247,7 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
               </div>
               <div className="flex flex-wrap content-center gap-2">
                 {fitValues.map((value) => summary.fitDistribution[value] > 0 && (
-                  <span key={value} className="rounded-full border border-line px-3 py-1.5 text-xs dark:border-white/15">
+                  <span key={value} className="rounded-full border border-line px-3 py-2 text-xs dark:border-white/15">
                     {t(`fit.${value}`)} · {summary.fitDistribution[value]}%
                   </span>
                 ))}

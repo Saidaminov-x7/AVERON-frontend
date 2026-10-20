@@ -248,7 +248,7 @@ function OutfitBuilderContent() {
             <input id="outfit-product-search" value={search} onChange={(event) => setSearch(event.target.value)}
               onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); void searchProducts(); } }}
               placeholder={text.search} className="min-h-11 flex-1 rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
-            <Button type="button" loading={searchPending} loadingLabel={text.searching} onClick={() => void searchProducts()} className="min-h-11 rounded-xl bg-primary-700 px-5 font-bold text-white focus-visible:ring-primary-500">{text.find}</Button>
+            <Button type="button" loading={searchPending} loadingLabel={text.searching} onClick={() => void searchProducts()} className="min-h-11 rounded-xl px-5 font-bold">{text.find}</Button>
           </div>
           {results.length > 0 && <div className="mt-4 rounded-2xl border border-line bg-white p-4 dark:border-white/10 dark:bg-surface-soft">
             <h2 className="font-bold">{text.result}</h2>
@@ -299,14 +299,14 @@ function OutfitBuilderContent() {
           <input id="outfit-name" maxLength={80} value={name} onChange={(event) => setName(event.target.value)} className="mt-2 min-h-10 w-full rounded-lg border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
           <p className="mt-5 text-sm text-muted">{text.total}</p>
           <p className="mt-1 text-2xl font-extrabold">{formatUzs(total, locale)}</p>
-          <Button type="button" loading={saveMutation.isPending} loadingLabel={text.saving} disabled={!items.length} onClick={() => saveMutation.mutate()} className="mt-5 min-h-11 w-full rounded-xl border px-3 font-bold text-ink dark:text-ink-soft">{outfitId ? text.update : text.save}</Button>
-          <Button type="button" loading={cartPending} loadingLabel={text.addingCart} disabled={!items.length || cartPending || saveMutation.isPending} onClick={() => void addToCart()} className="mt-2 min-h-11 w-full rounded-xl bg-primary-700 px-3 font-bold text-white">{text.cart}</Button>
+          <Button type="button" loading={saveMutation.isPending} loadingLabel={text.saving} disabled={!items.length} onClick={() => saveMutation.mutate()} className="mt-5 min-h-11 w-full rounded-xl px-3 font-bold">{outfitId ? text.update : text.save}</Button>
+          <Button type="button" loading={cartPending} loadingLabel={text.addingCart} disabled={!items.length || cartPending || saveMutation.isPending} onClick={() => void addToCart()} className="mt-2 min-h-11 w-full rounded-xl px-3 font-bold">{text.cart}</Button>
           {outfitId && <Button type="button" loading={deletePending} loadingLabel={text.deleting} disabled={deletePending} onClick={() => void removeSaved()} variant="outline" className="mt-2 min-h-10 w-full rounded-xl border-line px-3 text-sm text-error">{text.delete}</Button>}
           {message && <p role="status" className="mt-4 text-sm">{message}</p>}
           {rejected.length > 0 && <ul className="mt-2 list-inside list-disc text-xs text-error">{rejected.map((item) => <li key={`${item.productId}:${item.variantId}`}>{item.code}</li>)}</ul>}
-          <h2 className="mt-7 font-bold">{text.saved}</h2>
+          <h2 className="mt-8 font-bold">{text.saved}</h2>
           <div className="mt-2 space-y-2">{savedQuery.data?.map((outfit) =>
-            <Button key={outfit.id} type="button" loading={openingOutfit === outfit.id} loadingLabel={text.loading} disabled={openingOutfit !== null} onClick={() => void openOutfit(outfit)} variant="ghost" className="block min-h-10 w-full rounded-lg bg-surface-soft px-3 text-left text-sm dark:bg-white/5">{outfit.name}</Button>,
+            <Button key={outfit.id} type="button" loading={openingOutfit === outfit.id} loadingLabel={text.loading} disabled={openingOutfit !== null} onClick={() => void openOutfit(outfit)} variant="ghost" className="block min-h-10 w-full rounded-lg bg-surface-soft px-3 text-left text-sm">{outfit.name}</Button>,
           )}</div>
           <button type="button" onClick={() => { setOutfitId(null); setName(''); setItems([]); setMessage(''); }} className="mt-3 min-h-10 w-full rounded-lg border px-3 text-sm">{text.start}</button>
         </aside>

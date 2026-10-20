@@ -69,7 +69,7 @@ export function LoginForm({ locale }: { locale: string }) {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">{copy.title}</h1>
-        <p className="mt-1.5 text-sm text-ink-soft">
+        <p className="mt-2 text-sm text-ink-soft">
           {step === 'credentials' ? copy.intro : `${copy.sent} ${phone}`}
         </p>
       </div>
@@ -88,15 +88,15 @@ export function LoginForm({ locale }: { locale: string }) {
               <span className="text-xs font-semibold uppercase tracking-wider text-ink-soft">{copy.phone}</span>
               <div className="relative">
                 <Phone size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
-                <input value={phone} onChange={(event) => setPhone(event.target.value)} autoComplete="tel" inputMode="tel" className={`${field} pl-11 pr-4`} />
+                <input value={phone} onChange={(event) => setPhone(event.target.value)} autoComplete="tel" inputMode="tel" className={`${field} pl-12 pr-4`} />
               </div>
             </label>
             <label className="block space-y-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-ink-soft">{copy.password}</span>
               <div className="relative">
                 <LockKeyhole size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
-                <input type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" className={`${field} pl-11 pr-11`} />
-                <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'} className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-sm text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+                <input type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" className={`${field} pl-12 pr-12`} />
+                <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'} className="absolute right-3.5 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-sm text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
                   {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
@@ -116,7 +116,7 @@ export function LoginForm({ locale }: { locale: string }) {
           loading={loading}
           loadingLabel={copy.wait}
           disabled={disabled}
-          className="h-12 w-full rounded-xl bg-primary-600 font-semibold text-white hover:bg-primary-500"
+          className="h-12 w-full rounded-xl font-semibold"
         >
           {smsAvailable === false ? copy.smsUnavailable : step === 'credentials' ? copy.next : copy.confirm}
         </Button>

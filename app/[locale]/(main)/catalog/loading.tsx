@@ -18,7 +18,7 @@ export default function Loading() {
           <Skeleton className="h-10 w-full max-w-md" />
         </div>
 
-        <div className="grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:gap-x-5 min-[1400px]:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-8 lg:grid-cols-3 xl:gap-x-5 min-[1400px]:grid-cols-4">
           {Array.from({ length: 8 }).map((_, index) => (
             <div key={index} className="min-w-0">
               <Skeleton className="aspect-[3/4] w-full" />

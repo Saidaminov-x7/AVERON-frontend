@@ -165,7 +165,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
 
             <form onSubmit={handlePasswordSubmit} className="space-y-4 pt-2">
               <div>
-                <label className="block text-xs font-medium text-ink-soft mb-1.5">
+                <label className="block text-xs font-medium text-ink-soft mb-2">
                   Пароль обхода
                 </label>
                 <input
@@ -175,7 +175,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
                   placeholder="Введите пароль..."
                   autoFocus
                   required
-                  className="w-full px-4 py-2.5 rounded-xl bg-surface-soft border border-line text-white placeholder-stone-500 text-sm focus:outline-none focus:border-primary-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-surface-soft border border-line text-white placeholder-stone-500 text-sm focus:outline-none focus:border-primary-500 transition-colors"
                 />
               </div>
 
@@ -197,7 +197,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
                 <button
                   type="submit"
                   disabled={isVerifying || !password.trim()}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all disabled:opacity-50"
                 >
                   {isVerifying ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />

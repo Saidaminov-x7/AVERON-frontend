@@ -191,7 +191,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           </p>
         </div>
         {error && (
-          <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-soft px-3 py-2.5 text-xs text-error">
+          <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-soft px-3 py-3 text-xs text-error">
             <AlertCircle size={14} /> {error}
           </div>
         )}
@@ -205,7 +205,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           <button
             type="button"
             onClick={sendOtp}
-            className="flex h-10 items-center gap-1.5 rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white hover:bg-primary-500 transition-colors"
+            className="flex h-10 items-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white hover:bg-primary-500 transition-colors"
           >
             <ArrowRight size={16} />
           </button>
@@ -223,7 +223,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           <p className="text-xs text-muted dark:text-ink-soft">Отправлен на {phone}</p>
         </div>
         {error && (
-          <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-soft px-3 py-2.5 text-xs text-error">
+          <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-soft px-3 py-3 text-xs text-error">
             <AlertCircle size={14} /> {error}
           </div>
         )}
@@ -247,7 +247,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
             type="button"
             onClick={sendOtp}
             disabled={countdown > 0}
-            className="flex h-10 items-center gap-1.5 rounded-xl border border-line bg-white px-3 text-xs text-muted hover:text-ink disabled:opacity-40 dark:border-white/10 dark:bg-surface-soft dark:text-ink-soft transition-colors"
+            className="flex h-10 items-center gap-2 rounded-xl border border-line bg-white px-3 text-xs text-muted hover:text-ink disabled:opacity-40 dark:border-white/10 dark:bg-surface-soft dark:text-ink-soft transition-colors"
           >
             <RefreshCw size={13} />
             {countdown > 0 ? `${countdown}с` : 'Ещё раз'}
@@ -280,7 +280,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           setStep('loading');
           loginWithGoogle();
         }}
-        className="flex h-10 w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-white px-4 text-sm font-semibold text-ink-soft shadow-xs transition-colors hover:bg-surface-soft active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-surface-soft dark:text-ink-soft dark:hover:bg-surface-soft"
+        className="flex h-10 w-full items-center justify-center gap-3 rounded-xl border border-line bg-white px-4 text-sm font-semibold text-ink-soft shadow-xs transition-colors hover:bg-surface-soft active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-surface-soft dark:text-ink-soft dark:hover:bg-surface-soft"
       >
         {step === 'loading' ? (
           <svg className="h-4 w-4 animate-spin text-primary-600" viewBox="0 0 24 24" fill="none">

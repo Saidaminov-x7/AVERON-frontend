@@ -136,14 +136,14 @@ function CatalogFilterDraft({
 
   return (
     <form onSubmit={apply} aria-busy={isPending} className="flex h-full flex-col">
-      <label className="text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]" htmlFor={`${id}-search`}>{t('search')}</label>
+      <label className="text-[length:var(--font-size-caption)] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]" htmlFor={`${id}-search`}>{t('search')}</label>
       <input id={`${id}-search`} className={`${controlClass} mt-2`} value={draft.q} onChange={(event) => set('q', event.target.value)} placeholder={t('placeholder')} />
       <div className="mt-5">
         <CatalogSelect name="category" label={t('category')} value={draft.category} placeholder={t('all')} options={categoriesOptions} onValueChange={(value) => set('category', value)} />
         {categoriesError && <p className="mt-2 text-xs text-warning dark:text-warning" role="status">{t('categoriesUnavailable')}</p>}
       </div>
       <fieldset className="mt-5">
-        <legend className="text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('audience')}</legend>
+        <legend className="text-[length:var(--font-size-caption)] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('audience')}</legend>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {audiences.map(([value, label]) => (
             <button
@@ -177,7 +177,7 @@ function CatalogFilterDraft({
         <span>{t('saleOnly')}</span>
       </label>
       {facetsError && <p className="mt-2 text-xs text-warning dark:text-warning" role="status">{t('facetsUnavailable')}</p>}
-      <p className="mt-5 text-[11px] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('price')}</p>
+      <p className="mt-5 text-[length:var(--font-size-caption)] font-semibold uppercase tracking-[.08em] text-[var(--color-muted)]">{t('price')}</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
         {(['minPrice', 'maxPrice'] as const).map((key) => <input key={key} className={controlClass} aria-label={key === 'minPrice' ? t('from') : t('to')} type="text" inputMode="decimal" value={draft[key]} onChange={(event) => set(key, event.target.value)} placeholder={key === 'minPrice' ? t('from') : t('to')} />)}
       </div>

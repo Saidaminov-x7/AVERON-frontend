@@ -151,7 +151,7 @@ export default function RegisterPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">{text.title}</h1>
-        <p className="mt-1.5 text-sm text-ink-soft">
+        <p className="mt-2 text-sm text-ink-soft">
           {step === 'form' ? text.intro : text.codeIntro(phone)}
         </p>
       </div>
@@ -213,13 +213,13 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   autoComplete="new-password"
-                  className={`${field} pr-11`}
+                  className={`${field} pr-12`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((visible) => !visible)}
                   aria-label={showPassword ? text.hidePassword : text.showPassword}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-sm text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                  className="absolute right-3.5 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-sm text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                 >
                   {showPassword ? <EyeOff size={17} aria-hidden="true" /> : <Eye size={17} aria-hidden="true" />}
                 </button>
