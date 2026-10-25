@@ -1,7 +1,14 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store/useAuthStore';
 
-const externalBaseURL = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
+const LOCAL_BROWSER_API = 'http://127.0.0.1:8080';
+const localApiUrl = process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || LOCAL_BROWSER_API;
+const isLocalBrowserHost = typeof window !== 'undefined'
+  && ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+const isLocalRuntime = process.env.NEXT_PUBLIC_AVERON_RUNTIME_TARGET === 'local' || process.env.NODE_ENV !== 'production';
+const externalBaseURL = isLocalBrowserHost || isLocalRuntime
+  ? localApiUrl
+  : process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
 export { externalBaseURL };
 const baseURL = typeof window !== 'undefined' ? '/api/backend' : externalBaseURL;
 const PROACTIVE_REFRESH_BEFORE_MS = 5 * 60 * 1000; // 5 minutes

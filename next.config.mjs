@@ -2,7 +2,10 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 // Указываем путь к файлу конфигурации (если он лежит в корне как i18n.ts)
 const withNextIntl = createNextIntlPlugin('./i18n.ts');
-const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
+const isLocalRuntime = process.env.NEXT_PUBLIC_AVERON_RUNTIME_TARGET === 'local' || process.env.NODE_ENV !== 'production';
+const backendUrl = isLocalRuntime
+  ? process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080'
+  : process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

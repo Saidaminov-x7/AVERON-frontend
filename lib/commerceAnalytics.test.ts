@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { trackCommerceEvent } from './commerceAnalytics';
 
 vi.mock('@/lib/axios', () => ({ externalBaseURL: 'https://api.example.test' }));
+const mocks = vi.hoisted(() => ({ canSend: vi.fn(() => true) }));
+vi.mock('@/lib/analyticsPolicy', () => ({ canSendAnalytics: mocks.canSend }));
 
 const uuid = '00000000-0000-4000-8000-000000000001';
 
@@ -9,7 +11,18 @@ describe('trackCommerceEvent', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+    mocks.canSend.mockReturnValue(true);
     localStorage.clear();
+  });
+
+  it('does not issue an analytics request when environment policy denies sending', () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    mocks.canSend.mockReturnValue(false);
+
+    trackCommerceEvent({ eventName: 'cart_add' });
+
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('sends bounded event metadata without query contents', () => {
@@ -41,5 +54,17 @@ describe('trackCommerceEvent', () => {
     trackCommerceEvent({ eventName: 'page_view' });
 
     expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it('never includes a raw order identifier in purchase analytics', () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal('fetch', fetchMock);
+    vi.spyOn(window.crypto, 'randomUUID').mockReturnValue(uuid);
+
+    trackCommerceEvent({ eventName: 'purchase' });
+
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(body.eventName).toBe('purchase');
+    expect(body).not.toHaveProperty('orderId');
   });
 });

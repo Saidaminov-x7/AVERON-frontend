@@ -119,7 +119,26 @@
     "cart": "Cart",
     "orders": "Orders",
     "settings": "Settings",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "categories": "Categories"
+  },
+  "consent": {
+    "title": "Privacy choices",
+    "description": "Optional analytics measures catalog views and selected shopping interactions with a random device identifier. It stays off until you choose it.",
+    "privacyLink": "Privacy policy",
+    "accept": "Allow analytics",
+    "reject": "Reject analytics",
+    "settings": "Customize",
+    "manage": "Cookie settings",
+    "settingsTitle": "Cookie and analytics settings",
+    "settingsDescription": "Choose whether optional analytics may run. You can change your choice later.",
+    "necessary": "Necessary data",
+    "necessaryDescription": "Required for core functions including login, CSRF protection, cart state, language and theme preferences.",
+    "analytics": "Analytics",
+    "analyticsDescription": "Measures catalog views and selected shopping interactions using a random device identifier. Raw order IDs are not sent.",
+    "retention": "Your choice is stored for up to 180 days. Analytics event retention and deletion procedures are being finalized.",
+    "save": "Save choice",
+    "close": "Close"
   },
   "comparePage": {
     "loading": "Loading comparison…",

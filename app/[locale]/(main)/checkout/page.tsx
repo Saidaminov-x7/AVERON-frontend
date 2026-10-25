@@ -136,7 +136,7 @@ function CheckoutContent() {
   const checkout = useMutation({
     mutationFn: createCheckout,
     onSuccess: async (order) => {
-      if (order.id) trackCommerceEvent({ eventName: 'purchase', orderId: order.id });
+      trackCommerceEvent({ eventName: 'purchase' });
       queryClient.setQueryData(commerceQueryKeys.order(order.orderNumber), order);
       await queryClient.invalidateQueries({ queryKey: commerceQueryKeys.cart });
       router.push(`/${locale}/checkout/success/${encodeURIComponent(order.orderNumber)}`);
