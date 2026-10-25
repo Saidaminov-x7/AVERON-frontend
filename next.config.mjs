@@ -6,6 +6,17 @@ const isLocalRuntime = process.env.NEXT_PUBLIC_AVERON_RUNTIME_TARGET === 'local'
 const backendUrl = isLocalRuntime
   ? process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080'
   : process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
+if (!isLocalRuntime) {
+  let configuredBackend;
+  try {
+    configuredBackend = new URL(backendUrl);
+  } catch {
+    throw new Error('Production NEXT_PUBLIC_API_URL must be a valid absolute URL');
+  }
+  if (configuredBackend.protocol !== 'https:' || configuredBackend.username || configuredBackend.password || configuredBackend.search || configuredBackend.hash) {
+    throw new Error('Production NEXT_PUBLIC_API_URL must use HTTPS and contain no credentials, query, or fragment');
+  }
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { externalBaseURL } from '@/lib/axios';
-import { getSafeErrorReportPath, sanitizeErrorReportText } from '@/lib/safe-error-report';
+import { getSafeErrorReportPath } from '@/lib/safe-error-report';
+import { resolveBrowserApiBaseUrl } from '@/lib/api-origin';
 
 const REPORTED_ERROR_TTL_MS = 60_000;
 const MAX_REPORTED_ERRORS = 200;
@@ -29,19 +29,18 @@ function shouldReport(message: string, stack?: string) {
 
 export function GlobalErrorListener() {
   useEffect(() => {
-    const backendBaseUrl = externalBaseURL;
+    const reportUrl = `${resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl())}/error-reports`;
 
     const sendReport = (payload: { message: string; stack?: string; severity?: string }) => {
       if (!shouldReport(payload.message, payload.stack)) return;
       try {
-        fetch(`${backendBaseUrl}/error-reports`, {
+        fetch(reportUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            message: sanitizeErrorReportText(payload.message).slice(0, 2000),
-            stack: payload.stack ? sanitizeErrorReportText(payload.stack).slice(0, 5000) : '',
+            message: 'Client-side application error',
+            stack: '',
             url: getSafeErrorReportPath(),
-            userAgent: navigator.userAgent.slice(0, 500),
             severity: payload.severity || 'error',
           }),
         }).catch(() => {});
@@ -84,4 +83,8 @@ export function GlobalErrorListener() {
   }, []);
 
   return null;
+}
+
+function localApiUrl() {
+  return process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080';
 }
