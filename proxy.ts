@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isLocalApiHost } from './lib/api-origin';
 
 // Configuration
 const locales = ['uz', 'en', 'ru'];
@@ -19,7 +20,9 @@ export async function proxy(request: NextRequest) {
 
   // Maintenance mode check via backend API
   const isMaintenancePage = pathname.includes('/maintenance');
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
+  const API_BASE_URL = isLocalApiHost(request.nextUrl.hostname)
+    ? process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080'
+    : process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
 
   const bypassCookie = request.cookies.get('maintenance_bypass')?.value;
   const locale = locales.find((l) => pathname.startsWith(`/${l}`)) || defaultLocale;

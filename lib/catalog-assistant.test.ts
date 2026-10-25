@@ -8,6 +8,19 @@ import {
 const product = { id: "real-product", slug: "real-product", salePriceUzs: "125000" };
 
 describe("catalog assistant API", () => {
+  it("routes user-entered assistant prompts to loopback on localhost", async () => {
+    vi.stubGlobal("window", { location: { hostname: "localhost" } });
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      items: [product], intent: {}, meta: { aiUsed: false, fallbackUsed: true },
+    }), { status: 200 }));
+    try {
+      await searchCatalogWithIntent("private search", "en", undefined, fetcher);
+      expect(fetcher.mock.calls[0]?.[0]).toBe("http://127.0.0.1:8080/api/v1/products/ai-search");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("sends only the query, locale and explicit filter overrides to backend search", async () => {
     const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({
       items: [product],

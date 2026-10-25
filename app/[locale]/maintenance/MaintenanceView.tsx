@@ -3,6 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, Hammer, RefreshCw, KeyRound, Lock, CheckCircle2, X } from 'lucide-react';
+import { resolveBrowserApiBaseUrl } from '@/lib/api-origin';
+
+const localApiUrl = process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080';
+const apiUrl = (path: string) => `${resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl)}/${path}`;
 
 interface MaintenanceViewProps {
   locale: string;
@@ -26,7 +30,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
   useEffect(() => {
     const checkMaintenanceStatus = async () => {
       try {
-        const res = await fetch('/api/backend/site-settings/public', { cache: 'no-store' });
+        const res = await fetch(apiUrl('site-settings/public'), { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setSettings(data);
@@ -47,7 +51,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
   const handleManualCheck = async () => {
     setIsCheckingStatus(true);
     try {
-      const res = await fetch('/api/backend/site-settings/public', { cache: 'no-store' });
+      const res = await fetch(apiUrl('site-settings/public'), { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setSettings(data);
@@ -71,7 +75,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
     setPasswordError('');
 
     try {
-      const res = await fetch('/api/backend/site-settings/public/check-bypass', {
+      const res = await fetch(apiUrl('site-settings/public/check-bypass'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: password.trim() }),
