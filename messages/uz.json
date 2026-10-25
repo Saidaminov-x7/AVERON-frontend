@@ -119,7 +119,26 @@
     "cart": "Savatcha",
     "orders": "Buyurtmalar",
     "settings": "Sozlamalar",
-    "logout": "Chiqish"
+    "logout": "Chiqish",
+    "categories": "Toifalar"
+  },
+  "consent": {
+    "title": "Maxfiylik sozlamalari",
+    "description": "Ixtiyoriy tahlil tasodifiy qurilma identifikatori yordamida katalog ko‘rishlari va ayrim xarid amallarini o‘lchaydi. Tanlovingizgacha u o‘chiq turadi.",
+    "privacyLink": "Maxfiylik siyosati",
+    "accept": "Ixtiyoriy tahlilga roziman",
+    "reject": "Ixtiyoriy tahlilni rad etish",
+    "settings": "Sozlash",
+    "manage": "Cookie sozlamalari",
+    "settingsTitle": "Cookie va tahlil sozlamalari",
+    "settingsDescription": "Ixtiyoriy tahlilni yoqish yoki o‘chirishni tanlang. Tanlovni keyin o‘zgartirishingiz mumkin.",
+    "necessary": "Zarur ma’lumotlar",
+    "necessaryDescription": "Kirish, CSRF himoyasi, savat holati, til va mavzu sozlamalari kabi asosiy funksiyalar uchun kerak.",
+    "analytics": "Tahlil",
+    "analyticsDescription": "Tasodifiy qurilma identifikatori yordamida katalog ko‘rishlari va ayrim xarid amallarini o‘lchaydi. Buyurtma ID raqamlari yuborilmaydi.",
+    "retention": "Tanlovingiz 180 kungacha saqlanadi. Analitika hodisalarini saqlash muddati va ularni o‘chirish tartibi aniqlashtirilmoqda.",
+    "save": "Tanlovni saqlash",
+    "close": "Yopish"
   },
   "comparePage": {
     "loading": "Taqqoslash yuklanmoqda…",

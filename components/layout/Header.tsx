@@ -4,13 +4,17 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { useQuery } from '@tanstack/react-query';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { categoryName, parseStoreCategories, type StoreCategory } from '@/lib/products';
+import api from '@/lib/axios';
 import type { NavLink } from '@/lib/siteSettings';
 import {
   Search, X, Heart, ChevronRight, LogIn, LogOut, Menu, User, Scale, ShoppingCart,
-  Headphones,
+  Headphones, Shirt, Footprints, ShoppingBag,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { CookieSettingsLink } from '@/components/privacy/CookieSettingsLink';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -180,7 +184,16 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const router = useRouter();
   const locale = useLocale() || localeProp || 'ru';
   const t = useTranslations('nav');
+  const consentT = useTranslations('consent');
   const { data: settings } = useSiteSettings();
+  const { data: categories = [] } = useQuery({
+    queryKey: ['storefront-categories'],
+    queryFn: async () => {
+      const { data } = await api.get<unknown>('/api/v1/categories');
+      return parseStoreCategories(data);
+    },
+    staleTime: 5 * 60 * 1000,
+  });
   const marketCopy = MARKET_COPY[locale as keyof typeof MARKET_COPY] ?? MARKET_COPY.ru;
   const countryLinks = [
     { href: '/catalog?country=CN', label: marketCopy.china },
@@ -238,6 +251,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const { data: cart } = useCommerceCart();
   const cartCount = cart?.items.reduce((total, item) => total + item.quantity, 0) ?? 0;
   const cartLabel = t('cart');
+  const activeCategory = useSearchParams().get('category');
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
@@ -648,6 +662,47 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             </div>
           )}
 
+          {categories.length > 0 && (
+            <section className="mt-5" aria-labelledby="mobile-categories-title">
+              <p id="mobile-categories-title" className="px-1 text-[length:var(--font-size-caption)] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">
+                {t('categories')}
+              </p>
+              <nav aria-label={t('categories')} className="mt-3 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
+                {categories.map((category: StoreCategory) => {
+                  const isActiveCategory = activeCategory === category.slug;
+                  const slug = category.slug.toLowerCase();
+                  const CategoryIcon = /shoe|footwear|boot|obuv|oyoq/.test(slug)
+                    ? Footprints
+                    : /clothing|apparel|fashion|wear|odezhda|kiyim|futbolka/.test(slug)
+                      ? Shirt
+                      : /headphone|audio|electronics/.test(slug)
+                        ? Headphones
+                        : ShoppingBag;
+                  return (
+                    <Link
+                      key={category.slug}
+                      href={to(`/catalog?category=${encodeURIComponent(category.slug)}`)}
+                      onClick={closeMobileMenu}
+                      aria-current={isActiveCategory ? 'page' : undefined}
+                      className={
+                        'group flex min-h-16 min-w-0 items-center gap-3 border border-[var(--color-border)] px-3 py-2 transition-colors ' +
+                        (isActiveCategory
+                          ? 'bg-[var(--color-surface-soft)] text-[var(--color-text)]'
+                          : 'bg-transparent text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-text)]')
+                      }
+                    >
+                      <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center bg-[var(--color-surface-soft)] text-[var(--color-text)]">
+                        <CategoryIcon size={19} strokeWidth={1.7} />
+                      </span>
+                      <span className="line-clamp-2 min-w-0 text-sm font-semibold">{categoryName(category, locale)}</span>
+                      <ChevronRight size={14} className="ml-auto shrink-0 text-[var(--color-muted)]" aria-hidden="true" />
+                    </Link>
+                  );
+                })}
+              </nav>
+            </section>
+          )}
+
           <section className="mt-5" aria-labelledby="mobile-markets-title">
             <p id="mobile-markets-title" className="px-1 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">
               {marketCopy.markets}
@@ -747,6 +802,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             <div className="flex items-center gap-2">
               <LanguagePicker onSelect={closeMobileMenu} />
               <ThemeToggle />
+              <CookieSettingsLink label={consentT('manage')} />
             </div>
           </div>
           {isAuthenticated ? (
