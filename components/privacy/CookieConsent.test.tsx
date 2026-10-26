@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, describe, expect, it } from 'vitest';
 import { CookieConsent } from './CookieConsent';
+import { CookieSettingsLink } from './CookieSettingsLink';
 import { CONSENT_STORAGE_KEY, hasAnalyticsConsent } from '@/lib/consent';
 import enMessages from '@/messages/en.json';
 import ruMessages from '@/messages/ru.json';
@@ -12,6 +13,7 @@ function renderConsent(locale: 'ru' | 'uz' | 'en' = 'en') {
   return render(
     <NextIntlClientProvider locale={locale} messages={messages}>
       <CookieConsent />
+      <CookieSettingsLink label={messages.consent.manage} />
     </NextIntlClientProvider>,
   );
 }
@@ -37,6 +39,7 @@ describe('CookieConsent', () => {
     expect(localStorage.getItem(CONSENT_STORAGE_KEY)).toContain('"analytics":false');
     expect(localStorage.getItem('averon_device_id')).toBeNull();
     expect(await screen.findByRole('button', { name: enMessages.consent.manage })).toBeInTheDocument();
+    expect(document.querySelector('.cookie-settings-trigger')).toBeNull();
   });
 
   it('only enables optional analytics after explicit acceptance and supports later withdrawal', async () => {

@@ -133,25 +133,6 @@ body:has(.cookie-consent-banner) {
   padding-bottom: var(--cookie-consent-clearance, 12rem);
 }
 
-.cookie-settings-trigger {
-  position: fixed;
-  z-index: 45;
-  right: max(16px, env(safe-area-inset-right));
-  bottom: max(16px, env(safe-area-inset-bottom));
-  min-height: 44px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  padding: 0 12px;
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-size: var(--font-size-caption);
-  font-weight: 600;
-  box-shadow: var(--shadow-menu);
-}
-
-.cookie-settings-trigger:hover { background: var(--color-surface-soft); }
-.cookie-settings-trigger:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-
 .cookie-consent-backdrop {
   position: fixed;
   z-index: 80;
@@ -187,12 +168,15 @@ body:has(.cookie-consent-banner) {
   color-scheme: dark;
   --color-primary: #f1f1f1;
   --color-secondary: #cfcfcf;
-  --color-bg: #181818;
+  --color-bg: #111315;
   --color-text: #f2f3f3;
   --color-text-secondary: #c3c7cb;
-  --color-surface: #1e1e1e;
-  --color-surface-soft: #252525;
-  --color-image-surface: #ededed;
+  --color-surface: #181b1f;
+  --color-surface-soft: #20242a;
+  --color-image-surface: #20242a;
+  --color-action-bg: #e7e8ea;
+  --color-button-hover: #d5d8dd;
+  --color-on-action: #17191c;
   --color-border: #3a3a3a;
   --color-border-hover: #737373;
   --color-muted: #a3a3a3;
