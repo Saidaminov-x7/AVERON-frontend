@@ -20,6 +20,7 @@ import { useCompareStore } from '@/store/useCompareStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { getSearchSuggestions } from '@/lib/data';
+import { getProducts, productRouteId, productTitle } from '@/lib/products';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'framer-motion';
 import { localizeHrefPreservingSafeQuery } from '@/lib/safe-navigation';
@@ -162,7 +163,7 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
               aria-checked={active}
               onClick={() => handleSelectLocale(code)}
               className={
-                'averon-menu-item text-xs font-medium ' +
+                'averon-menu-item h-11 min-h-11 !rounded-none text-xs font-medium ' +
                 (prefersReducedMotion ? '' : 'transition-colors ') +
                 (active
                   ? '!bg-[var(--color-surface-soft)] !text-[var(--color-text)]'
@@ -240,8 +241,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<ReturnType<typeof getSearchSuggestions>>([]);
-  const [mobileSuggestions, setMobileSuggestions] = useState<ReturnType<typeof getSearchSuggestions>>([]);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [scrolled, setScrolled] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
@@ -253,11 +255,29 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const cartLabel = t('cart');
   const activeCategory = useSearchParams().get('category');
   const searchRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const searchRegionRef = useRef<HTMLDivElement>(null);
+  const searchInputsRef = useRef<Record<string, HTMLInputElement | null>>({});
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
   const mobileCloseButtonRef = useRef<HTMLButtonElement>(null);
   const mobileDrawerRef = useRef<HTMLDivElement>(null);
   const wasMobileOpen = useRef(false);
+
+  useEffect(() => {
+    const nextQuery = query.trim();
+    const timeout = window.setTimeout(
+      () => setDebouncedQuery(nextQuery),
+      nextQuery.length < 2 ? 0 : 250,
+    );
+    return () => window.clearTimeout(timeout);
+  }, [query]);
+
+  const productSuggestionsQuery = useQuery({
+    queryKey: ['header-product-suggestions', locale, debouncedQuery],
+    queryFn: ({ signal }) => getProducts({ q: debouncedQuery, page: 1, limit: 5 }, signal),
+    enabled: debouncedQuery.length >= 2,
+    staleTime: 60_000,
+    retry: 1,
+  });
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -326,8 +346,23 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   }, [searchOpen]);
 
   useEffect(() => {
+    if (!suggestionsOpen) return;
+    const closeOnOutside = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (searchRegionRef.current?.contains(target)
+        || document.getElementById('mobile-header-search')?.contains(target)
+        || document.getElementById('drawer-search-form')?.contains(target)) return;
+      setSuggestionsOpen(false);
+      setActiveSuggestionIndex(-1);
+    };
+    document.addEventListener('pointerdown', closeOnOutside);
+    return () => document.removeEventListener('pointerdown', closeOnOutside);
+  }, [suggestionsOpen]);
+
+  useEffect(() => {
     if (searchOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
+      const timeout = window.setTimeout(() => searchInputsRef.current['mobile-header-search']?.focus(), 50);
+      return () => window.clearTimeout(timeout);
     }
   }, [searchOpen]);
 
@@ -336,12 +371,102 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
   const handleQuery = (val: string) => {
     setQuery(val);
-    setSuggestions(getSearchSuggestions(val));
+    setSuggestionsOpen(Boolean(val.trim()));
+    setActiveSuggestionIndex(-1);
   };
 
-  const handleMobileQuery = (val: string) => {
-    setQuery(val);
-    setMobileSuggestions(getSearchSuggestions(val));
+  const clearQuery = (inputId: string) => {
+    setQuery('');
+    setDebouncedQuery('');
+    setSuggestionsOpen(false);
+    setActiveSuggestionIndex(-1);
+    searchInputsRef.current[inputId]?.focus();
+  };
+
+  const handleSuggestionKeyDown = (event: React.KeyboardEvent<HTMLInputElement | HTMLButtonElement>, inputId: string) => {
+    const list = document.getElementById(`${inputId}-suggestions`);
+    const buttons = Array.from(list?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? []);
+    const currentIndex = buttons.indexOf(document.activeElement as HTMLButtonElement);
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setSuggestionsOpen(false);
+      setActiveSuggestionIndex(-1);
+      searchInputsRef.current[inputId]?.focus();
+      return;
+    }
+    if (event.key === 'Enter' && event.currentTarget instanceof HTMLInputElement && activeSuggestionIndex >= 0) {
+      event.preventDefault();
+      buttons[activeSuggestionIndex]?.click();
+      return;
+    }
+    const nextIndex = event.key === 'ArrowDown'
+      ? Math.min(currentIndex + 1, buttons.length - 1)
+      : event.key === 'ArrowUp'
+        ? (currentIndex < 0 ? buttons.length - 1 : Math.max(currentIndex - 1, 0))
+        : -1;
+    if (nextIndex >= 0 && buttons.length) {
+      event.preventDefault();
+      setActiveSuggestionIndex(nextIndex);
+      buttons[nextIndex]?.focus();
+    }
+  };
+
+  const renderSuggestions = (inputId: string) => {
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery || !suggestionsOpen) return null;
+    const products = debouncedQuery === trimmedQuery ? productSuggestionsQuery.data?.items ?? [] : [];
+    const staticSuggestions = getSearchSuggestions(trimmedQuery, locale);
+    const isSearching = trimmedQuery.length >= 2 && (debouncedQuery !== trimmedQuery || productSuggestionsQuery.isFetching);
+    const isUnavailable = debouncedQuery === trimmedQuery && trimmedQuery.length >= 2 && productSuggestionsQuery.isError;
+    const noProducts = debouncedQuery === trimmedQuery && trimmedQuery.length >= 2 && productSuggestionsQuery.isSuccess && products.length === 0;
+
+    return (
+      <div id={`${inputId}-suggestions`} className="averon-menu-surface mt-1 max-h-72 overflow-y-auto">
+        {isSearching && <p role="status" aria-live="polite" className="px-3 py-2 text-xs text-[var(--color-muted)]">{t('searchLoading')}</p>}
+        {isUnavailable && <p role="status" aria-live="polite" className="px-3 py-2 text-xs text-[var(--color-muted)]">{t('searchUnavailable')}</p>}
+        {noProducts && <p role="status" aria-live="polite" className="px-3 py-2 text-xs text-[var(--color-muted)]">{t('searchNoProducts')}</p>}
+        <div role="listbox" aria-label={t('search')}>
+        {products.map((product, index) => (
+          <button
+            key={product.id}
+            id={`${inputId}-option-${index}`}
+            type="button"
+            role="option"
+            aria-selected={activeSuggestionIndex === index}
+            onFocus={() => setActiveSuggestionIndex(index)}
+            onKeyDown={(event) => handleSuggestionKeyDown(event, inputId)}
+            onClick={() => navTo(`/catalog/${encodeURIComponent(productRouteId(product))}`)}
+            className="averon-menu-item gap-3 text-left"
+          >
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--color-text)]">{productTitle(product, locale)}</span>
+            <span aria-hidden="true" className="shrink-0 text-[11px] text-[var(--color-muted)]">{t('searchProduct')}</span>
+          </button>
+        ))}
+        {staticSuggestions.map((item, index) => {
+          const optionIndex = products.length + index;
+          return (
+          <button
+            key={`${item.href}-${item.icon}`}
+            id={`${inputId}-option-${optionIndex}`}
+            type="button"
+            role="option"
+            aria-selected={activeSuggestionIndex === optionIndex}
+            onFocus={() => setActiveSuggestionIndex(optionIndex)}
+            onKeyDown={(event) => handleSuggestionKeyDown(event, inputId)}
+            onClick={() => navTo(item.href)}
+            className="averon-menu-item gap-3 text-left"
+          >
+            <span aria-hidden="true" className="text-sm">{item.icon === 'search' ? <Search size={16} /> : <ShoppingBag size={16} />}</span>
+            <span className="min-w-0 flex-1 text-left">
+              <span className="block truncate text-sm font-semibold text-[var(--color-text)]">{item.text}</span>
+              <span className="block truncate text-[11px] text-[var(--color-muted)]">{item.sub}</span>
+            </span>
+          </button>
+          );
+        })}
+        </div>
+      </div>
+    );
   };
 
   const doSearch = (q: string) => {
@@ -354,6 +479,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const navTo = (href: string) => {
     setSearchOpen(false);
     setMobileOpen(false);
+    setSuggestionsOpen(false);
     setQuery('');
     router.push(`/${locale}${href}`);
   };
@@ -430,32 +556,30 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
           {/* Right Desktop items */}
           <div className="hidden min-w-0 flex-1 items-center justify-end gap-1.5 lg:flex">
-            <div className="relative mx-2 w-full max-w-[300px]">
+            <div ref={searchRegionRef} className="relative mx-2 w-full max-w-[300px]">
               <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
                 <Search size={17} className="pointer-events-none absolute left-3.5 text-[var(--color-muted)]" />
                 <input
-                  ref={inputRef}
-                  type="search"
+                  ref={(node) => { searchInputsRef.current['desktop-header-search'] = node; }}
+                  type="text"
                   value={query}
                   onChange={(e) => handleQuery(e.target.value)}
+                  onKeyDown={(event) => handleSuggestionKeyDown(event, 'desktop-header-search')}
+                  onFocus={() => setSuggestionsOpen(Boolean(query.trim()))}
+                  onClick={() => query.trim() && setSuggestionsOpen(true)}
                   placeholder={t('searchPlaceholder')}
                   aria-label={t('search')}
-                  className="h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] pl-10 pr-4 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition focus:border-[var(--color-text-secondary)] focus:ring-2 focus:ring-[var(--color-primary)]/15"
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-expanded={Boolean(query.trim()) && suggestionsOpen}
+                  aria-controls="desktop-header-search-suggestions"
+                  aria-activedescendant={activeSuggestionIndex >= 0 && suggestionsOpen ? `desktop-header-search-option-${activeSuggestionIndex}` : undefined}
+                  autoComplete="off"
+                  className="h-11 w-full border border-[var(--color-border)] bg-[var(--color-surface)] pl-10 pr-11 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition focus:border-[var(--color-text-secondary)] focus:ring-2 focus:ring-[var(--color-primary)]/15"
                 />
+                {query && <button type="button" onClick={() => clearQuery('desktop-header-search')} aria-label={t('clearSearch')} className="averon-control-button averon-icon-button absolute right-0 top-0 h-11 !min-h-0 !border-0 !bg-transparent hover:!bg-[var(--color-surface-soft)]"><X size={16} /></button>}
               </form>
-              {suggestions.length > 0 && (
-                <div className="averon-menu-surface absolute inset-x-0 top-full z-50 mt-2 overflow-hidden">
-                  {suggestions.map((item, i) => (
-                    <button key={i} type="button" onClick={() => navTo(item.href)} className="averon-menu-item gap-3 text-xs">
-                      <span className="text-sm">{item.icon}</span>
-                      <div className="min-w-0 flex-1 text-left">
-                        <p className="truncate font-semibold text-[var(--color-text)]">{item.text}</p>
-                        <p className="truncate text-[11px] text-[var(--color-muted)]">{item.sub}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+              <div className="absolute inset-x-0 top-full z-50">{renderSuggestions('desktop-header-search')}</div>
             </div>
 
             <Link href={to('/favorites')} aria-label={t('favorites')} className={`${BTN_CLASS} relative`}>
@@ -557,30 +681,26 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
               <Search size={16} className="pointer-events-none absolute left-3 text-stone-400" />
               <input
-                ref={inputRef}
-                type="search"
+                ref={(node) => { searchInputsRef.current['mobile-header-search'] = node; }}
+                type="text"
                 value={query}
                 onChange={(e) => handleQuery(e.target.value)}
+                onKeyDown={(event) => handleSuggestionKeyDown(event, 'mobile-header-search')}
+                onFocus={() => setSuggestionsOpen(Boolean(query.trim()))}
+                onClick={() => query.trim() && setSuggestionsOpen(true)}
                 placeholder={t('searchPlaceholder')}
                 aria-label={t('search')}
-                className="h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] pl-10 pr-3 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={Boolean(query.trim()) && suggestionsOpen}
+                aria-controls="mobile-header-search-suggestions"
+                aria-activedescendant={activeSuggestionIndex >= 0 && suggestionsOpen ? `mobile-header-search-option-${activeSuggestionIndex}` : undefined}
+                autoComplete="off"
+                className="h-11 w-full border border-[var(--color-border)] bg-[var(--color-surface-soft)] pl-10 pr-11 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
               />
+              {query && <button type="button" onClick={() => clearQuery('mobile-header-search')} aria-label={t('clearSearch')} className="averon-control-button averon-icon-button absolute right-0 top-0 h-11 !min-h-0 !border-0 !bg-transparent hover:!bg-[var(--color-surface-soft)]"><X size={16} /></button>}
             </form>
-            {suggestions.length > 0 && (
-              <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-stone-200 dark:border-white/10">
-                {suggestions.map((item, i) => (
-                  <button
-                    key={`${item.href}-${i}`}
-                    type="button"
-                    onClick={() => navTo(item.href)}
-                    className="averon-menu-item gap-3 text-sm"
-                  >
-                    <span>{item.icon}</span>
-                    <span className="truncate">{item.text}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            {renderSuggestions('mobile-header-search')}
           </div>
         )}
       </header>
@@ -633,34 +753,30 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         </div>
 
         <div className="mx-auto min-h-0 w-full max-w-xl flex-1 overflow-y-auto overscroll-contain px-5 pb-8 pt-6">
-          <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative">
+          <form id="drawer-search-form" onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative">
             <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
             <input
-              type="search"
+              ref={(node) => { searchInputsRef.current['drawer-search'] = node; }}
+              type="text"
               value={query}
-              onChange={(e) => handleMobileQuery(e.target.value)}
+              onChange={(e) => handleQuery(e.target.value)}
+              onKeyDown={(event) => handleSuggestionKeyDown(event, 'drawer-search')}
+              onFocus={() => setSuggestionsOpen(Boolean(query.trim()))}
+              onClick={() => query.trim() && setSuggestionsOpen(true)}
               placeholder={t('searchPlaceholder')}
               aria-label={t('search')}
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded={Boolean(query.trim()) && suggestionsOpen}
+              aria-controls="drawer-search-suggestions"
+              aria-activedescendant={activeSuggestionIndex >= 0 && suggestionsOpen ? `drawer-search-option-${activeSuggestionIndex}` : undefined}
               autoComplete="off"
               enterKeyHint="search"
-              className="h-12 w-full border-0 border-b border-[var(--color-border)] bg-transparent pl-9 pr-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-primary)]"
+              className="h-12 w-full border-0 border-b border-[var(--color-border)] bg-transparent pl-9 pr-11 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-primary)]"
             />
+            {query && <button type="button" onClick={() => clearQuery('drawer-search')} aria-label={t('clearSearch')} className="averon-control-button averon-icon-button absolute right-0 top-0 h-12 !min-h-0 !border-0 !bg-transparent hover:!bg-[var(--color-surface-soft)]"><X size={16} /></button>}
           </form>
-          {mobileSuggestions.length > 0 && (
-            <div className="averon-menu-surface mt-2 overflow-hidden">
-              {mobileSuggestions.map((item, i) => (
-                <button
-                  key={`${item.href}-${i}`}
-                  type="button"
-                  onClick={() => navTo(item.href)}
-                  className="averon-menu-item gap-3 text-sm"
-                >
-                  <span aria-hidden="true">{item.icon}</span>
-                  <span className="truncate">{item.text}</span>
-                </button>
-              ))}
-            </div>
-          )}
+          {renderSuggestions('drawer-search')}
 
           {categories.length > 0 && (
             <section className="mt-5" aria-labelledby="mobile-categories-title">
