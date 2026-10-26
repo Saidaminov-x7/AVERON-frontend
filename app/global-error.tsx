@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { getSafeErrorReportPath, sanitizeErrorReportText } from '@/lib/safe-error-report';
+import { getSafeErrorReportPath } from '@/lib/safe-error-report';
+import { resolveBrowserApiBaseUrl } from '@/lib/api-origin';
 
 const themeBootstrap = `(() => {
   try {
@@ -24,20 +25,18 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     try {
-      const backendBaseUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (backendBaseUrl) {
-        fetch(`${backendBaseUrl}/error-reports`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: sanitizeErrorReportText(error.message || 'Unknown global error'),
-            stack: sanitizeErrorReportText(error.stack || ''),
-            url: getSafeErrorReportPath(),
-            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-            severity: 'error',
-          }),
-        }).catch(() => {});
-      }
+      const localApiUrl = process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080';
+      const reportUrl = `${resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl)}/error-reports`;
+      fetch(reportUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'Client-side application error',
+          stack: '',
+          url: getSafeErrorReportPath(),
+          severity: 'error',
+        }),
+      }).catch(() => {});
     } catch {
       // ignore reporting errors
     }

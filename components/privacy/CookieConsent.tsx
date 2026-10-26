@@ -16,6 +16,7 @@ export function CookieConsent() {
   const manageRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const bannerRef = useRef<HTMLElement>(null);
   const restoreFocusRef = useRef(false);
 
   const openSettings = useCallback(() => {
@@ -33,6 +34,24 @@ export function CookieConsent() {
     handleChoice();
     return subscribeToConsentChanges(handleChoice);
   }, []);
+
+  useLayoutEffect(() => {
+    if (choice !== null || !bannerRef.current) return;
+    const banner = bannerRef.current;
+    const updateClearance = () => {
+      document.documentElement.style.setProperty('--cookie-consent-clearance', `${Math.ceil(banner.getBoundingClientRect().height + 24)}px`);
+    };
+    updateClearance();
+    if (typeof ResizeObserver === 'undefined') {
+      return () => document.documentElement.style.removeProperty('--cookie-consent-clearance');
+    }
+    const observer = new ResizeObserver(updateClearance);
+    observer.observe(banner);
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty('--cookie-consent-clearance');
+    };
+  }, [choice]);
 
   useLayoutEffect(() => {
     if (settingsOpen || !restoreFocusRef.current) return;
@@ -65,9 +84,12 @@ export function CookieConsent() {
       if (event.key !== 'Tab' || !panel) return;
       const focusable = Array.from(panel.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled)'));
       if (!focusable.length) return;
-      if (event.shiftKey && document.activeElement === focusable[0]) {
+      if (event.shiftKey && (document.activeElement === panel || document.activeElement === focusable[0])) {
         event.preventDefault();
         focusable.at(-1)?.focus();
+      } else if (!event.shiftKey && document.activeElement === panel) {
+        event.preventDefault();
+        focusable[0]?.focus();
       } else if (!event.shiftKey && document.activeElement === focusable.at(-1)) {
         event.preventDefault();
         focusable[0]?.focus();
@@ -93,7 +115,7 @@ export function CookieConsent() {
   return (
     <>
       {choice === null ? (
-        <aside className="cookie-consent-banner" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-description">
+        <aside ref={bannerRef} className="cookie-consent-banner" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-description">
           <div className="min-w-0 flex-1">
             <p id="cookie-consent-title" className="text-sm font-semibold text-[var(--color-text)]">{t('title')}</p>
             <p id="cookie-consent-description" className="mt-1 text-xs leading-5 text-[var(--color-text-secondary)]">
@@ -102,9 +124,9 @@ export function CookieConsent() {
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => save(false)}>{t('reject')}</Button>
-            <Button type="button" variant="outline" size="sm" onClick={openSettings}>{t('settings')}</Button>
-            <Button type="button" size="sm" onClick={() => save(true)}>{t('accept')}</Button>
+            <Button type="button" variant="outline" size="sm" className="h-11 min-h-11" onClick={() => save(false)}>{t('reject')}</Button>
+            <Button type="button" variant="outline" size="sm" className="h-11 min-h-11" onClick={openSettings}>{t('settings')}</Button>
+            <Button type="button" size="sm" className="h-11 min-h-11" onClick={() => save(true)}>{t('accept')}</Button>
           </div>
         </aside>
       ) : (
@@ -132,14 +154,14 @@ export function CookieConsent() {
             </div>
 
             <div className="mt-5 divide-y divide-[var(--color-border)] rounded-[var(--radius-control)] border border-[var(--color-border)] px-4">
-              <div className="flex items-center justify-between gap-4 py-4">
+              <div className="flex min-h-11 items-center justify-between gap-4 py-4">
                 <div>
                   <p className="text-sm font-semibold text-[var(--color-text)]">{t('necessary')}</p>
                   <p className="mt-1 text-xs leading-5 text-[var(--color-text-secondary)]">{t('necessaryDescription')}</p>
                 </div>
                 <input type="checkbox" checked disabled aria-label={t('necessary')} className="size-5 shrink-0 accent-[var(--color-primary)]" />
               </div>
-              <label className="flex cursor-pointer items-center justify-between gap-4 py-4">
+              <label className="flex min-h-11 cursor-pointer items-center justify-between gap-4 py-4">
                 <span>
                   <span className="block text-sm font-semibold text-[var(--color-text)]">{t('analytics')}</span>
                   <span className="mt-1 block text-xs leading-5 text-[var(--color-text-secondary)]">{t('analyticsDescription')}</span>

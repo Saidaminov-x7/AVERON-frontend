@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { CookieSettingsLink } from "@/components/privacy/CookieSettingsLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import type { NavLink } from "@/lib/siteSettings";
 
@@ -29,6 +30,7 @@ const DOCUMENT_LINKS = [
 export function Footer({ locale: localeProp }: { locale?: string } = {}) {
   const locale = useLocale() || localeProp || "ru";
   const t = useTranslations("footer");
+  const consentT = useTranslations("consent");
   const { data: settings } = useSiteSettings();
   const configuredFooterLinks = Array.isArray(settings?.navLinks)
     ? settings.navLinks
@@ -77,25 +79,26 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
           <div className="min-w-0">
             <Link
               href={`/${locale}`}
-              className="inline-flex min-h-11 items-center text-xl font-black tracking-[.18em] text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              className="inline-flex min-h-11 items-start text-xl font-black tracking-[.18em] text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             >
               {settings?.siteName || "AVERON"}
             </Link>
             <p className="mt-2 max-w-xs text-sm leading-6 text-[var(--color-text-secondary)]">
               {t("description")}
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <ThemeToggle />
+            <div className="mt-3 grid max-w-[24rem] grid-cols-2 gap-2">
+              <div className="flex min-w-0 [&_button]:w-full"><ThemeToggle /></div>
+              <CookieSettingsLink label={consentT("manage")} />
               <a
                 href="https://t.me/averon_fashion"
-                className="inline-flex min-h-11 items-center rounded-xl border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="averon-secondary-button h-11 w-full px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <Send className="mr-2 shrink-0" size={15} />
                 {t("channel")}
               </a>
               <a
                 href="https://t.me/averon_fashion_admin"
-                className="inline-flex min-h-11 items-center rounded-xl border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="averon-secondary-button h-11 w-full px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <MessageCircle className="mr-2 shrink-0" size={15} />
                 {t("support")}

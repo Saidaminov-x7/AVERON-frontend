@@ -1,9 +1,15 @@
 import type { StoreProduct } from "./products";
+import { resolveBrowserApiBaseUrl } from "./api-origin";
 
-const apiBaseUrl = (
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://averon-backend-production.up.railway.app"
-).replace(/\/+$/, "");
+const localApiUrl = process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || "http://127.0.0.1:8080";
+const localRuntime = process.env.NEXT_PUBLIC_AVERON_RUNTIME_TARGET === "local" || process.env.NODE_ENV !== "production";
+const serverApiBaseUrl = (localRuntime ? localApiUrl : process.env.NEXT_PUBLIC_API_URL || "https://averon-backend-production.up.railway.app").replace(/\/+$/, "");
+
+function apiBaseUrl() {
+  return typeof window !== "undefined"
+    ? resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl)
+    : serverApiBaseUrl;
+}
 
 export type SearchOverrides = {
   category?: string | null;
@@ -76,7 +82,7 @@ async function readErrorCode(response: Response): Promise<string> {
 async function post(path: string, payload: unknown, fetcher: typeof fetch): Promise<unknown> {
   let response: Response;
   try {
-    response = await fetcher(`${apiBaseUrl}/api/v1/${path}`, {
+    response = await fetcher(`${apiBaseUrl()}/api/v1/${path}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(payload),
@@ -161,7 +167,7 @@ export async function loadCompleteTheLook(
   let response: Response;
   try {
     response = await fetcher(
-      `${apiBaseUrl}/api/v1/products/${encodeURIComponent(slug)}/complete-the-look`,
+      `${apiBaseUrl()}/api/v1/products/${encodeURIComponent(slug)}/complete-the-look`,
       { cache: "no-store", signal: AbortSignal.timeout(15000) },
     );
   } catch {

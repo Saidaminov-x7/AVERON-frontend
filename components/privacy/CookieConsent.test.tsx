@@ -60,6 +60,22 @@ describe('CookieConsent', () => {
     expect(document.activeElement).toBe(settingsButton);
   });
 
+  it('keeps focus inside the dialog when tabbing forward or backward from the dialog surface', async () => {
+    renderConsent();
+    fireEvent.click(await screen.findByRole('button', { name: enMessages.consent.settings }));
+    const dialog = screen.getByRole('dialog', { name: enMessages.consent.settingsTitle });
+    const close = screen.getByRole('button', { name: enMessages.consent.close });
+    const save = screen.getByRole('button', { name: enMessages.consent.save });
+
+    expect(dialog).toHaveFocus();
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+    expect(save).toHaveFocus();
+
+    dialog.focus();
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(close).toHaveFocus();
+  });
+
   it.each(['close', 'backdrop'] as const)('restores focus after closing settings with %s', async (method) => {
     renderConsent();
     const settingsButton = await screen.findByRole('button', { name: enMessages.consent.settings });
