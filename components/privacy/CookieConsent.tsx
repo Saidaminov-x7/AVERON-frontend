@@ -13,7 +13,6 @@ export function CookieConsent() {
   const [choice, setChoice] = useState<boolean | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [analytics, setAnalytics] = useState(false);
-  const manageRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const bannerRef = useRef<HTMLElement>(null);
@@ -56,7 +55,10 @@ export function CookieConsent() {
   useLayoutEffect(() => {
     if (settingsOpen || !restoreFocusRef.current) return;
     restoreFocusRef.current = false;
-    (previousFocusRef.current?.isConnected ? previousFocusRef.current : manageRef.current)?.focus();
+    const target = previousFocusRef.current?.isConnected
+      ? previousFocusRef.current
+      : document.querySelector<HTMLElement>('[data-cookie-settings-trigger]');
+    target?.focus();
   }, [choice, settingsOpen]);
 
   const closeSettings = useCallback(() => {
@@ -129,16 +131,7 @@ export function CookieConsent() {
             <Button type="button" size="sm" className="h-11 min-h-11" onClick={() => save(true)}>{t('accept')}</Button>
           </div>
         </aside>
-      ) : (
-        <button
-          ref={manageRef}
-          type="button"
-          className="cookie-settings-trigger"
-          onClick={openSettings}
-        >
-          {t('manage')}
-        </button>
-      )}
+      ) : null}
 
       {settingsOpen && (
         <div className="cookie-consent-backdrop" onMouseDown={(event) => {

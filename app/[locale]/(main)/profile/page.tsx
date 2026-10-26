@@ -27,6 +27,7 @@ import { getProduct } from "@/lib/products";
 import api from "@/lib/axios";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useFavoritesStore } from "@/store/useFavoritesStore";
+import { CookiePreferencesSection } from "@/components/privacy/CookiePreferencesSection";
 import {
   Select,
   SelectContent,
@@ -299,6 +300,7 @@ function ProfileContent() {
               </div>
             </div>
           </section>
+          <CookiePreferencesSection />
           <section className="mt-5 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
             <h2 className="font-bold">Размер по параметрам</h2>
             <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">Заполните необязательно — рекомендация появится только после ввода роста и веса.</p>
