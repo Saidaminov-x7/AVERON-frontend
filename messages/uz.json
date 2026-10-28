@@ -340,6 +340,7 @@
     "signIn": "Kirish"
   },
   "profile": {
+    "privacy": { "title": "Maxfiylik sozlamalari", "description": "Bu brauzerda ixtiyoriy tahlil sozlamalarini boshqaring. Zarur saqlash doim faol; tahlilni o‘zingiz yoqmaguningizcha u o‘chiq turadi.", "notChosen": "Ixtiyoriy tahlil bo‘yicha tanlov saqlanmagan.", "analyticsOn": "Ixtiyoriy tahlil yoqilgan.", "analyticsOff": "Ixtiyoriy tahlil o‘chirilgan.", "manage": "Cookie tanlovini ko‘rish" },
     "bodyProfile": { "heightLabel": "Bo‘y, sm", "weightLabel": "Vazn, kg", "heightPlaceholder": "Masalan, 175", "weightPlaceholder": "Masalan, 70", "save": "Parametrlarni saqlash", "saved": "Saqlandi", "saveError": "Saqlab bo‘lmadi", "noRecommendation": "Aniq o‘lcham faqat o‘lcham jadvali bor mahsulotlar uchun ko‘rsatiladi." },
     "accountName": "AVERON xaridori",
     "active": "Faol",

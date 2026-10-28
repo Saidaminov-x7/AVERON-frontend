@@ -14,7 +14,6 @@ import {
   Headphones, Shirt, Footprints, ShoppingBag,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { CookieSettingsLink } from '@/components/privacy/CookieSettingsLink';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -185,7 +184,6 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const router = useRouter();
   const locale = useLocale() || localeProp || 'ru';
   const t = useTranslations('nav');
-  const consentT = useTranslations('consent');
   const { data: settings } = useSiteSettings();
   const { data: categories = [] } = useQuery({
     queryKey: ['storefront-categories'],
@@ -916,9 +914,6 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <LanguagePicker onSelect={closeMobileMenu} />
               <ThemeToggle />
-            </div>
-            <div className="w-full min-w-0 [&_button]:w-full">
-              <CookieSettingsLink label={consentT('manage')} />
             </div>
           </div>
           {isAuthenticated ? (
