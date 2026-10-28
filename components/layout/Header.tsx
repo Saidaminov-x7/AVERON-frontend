@@ -902,7 +902,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                             </span>
                           )}
                         </span>
-                        <span className="min-w-0 truncate text-xs font-semibold">{label}</span>
+                        <span className="min-w-0 break-words text-xs font-semibold">{label}</span>
                       </Link>
                     );
                   })}
@@ -910,12 +910,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </div>
             );
           })()}
-        </div>
-
-        <div className="mx-auto w-full max-w-xl shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-5 pb-5 pt-4">
-          <div className="mb-3 flex items-center justify-between">
+        <div className="mt-8 w-full border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-4 pb-5 pt-4">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs font-medium text-[var(--color-text-secondary)]">{t('langAndTheme')}</span>
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               <LanguagePicker onSelect={closeMobileMenu} />
               <ThemeToggle />
               <CookieSettingsLink label={consentT('manage')} />
@@ -941,7 +939,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <button
                 type="button"
                 onClick={() => { void handleLogout(); }}
-                className="averon-secondary-button col-span-2 h-10 gap-2 text-xs"
+                className="averon-secondary-button h-11 gap-2 text-xs min-[400px]:col-span-2"
               >
                 <LogOut size={15} />
                 {t('logout')}
@@ -966,6 +964,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </Link>
             </div>
           )}
+        </div>
         </div>
       </div>
     </>
