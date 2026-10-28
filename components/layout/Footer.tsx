@@ -87,8 +87,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
               {t("description")}
             </p>
             <div className="mt-3 grid max-w-[24rem] grid-cols-2 gap-2">
-              <div className="flex min-w-0 [&_button]:w-full"><ThemeToggle /></div>
-              <CookieSettingsLink label={consentT("manage")} />
+              <div className="col-span-2 flex min-w-0 [&_button]:w-full"><ThemeToggle /></div>
               <a
                 href="https://t.me/averon_fashion"
                 className="averon-secondary-button h-11 w-full px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
@@ -103,6 +102,9 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
                 <MessageCircle className="mr-2 shrink-0" size={15} />
                 {t("support")}
               </a>
+              <div className="col-span-2 min-w-0 [&_button]:w-full">
+                <CookieSettingsLink label={consentT("manage")} />
+              </div>
             </div>
             {(settings?.contactEmail || settings?.contactPhone) && (
               <div className="mt-3 space-y-1 text-sm text-[var(--color-text-secondary)]">

@@ -916,6 +916,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <LanguagePicker onSelect={closeMobileMenu} />
               <ThemeToggle />
+            </div>
+            <div className="w-full min-w-0 [&_button]:w-full">
               <CookieSettingsLink label={consentT('manage')} />
             </div>
           </div>
