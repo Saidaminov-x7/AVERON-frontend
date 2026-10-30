@@ -26,6 +26,8 @@ const LOCALES = [
   { code: 'en', short: 'EN', label: 'English' },
 ] as const;
 
+const LOCALE_LABELS = { ru: 'Русский', uz: 'Oʻzbekcha', en: 'English' } as const;
+
 const BTN_CLASS =
   'averon-control-button averon-icon-button h-11 shrink-0';
 
@@ -113,12 +115,12 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
             menuRef.current?.querySelector<HTMLButtonElement>('[aria-checked="true"]')?.focus();
           });
         }}
-        className={BTN_CLASS + ' gap-2 !w-auto px-3 text-sm font-semibold ' + (open ? '!border-primary-500 !text-primary-600 dark:!text-primary-400' : '')}
-        aria-label={t('language')}
+        className={BTN_CLASS + ' !w-11 justify-center !px-0 text-sm font-semibold tracking-wide ' + (open ? '!border-primary-500 !text-primary-600 dark:!text-primary-400' : '')}
+        aria-label={`${t('language')}: ${LOCALE_LABELS[current.code]}`}
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        <span className="font-semibold tracking-wide">{current.short}</span>
+        <span aria-hidden="true" className="font-semibold tracking-wide">{current.short}</span>
       </button>
       <div
         ref={menuRef}
@@ -142,13 +144,13 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
           items[nextIndex]?.focus();
         }}
         className={
-          'averon-menu-surface absolute right-0 z-50 w-40 overflow-hidden py-1 ' +
+          'averon-menu-surface absolute right-0 z-50 !w-[46px] max-h-[min(9rem,calc(100dvh-2rem))] overflow-y-auto overscroll-contain py-1 ' +
           (prefersReducedMotion ? 'transition-none ' : 'transition-all duration-200 ') +
           (openUpward ? 'bottom-full mb-2 origin-bottom-right' : 'top-full mt-2 origin-top-right') + ' ' +
-          (open ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0')
+          (open ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none hidden scale-95 opacity-0')
         }
       >
-        {LOCALES.map(({ code, short, label }) => {
+        {LOCALES.map(({ code, short }) => {
           const active = code === locale;
           return (
             <button
@@ -156,17 +158,17 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
               type="button"
               role="menuitemradio"
               aria-checked={active}
+              aria-label={LOCALE_LABELS[code]}
               onClick={() => handleSelectLocale(code)}
               className={
-                'averon-menu-item text-xs font-medium ' +
+                'averon-menu-item !h-11 !min-h-11 !w-full !px-0 justify-center text-xs font-medium ' +
                 (prefersReducedMotion ? '' : 'transition-colors ') +
                 (active
                   ? '!bg-[var(--color-surface-soft)] !text-[var(--color-text)]'
                   : '')
               }
             >
-              <span className="ml-2 flex-1">{label}</span>
-              <span className="text-[10px] text-stone-400">{short}</span>
+              <span aria-hidden="true" className="text-xs font-bold tracking-wide">{short}</span>
             </button>
           );
         })}
@@ -252,6 +254,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     mobileCloseButtonRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        const openMenu = mobileDrawerRef.current?.querySelector<HTMLElement>(
+          '[role="menu"][aria-hidden="false"]',
+        );
+        if (openMenu) return;
         event.preventDefault();
         setMobileOpen(false);
         return;
@@ -584,29 +590,37 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         }
       />
 
-      <div
-        id="mobile-navigation"
-        ref={mobileDrawerRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={t('menu')}
-        aria-hidden={!mobileOpen}
-        inert={!mobileOpen}
-        style={{
-          transitionTimingFunction: 'var(--ease-drawer)',
-        }}
-        className={
-          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-[min(92vw,400px)] max-w-full flex-col overflow-hidden bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
-          (mobileOpen ? 'translate-x-0' : 'translate-x-full')
-        }
-      >
+      <div className="pointer-events-none fixed inset-0 z-[61] lg:hidden">
+        <div
+          id="mobile-navigation"
+          ref={mobileDrawerRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('menu')}
+          aria-hidden={!mobileOpen}
+          inert={!mobileOpen}
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 'max(14px, env(safe-area-inset-right))',
+            bottom: 0,
+            width: 'min(calc(100vw - 28px), 400px)',
+            maxWidth: 'calc(100vw - 28px)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-control)',
+            boxShadow: 'var(--shadow-drawer)',
+            transform: mobileOpen ? 'translateX(0)' : 'translateX(calc(100% + 14px))',
+            transitionTimingFunction: 'var(--ease-drawer)',
+          }}
+          className={`pointer-events-auto flex flex-col overflow-hidden bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden`}
+        >
         <div className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface)] px-5">
-          <div className="flex min-w-0 items-baseline gap-2 min-[360px]:gap-3">
+          <div className="flex min-w-0 items-baseline">
             <Link href={to('/')} onClick={closeMobileMenu} className="truncate text-base font-black tracking-[0.16em] text-[var(--color-text)] min-[360px]:text-lg min-[360px]:tracking-[0.2em]">
               AVERON
             </Link>
-            <span className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)] min-[280px]:inline">{t('menu')}</span>
           </div>
+          <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]">{t('menu')}</span>
           <button
             ref={mobileCloseButtonRef}
             type="button"
@@ -678,14 +692,14 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     onClick={closeMobileMenu}
                     aria-current={active ? 'page' : undefined}
                     className={
-                      'group flex min-h-[64px] items-center gap-4 border-b border-[var(--color-border)] px-0 transition-colors ' +
+                      'group flex min-h-14 items-center gap-4 border-b border-[var(--color-border)] px-0 transition-colors ' +
                       (active
                         ? 'text-[var(--color-text)]'
                         : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]')
                     }
                   >
                     <span className="w-6 shrink-0 text-[10px] font-semibold tabular-nums tracking-[.12em] text-[var(--color-muted)]" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-                    <span className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">{label}</span>
+                    <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">{label}</span>
                     <ChevronRight size={16} className="shrink-0 text-[var(--color-muted)] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                   </Link>
                 );
@@ -741,7 +755,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           })()}
         </div>
 
-        <div className="mx-auto w-full max-w-xl shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-5 pb-5 pt-4">
+        <div className="mx-auto w-full max-w-xl shrink-0 border-x border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-5 pb-5 pt-4">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-xs font-medium text-[var(--color-text-secondary)]">{t('langAndTheme')}</span>
             <div className="flex items-center gap-2">
@@ -750,7 +764,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             </div>
           </div>
           {isAuthenticated ? (
-            <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
+            <div className="grid grid-cols-[minmax(0,1fr)_98px] gap-2">
               <Link
                 href={to('/profile')}
                 onClick={closeMobileMenu}
@@ -794,6 +808,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </Link>
             </div>
           )}
+        </div>
         </div>
       </div>
     </>

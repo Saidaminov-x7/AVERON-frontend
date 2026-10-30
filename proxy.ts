@@ -36,13 +36,17 @@ export async function proxy(request: NextRequest) {
       // 1. Если техобслуживание включено, но нет байпасс-куки и мы не на странице maintenance -> редирект на maintenance
       if (isUnderMaintenance && !isMaintenancePage && !bypassCookie) {
         const maintenanceUrl = new URL(`/${locale}/maintenance`, request.url);
+        maintenanceUrl.searchParams.set('returnTo', `${pathname}${request.nextUrl.search}`);
         return NextResponse.redirect(maintenanceUrl);
       }
 
       // 2. Если техобслуживание ВЫКЛЮЧЕНО (или есть активный байпасс), но пользователь перешел на /maintenance -> редирект на главную
       if ((!isUnderMaintenance || bypassCookie) && isMaintenancePage) {
-        const homeUrl = new URL(`/${locale}`, request.url);
-        return NextResponse.redirect(homeUrl);
+        const returnTo = request.nextUrl.searchParams.get('returnTo');
+        const safeReturnTo = returnTo?.startsWith(`/${locale}/`) || returnTo === `/${locale}`
+          ? returnTo
+          : `/${locale}`;
+        return NextResponse.redirect(new URL(safeReturnTo, request.url));
       }
     }
   } catch {

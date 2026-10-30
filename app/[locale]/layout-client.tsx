@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { AppChrome } from '@/components/AppChrome';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
+import { CookieConsent } from '@/components/providers/CookieConsent';
 import { GlobalErrorListener } from '@/components/GlobalErrorListener';
 import { NavigationHistoryTracker } from '@/components/NavigationHistoryTracker';
 import AuthInitializer from '@/components/AuthInitializer';
@@ -55,6 +56,7 @@ export default function LocaleLayout({
             <div className="flex min-h-screen flex-col">
               <AppChrome>{children}</AppChrome>
             </div>
+            <CookieConsent />
             <Toaster closeButton richColors position="top-center" visibleToasts={4} toastOptions={{ duration: 4000 }} />
           </QueryProvider>
         </NextIntlClientProvider>
