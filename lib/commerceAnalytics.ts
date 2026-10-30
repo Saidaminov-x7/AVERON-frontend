@@ -1,5 +1,7 @@
 import { externalBaseURL } from '@/lib/axios';
 import { readCookieConsent } from '@/lib/cookieConsent';
+import { canSendAnalytics } from '@/lib/analyticsPolicy';
+import { clearAnalyticsIdentifier } from '@/lib/consent';
 
 export type CommerceEventMetadata = {
   productId?: string;
@@ -55,7 +57,10 @@ function getDeviceId() {
 
 export function trackCommerceEvent(event: CommerceEvent, pathOverride?: string) {
   if (typeof window === 'undefined') return;
-  if (!readCookieConsent()?.analytics) return;
+  if (!canSendAnalytics() || !readCookieConsent()?.analytics) {
+    clearAnalyticsIdentifier();
+    return;
+  }
   const path = pathOverride ?? window.location.pathname;
   const dedupeKey = JSON.stringify([event.eventName, path, event.metadata ?? {}]);
   const now = Date.now();

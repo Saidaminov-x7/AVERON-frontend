@@ -90,7 +90,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
     setIsVerifying(true);
     setPasswordError('');
     try {
-      const res = await fetch(apiUrl('site-settings/public/check-bypass'), {
+      const res = await fetch('/api/backend/site-settings/public/check-bypass', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: password.trim() }),

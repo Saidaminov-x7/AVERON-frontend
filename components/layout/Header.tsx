@@ -732,19 +732,19 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           aria-hidden={!mobileOpen}
           inert={!mobileOpen}
           style={{
-            position: 'absolute',
+            position: 'fixed',
             top: 0,
-            right: 'max(14px, env(safe-area-inset-right))',
+            right: 0,
             bottom: 0,
-            width: 'min(calc(100vw - 28px), 400px)',
-            maxWidth: 'calc(100vw - 28px)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-control)',
-            boxShadow: 'var(--shadow-drawer)',
-            transform: mobileOpen ? 'translateX(0)' : 'translateX(calc(100% + 14px))',
+            width: '100%',
+            maxWidth: '100%',
+            border: 0,
+            borderRadius: 0,
+            boxShadow: 'none',
+            transform: mobileOpen ? 'translateX(0)' : 'translateX(100%)',
             transitionTimingFunction: 'var(--ease-drawer)',
           }}
-          className={`pointer-events-auto flex flex-col overflow-hidden bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden`}
+          className={`pointer-events-auto fixed inset-0 !left-0 !right-0 !top-0 !bottom-0 !w-screen !max-w-none flex flex-col overflow-hidden bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden`}
         >
         <div className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface)] px-5">
           <div className="flex min-w-0 items-baseline">
