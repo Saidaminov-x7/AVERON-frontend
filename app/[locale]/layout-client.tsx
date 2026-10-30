@@ -11,6 +11,7 @@ import { GlobalErrorListener } from '@/components/GlobalErrorListener';
 import { NavigationHistoryTracker } from '@/components/NavigationHistoryTracker';
 import AuthInitializer from '@/components/AuthInitializer';
 import { SiteViewportSettings } from '@/components/SiteViewportSettings';
+import { CookieConsent } from '@/components/privacy/CookieConsent';
 import type { PublicSiteSettings } from '@/lib/siteSettings';
 import React, { Suspense, useLayoutEffect } from 'react';
 
@@ -58,6 +59,7 @@ export default function LocaleLayout({
             </div>
             <CookieConsent />
             <Toaster closeButton richColors position="top-center" visibleToasts={4} toastOptions={{ duration: 4000 }} />
+            <CookieConsent />
           </QueryProvider>
         </NextIntlClientProvider>
       </ThemeProvider>

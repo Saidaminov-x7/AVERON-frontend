@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { CookieSettingsLink } from "@/components/privacy/CookieSettingsLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import type { NavLink } from "@/lib/siteSettings";
 import { openCookieSettings } from "@/components/providers/CookieConsent";
@@ -30,6 +31,7 @@ const DOCUMENT_LINKS = [
 export function Footer({ locale: localeProp }: { locale?: string } = {}) {
   const locale = useLocale() || localeProp || "ru";
   const t = useTranslations("footer");
+  const consentT = useTranslations("consent");
   const { data: settings } = useSiteSettings();
   const configuredFooterLinks = Array.isArray(settings?.navLinks)
     ? settings.navLinks
@@ -74,12 +76,12 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
 
   return (
     <footer className="w-full border-t border-[var(--color-border)] bg-[var(--color-surface)]">
-      <div className="mx-auto max-w-[1440px] px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-12 sm:pb-[calc(3rem+env(safe-area-inset-bottom))] lg:px-8">
+      <div className="mx-auto max-w-[1440px] px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:pt-12 sm:pb-[calc(3rem+env(safe-area-inset-bottom))] md:px-6 lg:px-8 min-[1400px]:px-12">
         <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-[1.25fr_repeat(3,1fr)] lg:gap-10">
           <div className="min-w-0">
             <Link
               href={`/${locale}`}
-              className="inline-flex min-h-11 items-center text-xl font-black tracking-[.18em] text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              className="inline-flex min-h-11 items-start text-xl font-black tracking-[.18em] text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             >
               {settings?.siteName || "AVERON"}
             </Link>
@@ -105,6 +107,9 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
                 <MessageCircle className="mr-2 shrink-0" size={15} />
                 {t("support")}
               </a>
+              <div className="col-span-2 min-w-0 [&_button]:w-full">
+                <CookieSettingsLink label={consentT("manage")} />
+              </div>
             </div>
             {(settings?.contactEmail || settings?.contactPhone) && (
               <div className="mt-3 space-y-1 text-sm text-[var(--color-text-secondary)]">

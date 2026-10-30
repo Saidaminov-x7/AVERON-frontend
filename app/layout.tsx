@@ -30,7 +30,10 @@ export const metadata: Metadata = {
 
 async function getServerSettings() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const isLocalRuntime = process.env.NEXT_PUBLIC_AVERON_RUNTIME_TARGET === 'local' || process.env.NODE_ENV !== 'production';
+    const apiUrl = isLocalRuntime
+      ? process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080'
+      : process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) throw new Error('no apiUrl');
     const res = await fetch(`${apiUrl}/site-settings/public`, {
       next: { revalidate: 30 },

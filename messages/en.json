@@ -111,6 +111,11 @@
     "support": "Support",
     "search": "Search",
     "searchPlaceholder": "What are you looking for?",
+    "clearSearch": "Clear search",
+    "searchLoading": "Searching products…",
+    "searchUnavailable": "Suggestions are unavailable right now. You can still search this query.",
+    "searchNoProducts": "No matching products found.",
+    "searchProduct": "Product",
     "language": "Language",
     "menu": "Menu",
     "close": "Close",
@@ -119,7 +124,26 @@
     "cart": "Cart",
     "orders": "Orders",
     "settings": "Settings",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "categories": "Categories"
+  },
+  "consent": {
+    "title": "Privacy choices",
+    "description": "Optional analytics measures catalog views and selected shopping interactions with a random device identifier. It stays off until you choose it.",
+    "privacyLink": "Privacy policy",
+    "accept": "Allow analytics",
+    "reject": "Reject analytics",
+    "settings": "Customize",
+    "manage": "Cookie settings",
+    "settingsTitle": "Cookie and analytics settings",
+    "settingsDescription": "Choose whether optional analytics may run. You can change your choice later.",
+    "necessary": "Necessary data",
+    "necessaryDescription": "Required for core functions including login, CSRF protection, cart state, language and theme preferences.",
+    "analytics": "Analytics",
+    "analyticsDescription": "Measures catalog views and selected shopping interactions using a random device identifier. Raw order IDs are not sent.",
+    "retention": "Your choice is stored for up to 180 days. Analytics event retention and deletion procedures are being finalized.",
+    "save": "Save choice",
+    "close": "Close"
   },
   "comparePage": {
     "loading": "Loading comparison…",
@@ -316,6 +340,7 @@
     "signIn": "Sign in"
   },
   "profile": {
+    "privacy": { "title": "Privacy preferences", "description": "Manage optional analytics for this browser. Necessary storage is always active; analytics stays off until you choose to enable it.", "notChosen": "No optional analytics choice saved.", "analyticsOn": "Optional analytics is enabled.", "analyticsOff": "Optional analytics is disabled.", "manage": "Review cookie choices" },
     "bodyProfile": { "heightLabel": "Height, cm", "weightLabel": "Weight, kg", "heightPlaceholder": "For example, 175", "weightPlaceholder": "For example, 70", "save": "Save measurements", "saved": "Saved", "saveError": "Could not save", "noRecommendation": "An exact size is shown only for products with a size chart." },
     "accountName": "AVERON customer",
     "active": "Active",

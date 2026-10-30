@@ -31,6 +31,9 @@
   --color-scroll-top-border: #1a1a1a;
   --shadow-scroll-top: 0 4px 18px rgb(0 0 0 / 18%);
   --color-primary: #1a1a1a;
+  --color-action-bg: #1a1a1a;
+  --color-button-hover: #111111;
+  --color-on-action: #ffffff;
   --color-secondary: #404040;
   --color-action-bg: #1a1a1a;
   --color-button-hover: #111111;
@@ -56,7 +59,7 @@
   --radius-md: 0.125rem;
   --radius-lg: 0.1875rem;
   --radius-card: 0;
-  --radius-control: 0.125rem;
+  --radius-control: 0;
   --border-radius: var(--radius-card);
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -108,6 +111,62 @@
 .averon-site-shell :where(.max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl) {
   width: 100%;
   max-width: var(--layout-max-width);
+}
+
+.cookie-consent-banner {
+  position: fixed;
+  z-index: 45;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  width: min(760px, calc(100vw - 32px));
+  max-width: 100%;
+  margin: 0;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 16px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-elevated);
+}
+.cookie-consent-banner button {
+  min-height: 44px;
+}
+body:has(.cookie-consent-banner) {
+  padding-bottom: var(--cookie-consent-clearance, 12rem);
+}
+
+.cookie-consent-backdrop {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: var(--color-overlay);
+}
+
+.cookie-consent-dialog {
+  width: min(100%, 560px);
+  max-height: 100%;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 24px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-elevated);
+}
+
+@media (max-width: 639px) {
+  .cookie-consent-banner { right: max(16px, env(safe-area-inset-right)); left: max(16px, env(safe-area-inset-left)); width: auto; }
+  .cookie-consent-banner { max-height: 70dvh; overflow-y: auto; align-items: stretch; flex-direction: column; gap: 12px; padding: 12px; }
+  .cookie-consent-banner > div:last-child { display: grid; grid-template-columns: 1fr; }
+  .cookie-consent-banner > div:last-child button { width: 100%; min-height: 44px; }
+  .cookie-consent-dialog { padding: 16px; }
 }
 
 :root.dark {
@@ -212,16 +271,16 @@
   .averon-control-button:disabled { cursor: not-allowed; opacity: .5; }
   .averon-icon-button { width: 44px; min-width: 44px; padding: 0; }
   .averon-primary-button, .averon-secondary-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: .5rem; border: 1px solid transparent; border-radius: var(--radius-control); padding: .75rem 1.25rem; font-family: var(--font-family); font-size: .8125rem; font-weight: 700; line-height: 1.25rem; text-align: center; transition: color var(--duration-press) var(--ease-out-ui), background-color var(--duration-press) var(--ease-out-ui), border-color var(--duration-press) var(--ease-out-ui), box-shadow var(--duration-press) var(--ease-out-ui); }
-  .averon-primary-button { background: var(--color-primary); color: var(--color-on-primary); }
-  .averon-primary-button:hover { background: var(--color-secondary); }
-  :root.dark .averon-primary-button { background: var(--color-primary); color: var(--color-on-primary); }
-  :root.dark .averon-primary-button:hover { background: var(--color-secondary); }
+  .averon-primary-button { background: var(--color-action-bg); color: var(--color-on-action); }
+  .averon-primary-button:hover { background: var(--color-button-hover); }
+  :root.dark .averon-primary-button { background: var(--color-action-bg); color: var(--color-on-action); }
+  :root.dark .averon-primary-button:hover { background: var(--color-button-hover); }
   .averon-secondary-button { border-color: var(--color-border); background: var(--color-surface); color: var(--color-text); }
   .averon-secondary-button:hover { background: var(--color-surface-soft); }
   .averon-ghost-button { border: 1px solid transparent; background: transparent; color: var(--color-text-secondary); }
   .averon-ghost-button:hover { background: var(--color-surface-soft); color: var(--color-text); }
   .averon-menu-surface { border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface); color: var(--color-text); box-shadow: 0 6px 18px rgb(0 0 0 / .08); }
-  .averon-menu-item { display: flex; min-height: 44px; width: 100%; align-items: center; border-radius: var(--radius-sm); padding: .625rem .75rem; color: var(--color-text-secondary); text-align: left; transition: background-color var(--duration-press) var(--ease-out-ui), color var(--duration-press) var(--ease-out-ui); }
+  .averon-menu-item { display: flex; min-height: 44px !important; width: 100%; align-items: center; border-radius: 0 !important; padding: .625rem .75rem; color: var(--color-text-secondary); text-align: left; transition: background-color var(--duration-press) var(--ease-out-ui), color var(--duration-press) var(--ease-out-ui); }
   .averon-menu-item:hover, .averon-menu-item[aria-selected="true"], .averon-menu-item[aria-checked="true"] { background: var(--color-surface-soft); color: var(--color-text); }
   .averon-menu-item:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
 }
@@ -231,14 +290,9 @@
   background-color: var(--color-bg) !important;
   color: var(--color-text) !important;
 }
-.averon-site-shell .rounded-3xl,
-.averon-site-shell .rounded-2xl { border-radius: var(--radius-card) !important; }
-.averon-site-shell .rounded-xl,
-.averon-site-shell .rounded-lg { border-radius: var(--radius-control) !important; }
-.averon-site-shell .rounded-md,
-.averon-site-shell .rounded-sm { border-radius: var(--radius-sm) !important; }
-.averon-site-shell :where(button, [role="button"], .averon-primary-button, .averon-secondary-button, .averon-control-button) {
-  border-radius: var(--radius-control);
+.averon-site-shell :where(button, [role="button"], [role="checkbox"], [role="option"], [role="menuitem"], [role="menuitemradio"], select, a.averon-primary-button, a.averon-secondary-button, a.averon-control-button),
+.averon-auth-shell :where(button, [role="button"], [role="checkbox"], [role="option"], [role="menuitem"], [role="menuitemradio"], select, a.averon-primary-button, a.averon-secondary-button, a.averon-control-button) {
+  border-radius: 0 !important;
   font-family: var(--font-family);
 }
 
@@ -262,14 +316,63 @@
 .averon-site-shell :where(button, [role="button"], a.averon-primary-button, a.averon-secondary-button, a.averon-control-button):disabled {
   cursor: not-allowed;
 }
+.averon-site-shell :is(button, a):is([class~="bg-primary"], [class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-primary-700"], [class~="bg-primary-800"]),
+.averon-auth-shell :is(button, a):is([class~="bg-primary"], [class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-primary-700"], [class~="bg-primary-800"]) {
+  background-color: var(--color-action-bg) !important;
+  color: var(--color-on-action) !important;
+}
+.averon-site-shell :is(button, a)[class*="hover:bg-primary"]:hover:not(:disabled):not([class~="bg-primary"]):not([class~="bg-primary-500"]):not([class~="bg-primary-600"]):not([class~="bg-primary-700"]):not([class~="bg-primary-800"]),
+.dark .averon-site-shell :is(button, a)[class*="dark:hover:bg-primary"]:hover:not(:disabled):not([class~="bg-primary"]):not([class~="bg-primary-500"]):not([class~="bg-primary-600"]):not([class~="bg-primary-700"]):not([class~="bg-primary-800"]),
+.averon-auth-shell :is(button, a)[class*="hover:bg-primary"]:hover:not(:disabled):not([class~="bg-primary"]):not([class~="bg-primary-500"]):not([class~="bg-primary-600"]):not([class~="bg-primary-700"]):not([class~="bg-primary-800"]),
+.dark .averon-auth-shell :is(button, a)[class*="dark:hover:bg-primary"]:hover:not(:disabled):not([class~="bg-primary"]):not([class~="bg-primary-500"]):not([class~="bg-primary-600"]):not([class~="bg-primary-700"]):not([class~="bg-primary-800"]) {
+  background-color: var(--color-surface-soft) !important;
+  color: var(--color-text) !important;
+}
+.averon-site-shell :is(button, a):is([class~="bg-primary"], [class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-primary-700"], [class~="bg-primary-800"]):is([class*="hover:bg-primary"], [class*="dark:hover:bg-primary"]):hover:not(:disabled),
+.averon-auth-shell :is(button, a):is([class~="bg-primary"], [class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-primary-700"], [class~="bg-primary-800"]):is([class*="hover:bg-primary"], [class*="dark:hover:bg-primary"]):hover:not(:disabled) {
+  background-color: var(--color-button-hover) !important;
+  color: var(--color-on-action) !important;
+}
 .averon-site-shell :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]):not([type="range"]), textarea, select) {
   min-height: 44px;
   border-color: var(--color-border);
-  border-radius: var(--radius-control);
+  border-radius: 0 !important;
   background-color: var(--color-surface);
   color: var(--color-text);
   font-family: var(--font-family);
   transition: border-color var(--duration-press) var(--ease-out-ui), box-shadow var(--duration-press) var(--ease-out-ui), background-color var(--duration-press) var(--ease-out-ui);
+}
+.averon-site-shell :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]):not([type="range"]), textarea, select) {
+  border-radius: 0 !important;
+}
+.averon-site-shell input[type="checkbox"], .cookie-consent-dialog input[type="checkbox"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  flex: 0 0 20px;
+  border: 1px solid var(--color-border-hover);
+  border-radius: 0;
+  background-color: var(--color-surface);
+  cursor: pointer;
+}
+.averon-site-shell input[type="checkbox"]:checked, .cookie-consent-dialog input[type="checkbox"]:checked {
+  border-color: var(--color-text);
+  background-color: var(--color-text);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m3 8 3 3 7-7' stroke='white' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.averon-site-shell input[type="checkbox"]:focus-visible, .cookie-consent-dialog input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.averon-site-shell input[type="checkbox"]:disabled, .cookie-consent-dialog input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+.averon-site-shell :where([role="option"], [role="menuitem"], [role="menuitemradio"]) {
+  border-radius: 0 !important;
 }
 .averon-site-shell :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]):not([type="range"]), textarea, select):focus-visible {
   outline: 2px solid color-mix(in srgb, var(--color-primary) 42%, transparent);
@@ -316,14 +419,12 @@ html:not(.dark) .averon-site-shell :where(main, section, article, aside)[class*=
 .averon-auth-shell h2 { color: var(--color-text) !important; }
 .averon-auth-shell :where(input, textarea, select) {
   border: 1px solid var(--color-border) !important;
-  border-radius: .25rem !important;
+  border-radius: 0 !important;
   background: var(--color-surface-soft) !important;
   color: var(--color-text) !important;
 }
 .averon-auth-shell :where(input, textarea)::placeholder { color: var(--color-muted) !important; }
 .averon-auth-shell :where(label, p)[class*="text-stone"] { color: var(--color-muted) !important; }
-.averon-auth-shell .rounded-xl,
-.averon-auth-shell .rounded-2xl { border-radius: var(--radius-card) !important; }
 
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(10px); }

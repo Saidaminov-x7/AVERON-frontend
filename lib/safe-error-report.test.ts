@@ -1,14 +1,16 @@
-import { describe, expect, it } from 'vitest';
-import { sanitizeErrorReportText } from './safe-error-report';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { getSafeErrorReportPath } from './safe-error-report';
 
-describe('sanitizeErrorReportText', () => {
-  it('removes query strings, credentials, and bearer tokens from reports', () => {
-    const result = sanitizeErrorReportText(
-      'request https://averon.example/reset?token=secret Bearer abc.def password="hunter2"',
-    );
-    expect(result).toBe('request https://averon.example/reset Bearer [redacted] password=[redacted]');
-    expect(result).not.toContain('secret');
-    expect(result).not.toContain('hunter2');
-    expect(result).not.toContain('abc.def');
+describe('getSafeErrorReportPath', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('keeps only a localized static route prefix and drops dynamic path segments', () => {
+    vi.stubGlobal('window', { location: { pathname: '/ru/catalog/private-product-slug' } });
+    expect(getSafeErrorReportPath()).toBe('/ru/catalog');
+  });
+
+  it('does not include arbitrary or personal-looking route segments', () => {
+    vi.stubGlobal('window', { location: { pathname: '/ru/person@example.com/private-id' } });
+    expect(getSafeErrorReportPath()).toBe('/ru');
   });
 });

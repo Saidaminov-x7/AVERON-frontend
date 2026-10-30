@@ -176,8 +176,8 @@ export function buildCatalogPageSearchParams(
   return query;
 }
 
-export async function getProducts(params: Record<string, string | number> = {}): Promise<ProductListResponse> {
-  const { data } = await api.get<ProductListResponse>('/api/v1/products', { params });
+export async function getProducts(params: Record<string, string | number> = {}, signal?: AbortSignal): Promise<ProductListResponse> {
+  const { data } = await api.get<ProductListResponse>('/api/v1/products', { params, signal });
   return data;
 }
 

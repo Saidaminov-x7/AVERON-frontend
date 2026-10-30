@@ -51,7 +51,7 @@ describe("commerce visual-search API", () => {
   });
 
   it("loads browser capabilities through the same-origin backend proxy", async () => {
-    vi.stubGlobal("window", {});
+    vi.stubGlobal("window", { location: { hostname: "shop.averon.uz" } });
     const fetcher = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ recommendations: true }), { status: 200 }),
     );
@@ -62,6 +62,19 @@ describe("commerce visual-search API", () => {
         "/api/backend/api/v1/capabilities",
         expect.objectContaining({ credentials: "include", cache: "no-store" }),
       );
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("keeps uploaded product photos on loopback from localhost", async () => {
+    vi.stubGlobal("window", { location: { hostname: "127.0.0.1" } });
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ items: [], meta: { limit: 20 } }), { status: 200 }),
+    );
+    try {
+      await searchProductsByImage(new File(["photo"], "coat.jpg", { type: "image/jpeg" }), {}, fetcher);
+      expect(fetcher.mock.calls[0]?.[0]).toBe("http://127.0.0.1:8080/api/v1/products/visual-search");
     } finally {
       vi.unstubAllGlobals();
     }

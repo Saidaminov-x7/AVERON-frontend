@@ -1,9 +1,15 @@
 import type { StoreProduct } from "@/lib/products";
+import { resolveBrowserApiBaseUrl } from "@/lib/api-origin";
 
-const apiBaseUrl = (
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://averon-backend-production.up.railway.app"
-).replace(/\/+$/, "");
+const localApiUrl = process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || "http://127.0.0.1:8080";
+const localRuntime = process.env.NEXT_PUBLIC_AVERON_RUNTIME_TARGET === "local" || process.env.NODE_ENV !== "production";
+const serverApiBaseUrl = (localRuntime ? localApiUrl : process.env.NEXT_PUBLIC_API_URL || "https://averon-backend-production.up.railway.app").replace(/\/+$/, "");
+
+function apiBaseUrl() {
+  return typeof window !== "undefined"
+    ? resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl)
+    : serverApiBaseUrl;
+}
 
 export type CommerceCapabilities = {
   visualSearch: boolean;
@@ -64,9 +70,7 @@ export async function loadCommerceCapabilities(
   fetcher: typeof fetch = fetch,
 ): Promise<CommerceCapabilities> {
   try {
-    const endpoint = typeof window !== "undefined"
-      ? "/api/backend/api/v1/capabilities"
-      : `${apiBaseUrl}/api/v1/capabilities`;
+    const endpoint = `${apiBaseUrl()}/api/v1/capabilities`;
     const response = await fetcher(endpoint, {
       cache: "no-store",
       credentials: "include",
@@ -129,7 +133,7 @@ export async function searchProductsByImage(
   const queryString = query.toString();
 
   const response = await fetcher(
-    `${apiBaseUrl}/api/v1/products/visual-search${queryString ? `?${queryString}` : ""}`,
+    `${apiBaseUrl()}/api/v1/products/visual-search${queryString ? `?${queryString}` : ""}`,
     {
     method: "POST",
     body: formData,
@@ -147,7 +151,7 @@ export async function loadSimilarProducts(
   fetcher: typeof fetch = fetch,
 ): Promise<ProductEnvelope> {
   const response = await fetcher(
-    `${apiBaseUrl}/api/v1/products/${encodeURIComponent(slug)}/similar?limit=8`,
+    `${apiBaseUrl()}/api/v1/products/${encodeURIComponent(slug)}/similar?limit=8`,
     { cache: "no-store" },
   );
   const payload: unknown = await response.json().catch(() => null);

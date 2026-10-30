@@ -39,9 +39,7 @@ export type CommerceEventName =
   | 'wishlist_share_disable'
   | 'telegram_transition';
 
-type CommerceEvent =
-  | { eventName: Exclude<CommerceEventName, 'purchase'>; metadata?: CommerceEventMetadata }
-  | { eventName: 'purchase'; orderId: string; metadata?: CommerceEventMetadata };
+type CommerceEvent = { eventName: CommerceEventName; metadata?: CommerceEventMetadata };
 
 const recentEvents = new Map<string, number>();
 const EVENT_DEDUPE_MS = 2_000;
@@ -59,7 +57,7 @@ export function trackCommerceEvent(event: CommerceEvent, pathOverride?: string) 
   if (typeof window === 'undefined') return;
   if (!readCookieConsent()?.analytics) return;
   const path = pathOverride ?? window.location.pathname;
-  const dedupeKey = JSON.stringify([event.eventName, path, event.metadata ?? {}, 'orderId' in event ? event.orderId : null]);
+  const dedupeKey = JSON.stringify([event.eventName, path, event.metadata ?? {}]);
   const now = Date.now();
   for (const [key, time] of recentEvents) {
     if (now - time > EVENT_DEDUPE_MS) recentEvents.delete(key);
@@ -78,7 +76,6 @@ export function trackCommerceEvent(event: CommerceEvent, pathOverride?: string) 
       eventName: event.eventName,
       path,
       ...(event.metadata ? { metadata: event.metadata } : {}),
-      ...('orderId' in event ? { orderId: event.orderId } : {}),
     };
     void fetch(`${externalBaseURL}/analytics/events`, {
       method: 'POST',

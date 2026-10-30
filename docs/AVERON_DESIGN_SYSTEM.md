@@ -70,24 +70,24 @@ Dark and light themes use the same semantic tokens and component structure. Imag
 ## 6. Radius and depth
 
 - Small: 2px for flags, tight chips, and image details.
-- Medium: 4px for most controls, cards, and dialogs.
-- Large: 8px for grouped operational surfaces and admin panels only.
+- Controls, search fields, menus, cards, and dialogs: square corners (0px).
+- Large: 8px for grouped operational surfaces and admin panels only when they are not interactive controls.
 - Pill: 999px only for status pills, compact filters, and circular icon controls.
 - Product images and editorial sections remain square-edged unless the image itself has a native shape.
 - Default elevation is none. Use a single soft shadow only for an overlay/menu that must separate from content. No nested card shadows.
 
 ## 7. Buttons
 
-Primary: 44px minimum height, 16–20px horizontal padding, 4px radius, cobalt fill with white/light-theme or ink/dark-theme text as contrast requires. Secondary: 44px minimum, transparent/surface fill, one-pixel border. Ghost: 44px minimum without a visible border. Danger: semantic danger color plus explicit confirmation for destructive actions. Icon: 44×44px touch target; a smaller visible glyph is centered inside. Compact desktop-only table actions may use 36px with a clear accessible name.
+Primary: 44px minimum height, 16–20px horizontal padding, 0px radius, ink fill with white text. Hover/pressed darken the ink surface without introducing a blue fill. Secondary: 44px minimum, transparent/surface fill, one-pixel border; hover uses a neutral surface and darker border. Ghost: 44px minimum without a visible border; hover uses a neutral surface. Danger: semantic danger color plus explicit confirmation for destructive actions. Icon: 44×44px touch target; a smaller visible glyph is centered inside. Compact desktop-only table actions may use 36px with a clear accessible name.
 
 All variants use the button typeface, consistent focus-visible ring, 140–180ms color transitions, a pressed state, and a real disabled state. Loading uses one shared inline spinner, `aria-busy`, and stable button width; reduce or remove animation for `prefers-reduced-motion`. Never rely on color alone to communicate disabled, selected, or error state.
 
 ## 8. Inputs and forms
 
 - Standard control height: 44px; multi-line fields grow with content and start at 96px.
-- Border: 1px `border`; radius 4px; horizontal padding 12px.
+- Border: 1px `border`; square corners (0px); horizontal padding 12px.
 - Label: 13px/500 above the control; helper/error copy 12–13px directly below it.
-- Focus: 2px visible accent outline with 2px offset; invalid uses danger border plus text/icon explanation.
+- Focus: 2px visible accent outline with 2px offset; accent is reserved for focus and selected-state indication, while hover stays neutral. Invalid uses danger border plus text/icon explanation.
 - Disabled: preserve readable text and indicate unavailable behavior; do not rely on low-opacity alone.
 - Keep labels visible after typing. Placeholders are examples, not labels.
 - Localize validation and keep RU/UZ/EN strings flexible; avoid fixed widths sized for one locale.
