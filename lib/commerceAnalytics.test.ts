@@ -1,5 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { trackCommerceEvent } from './commerceAnalytics';
+import { COOKIE_CONSENT_KEY } from './cookieConsent';
 
 vi.mock('@/lib/axios', () => ({ externalBaseURL: 'https://api.example.test' }));
 const mocks = vi.hoisted(() => ({ canSend: vi.fn(() => true) }));
@@ -8,6 +9,10 @@ vi.mock('@/lib/analyticsPolicy', () => ({ canSendAnalytics: mocks.canSend }));
 const uuid = '00000000-0000-4000-8000-000000000001';
 
 describe('trackCommerceEvent', () => {
+  beforeEach(() => {
+    localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({ necessary: true, analytics: true, savedAt: '2026-01-01T00:00:00.000Z' }));
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();

@@ -1,0 +1,20 @@
+1:"$Sreact.fragment"
+2:I[660187,["/_next/static/chunks/33t46atd3n2zd.js","/_next/static/chunks/033y2_44ucqy7.js","/_next/static/chunks/2qrdos7bay7xd.js","/_next/static/chunks/00z9ge-arth29.js","/_next/static/chunks/1qd3foz2q37f6.js","/_next/static/chunks/185lzg4lmq6yp.js","/_next/static/chunks/1tyss61gb-gik.js","/_next/static/chunks/2cyi1t7yh20nv.js","/_next/static/chunks/28hcbc-ir4fzw.js"],"MaintenanceView"]
+3:I[897367,["/_next/static/chunks/33t46atd3n2zd.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+8:I[897367,["/_next/static/chunks/33t46atd3n2zd.js"],"ViewportBoundary"]
+9:I[897367,["/_next/static/chunks/33t46atd3n2zd.js"],"MetadataBoundary"]
+b:I[339756,["/_next/static/chunks/33t46atd3n2zd.js"],"default"]
+c:I[837457,["/_next/static/chunks/33t46atd3n2zd.js"],"default"]
+7:X
+e:X
+e:C
+0:{"buildId":"awx-ZT5HSfZEpE07QZA6Y","data":[{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"locale":"uz","initialSettings":{"maintenanceMode":false,"siteName":"AVERON local fixture"}}],[["$","script","script-0",{"src":"/_next/static/chunks/28hcbc-ir4fzw.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":"$@6","staleTime":"$7","varyParams":null},{"rsc":["$","$1","h",{"children":[null,["$","$L8",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#fafafa","media":"(prefers-color-scheme: light)"}],["$","meta","3",{"name":"theme-color","content":"#0f0f10","media":"(prefers-color-scheme: dark)"}]]}],["$","div",null,{"hidden":true,"children":["$","$L9",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Onlayn do‘kon | AVERON"}],["$","meta","1",{"name":"description","content":"Kiyim, poyabzal va aksessuarlar narxi o‘zbek so‘mida ko‘rsatilgan."}],["$","link","2",{"rel":"manifest","href":"/manifest.webmanifest"}],["$","link","3",{"rel":"canonical","href":"https://averon.uz/uz"}],["$","link","4",{"rel":"alternate","hrefLang":"ru","href":"https://averon.uz/ru"}],["$","link","5",{"rel":"alternate","hrefLang":"uz","href":"https://averon.uz/uz"}],["$","link","6",{"rel":"alternate","hrefLang":"en","href":"https://averon.uz/en"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://averon.uz/ru"}],["$","meta","8",{"property":"og:title","content":"Onlayn do‘kon"}],["$","meta","9",{"property":"og:description","content":"Kiyim, poyabzal va aksessuarlar narxi o‘zbek so‘mida ko‘rsatilgan."}],["$","meta","10",{"property":"og:url","content":"https://averon.uz/uz"}],["$","meta","11",{"property":"og:site_name","content":"AVERON"}],["$","meta","12",{"property":"og:locale","content":"uz_UZ"}],["$","meta","13",{"property":"og:type","content":"website"}],["$","meta","14",{"name":"twitter:card","content":"summary"}],["$","meta","15",{"name":"twitter:title","content":"Onlayn do‘kon"}],["$","meta","16",{"name":"twitter:description","content":"Kiyim, poyabzal va aksessuarlar narxi o‘zbek so‘mida ko‘rsatilgan."}]]}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"isPartial":"$@a","staleTime":"$7","varyParams":null},{"rsc":["$","$1","c",{"children":[null,["$","$Lb",null,{"parallelRouterKey":"children","template":["$","$Lc",null,{}]}]]}],"isPartial":"$@d","staleTime":"$7","varyParams":"$e"}],"isUpgradeableISRFallback":false,"a":"$@f","rootVaryParams":null,"needsRuntimeRequest":"$@10"}
+5:null
+10:true
+7:300
+7:C
+f:0
+a:"$undefined"
+d:"$undefined"
+6:"$undefined"

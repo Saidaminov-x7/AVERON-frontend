@@ -1,4 +1,5 @@
 import { externalBaseURL } from '@/lib/axios';
+import { readCookieConsent } from '@/lib/cookieConsent';
 import { canSendAnalytics } from '@/lib/analyticsPolicy';
 import { clearAnalyticsIdentifier } from '@/lib/consent';
 
@@ -55,7 +56,8 @@ function getDeviceId() {
 }
 
 export function trackCommerceEvent(event: CommerceEvent, pathOverride?: string) {
-  if (!canSendAnalytics()) {
+  if (typeof window === 'undefined') return;
+  if (!canSendAnalytics() || !readCookieConsent()?.analytics) {
     clearAnalyticsIdentifier();
     return;
   }

@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { CookieSettingsLink } from "@/components/privacy/CookieSettingsLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import type { NavLink } from "@/lib/siteSettings";
+import { openCookieSettings } from "@/components/providers/CookieConsent";
 
 const BUYER_LINKS = [
   ["links.catalog", "/catalog"],
@@ -71,6 +72,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
     : BUYER_LINKS.map(([key, href]) => [t(key), href] as const);
   const helpLinks = HELP_LINKS.map(([key, href]) => [t(key), href] as const);
   const documentLinks = DOCUMENT_LINKS.map(([key, href]) => [t(key), href] as const);
+  const cookieSettingsLabel = locale === 'uz' ? 'Cookie sozlamalari' : locale === 'en' ? 'Cookie settings' : 'Настройки cookies';
 
   return (
     <footer className="w-full border-t border-[var(--color-border)] bg-[var(--color-surface)]">
@@ -86,18 +88,21 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
             <p className="mt-2 max-w-xs text-sm leading-6 text-[var(--color-text-secondary)]">
               {t("description")}
             </p>
-            <div className="mt-3 grid max-w-[24rem] grid-cols-2 gap-2">
-              <div className="col-span-2 flex min-w-0 [&_button]:w-full"><ThemeToggle /></div>
+            <div className="averon-footer-utility-actions mt-3 grid grid-cols-2 gap-2 [&>*]:min-w-0 [&>*]:w-full">
+              <ThemeToggle />
+              <button type="button" onClick={openCookieSettings} className="inline-flex min-h-11 items-center justify-center border border-[var(--color-border)] px-3 text-center text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+                {cookieSettingsLabel}
+              </button>
               <a
                 href="https://t.me/averon_fashion"
-                className="averon-secondary-button h-11 w-full px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="inline-flex min-h-11 items-center justify-center border border-[var(--color-border)] px-3 text-center text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <Send className="mr-2 shrink-0" size={15} />
                 {t("channel")}
               </a>
               <a
                 href="https://t.me/averon_fashion_admin"
-                className="averon-secondary-button h-11 w-full px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="inline-flex min-h-11 items-center justify-center border border-[var(--color-border)] px-3 text-center text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <MessageCircle className="mr-2 shrink-0" size={15} />
                 {t("support")}
