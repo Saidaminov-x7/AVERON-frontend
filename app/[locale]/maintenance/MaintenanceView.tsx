@@ -1,74 +1,128 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, Hammer, RefreshCw, KeyRound, Lock, CheckCircle2, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Hammer, KeyRound, Lock, RefreshCw, X } from 'lucide-react';
 import { resolveBrowserApiBaseUrl } from '@/lib/api-origin';
+import { safeMaintenanceReturnPath } from '@/lib/maintenance-return';
 
 const localApiUrl = process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080';
 const apiUrl = (path: string) => `${resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl)}/${path}`;
 
-interface MaintenanceViewProps {
-  locale: string;
-  initialSettings: {
-    maintenanceMode?: boolean;
-    maintenanceMessage?: string | null;
-    maintenancePasswordEnabled?: boolean;
-  };
+interface MaintenanceSettings {
+  maintenanceMode?: boolean;
+  maintenanceMessage?: string | null;
+  maintenancePasswordEnabled?: boolean;
 }
 
-export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProps) {
+interface MaintenanceViewProps {
+  locale: string;
+  initialSettings: MaintenanceSettings;
+  returnTo?: string | null;
+}
+
+const copy = {
+  ru: {
+    title: 'Технические работы', description: 'Сайт временно недоступен. Мы скоро вернёмся с обновлённой версией.',
+    status: 'Проверяем доступность основных сервисов.', check: 'Проверить доступ', password: 'Войти по паролю',
+    passwordTitle: 'Ранний доступ', passwordDescription: 'Введите пароль для доступа к сайту.', passwordLabel: 'Пароль',
+    passwordPlaceholder: 'Введите пароль', cancel: 'Отмена', enter: 'Войти на сайт',
+    invalidPassword: 'Неверный пароль для обхода технических работ.', connectionError: 'Не удалось проверить пароль. Проверьте подключение и попробуйте ещё раз.', close: 'Закрыть',
+  },
+  uz: {
+    title: 'Texnik ishlar', description: 'Sayt vaqtincha ishlamayapti. Yangilangan versiya bilan tez orada qaytamiz.',
+    status: 'Asosiy xizmatlar holati tekshirilmoqda.', check: 'Qayta tekshirish', password: 'Parol bilan kirish',
+    passwordTitle: 'Erta kirish', passwordDescription: 'Saytga kirish uchun parolni kiriting.', passwordLabel: 'Parol',
+    passwordPlaceholder: 'Parolni kiriting', cancel: 'Bekor qilish', enter: 'Saytga kirish',
+    invalidPassword: 'Texnik ishlarni chetlab o‘tish paroli noto‘g‘ri.', connectionError: 'Parolni tekshirib bo‘lmadi. Ulanishni tekshirib, qayta urinib ko‘ring.', close: 'Yopish',
+  },
+  en: {
+    title: 'Maintenance in progress', description: 'The site is temporarily unavailable. We’ll be back with an updated experience soon.',
+    status: 'Checking availability of core services.', check: 'Check again', password: 'Enter access password',
+    passwordTitle: 'Early access', passwordDescription: 'Enter the password to access the site.', passwordLabel: 'Password',
+    passwordPlaceholder: 'Enter password', cancel: 'Cancel', enter: 'Continue to site',
+    invalidPassword: 'The maintenance access password is incorrect.', connectionError: 'Could not verify the password. Check your connection and try again.', close: 'Close',
+  },
+} as const;
+
+export function MaintenanceView({ locale, initialSettings, returnTo = null }: MaintenanceViewProps) {
   const router = useRouter();
+  const t = copy[locale as keyof typeof copy] ?? copy.ru;
+  const returnPath = safeMaintenanceReturnPath(returnTo, locale);
   const [settings, setSettings] = useState(initialSettings);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const passwordTriggerRef = useRef<HTMLButtonElement>(null);
 
-  // Периодический опрос API (polling раз в 10 секунд), чтобы автоматически вернуть пользователя на сайт, как только техработы завершатся
+  const returnToSite = useCallback(() => {
+    router.replace(returnPath);
+    router.refresh();
+  }, [returnPath, router]);
+
   useEffect(() => {
+    let disposed = false;
     const checkMaintenanceStatus = async () => {
       try {
         const res = await fetch(apiUrl('site-settings/public'), { cache: 'no-store' });
-        if (res.ok) {
-          const data = await res.json();
-          setSettings(data);
-          // Если режим обслуживания отключили - автоматически перенаправляем на главную
-          if (!data.maintenanceMode) {
-            router.push(`/${locale || 'ru'}`);
-          }
-        }
+        if (!res.ok) return;
+        const data: MaintenanceSettings = await res.json();
+        if (disposed) return;
+        setSettings(data);
+        if (!data.maintenanceMode) returnToSite();
       } catch {
-        // Игнорируем сетевые сбои опроса
+        // A transient status-check failure should leave the retry action available.
       }
     };
 
-    const interval = setInterval(checkMaintenanceStatus, 10000);
-    return () => clearInterval(interval);
-  }, [locale, router]);
+    void checkMaintenanceStatus();
+    const interval = window.setInterval(checkMaintenanceStatus, 10000);
+    return () => {
+      disposed = true;
+      window.clearInterval(interval);
+    };
+  }, [returnToSite]);
+
+  useEffect(() => {
+    if (!showPasswordModal) return;
+    const passwordTrigger = passwordTriggerRef.current;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousDocumentOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    passwordInputRef.current?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setShowPasswordModal(false);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousDocumentOverflow;
+      document.removeEventListener('keydown', closeOnEscape);
+      passwordTrigger?.focus();
+    };
+  }, [showPasswordModal]);
 
   const handleManualCheck = async () => {
     setIsCheckingStatus(true);
     try {
       const res = await fetch(apiUrl('site-settings/public'), { cache: 'no-store' });
-      if (res.ok) {
-        const data = await res.json();
-        setSettings(data);
-        if (!data.maintenanceMode) {
-          router.push(`/${locale || 'ru'}`);
-          return;
-        }
-      }
+      if (!res.ok) return;
+      const data: MaintenanceSettings = await res.json();
+      setSettings(data);
+      if (!data.maintenanceMode) returnToSite();
     } catch {
-      // Игнорируем
+      // Keep the page available so the user can retry after a network failure.
     } finally {
       setIsCheckingStatus(false);
     }
   };
 
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handlePasswordSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!password.trim()) return;
 
     setIsVerifying(true);
@@ -80,141 +134,100 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: password.trim() }),
       });
-
       const data = await res.json();
 
       if (res.ok && data.allowed) {
-        // Устанавливаем cookie bypass на 24 часа
         document.cookie = `maintenance_bypass=true; path=/; max-age=${24 * 60 * 60}; SameSite=Lax`;
         setShowPasswordModal(false);
-        router.push(`/${locale || 'ru'}`);
-        router.refresh();
+        returnToSite();
       } else {
-        setPasswordError(data.message || 'Неверный пароль для обхода техобслуживания');
+        setPasswordError(data.message || t.invalidPassword);
       }
     } catch {
-      setPasswordError('Ошибка соединения с сервером при проверке пароля');
+      setPasswordError(t.connectionError);
     } finally {
       setIsVerifying(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-      <div className="max-w-lg w-full space-y-6 animate-in fade-in duration-200 relative z-10">
-        <div className="relative mx-auto w-20 h-20 border border-white/20 bg-white/5 flex items-center justify-center text-white">
-          <Hammer className="w-10 h-10" />
-          <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-bold text-xs">
-            !
-          </div>
+    <main className="flex min-h-[70dvh] w-full items-center justify-center bg-[var(--color-bg)] px-4 py-12 text-center text-[var(--color-text)] sm:px-6">
+      <section className="w-full max-w-xl space-y-6">
+        <div className="relative mx-auto flex size-16 items-center justify-center border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)]">
+          <Hammer className="size-7" aria-hidden="true" />
+          <span className="absolute -right-2 -top-2 flex size-6 items-center justify-center rounded-full bg-[var(--color-warning)] text-xs font-bold text-[var(--color-bg)]" aria-hidden="true">!</span>
         </div>
 
         <div className="space-y-3">
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
-            Технические работы
-          </h1>
-          <p className="text-stone-400 text-base leading-relaxed">
-            {settings.maintenanceMessage ||
-              'Сайт находится в разработке. Мы скоро вернемся с обновленной версией!'}
+          <h1 className="text-3xl font-semibold tracking-tight text-[var(--color-text)] sm:text-4xl">{t.title}</h1>
+          <p className="text-sm leading-6 text-[var(--color-text-secondary)] sm:text-base">
+            {settings.maintenanceMessage || t.description}
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-stone-900/60 border border-stone-800 text-xs text-stone-400 flex items-center justify-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-          <span>Все сервисы платформы временно приостановлены для обновления</span>
+        <div role="status" className="flex items-center justify-center gap-2 border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-xs leading-5 text-[var(--color-text-secondary)]">
+          <AlertTriangle className="size-4 shrink-0 text-[var(--color-warning)]" aria-hidden="true" />
+          <span>{t.status}</span>
         </div>
 
-        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <button
-            onClick={handleManualCheck}
-            disabled={isCheckingStatus}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
-          >
-            <RefreshCw className={`w-4 h-4 ${isCheckingStatus ? 'animate-spin' : ''}`} />
-            Проверить доступ
+        <div className="flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row">
+          <button type="button" onClick={handleManualCheck} disabled={isCheckingStatus} aria-busy={isCheckingStatus} className="averon-primary-button w-full gap-2 px-5 sm:w-auto">
+            <RefreshCw className={`size-4 ${isCheckingStatus ? 'animate-spin' : ''}`} aria-hidden="true" />
+            {t.check}
           </button>
 
           {settings.maintenancePasswordEnabled && (
-            <button
-              onClick={() => setShowPasswordModal(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-200 text-sm font-semibold transition-all"
-            >
-              <KeyRound className="w-4 h-4 text-primary-400" />
-              Ввести пароль
+            <button ref={passwordTriggerRef} type="button" onClick={() => setShowPasswordModal(true)} className="averon-secondary-button w-full gap-2 px-5 sm:w-auto">
+              <KeyRound className="size-4" aria-hidden="true" />
+              {t.password}
             </button>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* Модальное окно ввода пароля */}
       {showPasswordModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-2xl bg-stone-900 border border-stone-800 p-6 shadow-2xl text-left space-y-4">
-            <button
-              onClick={() => setShowPasswordModal(false)}
-              className="absolute top-4 right-4 text-stone-400 hover:text-white transition-colors"
-            >
-              <X className="w-5 h-5" />
+        <div className="fixed inset-0 z-[100] grid place-items-center overflow-y-auto bg-[var(--color-overlay)] p-4" onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setShowPasswordModal(false);
+        }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="maintenance-password-title" className="relative w-full max-w-md border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-left text-[var(--color-text)] sm:p-6">
+            <button type="button" onClick={() => setShowPasswordModal(false)} aria-label={t.close} className="averon-control-button averon-icon-button absolute right-4 top-4">
+              <X className="size-4" aria-hidden="true" />
             </button>
 
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 text-primary-400 flex items-center justify-center">
-                <Lock className="w-5 h-5" />
-              </div>
+            <div className="flex items-center gap-3 pr-12">
+              <span className="flex size-10 shrink-0 items-center justify-center border border-[var(--color-border)] bg-[var(--color-surface-soft)] text-[var(--color-text)]">
+                <Lock className="size-5" aria-hidden="true" />
+              </span>
               <div>
-                <h3 className="font-bold text-lg text-white">Доступ по паролю</h3>
-                <p className="text-xs text-stone-400">Введите пароль для раннего доступа к сайту</p>
+                <h2 id="maintenance-password-title" className="font-semibold">{t.passwordTitle}</h2>
+                <p className="mt-1 text-xs leading-5 text-[var(--color-text-secondary)]">{t.passwordDescription}</p>
               </div>
             </div>
 
-            <form onSubmit={handlePasswordSubmit} className="space-y-4 pt-2">
+            <form onSubmit={handlePasswordSubmit} className="mt-5 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-stone-300 mb-1.5">
-                  Пароль обхода
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Введите пароль..."
-                  autoFocus
-                  required
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white placeholder-stone-500 text-sm focus:outline-none focus:border-primary-500 transition-colors"
-                />
+                <label htmlFor="maintenance-password" className="mb-1.5 block text-sm font-medium">{t.passwordLabel}</label>
+                <input ref={passwordInputRef} id="maintenance-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder={t.passwordPlaceholder} autoComplete="current-password" required className="h-11 w-full border border-[var(--color-border)] bg-[var(--color-surface-soft)] px-3 text-sm text-[var(--color-text)] outline-none transition-colors focus-visible:border-[var(--color-primary)] focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]/30" />
               </div>
 
               {passwordError && (
-                <div className="p-3 rounded-xl bg-red-950/50 border border-red-800 text-xs text-red-300 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 shrink-0 text-red-400" />
+                <p role="alert" className="flex items-start gap-2 border border-[var(--color-error)] px-3 py-2.5 text-xs leading-5 text-[var(--color-error)]">
+                  <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                   <span>{passwordError}</span>
-                </div>
+                </p>
               )}
 
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowPasswordModal(false)}
-                  className="px-4 py-2 rounded-xl text-stone-400 hover:text-white text-sm font-medium transition-colors"
-                >
-                  Отмена
-                </button>
-                <button
-                  type="submit"
-                  disabled={isVerifying || !password.trim()}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all disabled:opacity-50"
-                >
-                  {isVerifying ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <CheckCircle2 className="w-4 h-4" />
-                  )}
-                  Войти на сайт
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <button type="button" onClick={() => setShowPasswordModal(false)} className="averon-secondary-button px-4">{t.cancel}</button>
+                <button type="submit" disabled={isVerifying || !password.trim()} aria-busy={isVerifying} className="averon-primary-button gap-2 px-5">
+                  {isVerifying ? <RefreshCw className="size-4 animate-spin" aria-hidden="true" /> : <CheckCircle2 className="size-4" aria-hidden="true" />}
+                  {t.enter}
                 </button>
               </div>
             </form>
-          </div>
+          </section>
         </div>
       )}
-    </div>
+    </main>
   );
 }

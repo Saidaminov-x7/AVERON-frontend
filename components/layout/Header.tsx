@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -25,9 +26,9 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { localizeHrefPreservingSafeQuery } from '@/lib/safe-navigation';
 
 const LOCALES = [
-  { code: 'ru', short: 'RU', label: 'Русский' },
-  { code: 'uz', short: 'UZ', label: 'O‘zbekcha' },
-  { code: 'en', short: 'EN', label: 'English' },
+  { code: 'ru', short: 'RU', label: 'Русский', flag: 'ru' },
+  { code: 'uz', short: 'UZ', label: "O'zbekcha", flag: 'uz' },
+  { code: 'en', short: 'EN', label: 'English', flag: 'us' },
 ] as const;
 
 const BTN_CLASS =
@@ -122,7 +123,7 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        <span className="font-semibold tracking-wide">{current.short}</span>
+        <Image src={`/flags/${current.flag}.svg`} width={24} height={18} alt="" aria-hidden="true" className="h-[18px] w-6 shrink-0 border border-[var(--color-border)] object-cover" />
       </button>
       <div
         ref={menuRef}
@@ -152,7 +153,7 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
           (open ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0')
         }
       >
-        {LOCALES.map(({ code, short, label }) => {
+        {LOCALES.map(({ code, short, label, flag }) => {
           const active = code === locale;
           return (
             <button
@@ -169,8 +170,9 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
                   : '')
               }
             >
-              <span className="ml-2 flex-1">{label}</span>
-              <span className="text-[10px] text-stone-400">{short}</span>
+              <Image src={`/flags/${flag}.svg`} width={24} height={18} alt="" aria-hidden="true" className="ml-2 h-[18px] w-6 shrink-0 border border-[var(--color-border)] object-cover" />
+              <span className="ml-2 flex-1 text-left">{label}</span>
+              <span className="text-[10px] text-[var(--color-muted)]">{short}</span>
             </button>
           );
         })}
@@ -280,7 +282,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   useEffect(() => {
     if (!mobileOpen) return;
     const previousOverflow = document.body.style.overflow;
+    const previousDocumentOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     mobileCloseButtonRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -314,6 +318,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
       document.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('resize', closeOnDesktop);
       document.body.style.overflow = previousOverflow;
+      document.documentElement.style.overflow = previousDocumentOverflow;
     };
   }, [mobileOpen]);
 
@@ -711,7 +716,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         inert={!mobileOpen}
         onClick={closeMobileMenu}
         className={
-          `fixed inset-0 z-[60] bg-black/45 backdrop-blur-[2px] transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
+          `fixed inset-0 z-[60] bg-black/50 transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-[240ms]'} lg:hidden ` +
           (mobileOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0')
         }
       />
@@ -728,7 +733,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'var(--ease-drawer)',
         }}
         className={
-          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-[min(92vw,400px)] max-w-full flex-col overflow-hidden bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
+          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-[min(92vw,400px)] max-w-full flex-col overflow-hidden overscroll-contain bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-[240ms]'} lg:hidden ` +
           (mobileOpen ? 'translate-x-0' : 'translate-x-full')
         }
       >
@@ -750,7 +755,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </button>
         </div>
 
-        <div className="mx-auto min-h-0 w-full max-w-xl flex-1 overflow-y-auto overscroll-contain px-5 pb-8 pt-6">
+        <div className="min-h-0 w-full flex-1 overflow-y-auto overscroll-contain px-5 pb-8 pt-6">
           <form id="drawer-search-form" onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative">
             <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
             <input
@@ -908,7 +913,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </div>
             );
           })()}
-        <div className="mt-8 w-full border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-4 pb-5 pt-4">
+        </div>
+        <div className="w-full shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs font-medium text-[var(--color-text-secondary)]">{t('langAndTheme')}</span>
             <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -961,7 +967,6 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </Link>
             </div>
           )}
-        </div>
         </div>
       </div>
     </>
