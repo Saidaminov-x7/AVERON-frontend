@@ -1,18 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useQuery } from '@tanstack/react-query';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
-import { categoryName, parseStoreCategories, type StoreCategory } from '@/lib/products';
-import api from '@/lib/axios';
 import type { NavLink } from '@/lib/siteSettings';
 import {
   Search, X, Heart, ChevronRight, LogIn, LogOut, Menu, User, Scale, ShoppingCart,
-  Headphones, Shirt, Footprints, ShoppingBag,
+  Headphones,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
@@ -20,16 +16,15 @@ import { useCompareStore } from '@/store/useCompareStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { getSearchSuggestions } from '@/lib/data';
-import { getProducts, productRouteId, productTitle } from '@/lib/products';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'framer-motion';
 import { localizeHrefPreservingSafeQuery } from '@/lib/safe-navigation';
 import { LanguageFlag } from '@/components/ui/LanguageFlag';
 
 const LOCALES = [
-  { code: 'ru', short: 'RU', label: 'Русский', flag: 'ru' },
-  { code: 'uz', short: 'UZ', label: "O'zbekcha", flag: 'uz' },
-  { code: 'en', short: 'EN', label: 'English', flag: 'us' },
+  { code: 'ru', short: 'RU', label: 'Русский' },
+  { code: 'uz', short: 'UZ', label: 'O‘zbekcha' },
+  { code: 'en', short: 'EN', label: 'English' },
 ] as const;
 
 const BTN_CLASS =
@@ -165,7 +160,7 @@ export function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
               aria-checked={active}
               onClick={() => handleSelectLocale(code)}
               className={
-                'averon-menu-item h-11 min-h-11 !rounded-none text-xs font-medium ' +
+                'averon-menu-item text-xs font-medium ' +
                 (prefersReducedMotion ? '' : 'transition-colors ') +
                 (active
                   ? '!bg-[var(--color-surface-soft)] !text-[var(--color-text)]'
@@ -188,14 +183,6 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const locale = useLocale() || localeProp || 'ru';
   const t = useTranslations('nav');
   const { data: settings } = useSiteSettings();
-  const { data: categories = [] } = useQuery({
-    queryKey: ['storefront-categories'],
-    queryFn: async () => {
-      const { data } = await api.get<unknown>('/api/v1/categories');
-      return parseStoreCategories(data);
-    },
-    staleTime: 5 * 60 * 1000,
-  });
   const marketCopy = MARKET_COPY[locale as keyof typeof MARKET_COPY] ?? MARKET_COPY.ru;
   const countryLinks = [
     { href: '/catalog?country=CN', label: marketCopy.china },
@@ -242,9 +229,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
-  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
+  const [suggestions, setSuggestions] = useState<ReturnType<typeof getSearchSuggestions>>([]);
+  const [mobileSuggestions, setMobileSuggestions] = useState<ReturnType<typeof getSearchSuggestions>>([]);
   const [scrolled, setScrolled] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
@@ -254,38 +240,17 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const { data: cart } = useCommerceCart();
   const cartCount = cart?.items.reduce((total, item) => total + item.quantity, 0) ?? 0;
   const cartLabel = t('cart');
-  const activeCategory = useSearchParams().get('category');
   const searchRef = useRef<HTMLDivElement>(null);
-  const searchRegionRef = useRef<HTMLDivElement>(null);
-  const searchInputsRef = useRef<Record<string, HTMLInputElement | null>>({});
+  const inputRef = useRef<HTMLInputElement>(null);
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
   const mobileCloseButtonRef = useRef<HTMLButtonElement>(null);
   const mobileDrawerRef = useRef<HTMLDivElement>(null);
   const wasMobileOpen = useRef(false);
 
   useEffect(() => {
-    const nextQuery = query.trim();
-    const timeout = window.setTimeout(
-      () => setDebouncedQuery(nextQuery),
-      nextQuery.length < 2 ? 0 : 250,
-    );
-    return () => window.clearTimeout(timeout);
-  }, [query]);
-
-  const productSuggestionsQuery = useQuery({
-    queryKey: ['header-product-suggestions', locale, debouncedQuery],
-    queryFn: ({ signal }) => getProducts({ q: debouncedQuery, page: 1, limit: 5 }, signal),
-    enabled: debouncedQuery.length >= 2,
-    staleTime: 60_000,
-    retry: 1,
-  });
-
-  useEffect(() => {
     if (!mobileOpen) return;
     const previousOverflow = document.body.style.overflow;
-    const previousDocumentOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
     mobileCloseButtonRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -319,7 +284,6 @@ export function Header({ locale: localeProp }: { locale?: string }) {
       document.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('resize', closeOnDesktop);
       document.body.style.overflow = previousOverflow;
-      document.documentElement.style.overflow = previousDocumentOverflow;
     };
   }, [mobileOpen]);
 
@@ -350,23 +314,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   }, [searchOpen]);
 
   useEffect(() => {
-    if (!suggestionsOpen) return;
-    const closeOnOutside = (event: PointerEvent) => {
-      const target = event.target as Node;
-      if (searchRegionRef.current?.contains(target)
-        || document.getElementById('mobile-header-search')?.contains(target)
-        || document.getElementById('drawer-search-form')?.contains(target)) return;
-      setSuggestionsOpen(false);
-      setActiveSuggestionIndex(-1);
-    };
-    document.addEventListener('pointerdown', closeOnOutside);
-    return () => document.removeEventListener('pointerdown', closeOnOutside);
-  }, [suggestionsOpen]);
-
-  useEffect(() => {
     if (searchOpen) {
-      const timeout = window.setTimeout(() => searchInputsRef.current['mobile-header-search']?.focus(), 50);
-      return () => window.clearTimeout(timeout);
+      setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [searchOpen]);
 
@@ -375,102 +324,12 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
   const handleQuery = (val: string) => {
     setQuery(val);
-    setSuggestionsOpen(Boolean(val.trim()));
-    setActiveSuggestionIndex(-1);
+    setSuggestions(getSearchSuggestions(val));
   };
 
-  const clearQuery = (inputId: string) => {
-    setQuery('');
-    setDebouncedQuery('');
-    setSuggestionsOpen(false);
-    setActiveSuggestionIndex(-1);
-    searchInputsRef.current[inputId]?.focus();
-  };
-
-  const handleSuggestionKeyDown = (event: React.KeyboardEvent<HTMLInputElement | HTMLButtonElement>, inputId: string) => {
-    const list = document.getElementById(`${inputId}-suggestions`);
-    const buttons = Array.from(list?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? []);
-    const currentIndex = buttons.indexOf(document.activeElement as HTMLButtonElement);
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      setSuggestionsOpen(false);
-      setActiveSuggestionIndex(-1);
-      searchInputsRef.current[inputId]?.focus();
-      return;
-    }
-    if (event.key === 'Enter' && event.currentTarget instanceof HTMLInputElement && activeSuggestionIndex >= 0) {
-      event.preventDefault();
-      buttons[activeSuggestionIndex]?.click();
-      return;
-    }
-    const nextIndex = event.key === 'ArrowDown'
-      ? Math.min(currentIndex + 1, buttons.length - 1)
-      : event.key === 'ArrowUp'
-        ? (currentIndex < 0 ? buttons.length - 1 : Math.max(currentIndex - 1, 0))
-        : -1;
-    if (nextIndex >= 0 && buttons.length) {
-      event.preventDefault();
-      setActiveSuggestionIndex(nextIndex);
-      buttons[nextIndex]?.focus();
-    }
-  };
-
-  const renderSuggestions = (inputId: string) => {
-    const trimmedQuery = query.trim();
-    if (!trimmedQuery || !suggestionsOpen) return null;
-    const products = debouncedQuery === trimmedQuery ? productSuggestionsQuery.data?.items ?? [] : [];
-    const staticSuggestions = getSearchSuggestions(trimmedQuery, locale);
-    const isSearching = trimmedQuery.length >= 2 && (debouncedQuery !== trimmedQuery || productSuggestionsQuery.isFetching);
-    const isUnavailable = debouncedQuery === trimmedQuery && trimmedQuery.length >= 2 && productSuggestionsQuery.isError;
-    const noProducts = debouncedQuery === trimmedQuery && trimmedQuery.length >= 2 && productSuggestionsQuery.isSuccess && products.length === 0;
-
-    return (
-      <div id={`${inputId}-suggestions`} className="averon-menu-surface mt-1 max-h-72 overflow-y-auto">
-        {isSearching && <p role="status" aria-live="polite" className="px-3 py-2 text-xs text-[var(--color-muted)]">{t('searchLoading')}</p>}
-        {isUnavailable && <p role="status" aria-live="polite" className="px-3 py-2 text-xs text-[var(--color-muted)]">{t('searchUnavailable')}</p>}
-        {noProducts && <p role="status" aria-live="polite" className="px-3 py-2 text-xs text-[var(--color-muted)]">{t('searchNoProducts')}</p>}
-        <div role="listbox" aria-label={t('search')}>
-        {products.map((product, index) => (
-          <button
-            key={product.id}
-            id={`${inputId}-option-${index}`}
-            type="button"
-            role="option"
-            aria-selected={activeSuggestionIndex === index}
-            onFocus={() => setActiveSuggestionIndex(index)}
-            onKeyDown={(event) => handleSuggestionKeyDown(event, inputId)}
-            onClick={() => navTo(`/catalog/${encodeURIComponent(productRouteId(product))}`)}
-            className="averon-menu-item gap-3 text-left"
-          >
-            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[var(--color-text)]">{productTitle(product, locale)}</span>
-            <span aria-hidden="true" className="shrink-0 text-[11px] text-[var(--color-muted)]">{t('searchProduct')}</span>
-          </button>
-        ))}
-        {staticSuggestions.map((item, index) => {
-          const optionIndex = products.length + index;
-          return (
-          <button
-            key={`${item.href}-${item.icon}`}
-            id={`${inputId}-option-${optionIndex}`}
-            type="button"
-            role="option"
-            aria-selected={activeSuggestionIndex === optionIndex}
-            onFocus={() => setActiveSuggestionIndex(optionIndex)}
-            onKeyDown={(event) => handleSuggestionKeyDown(event, inputId)}
-            onClick={() => navTo(item.href)}
-            className="averon-menu-item gap-3 text-left"
-          >
-            <span aria-hidden="true" className="text-sm">{item.icon === 'search' ? <Search size={16} /> : <ShoppingBag size={16} />}</span>
-            <span className="min-w-0 flex-1 text-left">
-              <span className="block truncate text-sm font-semibold text-[var(--color-text)]">{item.text}</span>
-              <span className="block truncate text-[11px] text-[var(--color-muted)]">{item.sub}</span>
-            </span>
-          </button>
-          );
-        })}
-        </div>
-      </div>
-    );
+  const handleMobileQuery = (val: string) => {
+    setQuery(val);
+    setMobileSuggestions(getSearchSuggestions(val));
   };
 
   const doSearch = (q: string) => {
@@ -483,7 +342,6 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const navTo = (href: string) => {
     setSearchOpen(false);
     setMobileOpen(false);
-    setSuggestionsOpen(false);
     setQuery('');
     router.push(`/${locale}${href}`);
   };
@@ -564,24 +422,14 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
                 <Search size={17} className="pointer-events-none absolute left-3.5 text-[var(--color-muted)]" />
                 <input
-                  ref={(node) => { searchInputsRef.current['desktop-header-search'] = node; }}
-                  type="text"
+                  ref={inputRef}
+                  type="search"
                   value={query}
                   onChange={(e) => handleQuery(e.target.value)}
-                  onKeyDown={(event) => handleSuggestionKeyDown(event, 'desktop-header-search')}
-                  onFocus={() => setSuggestionsOpen(Boolean(query.trim()))}
-                  onClick={() => query.trim() && setSuggestionsOpen(true)}
                   placeholder={t('searchPlaceholder')}
                   aria-label={t('search')}
-                  role="combobox"
-                  aria-autocomplete="list"
-                  aria-expanded={Boolean(query.trim()) && suggestionsOpen}
-                  aria-controls="desktop-header-search-suggestions"
-                  aria-activedescendant={activeSuggestionIndex >= 0 && suggestionsOpen ? `desktop-header-search-option-${activeSuggestionIndex}` : undefined}
-                  autoComplete="off"
-                  className="h-11 w-full border border-[var(--color-border)] bg-[var(--color-surface)] pl-10 pr-11 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition focus:border-[var(--color-text-secondary)] focus:ring-2 focus:ring-[var(--color-primary)]/15"
+                  className="h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface)] pl-10 pr-4 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition focus:border-[var(--color-text-secondary)] focus:ring-2 focus:ring-[var(--color-primary)]/15"
                 />
-                {query && <button type="button" onClick={() => clearQuery('desktop-header-search')} aria-label={t('clearSearch')} className="averon-control-button averon-icon-button absolute right-0 top-0 h-11 !min-h-0 !border-0 !bg-transparent hover:!bg-[var(--color-surface-soft)]"><X size={16} /></button>}
               </form>
               {suggestions.length > 0 && (
                 <div className="averon-menu-surface absolute inset-x-0 top-full z-50 mt-2 overflow-hidden">
@@ -697,24 +545,14 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
               <Search size={16} className="pointer-events-none absolute left-3 text-ink-soft" />
               <input
-                ref={(node) => { searchInputsRef.current['mobile-header-search'] = node; }}
-                type="text"
+                ref={inputRef}
+                type="search"
                 value={query}
                 onChange={(e) => handleQuery(e.target.value)}
-                onKeyDown={(event) => handleSuggestionKeyDown(event, 'mobile-header-search')}
-                onFocus={() => setSuggestionsOpen(Boolean(query.trim()))}
-                onClick={() => query.trim() && setSuggestionsOpen(true)}
                 placeholder={t('searchPlaceholder')}
                 aria-label={t('search')}
-                role="combobox"
-                aria-autocomplete="list"
-                aria-expanded={Boolean(query.trim()) && suggestionsOpen}
-                aria-controls="mobile-header-search-suggestions"
-                aria-activedescendant={activeSuggestionIndex >= 0 && suggestionsOpen ? `mobile-header-search-option-${activeSuggestionIndex}` : undefined}
-                autoComplete="off"
-                className="h-11 w-full border border-[var(--color-border)] bg-[var(--color-surface-soft)] pl-10 pr-11 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+                className="h-11 w-full rounded-[var(--radius-control)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] pl-10 pr-3 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
               />
-              {query && <button type="button" onClick={() => clearQuery('mobile-header-search')} aria-label={t('clearSearch')} className="averon-control-button averon-icon-button absolute right-0 top-0 h-11 !min-h-0 !border-0 !bg-transparent hover:!bg-[var(--color-surface-soft)]"><X size={16} /></button>}
             </form>
             {suggestions.length > 0 && (
               <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-line dark:border-white/10">
@@ -743,7 +581,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         inert={!mobileOpen}
         onClick={closeMobileMenu}
         className={
-          `fixed inset-0 z-[60] bg-black/50 transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-[240ms]'} lg:hidden ` +
+          `fixed inset-0 z-[60] bg-black/45 backdrop-blur-[2px] transition-opacity ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
           (mobileOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0')
         }
       />
@@ -760,7 +598,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'var(--ease-drawer)',
         }}
         className={
-          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-[min(92vw,400px)] max-w-full flex-col overflow-hidden overscroll-contain bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-[240ms]'} lg:hidden ` +
+          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-[min(92vw,400px)] max-w-full flex-col overflow-hidden bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-300'} lg:hidden ` +
           (mobileOpen ? 'translate-x-0' : 'translate-x-full')
         }
       >
@@ -786,67 +624,30 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative">
             <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
             <input
-              ref={(node) => { searchInputsRef.current['drawer-search'] = node; }}
-              type="text"
+              type="search"
               value={query}
-              onChange={(e) => handleQuery(e.target.value)}
-              onKeyDown={(event) => handleSuggestionKeyDown(event, 'drawer-search')}
-              onFocus={() => setSuggestionsOpen(Boolean(query.trim()))}
-              onClick={() => query.trim() && setSuggestionsOpen(true)}
+              onChange={(e) => handleMobileQuery(e.target.value)}
               placeholder={t('searchPlaceholder')}
               aria-label={t('search')}
-              role="combobox"
-              aria-autocomplete="list"
-              aria-expanded={Boolean(query.trim()) && suggestionsOpen}
-              aria-controls="drawer-search-suggestions"
-              aria-activedescendant={activeSuggestionIndex >= 0 && suggestionsOpen ? `drawer-search-option-${activeSuggestionIndex}` : undefined}
               autoComplete="off"
               enterKeyHint="search"
               className="h-12 w-full border-0 border-b border-[var(--color-border)] bg-transparent pl-10 pr-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-primary)]"
             />
-            {query && <button type="button" onClick={() => clearQuery('drawer-search')} aria-label={t('clearSearch')} className="averon-control-button averon-icon-button absolute right-0 top-0 h-12 !min-h-0 !border-0 !bg-transparent hover:!bg-[var(--color-surface-soft)]"><X size={16} /></button>}
           </form>
-          {renderSuggestions('drawer-search')}
-
-          {categories.length > 0 && (
-            <section className="mt-5" aria-labelledby="mobile-categories-title">
-              <p id="mobile-categories-title" className="px-1 text-[length:var(--font-size-caption)] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">
-                {t('categories')}
-              </p>
-              <nav aria-label={t('categories')} className="mt-3 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
-                {categories.map((category: StoreCategory) => {
-                  const isActiveCategory = activeCategory === category.slug;
-                  const slug = category.slug.toLowerCase();
-                  const CategoryIcon = /shoe|footwear|boot|obuv|oyoq/.test(slug)
-                    ? Footprints
-                    : /clothing|apparel|fashion|wear|odezhda|kiyim|futbolka/.test(slug)
-                      ? Shirt
-                      : /headphone|audio|electronics/.test(slug)
-                        ? Headphones
-                        : ShoppingBag;
-                  return (
-                    <Link
-                      key={category.slug}
-                      href={to(`/catalog?category=${encodeURIComponent(category.slug)}`)}
-                      onClick={closeMobileMenu}
-                      aria-current={isActiveCategory ? 'page' : undefined}
-                      className={
-                        'group flex min-h-16 min-w-0 items-center gap-3 border border-[var(--color-border)] px-3 py-2 transition-colors ' +
-                        (isActiveCategory
-                          ? 'bg-[var(--color-surface-soft)] text-[var(--color-text)]'
-                          : 'bg-transparent text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-text)]')
-                      }
-                    >
-                      <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center bg-[var(--color-surface-soft)] text-[var(--color-text)]">
-                        <CategoryIcon size={19} strokeWidth={1.7} />
-                      </span>
-                      <span className="line-clamp-2 min-w-0 text-sm font-semibold">{categoryName(category, locale)}</span>
-                      <ChevronRight size={14} className="ml-auto shrink-0 text-[var(--color-muted)]" aria-hidden="true" />
-                    </Link>
-                  );
-                })}
-              </nav>
-            </section>
+          {mobileSuggestions.length > 0 && (
+            <div className="averon-menu-surface mt-2 overflow-hidden">
+              {mobileSuggestions.map((item, i) => (
+                <button
+                  key={`${item.href}-${i}`}
+                  type="button"
+                  onClick={() => navTo(item.href)}
+                  className="averon-menu-item gap-3 text-sm"
+                >
+                  <span aria-hidden="true">{item.icon}</span>
+                  <span className="truncate">{item.text}</span>
+                </button>
+              ))}
+            </div>
           )}
 
           <section className="mt-5" aria-labelledby="mobile-markets-title">
@@ -943,7 +744,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         <div className="-mx-5 mt-8 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-4 pb-5 pt-4">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-xs font-medium text-[var(--color-text-secondary)]">{t('langAndTheme')}</span>
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2">
               <LanguagePicker onSelect={closeMobileMenu} />
               <ThemeToggle />
             </div>

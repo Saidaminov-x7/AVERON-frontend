@@ -62,7 +62,9 @@ export async function loadCommerceCapabilities(
   fetcher: typeof fetch = fetch,
 ): Promise<CommerceCapabilities> {
   try {
-    const endpoint = `${apiBaseUrl()}/api/v1/capabilities`;
+    const endpoint = typeof window !== "undefined"
+      ? "/api/backend/api/v1/capabilities"
+      : `${apiBaseUrl}/api/v1/capabilities`;
     const response = await fetcher(endpoint, {
       cache: "no-store",
       credentials: "include",
@@ -125,7 +127,7 @@ export async function searchProductsByImage(
   const queryString = query.toString();
 
   const response = await fetcher(
-    `${apiBaseUrl()}/api/v1/products/visual-search${queryString ? `?${queryString}` : ""}`,
+    `${apiBaseUrl}/api/v1/products/visual-search${queryString ? `?${queryString}` : ""}`,
     {
     method: "POST",
     body: formData,
@@ -143,7 +145,7 @@ export async function loadSimilarProducts(
   fetcher: typeof fetch = fetch,
 ): Promise<ProductEnvelope> {
   const response = await fetcher(
-    `${apiBaseUrl()}/api/v1/products/${encodeURIComponent(slug)}/similar?limit=8`,
+    `${apiBaseUrl}/api/v1/products/${encodeURIComponent(slug)}/similar?limit=8`,
     { cache: "no-store" },
   );
   const payload: unknown = await response.json().catch(() => null);

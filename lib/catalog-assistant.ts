@@ -74,7 +74,7 @@ async function readErrorCode(response: Response): Promise<string> {
 async function post(path: string, payload: unknown, fetcher: typeof fetch): Promise<unknown> {
   let response: Response;
   try {
-    response = await fetcher(`${apiBaseUrl()}/api/v1/${path}`, {
+    response = await fetcher(`${apiBaseUrl}/api/v1/${path}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(payload),
@@ -159,7 +159,7 @@ export async function loadCompleteTheLook(
   let response: Response;
   try {
     response = await fetcher(
-      `${apiBaseUrl()}/api/v1/products/${encodeURIComponent(slug)}/complete-the-look`,
+      `${apiBaseUrl}/api/v1/products/${encodeURIComponent(slug)}/complete-the-look`,
       { cache: "no-store", signal: AbortSignal.timeout(15000) },
     );
   } catch {

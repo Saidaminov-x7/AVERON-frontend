@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
-import { CookieSettingsLink } from '@/components/privacy/CookieSettingsLink';
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CookieSettingsLink } from "@/components/privacy/CookieSettingsLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";

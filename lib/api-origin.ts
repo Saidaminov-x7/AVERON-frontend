@@ -63,3 +63,11 @@ export const externalBaseURL = resolveApiOrigin({
   NEXT_PUBLIC_AVERON_LOCAL_API_URL: process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL,
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
 });
+
+export function isLocalApiHost(hostname: string): boolean {
+  return ['localhost', '127.0.0.1', '::1', '[::1]'].includes(hostname.toLowerCase());
+}
+
+export function resolveBrowserApiBaseUrl(hostname: string, localApiUrl: string): string {
+  return isLocalApiHost(hostname) ? localApiUrl : '/api/backend';
+}

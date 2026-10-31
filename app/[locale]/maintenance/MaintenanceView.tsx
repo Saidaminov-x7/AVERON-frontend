@@ -1,9 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { getSafeInternalReturnTo } from '@/lib/safe-navigation';
-import { AlertTriangle, Hammer, RefreshCw, KeyRound, Lock, CheckCircle2, X } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { AlertTriangle, CheckCircle2, Hammer, KeyRound, Lock, RefreshCw, X } from 'lucide-react';
+import { resolveBrowserApiBaseUrl } from '@/lib/api-origin';
+import { safeMaintenanceReturnPath } from '@/lib/maintenance-return';
+
+const localApiUrl = process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080';
+const apiUrl = (path: string) => `${resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl)}/${path}`;
+
+interface MaintenanceSettings {
+  maintenanceMode?: boolean;
+  maintenanceMessage?: string | null;
+  maintenancePasswordEnabled?: boolean;
+}
 
 interface MaintenanceViewProps {
   locale: string;
@@ -37,9 +47,8 @@ const copy = {
 
 export function MaintenanceView({ locale, initialSettings, returnTo = null }: MaintenanceViewProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const requestedReturn = getSafeInternalReturnTo(searchParams.get('returnTo'), locale);
-  const returnPath = requestedReturn && !requestedReturn.split(/[?#]/)[0].endsWith('/maintenance') ? requestedReturn : `/${locale || 'ru'}`;
+  const t = copy[locale as keyof typeof copy] ?? copy.ru;
+  const returnPath = safeMaintenanceReturnPath(returnTo, locale);
   const [settings, setSettings] = useState(initialSettings);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState('');
@@ -58,38 +67,53 @@ export function MaintenanceView({ locale, initialSettings, returnTo = null }: Ma
     let disposed = false;
     const checkMaintenanceStatus = async () => {
       try {
-        const res = await fetch('/api/backend/site-settings/public', { cache: 'no-store' });
-        if (res.ok) {
-          const data = await res.json();
-          setSettings(data);
-          // Если режим обслуживания отключили - автоматически перенаправляем на главную
-          if (!data.maintenanceMode) {
-            router.replace(returnPath);
-          }
-        }
+        const res = await fetch(apiUrl('site-settings/public'), { cache: 'no-store' });
+        if (!res.ok) return;
+        const data: MaintenanceSettings = await res.json();
+        if (disposed) return;
+        setSettings(data);
+        if (!data.maintenanceMode) returnToSite();
       } catch {
         // A transient status-check failure should leave the retry action available.
       }
     };
 
-    const interval = setInterval(checkMaintenanceStatus, 10000);
-    const onVisible = () => { if (document.visibilityState === 'visible') void checkMaintenanceStatus(); };
-    document.addEventListener('visibilitychange', onVisible);
-    return () => { clearInterval(interval); document.removeEventListener('visibilitychange', onVisible); };
-  }, [returnPath, router]);
+    void checkMaintenanceStatus();
+    const interval = window.setInterval(checkMaintenanceStatus, 10000);
+    return () => {
+      disposed = true;
+      window.clearInterval(interval);
+    };
+  }, [returnToSite]);
+
+  useEffect(() => {
+    if (!showPasswordModal) return;
+    const passwordTrigger = passwordTriggerRef.current;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousDocumentOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    passwordInputRef.current?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setShowPasswordModal(false);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousDocumentOverflow;
+      document.removeEventListener('keydown', closeOnEscape);
+      passwordTrigger?.focus();
+    };
+  }, [showPasswordModal]);
 
   const handleManualCheck = async () => {
     setIsCheckingStatus(true);
     try {
-      const res = await fetch('/api/backend/site-settings/public', { cache: 'no-store' });
-      if (res.ok) {
-        const data = await res.json();
-        setSettings(data);
-        if (!data.maintenanceMode) {
-          router.replace(returnPath);
-          return;
-        }
-      }
+      const res = await fetch(apiUrl('site-settings/public'), { cache: 'no-store' });
+      if (!res.ok) return;
+      const data: MaintenanceSettings = await res.json();
+      setSettings(data);
+      if (!data.maintenanceMode) returnToSite();
     } catch {
       // Keep the page available so the user can retry after a network failure.
     } finally {
@@ -115,8 +139,7 @@ export function MaintenanceView({ locale, initialSettings, returnTo = null }: Ma
       if (res.ok && data.allowed) {
         document.cookie = `maintenance_bypass=true; path=/; max-age=${24 * 60 * 60}; SameSite=Lax`;
         setShowPasswordModal(false);
-        router.replace(returnPath);
-        router.refresh();
+        returnToSite();
       } else {
         setPasswordError(data.message || t.invalidPassword);
       }
@@ -128,60 +151,47 @@ export function MaintenanceView({ locale, initialSettings, returnTo = null }: Ma
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-      <div className="max-w-lg w-full space-y-6 animate-in fade-in duration-200 relative z-10">
-        <div className="relative mx-auto w-20 h-20 border border-[var(--color-border)] bg-[var(--color-surface-soft)] flex items-center justify-center text-[var(--color-text)]">
-          <Hammer className="w-10 h-10" />
-          <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-surface-soft text-ink flex items-center justify-center font-bold text-xs">
-            !
-          </div>
+    <main className="flex min-h-[70dvh] w-full items-center justify-center bg-[var(--color-bg)] px-4 py-12 text-center text-[var(--color-text)] sm:px-6">
+      <section className="w-full max-w-xl space-y-6">
+        <div className="relative mx-auto flex size-16 items-center justify-center border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)]">
+          <Hammer className="size-7" aria-hidden="true" />
+          <span className="absolute -right-2 -top-2 flex size-6 items-center justify-center rounded-full bg-[var(--color-warning)] text-xs font-bold text-[var(--color-bg)]" aria-hidden="true">!</span>
         </div>
 
         <div className="space-y-3">
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-[var(--color-text)]">
-            Технические работы
-          </h1>
-          <p className="text-ink-soft text-base leading-relaxed">
-            {settings.maintenanceMessage ||
-              'Сайт находится в разработке. Мы скоро вернемся с обновленной версией!'}
+          <h1 className="text-3xl font-semibold tracking-tight text-[var(--color-text)] sm:text-4xl">{t.title}</h1>
+          <p className="text-sm leading-6 text-[var(--color-text-secondary)] sm:text-base">
+            {settings.maintenanceMessage || t.description}
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-surface-soft border border-line text-xs text-ink-soft flex items-center justify-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-warning shrink-0" />
-          <span>Все сервисы платформы временно приостановлены для обновления</span>
+        <div role="status" className="flex items-center justify-center gap-2 border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-xs leading-5 text-[var(--color-text-secondary)]">
+          <AlertTriangle className="size-4 shrink-0 text-[var(--color-warning)]" aria-hidden="true" />
+          <span>{t.status}</span>
         </div>
 
-        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <button
-            onClick={handleManualCheck}
-            disabled={isCheckingStatus}
-            className="averon-primary-button w-full sm:w-auto disabled:opacity-50"
-          >
-            <RefreshCw className={`w-4 h-4 ${isCheckingStatus ? 'animate-spin' : ''}`} />
-            Проверить доступ
+        <div className="flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row">
+          <button type="button" onClick={handleManualCheck} disabled={isCheckingStatus} aria-busy={isCheckingStatus} className="averon-primary-button w-full gap-2 px-5 sm:w-auto">
+            <RefreshCw className={`size-4 ${isCheckingStatus ? 'animate-spin' : ''}`} aria-hidden="true" />
+            {t.check}
           </button>
 
           {settings.maintenancePasswordEnabled && (
-            <button
-              onClick={() => setShowPasswordModal(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-surface-soft hover:bg-surface-soft border border-line text-ink-soft text-sm font-semibold transition-all"
-            >
-              <KeyRound className="w-4 h-4 text-primary-400" />
-              Ввести пароль
+            <button ref={passwordTriggerRef} type="button" onClick={() => setShowPasswordModal(true)} className="averon-secondary-button w-full gap-2 px-5 sm:w-auto">
+              <KeyRound className="size-4" aria-hidden="true" />
+              {t.password}
             </button>
           )}
         </div>
       </section>
 
       {showPasswordModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-2xl bg-surface-soft border border-line p-6 shadow-2xl text-left space-y-4">
-            <button
-              onClick={() => setShowPasswordModal(false)}
-              className="absolute top-4 right-4 text-ink-soft hover:text-white transition-colors"
-            >
-              <X className="w-5 h-5" />
+        <div className="fixed inset-0 z-[100] grid place-items-center overflow-y-auto bg-[var(--color-overlay)] p-4" onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setShowPasswordModal(false);
+        }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="maintenance-password-title" className="relative w-full max-w-md border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-left text-[var(--color-text)] sm:p-6">
+            <button type="button" onClick={() => setShowPasswordModal(false)} aria-label={t.close} className="averon-control-button averon-icon-button absolute right-4 top-4">
+              <X className="size-4" aria-hidden="true" />
             </button>
 
             <div className="flex items-center gap-3 pr-12">
@@ -189,53 +199,29 @@ export function MaintenanceView({ locale, initialSettings, returnTo = null }: Ma
                 <Lock className="size-5" aria-hidden="true" />
               </span>
               <div>
-                <h3 className="font-bold text-lg text-white">Доступ по паролю</h3>
-                <p className="text-xs text-ink-soft">Введите пароль для раннего доступа к сайту</p>
+                <h2 id="maintenance-password-title" className="font-semibold">{t.passwordTitle}</h2>
+                <p className="mt-1 text-xs leading-5 text-[var(--color-text-secondary)]">{t.passwordDescription}</p>
               </div>
             </div>
 
             <form onSubmit={handlePasswordSubmit} className="mt-5 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-ink-soft mb-2">
-                  Пароль обхода
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Введите пароль..."
-                  autoFocus
-                  required
-                  className="w-full px-4 py-3 rounded-xl bg-surface-soft border border-line text-white placeholder-stone-500 text-sm focus:outline-none focus:border-primary-500 transition-colors"
-                />
+                <label htmlFor="maintenance-password" className="mb-1.5 block text-sm font-medium">{t.passwordLabel}</label>
+                <input ref={passwordInputRef} id="maintenance-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder={t.passwordPlaceholder} autoComplete="current-password" required className="h-11 w-full border border-[var(--color-border)] bg-[var(--color-surface-soft)] px-3 text-sm text-[var(--color-text)] outline-none transition-colors focus-visible:border-[var(--color-primary)] focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]/30" />
               </div>
 
               {passwordError && (
-                <div className="p-3 rounded-xl bg-surface-soft border border-line text-xs text-error flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 shrink-0 text-error" />
+                <p role="alert" className="flex items-start gap-2 border border-[var(--color-error)] px-3 py-2.5 text-xs leading-5 text-[var(--color-error)]">
+                  <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                   <span>{passwordError}</span>
                 </p>
               )}
 
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowPasswordModal(false)}
-                  className="px-4 py-2 rounded-xl text-ink-soft hover:text-white text-sm font-medium transition-colors"
-                >
-                  Отмена
-                </button>
-                <button
-                  type="submit"
-                  disabled={isVerifying || !password.trim()}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all disabled:opacity-50"
-                >
-                  {isVerifying ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <CheckCircle2 className="w-4 h-4" />
-                  )}
-                  Войти на сайт
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <button type="button" onClick={() => setShowPasswordModal(false)} className="averon-secondary-button px-4">{t.cancel}</button>
+                <button type="submit" disabled={isVerifying || !password.trim()} aria-busy={isVerifying} className="averon-primary-button gap-2 px-5">
+                  {isVerifying ? <RefreshCw className="size-4 animate-spin" aria-hidden="true" /> : <CheckCircle2 className="size-4" aria-hidden="true" />}
+                  {t.enter}
                 </button>
               </div>
             </form>

@@ -3,9 +3,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { externalBaseURL } from './api-origin';
 
 export { externalBaseURL };
-const baseURL = typeof window !== 'undefined'
-  ? resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl)
-  : externalBaseURL;
+const baseURL = typeof window !== 'undefined' ? '/api/backend' : externalBaseURL;
 const PROACTIVE_REFRESH_BEFORE_MS = 5 * 60 * 1000; // 5 minutes
 
 /** Decodes JWT payload to check exp */
