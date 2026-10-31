@@ -19,6 +19,7 @@ import { getSearchSuggestions } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'framer-motion';
 import { localizeHrefPreservingSafeQuery } from '@/lib/safe-navigation';
+import { LanguageFlag } from '@/components/ui/LanguageFlag';
 
 const LOCALES = [
   { code: 'ru', short: 'RU', label: 'Русский' },
@@ -48,7 +49,7 @@ function localeHref(pathname: string, code: string, search: string) {
   return localizeHrefPreservingSafeQuery(pathname, search ? `?${search}` : '', code);
 }
 
-function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
+export function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -75,12 +76,13 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
     if (!open) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        event.stopPropagation();
         setOpen(false);
         triggerRef.current?.focus();
       }
     };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => document.removeEventListener('keydown', onKeyDown, true);
   }, [open]);
 
   const handleToggle = () => {
@@ -114,11 +116,11 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
           });
         }}
         className={BTN_CLASS + ' gap-2 !w-auto px-3 text-sm font-semibold ' + (open ? '!border-primary-500 !text-primary-600 dark:!text-primary-400' : '')}
-        aria-label={t('language')}
+        aria-label={`${t('language')}: ${current.short}`}
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        <span className="font-semibold tracking-wide">{current.short}</span>
+        <LanguageFlag locale={current.code} />
       </button>
       <div
         ref={menuRef}
@@ -148,7 +150,7 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
           (open ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0')
         }
       >
-        {LOCALES.map(({ code, short, label }) => {
+        {LOCALES.map(({ code, label }) => {
           const active = code === locale;
           return (
             <button
@@ -165,8 +167,8 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
                   : '')
               }
             >
+              <LanguageFlag locale={code} />
               <span className="ml-2 flex-1">{label}</span>
-              <span className="text-[length:var(--font-size-caption)] text-ink-soft">{short}</span>
             </button>
           );
         })}
@@ -618,7 +620,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </button>
         </div>
 
-        <div className="mx-auto min-h-0 w-full max-w-xl flex-1 overflow-y-auto overscroll-contain px-5 pb-8 pt-6">
+        <div className="mx-auto min-h-0 w-full max-w-xl flex-1 overflow-y-auto overscroll-contain px-5 pt-6">
           <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative">
             <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
             <input
@@ -731,7 +733,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                             </span>
                           )}
                         </span>
-                        <span className="min-w-0 truncate text-xs font-semibold">{label}</span>
+                        <span className="min-w-0 break-words text-xs font-semibold">{label}</span>
                       </Link>
                     );
                   })}
@@ -739,9 +741,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </div>
             );
           })()}
-        </div>
-
-        <div className="mx-auto w-full max-w-xl shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-5 pb-5 pt-4">
+        <div className="-mx-5 mt-8 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-4 pb-5 pt-4">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-xs font-medium text-[var(--color-text-secondary)]">{t('langAndTheme')}</span>
             <div className="flex items-center gap-2">
@@ -769,7 +769,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <button
                 type="button"
                 onClick={() => { void handleLogout(); }}
-                className="averon-secondary-button col-span-2 h-10 gap-2 text-xs"
+                className="averon-secondary-button h-11 gap-2 text-xs min-[400px]:col-span-2"
               >
                 <LogOut size={15} />
                 {t('logout')}
@@ -794,6 +794,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </Link>
             </div>
           )}
+        </div>
         </div>
       </div>
     </>

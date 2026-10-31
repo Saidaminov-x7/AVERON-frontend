@@ -134,7 +134,7 @@ function CartContent() {
               {items.map((item) => (
                 <article key={item.id} className="flex gap-4 rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
                   <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-sm bg-[var(--color-surface-soft)]">
-                    <ProductImage src={item.imageUrl ?? undefined} alt={item.title} />
+                    <ProductImage src={item.imageUrl ?? undefined} alt={item.title} sizes="96px" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <h2 className="font-semibold leading-5">{item.title}</h2>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
+import { CookieSettingsLink } from '@/components/privacy/CookieSettingsLink';
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import type { NavLink } from "@/lib/siteSettings";
@@ -72,7 +73,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
 
   return (
     <footer className="w-full border-t border-[var(--color-border)] bg-[var(--color-surface)]">
-      <div className="mx-auto max-w-[1440px] px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-12 sm:pb-[calc(3rem+env(safe-area-inset-bottom))] lg:px-8">
+      <div className="mx-auto max-w-[1440px] px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:pt-12 sm:pb-[calc(3rem+env(safe-area-inset-bottom))] md:px-6 lg:px-8 min-[1400px]:px-12">
         <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-[1.25fr_repeat(3,1fr)] lg:gap-10">
           <div className="min-w-0">
             <Link
@@ -84,18 +85,19 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
             <p className="mt-2 max-w-xs text-sm leading-6 text-[var(--color-text-secondary)]">
               {t("description")}
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 grid grid-cols-2 gap-2">
               <ThemeToggle />
+              <CookieSettingsLink label={t('cookieSettings')} />
               <a
                 href="https://t.me/averon_fashion"
-                className="inline-flex min-h-11 items-center rounded-xl border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <Send className="mr-2 shrink-0" size={15} />
                 {t("channel")}
               </a>
               <a
                 href="https://t.me/averon_fashion_admin"
-                className="inline-flex min-h-11 items-center rounded-xl border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <MessageCircle className="mr-2 shrink-0" size={15} />
                 {t("support")}

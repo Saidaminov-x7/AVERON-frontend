@@ -1,4 +1,5 @@
 import { MaintenanceView } from './MaintenanceView';
+import { Suspense } from 'react';
 import { externalBaseURL } from '@/lib/axios';
 
 interface MaintenancePageProps {
@@ -31,5 +32,5 @@ export default async function MaintenancePage({ params }: MaintenancePageProps) 
   const { locale } = await params;
   const settings = await getSiteSettings();
 
-  return <MaintenanceView locale={locale} initialSettings={settings} />;
+  return <Suspense fallback={null}><MaintenanceView locale={locale} initialSettings={settings} /></Suspense>;
 }

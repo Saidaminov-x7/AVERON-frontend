@@ -8,8 +8,10 @@ import { AppChrome } from '@/components/AppChrome';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
 import { GlobalErrorListener } from '@/components/GlobalErrorListener';
 import { NavigationHistoryTracker } from '@/components/NavigationHistoryTracker';
+import { MaintenanceWatcher } from '@/components/MaintenanceWatcher';
 import AuthInitializer from '@/components/AuthInitializer';
 import { SiteViewportSettings } from '@/components/SiteViewportSettings';
+import { CookieConsent } from '@/components/privacy/CookieConsent';
 import type { PublicSiteSettings } from '@/lib/siteSettings';
 import React, { Suspense, useLayoutEffect } from 'react';
 
@@ -53,9 +55,11 @@ export default function LocaleLayout({
               <AnalyticsTracker />
             </Suspense>
             <div className="flex min-h-screen flex-col">
+              <Suspense fallback={null}><MaintenanceWatcher /></Suspense>
               <AppChrome>{children}</AppChrome>
             </div>
             <Toaster closeButton richColors position="top-center" visibleToasts={4} toastOptions={{ duration: 4000 }} />
+            <CookieConsent />
           </QueryProvider>
         </NextIntlClientProvider>
       </ThemeProvider>

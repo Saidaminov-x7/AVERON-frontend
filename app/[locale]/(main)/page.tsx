@@ -65,7 +65,7 @@ function ProductShelf({ title, href, products, locale, allLabel }: {
       </div>
       {products.length > 0 ? (
         <div className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-3">
-          {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
+          {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} imageSizes="(min-width: 1280px) 25vw, (min-width: 1024px) 24vw, (min-width: 768px) 33vw, calc(50vw - 24px)" />)}
         </div>
       ) : null}
     </section>
@@ -143,7 +143,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               className="group border-0 bg-[var(--color-surface)]"
             >
               <div className="relative aspect-[3/4] overflow-hidden bg-[var(--color-image-surface)]">
-                <ProductImage src={category.image} alt={category.title} fit="contain" zoomOnHover={false} />
+                <ProductImage src={category.image} alt={category.title} fit="contain" zoomOnHover={false} sizes="(min-width: 1400px) 336px, (min-width: 1024px) 24vw, (min-width: 768px) 46vw, calc(100vw - 32px)" />
               </div>
               <div className="flex items-center justify-between gap-3 py-2">
                 <h3 className="text-sm font-semibold">{category.title}</h3>

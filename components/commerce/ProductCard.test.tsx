@@ -18,22 +18,24 @@ describe('ProductCard', () => {
   it('shows only the second image on hover without zooming the card or image', () => {
     render(
       <ProductCard
-        product={{ ...product, images: [{ url: '/first.jpg' }, { url: '/second.jpg' }, { url: '/third.jpg' }] }}
+        product={{ ...product, images: [{ url: '/uploads/first.jpg' }, { url: '/uploads/second.jpg' }, { url: '/uploads/third.jpg' }] }}
         locale="ru"
+        imageSizes="260px"
       />,
     );
     const card = screen.getByRole('article');
     const image = screen.getByRole('img', { name: 'Красное платье' });
 
-    expect(image).toHaveAttribute('src', 'http://127.0.0.1:8080/first.jpg');
+    expect(new URL(image.getAttribute('src')!, 'http://localhost').searchParams.get('url')).toBe('/api/backend/uploads/first.jpg');
     expect(image).toHaveClass('object-cover');
+    expect(image).toHaveAttribute('sizes', '260px');
     fireEvent.mouseEnter(card);
-    expect(image).toHaveAttribute('src', 'http://127.0.0.1:8080/second.jpg');
+    expect(new URL(image.getAttribute('src')!, 'http://localhost').searchParams.get('url')).toBe('/api/backend/uploads/second.jpg');
     expect(image).not.toHaveClass('group-hover:scale-[1.03]');
     expect(card.className).not.toContain('hover:-translate');
 
     fireEvent.mouseLeave(card);
-    expect(image).toHaveAttribute('src', 'http://127.0.0.1:8080/first.jpg');
+    expect(new URL(image.getAttribute('src')!, 'http://localhost').searchParams.get('url')).toBe('/api/backend/uploads/first.jpg');
   });
 
   it('expires the new label after two weeks and ignores future dates', () => {

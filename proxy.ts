@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveApiOrigin } from './lib/api-origin';
+import { getSafeInternalReturnTo } from './lib/safe-navigation';
 
 // Configuration
 const locales = ['uz', 'en', 'ru'];
@@ -19,7 +20,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Maintenance mode check via backend API
-  const isMaintenancePage = pathname.includes('/maintenance');
+  const isMaintenancePage = /^\/(?:ru|uz|en)\/maintenance\/?$/.test(pathname);
   const API_BASE_URL = resolveApiOrigin({
     NODE_ENV: process.env.NODE_ENV,
     VITEST: process.env.VITEST,
@@ -34,7 +35,7 @@ export async function proxy(request: NextRequest) {
 
   try {
     const maintenanceRes = await fetch(`${API_BASE_URL}/site-settings/public`, {
-      next: { revalidate: 10 },
+      cache: 'no-store',
       signal: AbortSignal.timeout(3000),
     });
     if (maintenanceRes.ok) {
@@ -44,12 +45,15 @@ export async function proxy(request: NextRequest) {
       // 1. Если техобслуживание включено, но нет байпасс-куки и мы не на странице maintenance -> редирект на maintenance
       if (isUnderMaintenance && !isMaintenancePage && !bypassCookie) {
         const maintenanceUrl = new URL(`/${locale}/maintenance`, request.url);
+        const previous = getSafeInternalReturnTo(`${pathname}${request.nextUrl.search}`, locale);
+        if (previous) maintenanceUrl.searchParams.set('returnTo', previous);
         return NextResponse.redirect(maintenanceUrl);
       }
 
       // 2. Если техобслуживание ВЫКЛЮЧЕНО (или есть активный байпасс), но пользователь перешел на /maintenance -> редирект на главную
       if ((!isUnderMaintenance || bypassCookie) && isMaintenancePage) {
-        const homeUrl = new URL(`/${locale}`, request.url);
+        const candidate = getSafeInternalReturnTo(request.nextUrl.searchParams.get('returnTo'), locale);
+        const homeUrl = new URL(candidate && !candidate.split(/[?#]/)[0].endsWith('/maintenance') ? candidate : `/${locale}`, request.url);
         return NextResponse.redirect(homeUrl);
       }
     }

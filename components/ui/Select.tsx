@@ -44,9 +44,9 @@ function Select({ children, value: controlledValue, defaultValue = '', onValueCh
     document.getElementById(`${selectId}-trigger`)?.focus();
   };
 
-  const registerLabel = (val: string, label: React.ReactNode) => {
+  const registerLabel = React.useCallback((val: string, label: React.ReactNode) => {
     setLabelMap((prev) => (prev[val] === label ? prev : { ...prev, [val]: label }));
-  };
+  }, []);
 
   return (
     <SelectContext.Provider
@@ -226,10 +226,11 @@ const SelectItem = forwardRef<HTMLButtonElement, SelectItemProps>(
   ({ className, children, value, ...props }, ref) => {
     const context = useContext(SelectContext);
     const isSelected = context?.value === value;
+    const registerLabel = context?.registerLabel;
 
     useEffect(() => {
-      context?.registerLabel(value, children);
-    }, [value, children, context]);
+      registerLabel?.(value, children);
+    }, [value, children, registerLabel]);
 
     return (
       <button

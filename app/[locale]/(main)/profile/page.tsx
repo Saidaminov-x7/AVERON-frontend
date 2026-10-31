@@ -338,6 +338,7 @@ function ProfileContent() {
                   key={product.id}
                   product={product}
                   locale={locale}
+                  imageSizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, calc(100vw - 32px)"
                 />
               ))}
             </div>

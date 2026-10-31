@@ -284,9 +284,9 @@ function OutfitBuilderContent() {
                       </Select>
                     </div>}
                   </div>
-                  <div className="flex gap-2">
-                    <button type="button" onClick={() => setReplaceAt(index)} className="min-h-10 rounded-lg border px-3 text-sm">{text.replace}</button>
-                    <button type="button" onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="min-h-10 rounded-lg border px-3 text-sm">{text.remove}</button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button type="button" onClick={() => setReplaceAt(index)} className="min-h-11 rounded-lg border px-3 text-sm">{text.replace}</button>
+                    <button type="button" onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="min-h-11 rounded-lg border px-3 text-sm">{text.remove}</button>
                   </div>
                 </article>
               ))}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -16,6 +17,7 @@ import { ProductRecommendations } from "@/components/commerce/ProductRecommendat
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import { ProductViewTracker } from "@/components/analytics/ProductViewTracker";
 import { ProductLoadFailure } from "@/components/commerce/ProductLoadFailure";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { resolveProductAssetUrl } from "@/lib/product-images";
 import { SmartBackButton } from "@/components/navigation/SmartBackButton";
 import {
@@ -72,27 +74,35 @@ function isSemanticallyRelated(current: StoreProduct, candidate: StoreProduct) {
   return sameCategory || sameAudience;
 }
 
-async function loadFallbackRecommendations(product: StoreProduct): Promise<StoreProduct[]> {
+async function loadFallbackRecommendationCandidates(): Promise<StoreProduct[]> {
   try {
     const query = new URLSearchParams({ limit: "24", sort: "newest" });
     const response = await fetch(`${externalBaseURL}/api/v1/products?${query}`, {
       next: { revalidate: 120 },
       signal: AbortSignal.timeout(2500),
     });
-    if (!response.ok) return [];
+    if (!response.ok) {
+      return [];
+    }
     const payload = await response.json() as { items?: unknown };
     if (!Array.isArray(payload.items)) return [];
     return payload.items
-      .filter((candidate): candidate is StoreProduct => isStoreProduct(candidate) && candidate.id !== product.id)
+      .filter(isStoreProduct)
+      .map(withResolvedProductImages);
+  } catch (error) {
+    return [];
+  }
+}
+
+function selectFallbackRecommendations(product: StoreProduct, candidates: StoreProduct[]): StoreProduct[] {
+  return candidates
+      .filter((candidate) => candidate.id !== product.id)
       .filter((candidate) => isSemanticallyRelated(product, candidate))
       .map((candidate) => ({ candidate, score: recommendationScore(product, candidate) }))
       .filter(({ score }) => score >= 3)
       .sort((left, right) => right.score - left.score || left.candidate.id.localeCompare(right.candidate.id))
       .slice(0, 8)
-      .map(({ candidate }) => withResolvedProductImages(candidate));
-  } catch {
-    return [];
-  }
+      .map(({ candidate }) => candidate);
 }
 
 function isStoreProduct(value: unknown): value is ProductDetail {
@@ -167,6 +177,37 @@ async function loadProduct(slug: string): Promise<ProductDetail | null> {
   }
   if (!isStoreProduct(payload)) throw new ProductRequestError("malformed");
   return withResolvedProductImages(payload);
+}
+
+async function ProductRecommendationsWithFallback({
+  product,
+  locale,
+  candidates,
+}: {
+  product: StoreProduct;
+  locale: string;
+  candidates: Promise<StoreProduct[]>;
+}) {
+  const fallbackCandidates = await candidates;
+  const fallbackRecommendations = selectFallbackRecommendations(product, fallbackCandidates);
+  return <ProductRecommendations slug={product.slug} locale={locale} fallbackProducts={fallbackRecommendations} />;
+}
+
+function ProductRecommendationsSkeleton() {
+  return (
+    <section className="mt-12 border-t border-line pt-8 sm:pt-10" aria-busy="true" aria-hidden="true">
+      <Skeleton className="h-8 w-56 max-w-full rounded motion-reduce:animate-none" />
+      <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+        {[0, 1, 2].map((index) => (
+          <div key={index} className="min-w-0">
+            <Skeleton className="aspect-[3/4] w-full rounded-none motion-reduce:animate-none" />
+            <Skeleton className="mt-3 h-4 w-3/4 motion-reduce:animate-none" />
+            <Skeleton className="mt-2 h-5 w-1/2 motion-reduce:animate-none" />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function getProductDescription(product: StoreProduct, locale: string) {
@@ -260,6 +301,7 @@ export default async function ProductPage({
 }) {
   const [{ id, locale }, filters] = await Promise.all([params, searchParams]);
   const t = await getTranslations({ locale, namespace: "productDetail" });
+  const recommendationCandidates = loadFallbackRecommendationCandidates();
   let product: ProductDetail | null;
   try {
     product = await loadProduct(id);
@@ -311,7 +353,6 @@ export default async function ProductPage({
   const description = getProductDescription(product, locale) ?? copy.descriptionFallback;
   const composition = getProductAttribute(product, ["composition", "fabricComposition"], locale) ?? product.material?.trim() ?? null;
   const care = getProductAttribute(product, ["careInstructions", "care"], locale);
-  const fallbackRecommendations = await loadFallbackRecommendations(product);
   const productUrl = `${SITE_URL}/${locale}/catalog/${encodeURIComponent(productRouteId(product))}`;
   const canonicalPrice = String(product.salePriceUzs);
   const hasCanonicalPrice = /^\d+(?:\.\d+)?$/.test(canonicalPrice) && Number(canonicalPrice) >= 0;
@@ -478,7 +519,13 @@ export default async function ProductPage({
             </section>
           ) : null}
           <ProductReviews slug={product.slug} routeId={productRouteId(product)} locale={locale} initialOrderNumber={initialOrderNumber} />
-          <ProductRecommendations slug={product.slug} locale={locale} fallbackProducts={fallbackRecommendations} />
+          <Suspense fallback={<ProductRecommendationsSkeleton />}>
+            <ProductRecommendationsWithFallback
+              product={product}
+              locale={locale}
+              candidates={recommendationCandidates}
+            />
+          </Suspense>
           <SimilarProducts slug={product.slug} locale={locale} />
           <CompleteTheLook slug={product.slug} locale={locale} />
         </div>

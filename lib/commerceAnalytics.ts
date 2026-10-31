@@ -1,5 +1,6 @@
 import { externalBaseURL } from '@/lib/axios';
 import { canSendAnalytics } from '@/lib/analyticsPolicy';
+import { clearAnalyticsIdentifier } from '@/lib/consent';
 
 export type CommerceEventMetadata = {
   productId?: string;
@@ -56,7 +57,10 @@ function getDeviceId() {
 }
 
 export function trackCommerceEvent(event: CommerceEvent, pathOverride?: string) {
-  if (!canSendAnalytics()) return;
+  if (!canSendAnalytics()) {
+    clearAnalyticsIdentifier();
+    return;
+  }
   const path = pathOverride ?? window.location.pathname;
   const dedupeKey = JSON.stringify([event.eventName, path, event.metadata ?? {}, 'orderId' in event ? event.orderId : null]);
   const now = Date.now();

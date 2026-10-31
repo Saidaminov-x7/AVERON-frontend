@@ -10,6 +10,7 @@ import {
 } from "react";
 import { ImagePlus, LoaderCircle, Search, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/Button";
 import { ProductCard, type StoreProduct } from "@/components/commerce/ProductCard";
 import { CommerceApiError, searchProductsByImage } from "@/lib/visual-search";
 import { useCommerceCapabilities } from "./useCommerceCapabilities";
@@ -21,12 +22,13 @@ type Props = {
   locale: string;
   country?: string;
   category?: string;
+  initiallyOpen?: boolean;
 };
 
-export function VisualSearch({ locale, country, category }: Props) {
+export function VisualSearch({ locale, country, category, initiallyOpen = false }: Props) {
   const t = useTranslations("catalog");
   const capabilities = useCommerceCapabilities();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -161,15 +163,17 @@ export function VisualSearch({ locale, country, category }: Props) {
 
   return (
     <>
-      <button
-        ref={openButtonRef}
+      <Button
+        variant="outline"
+        size="lg"
         type="button"
+        ref={openButtonRef}
         onClick={() => setOpen(true)}
-        className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-primary-700 px-4 py-2 text-sm font-bold text-primary-800 transition-colors hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-950/40"
+        className="mt-5 gap-2 px-4 font-bold"
       >
         <ImagePlus size={18} aria-hidden="true" />
         {t("visualSearchOpen")}
-      </button>
+      </Button>
       {open ? (
         <div
           className="fixed inset-0 z-[100] flex items-end justify-center bg-black/55 p-0 sm:items-center sm:p-4"
@@ -311,7 +315,7 @@ export function VisualSearch({ locale, country, category }: Props) {
                 <h3 className="mb-3 font-bold">{t("visualSearchResults")}</h3>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {items.map((product) => (
-                    <ProductCard key={product.id} product={product} locale={locale} />
+                    <ProductCard key={product.id} product={product} locale={locale} imageSizes="(min-width: 768px) 240px, (min-width: 640px) 200px, calc(50vw - 24px)" />
                   ))}
                 </div>
               </section>

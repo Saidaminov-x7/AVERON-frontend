@@ -38,7 +38,7 @@ export default function SharedWishlistPage() {
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {wishlist.data.items.map((item) => (
             <li key={item.id} className="overflow-hidden rounded-2xl border border-line bg-white dark:border-white/10 dark:bg-surface-soft">
-              <div className="aspect-[4/5] w-full"><ProductImage src={item.imageUrl ?? undefined} alt={item.title} /></div>
+              <div className="relative aspect-[4/5] w-full"><ProductImage src={item.imageUrl ?? undefined} alt={item.title} sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw" /></div>
               <div className="p-4">
                 <h2 className="line-clamp-2 font-semibold">{item.title}</h2>
                 <p className="mt-2 font-bold">{Number(item.priceUzs).toLocaleString(locale)} {locale === 'en' ? 'UZS' : locale === 'uz' ? 'so‘m' : 'сум'}</p>

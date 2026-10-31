@@ -362,8 +362,8 @@ export function TelegramMiniApp({
                       return (
                         <li key={item.slug}>
                           <Link href={`/${locale}/mini-app?product=${encodeURIComponent(item.slug)}`} className="group block overflow-hidden rounded-2xl border border-line bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-white/10 dark:bg-surface-soft">
-                            <div className="aspect-square bg-surface-soft dark:bg-surface-soft">
-                              {item.images?.[0]?.url ? <ProductImage src={item.images[0].url} alt={item.images[0].alt?.[locale] ?? itemTitle} /> : <div className="flex h-full items-center justify-center text-sm text-ink-soft">AVERON</div>}
+                            <div className="relative aspect-square bg-surface-soft dark:bg-surface-soft">
+                              {item.images?.[0]?.url ? <ProductImage src={item.images[0].url} alt={item.images[0].alt?.[locale] ?? itemTitle} sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw" /> : <div className="flex h-full items-center justify-center text-sm text-ink-soft">AVERON</div>}
                             </div>
                             <div className="p-3">
                               <h2 className="line-clamp-2 min-h-10 text-sm font-semibold group-hover:underline">{itemTitle}</h2>

@@ -40,6 +40,7 @@
   --color-border-hover: #999999;
   --color-accent: #244FC7;
   --color-accent-hover: #193DA8;
+  --color-button-hover: color-mix(in srgb, var(--color-primary) 82%, black);
   --color-muted: #767676;
   --color-sale: #d6001c;
   --color-on-primary: #ffffff;
@@ -109,6 +110,79 @@
   max-width: var(--layout-max-width);
 }
 
+.cookie-consent-banner {
+  position: fixed;
+  z-index: 55;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: 0;
+  left: max(16px, env(safe-area-inset-left));
+  display: flex;
+  max-width: min(960px, calc(100vw - 32px));
+  margin-inline: auto;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 16px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-elevated);
+}
+
+.cookie-settings-trigger {
+  position: fixed;
+  z-index: 55;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 0 12px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  box-shadow: var(--shadow-menu);
+}
+
+.cookie-settings-trigger:hover { background: var(--color-surface-soft); }
+.cookie-settings-trigger:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+.cookie-consent-backdrop {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: var(--color-overlay);
+}
+
+.cookie-consent-dialog {
+  width: min(100%, 560px);
+  max-height: 100%;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 24px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-elevated);
+}
+
+@media (max-width: 639px) {
+  .cookie-consent-banner { align-items: stretch; flex-direction: column; gap: 12px; padding: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+  .cookie-consent-banner > div:last-child { display: grid; grid-template-columns: 1fr; }
+  .cookie-consent-banner > div:last-child button { width: 100%; min-height: 44px; }
+  .cookie-consent-dialog { padding: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-settings-trigger { scroll-behavior: auto; }
+}
+
 :root.dark {
   color-scheme: dark;
   --color-primary: #f1f1f1;
@@ -123,6 +197,7 @@
   --color-border-hover: #737373;
   --color-accent: #8ea5ff;
   --color-accent-hover: #b0bfff;
+  --color-button-hover: color-mix(in srgb, var(--color-primary) 82%, white);
   --color-muted: #a3a3a3;
   --color-sale: #ff6577;
   --color-on-primary: #181818;
@@ -147,6 +222,7 @@
 
   html {
     -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
     text-size-adjust: 100%;
   }
 
@@ -210,10 +286,10 @@
   .averon-icon-button { width: 44px; min-width: 44px; padding: 0; }
   .averon-primary-button, .averon-secondary-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: var(--space-2); border: 1px solid transparent; border-radius: var(--radius-control); padding: var(--space-3) var(--space-5); font-family: var(--font-family); font-size: var(--font-size-button); font-weight: 700; line-height: 1.25rem; text-align: center; transition: color var(--duration-press) var(--ease-out-ui), background-color var(--duration-press) var(--ease-out-ui), border-color var(--duration-press) var(--ease-out-ui), box-shadow var(--duration-press) var(--ease-out-ui); }
   .averon-primary-button { background: var(--color-primary); color: var(--color-on-primary); }
-  .averon-primary-button:hover:not(:disabled) { background: var(--color-accent-hover); }
+  .averon-primary-button:hover:not(:disabled) { background: var(--color-button-hover); }
   .averon-primary-button:active:not(:disabled) { background: var(--color-secondary); }
   :root.dark .averon-primary-button { background: var(--color-primary); color: var(--color-on-primary); }
-  :root.dark .averon-primary-button:hover:not(:disabled) { background: var(--color-accent-hover); }
+  :root.dark .averon-primary-button:hover:not(:disabled) { background: var(--color-button-hover); }
   :root.dark .averon-primary-button:active:not(:disabled) { background: var(--color-secondary); color: var(--color-bg); }
   .averon-secondary-button { border-color: var(--color-primary); background: var(--color-surface); color: var(--color-text); }
   .averon-secondary-button:hover:not(:disabled) { background: var(--color-surface-soft); }
@@ -260,6 +336,10 @@
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 .averon-site-shell :where(button, [role="button"], a[class*="bg-primary-"]):focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
@@ -272,13 +352,13 @@
 ) { color: var(--color-on-primary); }
 .averon-site-shell :is(button, a):is(
   [class~="hover:bg-primary"], [class~="hover:bg-primary-500"], [class~="hover:bg-primary-600"], [class~="hover:bg-primary-700"], [class~="hover:bg-primary-800"]
-):hover:not(:disabled) { color: var(--color-on-primary); }
+):hover:not(:disabled) { background-color: var(--color-button-hover) !important; color: var(--color-on-primary); }
 .dark .averon-site-shell :is(button, a):is(
   [class~="dark:bg-primary"], [class~="dark:bg-primary-500"], [class~="dark:bg-primary-600"], [class~="dark:bg-primary-700"], [class~="dark:bg-primary-800"]
 ) { color: var(--color-on-primary); }
 .dark .averon-site-shell :is(button, a):is(
   [class~="dark:hover:bg-primary"], [class~="dark:hover:bg-primary-500"], [class~="dark:hover:bg-primary-600"], [class~="dark:hover:bg-primary-700"], [class~="dark:hover:bg-primary-800"]
-):hover:not(:disabled) { color: var(--color-on-primary); }
+):hover:not(:disabled) { background-color: var(--color-button-hover) !important; color: var(--color-on-primary); }
 .averon-site-shell button:disabled:not(.averon-ghost-button):not(.averon-link-button) {
   background-color: var(--color-surface-soft);
   border-color: var(--color-border);

@@ -1,11 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import * as Icons from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { externalBaseURL } from '@/lib/axios';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
 import { ProductCard, type StoreProduct } from '@/components/commerce/ProductCard';
+import { canOptimizeProductImage, resolveProductAssetUrl } from '@/lib/product-images';
 import type {
   SectionType,
   HeroSearchContent,
@@ -291,23 +293,33 @@ export function DynamicSectionRenderer({
                   </h2>
                 )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {members.map((m, idx) => (
-                    <div
-                      key={idx}
-                      className="flex flex-col items-center text-center p-6 rounded-2xl border border-line bg-surface dark:border-white/5 dark:bg-surface"
-                    >
-                      {m.photoUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={m.photoUrl} alt={m.name} className="w-20 h-20 rounded-full object-cover mb-4" />
-                      ) : (
-                        <div className="w-20 h-20 rounded-full bg-primary-100 dark:bg-primary-950/60 text-primary-700 dark:text-primary-400 flex items-center justify-center mb-4 text-2xl font-bold">
-                          {m.name ? m.name[0] : 'U'}
-                        </div>
-                      )}
-                      <h3 className="font-bold text-base text-ink dark:text-white truncate max-w-full">{m.name}</h3>
-                      <p className="text-xs text-primary-600 dark:text-primary-400 mt-1 truncate max-w-full">{m.role}</p>
-                    </div>
-                  ))}
+                  {members.map((m, idx) => {
+                    const photoUrl = m.photoUrl ? resolveProductAssetUrl(m.photoUrl) : undefined;
+                    return (
+                      <div
+                        key={idx}
+                        className="flex flex-col items-center text-center p-6 rounded-2xl border border-line bg-surface dark:border-white/5 dark:bg-surface"
+                      >
+                        {photoUrl ? (
+                          <Image
+                            src={photoUrl}
+                            alt={m.name}
+                            width={80}
+                            height={80}
+                            sizes="80px"
+                            unoptimized={!canOptimizeProductImage(photoUrl)}
+                            className="w-20 h-20 rounded-full object-cover mb-4"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 rounded-full bg-primary-100 dark:bg-primary-950/60 text-primary-700 dark:text-primary-400 flex items-center justify-center mb-4 text-2xl font-bold">
+                            {m.name ? m.name[0] : 'U'}
+                          </div>
+                        )}
+                        <h3 className="font-bold text-base text-ink dark:text-white truncate max-w-full">{m.name}</h3>
+                        <p className="text-xs text-primary-600 dark:text-primary-400 mt-1 truncate max-w-full">{m.role}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );

@@ -56,7 +56,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning className={inter.variable}>
+    <html suppressHydrationWarning className={inter.variable} data-scroll-behavior="smooth">
       <head>
         <link rel="icon" href="/logotip.png" />
         <script

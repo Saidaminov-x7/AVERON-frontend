@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { getSafeInternalReturnTo } from '@/lib/safe-navigation';
 import { AlertTriangle, Hammer, RefreshCw, KeyRound, Lock, CheckCircle2, X } from 'lucide-react';
 
 interface MaintenanceViewProps {
@@ -15,6 +16,9 @@ interface MaintenanceViewProps {
 
 export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedReturn = getSafeInternalReturnTo(searchParams.get('returnTo'), locale);
+  const returnPath = requestedReturn && !requestedReturn.split(/[?#]/)[0].endsWith('/maintenance') ? requestedReturn : `/${locale || 'ru'}`;
   const [settings, setSettings] = useState(initialSettings);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState('');
@@ -32,7 +36,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
           setSettings(data);
           // Если режим обслуживания отключили - автоматически перенаправляем на главную
           if (!data.maintenanceMode) {
-            router.push(`/${locale || 'ru'}`);
+            router.replace(returnPath);
           }
         }
       } catch {
@@ -41,8 +45,10 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
     };
 
     const interval = setInterval(checkMaintenanceStatus, 10000);
-    return () => clearInterval(interval);
-  }, [locale, router]);
+    const onVisible = () => { if (document.visibilityState === 'visible') void checkMaintenanceStatus(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => { clearInterval(interval); document.removeEventListener('visibilitychange', onVisible); };
+  }, [returnPath, router]);
 
   const handleManualCheck = async () => {
     setIsCheckingStatus(true);
@@ -52,7 +58,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
         const data = await res.json();
         setSettings(data);
         if (!data.maintenanceMode) {
-          router.push(`/${locale || 'ru'}`);
+          router.replace(returnPath);
           return;
         }
       }
@@ -83,7 +89,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
         // Устанавливаем cookie bypass на 24 часа
         document.cookie = `maintenance_bypass=true; path=/; max-age=${24 * 60 * 60}; SameSite=Lax`;
         setShowPasswordModal(false);
-        router.push(`/${locale || 'ru'}`);
+        router.replace(returnPath);
         router.refresh();
       } else {
         setPasswordError(data.message || 'Неверный пароль для обхода техобслуживания');
@@ -96,9 +102,9 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
   };
 
   return (
-    <div className="min-h-screen bg-surface-soft text-ink-soft flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
       <div className="max-w-lg w-full space-y-6 animate-in fade-in duration-200 relative z-10">
-        <div className="relative mx-auto w-20 h-20 border border-white/20 bg-white/5 flex items-center justify-center text-white">
+        <div className="relative mx-auto w-20 h-20 border border-[var(--color-border)] bg-[var(--color-surface-soft)] flex items-center justify-center text-[var(--color-text)]">
           <Hammer className="w-10 h-10" />
           <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-surface-soft text-ink flex items-center justify-center font-bold text-xs">
             !
@@ -106,7 +112,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
         </div>
 
         <div className="space-y-3">
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-[var(--color-text)]">
             Технические работы
           </h1>
           <p className="text-ink-soft text-base leading-relaxed">
@@ -124,7 +130,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
           <button
             onClick={handleManualCheck}
             disabled={isCheckingStatus}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+            className="averon-primary-button w-full sm:w-auto disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${isCheckingStatus ? 'animate-spin' : ''}`} />
             Проверить доступ

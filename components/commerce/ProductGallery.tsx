@@ -232,6 +232,8 @@ export function ProductGallery({
             alt={selectedAlt}
             fit="cover"
             zoomOnHover={false}
+            sizes="(min-width: 1024px) 60vw, 100vw"
+            priority={selectedIndex === 0}
             onLoad={(width, height) => {
               const ratio = width / height;
               const normalizedRatio = ratio > 1.12 ? "4 / 3" : ratio < 0.9 ? "4 / 5" : "1 / 1";
@@ -283,6 +285,7 @@ export function ProductGallery({
                 alt=""
                 fit="cover"
                 zoomOnHover={false}
+                sizes="80px"
               />
             </button>
           ))}
@@ -381,6 +384,7 @@ export function ProductGallery({
                 alt={selectedAlt}
                 fit="contain"
                 zoomOnHover={false}
+                sizes="100vw"
               />
             </div>
           </div>

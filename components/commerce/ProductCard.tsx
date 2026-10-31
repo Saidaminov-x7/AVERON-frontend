@@ -35,10 +35,14 @@ export function ProductCard({
   product,
   locale,
   catalogQuery = '',
+  imageSizes = '(min-width: 1280px) 25vw, (min-width: 768px) 33vw, calc(50vw - 24px)',
+  imagePriority = false,
 }: {
   product: StoreProduct;
   locale: string;
   catalogQuery?: string;
+  imageSizes?: string;
+  imagePriority?: boolean;
 }) {
   const title = productTitle(product, locale);
   const plainTitle = productPlainText(title);
@@ -163,6 +167,8 @@ export function ProductCard({
             alt={plainTitle}
             zoomOnHover={false}
             fit="cover"
+            sizes={imageSizes}
+            priority={imagePriority}
             onError={imageIndex === 1 ? () => {
               setSecondImageAvailable(false);
               setImageIndex(0);

@@ -113,7 +113,7 @@ function FavoritesContent() {
       </section>
       {loading ? <div className="flex items-center justify-center gap-3 py-24 text-muted"><LoaderCircle className="animate-spin" /> Загружаем товары…</div> : null}
       {!loading && error ? <div className="rounded-2xl border border-line bg-surface-soft p-8 text-center"><p>{error}</p><button onClick={() => void load()} className="mt-4 inline-flex h-11 items-center gap-2 rounded-xl bg-primary-600 px-5 font-semibold text-white"><RefreshCw size={17}/>Повторить</button></div> : null}
-      {!loading && !error && products.length ? <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{products.map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}</div> : null}
+      {!loading && !error && products.length ? <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{products.map((product) => <ProductCard key={product.id} product={product} locale={locale} imageSizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, calc(100vw - 32px)" />)}</div> : null}
       {!loading && !error && !products.length ? <div className="rounded-2xl border border-line bg-white p-12 text-center dark:border-white/10 dark:bg-surface-soft"><Heart size={44} className="mx-auto text-ink-soft"/><h2 className="mt-4 text-xl font-bold">Избранное пока пусто</h2><p className="mt-2 text-sm text-muted">Нажимайте на сердце в карточке товара — выбранное сохранится здесь.</p><Link href={`/${locale}/catalog`} className="mt-6 inline-flex h-11 items-center rounded-xl bg-primary-600 px-5 font-semibold text-white">Открыть каталог</Link></div> : null}
     </main>
   );

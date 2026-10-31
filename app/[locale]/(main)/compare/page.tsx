@@ -149,10 +149,11 @@ export default function ComparePage() {
                 >
                   <X size={16} />
                 </button>
-                <div className="h-40 overflow-hidden rounded-xl bg-surface-soft dark:bg-surface-soft">
+                <div className="relative h-40 overflow-hidden rounded-xl bg-surface-soft dark:bg-surface-soft">
                   <ProductImage
                     src={product.images?.[0]?.url}
                     alt={productTitle(product, locale)}
+                    sizes="230px"
                   />
                 </div>
                 <h2 className="mt-3 line-clamp-2 font-bold">

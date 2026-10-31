@@ -7,7 +7,7 @@ import {
   ProductCard,
   type StoreProduct,
 } from "@/components/commerce/ProductCard";
-import { VisualSearch } from "@/components/commerce/VisualSearch";
+import { VisualSearchLauncher } from "@/components/commerce/VisualSearchLauncher";
 import { CatalogAiSearch } from "@/components/commerce/CatalogAiSearch";
 import { StyleAssistant } from "@/components/commerce/StyleAssistant";
 import { CatalogFilterLayout } from "@/components/commerce/CatalogFilterLayout";
@@ -166,7 +166,8 @@ function CatalogContent({
         >
           <>
             <div className="mb-5 flex flex-wrap items-center gap-3">
-              <VisualSearch
+              <VisualSearchLauncher
+                enabled={capabilities.visualSearch && capabilities.imageEmbeddings}
                 locale={locale}
                 country={typeof f.country === "string" ? f.country : undefined}
                 category={typeof f.category === "string" ? f.category : undefined}
@@ -202,12 +203,14 @@ function CatalogContent({
               </div>
             ) : products.length ? (
               <div className="catalog-product-grid mt-5 grid grid-cols-2 gap-x-3 gap-y-8 lg:grid-cols-3 xl:gap-x-5 min-[1400px]:grid-cols-4">
-                {products.map((p) => (
+                {products.map((p, index) => (
                   <ProductCard
                     key={p.id}
                     product={p}
                     locale={locale}
                     catalogQuery={catalogQuery}
+                    imagePriority={index === 0}
+                    imageSizes="(min-width: 1400px) 300px, (min-width: 1024px) 24vw, (min-width: 768px) 46vw, calc(50vw - 24px)"
                   />
                 ))}
               </div>
