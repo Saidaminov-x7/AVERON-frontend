@@ -1,0 +1,22 @@
+1:"$Sreact.fragment"
+2:I[347257,["/_next/static/chunks/33t46atd3n2zd.js"],"ClientPageRoot"]
+3:I[758755,["/_next/static/chunks/33t46atd3n2zd.js","/_next/static/chunks/033y2_44ucqy7.js","/_next/static/chunks/2qrdos7bay7xd.js","/_next/static/chunks/00z9ge-arth29.js","/_next/static/chunks/1qd3foz2q37f6.js","/_next/static/chunks/185lzg4lmq6yp.js","/_next/static/chunks/1tyss61gb-gik.js","/_next/static/chunks/2cyi1t7yh20nv.js","/_next/static/chunks/3pr1bqqmmd84m.js"],"default"]
+6:I[897367,["/_next/static/chunks/33t46atd3n2zd.js"],"OutletBoundary"]
+7:"$Sreact.suspense"
+b:I[897367,["/_next/static/chunks/33t46atd3n2zd.js"],"ViewportBoundary"]
+c:I[897367,["/_next/static/chunks/33t46atd3n2zd.js"],"MetadataBoundary"]
+e:I[339756,["/_next/static/chunks/33t46atd3n2zd.js"],"default"]
+f:I[837457,["/_next/static/chunks/33t46atd3n2zd.js"],"default"]
+a:X
+0:{"buildId":"awx-ZT5HSfZEpE07QZA6Y","data":[{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{"locale":"en"},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/_next/static/chunks/3pr1bqqmmd84m.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"isPartial":"$@9","staleTime":"$a","varyParams":null},{"rsc":["$","$1","h",{"children":[null,["$","$Lb",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#fafafa","media":"(prefers-color-scheme: light)"}],["$","meta","3",{"name":"theme-color","content":"#0f0f10","media":"(prefers-color-scheme: dark)"}]]}],["$","div",null,{"hidden":true,"children":["$","$Lc",null,{"children":["$","$7",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Online store | AVERON"}],["$","meta","1",{"name":"description","content":"Clothing, shoes, and accessories with product prices shown in Uzbekistani soʻm."}],["$","link","2",{"rel":"manifest","href":"/manifest.webmanifest"}],["$","meta","3",{"name":"robots","content":"noindex, follow"}],["$","link","4",{"rel":"canonical","href":"https://averon.uz/en"}],["$","link","5",{"rel":"alternate","hrefLang":"ru","href":"https://averon.uz/ru"}],["$","link","6",{"rel":"alternate","hrefLang":"uz","href":"https://averon.uz/uz"}],["$","link","7",{"rel":"alternate","hrefLang":"en","href":"https://averon.uz/en"}],["$","link","8",{"rel":"alternate","hrefLang":"x-default","href":"https://averon.uz/ru"}],["$","meta","9",{"property":"og:title","content":"Online store"}],["$","meta","10",{"property":"og:description","content":"Clothing, shoes, and accessories with product prices shown in Uzbekistani soʻm."}],["$","meta","11",{"property":"og:url","content":"https://averon.uz/en"}],["$","meta","12",{"property":"og:site_name","content":"AVERON"}],["$","meta","13",{"property":"og:locale","content":"en_US"}],["$","meta","14",{"property":"og:type","content":"website"}],["$","meta","15",{"name":"twitter:card","content":"summary"}],["$","meta","16",{"name":"twitter:title","content":"Online store"}],["$","meta","17",{"name":"twitter:description","content":"Clothing, shoes, and accessories with product prices shown in Uzbekistani soʻm."}]]}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"isPartial":"$@d","staleTime":"$a","varyParams":null},{"rsc":["$","$1","c",{"children":[null,["$","$Le",null,{"parallelRouterKey":"children","template":["$","$Lf",null,{}]}]]}],"isPartial":"$@10","staleTime":"$a","varyParams":null},{"rsc":["$","$1","c",{"children":[null,["$","div",null,{"className":"averon-site-shell min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]","children":["$","$Le",null,{"parallelRouterKey":"children","template":["$","$Lf",null,{}]}]}]]}],"isPartial":"$@11","staleTime":"$a","varyParams":null}],"isUpgradeableISRFallback":false,"a":"$@12","rootVaryParams":null,"needsRuntimeRequest":"$@13"}
+4:{}
+5:"$0:data:0:rsc:props:children:0:props:serverProvidedParams:params"
+8:null
+13:true
+a:300
+a:C
+12:0
+d:"$undefined"
+10:"$undefined"
+11:"$undefined"
+9:"$undefined"

@@ -1,0 +1,143 @@
+{
+  "app": {
+    "[project]/app/[locale]/(auth)/forgot-password/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(auth)/login/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(auth)/register/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(auth)/reset-password/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/about/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/ai/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/cart/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/catalog/[id]/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/catalog/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/chat/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/checkout/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/checkout/success/[orderNumber]/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/compare/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/delivery/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/faq/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/favorites/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/how-to-order/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/orders/[orderNumber]/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/orders/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/outfits/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/privacy/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/profile/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/public-offer/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/returns/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/size-guide/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/support/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/terms/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/(main)/wishlist/shared/[token]/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/maintenance/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/mini-app/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/[locale]/pages/[slug]/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/_not-found/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/page": [
+      "static/media/9c72aa0f40e4eef8-s.p.1y4-pdgsjb-pw.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

@@ -1,0 +1,19 @@
+User-Agent: *
+Allow: /
+Allow: /*/catalog
+Allow: /*/catalog/*
+Allow: /*/about
+Allow: /*/how-to-order
+Allow: /*/delivery
+Allow: /*/returns
+Allow: /*/size-guide
+Allow: /*/faq
+Allow: /*/support
+Disallow: /api/
+Disallow: /admin/
+Disallow: /*/api/
+
+User-Agent: GPTBot
+Disallow: /
+
+Sitemap: https://averon.uz/sitemap.xml

@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,324876,e=>{"use strict";var t=e.i(843476),n=e.i(647163);e.s(["Skeleton",0,function({className:e,...o}){return(0,t.jsx)("div",{className:(0,n.cn)("animate-pulse rounded-md bg-stone-200 dark:bg-stone-700",e),...o})}])}]);
