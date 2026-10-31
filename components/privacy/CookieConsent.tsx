@@ -15,7 +15,6 @@ export function CookieConsent() {
   const [analytics, setAnalytics] = useState(false);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
-  const bannerRef = useRef<HTMLElement>(null);
   const restoreFocusRef = useRef(false);
 
   const openSettings = useCallback(() => {
@@ -33,24 +32,6 @@ export function CookieConsent() {
     handleChoice();
     return subscribeToConsentChanges(handleChoice);
   }, []);
-
-  useLayoutEffect(() => {
-    if (choice !== null || !bannerRef.current) return;
-    const banner = bannerRef.current;
-    const updateClearance = () => {
-      document.documentElement.style.setProperty('--cookie-consent-clearance', `${Math.ceil(banner.getBoundingClientRect().height + 24)}px`);
-    };
-    updateClearance();
-    if (typeof ResizeObserver === 'undefined') {
-      return () => document.documentElement.style.removeProperty('--cookie-consent-clearance');
-    }
-    const observer = new ResizeObserver(updateClearance);
-    observer.observe(banner);
-    return () => {
-      observer.disconnect();
-      document.documentElement.style.removeProperty('--cookie-consent-clearance');
-    };
-  }, [choice]);
 
   useLayoutEffect(() => {
     if (settingsOpen || !restoreFocusRef.current) return;
@@ -74,8 +55,10 @@ export function CookieConsent() {
 
   useEffect(() => {
     if (!settingsOpen) return;
-    const previousOverflow = document.body.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousDocumentOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     const panel = dialogRef.current;
     panel?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
@@ -99,7 +82,8 @@ export function CookieConsent() {
     };
     document.addEventListener('keydown', onKeyDown);
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousDocumentOverflow;
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [settingsOpen, closeSettings]);
@@ -117,7 +101,7 @@ export function CookieConsent() {
   return (
     <>
       {choice === null ? (
-        <aside ref={bannerRef} className="cookie-consent-banner" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-description">
+        <aside className="cookie-consent-banner" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-description">
           <div className="min-w-0 flex-1">
             <p id="cookie-consent-title" className="text-sm font-semibold text-[var(--color-text)]">{t('title')}</p>
             <p id="cookie-consent-description" className="mt-1 text-xs leading-5 text-[var(--color-text-secondary)]">
@@ -125,7 +109,7 @@ export function CookieConsent() {
               <Link className="underline underline-offset-2" href={`/${locale}/privacy`}>{t('privacyLink')}</Link>
             </p>
           </div>
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <div className="cookie-consent-actions flex shrink-0 flex-wrap items-center gap-2">
             <Button type="button" variant="outline" size="sm" className="h-11 min-h-11" onClick={() => save(false)}>{t('reject')}</Button>
             <Button type="button" variant="outline" size="sm" className="h-11 min-h-11" onClick={openSettings}>{t('settings')}</Button>
             <Button type="button" size="sm" className="h-11 min-h-11" onClick={() => save(true)}>{t('accept')}</Button>
