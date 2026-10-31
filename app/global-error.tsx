@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { getSafeErrorReportPath } from '@/lib/safe-error-report';
-import { resolveBrowserApiBaseUrl } from '@/lib/api-origin';
+import { getSafeErrorReportPath, sanitizeErrorReportText } from '@/lib/safe-error-report';
+import { externalBaseURL } from '@/lib/axios';
 
 const themeBootstrap = `(() => {
   try {
@@ -25,18 +25,19 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     try {
-      const localApiUrl = process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080';
-      const reportUrl = `${resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl)}/error-reports`;
-      fetch(reportUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: 'Client-side application error',
-          stack: '',
-          url: getSafeErrorReportPath(),
-          severity: 'error',
-        }),
-      }).catch(() => {});
+      if (externalBaseURL) {
+        fetch(`${externalBaseURL}/error-reports`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: sanitizeErrorReportText(error.message || 'Unknown global error'),
+            stack: sanitizeErrorReportText(error.stack || ''),
+            url: getSafeErrorReportPath(),
+            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+            severity: 'error',
+          }),
+        }).catch(() => {});
+      }
     } catch {
       // ignore reporting errors
     }
@@ -58,7 +59,7 @@ export default function GlobalError({
               </div>
             </div>
             <div className="flex flex-col justify-center bg-[var(--color-surface)] p-8 md:p-12">
-              <div className="mb-7 flex h-12 w-12 items-center justify-center border border-[var(--color-border)] text-[var(--color-error)]">
+              <div className="mb-8 flex h-12 w-12 items-center justify-center border border-[var(--color-border)] text-[var(--color-error)]">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="12" y1="8" x2="12" y2="12" />

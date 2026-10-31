@@ -24,6 +24,7 @@ import { getProducts, productRouteId, productTitle } from '@/lib/products';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'framer-motion';
 import { localizeHrefPreservingSafeQuery } from '@/lib/safe-navigation';
+import { LanguageFlag } from '@/components/ui/LanguageFlag';
 
 const LOCALES = [
   { code: 'ru', short: 'RU', label: 'Русский', flag: 'ru' },
@@ -53,7 +54,7 @@ function localeHref(pathname: string, code: string, search: string) {
   return localizeHrefPreservingSafeQuery(pathname, search ? `?${search}` : '', code);
 }
 
-function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
+export function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -80,12 +81,13 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
     if (!open) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        event.stopPropagation();
         setOpen(false);
         triggerRef.current?.focus();
       }
     };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => document.removeEventListener('keydown', onKeyDown, true);
   }, [open]);
 
   const handleToggle = () => {
@@ -119,11 +121,11 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
           });
         }}
         className={BTN_CLASS + ' gap-2 !w-auto px-3 text-sm font-semibold ' + (open ? '!border-primary-500 !text-primary-600 dark:!text-primary-400' : '')}
-        aria-label={t('language')}
+        aria-label={`${t('language')}: ${current.short}`}
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        <Image src={`/flags/${current.flag}.svg`} width={24} height={18} alt="" aria-hidden="true" className="h-[18px] w-6 shrink-0 border border-[var(--color-border)] object-cover" />
+        <LanguageFlag locale={current.code} />
       </button>
       <div
         ref={menuRef}
@@ -153,7 +155,7 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
           (open ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0')
         }
       >
-        {LOCALES.map(({ code, short, label, flag }) => {
+        {LOCALES.map(({ code, label }) => {
           const active = code === locale;
           return (
             <button
@@ -170,9 +172,8 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
                   : '')
               }
             >
-              <Image src={`/flags/${flag}.svg`} width={24} height={18} alt="" aria-hidden="true" className="ml-2 h-[18px] w-6 shrink-0 border border-[var(--color-border)] object-cover" />
-              <span className="ml-2 flex-1 text-left">{label}</span>
-              <span className="text-[10px] text-[var(--color-muted)]">{short}</span>
+              <LanguageFlag locale={code} />
+              <span className="ml-2 flex-1">{label}</span>
             </button>
           );
         })}
@@ -499,11 +500,11 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
   if (isAuthPage) {
     return (
-      <header className="sticky top-0 z-40 flex h-[calc(5rem+env(safe-area-inset-top))] w-full items-center border-b border-stone-200/80 bg-white/95 pt-[env(safe-area-inset-top)] dark:border-white/10 dark:bg-[#1A1A1A]/95 sm:h-20 sm:pt-0">
+      <header className="sticky top-0 z-40 flex h-[calc(5rem+env(safe-area-inset-top))] w-full items-center border-b border-line bg-surface/95 pt-[env(safe-area-inset-top)] dark:border-white/10 dark:bg-surface/95 sm:h-20 sm:pt-0">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href={to('/')}
-            className="flex items-center gap-1.5 rounded-sm text-sm text-stone-400 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            className="flex items-center gap-2 rounded-sm text-sm text-ink-soft transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
             <div className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
             <span className="font-semibold tracking-tight text-[var(--color-text)]">AVERON</span>
@@ -531,24 +532,24 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           
           {/* Left: Logo & Nav */}
-          <div className="flex min-w-0 items-center gap-7">
+          <div className="flex min-w-0 items-center gap-8">
             <Link
               href={to('/')}
               className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
             >
-              <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-stone-950 dark:text-white">AVERON</span>
+              <span className="max-w-40 truncate text-xl font-black tracking-[0.18em] text-ink dark:text-white">AVERON</span>
             </Link>
 
-            <nav className="hidden items-center gap-0.5 lg:flex" aria-label={t('menu')}>
+            <nav className="hidden items-center gap-1 lg:flex" aria-label={t('menu')}>
               {visibleNavLinks.map(({ href, label }) => (
                   <Link
                     key={href}
                     href={to(href)}
                     className={
-                      'whitespace-nowrap border-b-2 border-transparent px-2.5 py-2 text-[13px] font-semibold transition-colors ' +
+                      'whitespace-nowrap border-b-2 border-transparent px-3 py-2 text-[length:var(--font-size-button)] font-semibold transition-colors ' +
                       (isActive(href)
                         ? 'border-[var(--color-text)] text-[var(--color-text)]'
-                        : 'text-stone-600 hover:text-stone-950 dark:text-stone-400 dark:hover:text-white')
+                        : 'text-muted hover:text-ink dark:text-ink-soft dark:hover:text-white')
                     }
                   >
                     {label}
@@ -558,8 +559,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </div>
 
           {/* Right Desktop items */}
-          <div className="hidden min-w-0 flex-1 items-center justify-end gap-1.5 lg:flex">
-            <div ref={searchRegionRef} className="relative mx-2 w-full max-w-[300px]">
+          <div className="hidden min-w-0 flex-1 items-center justify-end gap-2 lg:flex">
+            <div className="relative mx-2 w-full max-w-[300px]">
               <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
                 <Search size={17} className="pointer-events-none absolute left-3.5 text-[var(--color-muted)]" />
                 <input
@@ -582,7 +583,19 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 />
                 {query && <button type="button" onClick={() => clearQuery('desktop-header-search')} aria-label={t('clearSearch')} className="averon-control-button averon-icon-button absolute right-0 top-0 h-11 !min-h-0 !border-0 !bg-transparent hover:!bg-[var(--color-surface-soft)]"><X size={16} /></button>}
               </form>
-              <div className="absolute inset-x-0 top-full z-50">{renderSuggestions('desktop-header-search')}</div>
+              {suggestions.length > 0 && (
+                <div className="averon-menu-surface absolute inset-x-0 top-full z-50 mt-2 overflow-hidden">
+                  {suggestions.map((item, i) => (
+                    <button key={i} type="button" onClick={() => navTo(item.href)} className="averon-menu-item gap-3 text-xs">
+                      <span className="text-sm">{item.icon}</span>
+                      <div className="min-w-0 flex-1 text-left">
+                        <p className="truncate font-semibold text-[var(--color-text)]">{item.text}</p>
+                        <p className="truncate text-[length:var(--font-size-caption)] text-[var(--color-muted)]">{item.sub}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <Link href={to('/favorites')} aria-label={t('favorites')} className={`${BTN_CLASS} relative`}>
@@ -593,7 +606,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-bold text-white shadow"
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[length:var(--font-size-caption)] font-bold text-white shadow"
                 >
                   {favCount}
                 </motion.span>
@@ -608,7 +621,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-bold text-white shadow"
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[length:var(--font-size-caption)] font-bold text-white shadow"
                 >
                   {cartCount}
                 </motion.span>
@@ -620,7 +633,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             {isAuthenticated ? (
               <Link
                 href={to('/profile')}
-                className="averon-secondary-button h-10 gap-2 px-3.5 text-sm"
+                className="averon-secondary-button h-10 gap-2 px-4 text-sm"
               >
                 <User size={16} />
                 <span className="max-w-[120px] truncate">{user?.name || t('profile')}</span>
@@ -658,7 +671,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-bold text-white shadow"
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[length:var(--font-size-caption)] font-bold text-white shadow"
                 >
                   {cartCount}
                 </motion.span>
@@ -682,7 +695,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         {searchOpen && (
           <div id="mobile-header-search" className="averon-menu-surface absolute inset-x-4 top-full z-50 p-3 lg:hidden">
             <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">
-              <Search size={16} className="pointer-events-none absolute left-3 text-stone-400" />
+              <Search size={16} className="pointer-events-none absolute left-3 text-ink-soft" />
               <input
                 ref={(node) => { searchInputsRef.current['mobile-header-search'] = node; }}
                 type="text"
@@ -703,7 +716,21 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               />
               {query && <button type="button" onClick={() => clearQuery('mobile-header-search')} aria-label={t('clearSearch')} className="averon-control-button averon-icon-button absolute right-0 top-0 h-11 !min-h-0 !border-0 !bg-transparent hover:!bg-[var(--color-surface-soft)]"><X size={16} /></button>}
             </form>
-            {renderSuggestions('mobile-header-search')}
+            {suggestions.length > 0 && (
+              <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-line dark:border-white/10">
+                {suggestions.map((item, i) => (
+                  <button
+                    key={`${item.href}-${i}`}
+                    type="button"
+                    onClick={() => navTo(item.href)}
+                    className="averon-menu-item gap-3 text-sm"
+                  >
+                    <span>{item.icon}</span>
+                    <span className="truncate">{item.text}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </header>
@@ -742,7 +769,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             <Link href={to('/')} onClick={closeMobileMenu} className="truncate text-base font-black tracking-[0.16em] text-[var(--color-text)] min-[360px]:text-lg min-[360px]:tracking-[0.2em]">
               AVERON
             </Link>
-            <span className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)] min-[280px]:inline">{t('menu')}</span>
+            <span className="hidden text-[length:var(--font-size-caption)] font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)] min-[280px]:inline">{t('menu')}</span>
           </div>
           <button
             ref={mobileCloseButtonRef}
@@ -755,8 +782,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           </button>
         </div>
 
-        <div className="min-h-0 w-full flex-1 overflow-y-auto overscroll-contain px-5 pb-8 pt-6">
-          <form id="drawer-search-form" onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative">
+        <div className="mx-auto min-h-0 w-full max-w-xl flex-1 overflow-y-auto overscroll-contain px-5 pt-6">
+          <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative">
             <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
             <input
               ref={(node) => { searchInputsRef.current['drawer-search'] = node; }}
@@ -775,7 +802,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               aria-activedescendant={activeSuggestionIndex >= 0 && suggestionsOpen ? `drawer-search-option-${activeSuggestionIndex}` : undefined}
               autoComplete="off"
               enterKeyHint="search"
-              className="h-12 w-full border-0 border-b border-[var(--color-border)] bg-transparent pl-9 pr-11 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-primary)]"
+              className="h-12 w-full border-0 border-b border-[var(--color-border)] bg-transparent pl-10 pr-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-primary)]"
             />
             {query && <button type="button" onClick={() => clearQuery('drawer-search')} aria-label={t('clearSearch')} className="averon-control-button averon-icon-button absolute right-0 top-0 h-12 !min-h-0 !border-0 !bg-transparent hover:!bg-[var(--color-surface-soft)]"><X size={16} /></button>}
           </form>
@@ -823,7 +850,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           )}
 
           <section className="mt-5" aria-labelledby="mobile-markets-title">
-            <p id="mobile-markets-title" className="px-1 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">
+            <p id="mobile-markets-title" className="px-1 text-[length:var(--font-size-caption)] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">
               {marketCopy.markets}
             </p>
             <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-0">
@@ -858,7 +885,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                         : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]')
                     }
                   >
-                    <span className="w-6 shrink-0 text-[10px] font-semibold tabular-nums tracking-[.12em] text-[var(--color-muted)]" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                    <span className="w-6 shrink-0 text-[length:var(--font-size-caption)] font-semibold tabular-nums tracking-[.12em] text-[var(--color-muted)]" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                     <span className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">{label}</span>
                     <ChevronRight size={16} className="shrink-0 text-[var(--color-muted)] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                   </Link>
@@ -879,7 +906,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
             return (
               <div className="mt-8">
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">{t('menu')}</p>
+                <p className="mb-2 text-[length:var(--font-size-caption)] font-bold uppercase tracking-[.18em] text-[var(--color-muted)]">{t('menu')}</p>
                 <div className="grid grid-cols-2 gap-x-6">
                   {utilityLinks.map(({ href, label, icon, count }) => {
                     const active = isActive(href);
@@ -900,7 +927,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                         <span className="relative flex h-8 w-8 shrink-0 items-center justify-start text-[var(--color-text)]" aria-hidden="true">
                           {icon}
                           {count > 0 && (
-                            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-text)] px-1 text-[9px] font-bold leading-none text-[var(--color-surface)]">
+                            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-text)] px-1 text-[length:var(--font-size-caption)] font-bold leading-none text-[var(--color-surface)]">
                               {count > 99 ? '99+' : count}
                             </span>
                           )}
@@ -913,9 +940,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </div>
             );
           })()}
-        </div>
-        <div className="w-full shrink-0 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-4">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="-mx-5 mt-8 border-t border-[var(--color-border)] bg-[var(--color-surface-soft)] px-4 pb-5 pt-4">
+          <div className="mb-3 flex items-center justify-between">
             <span className="text-xs font-medium text-[var(--color-text-secondary)]">{t('langAndTheme')}</span>
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <LanguagePicker onSelect={closeMobileMenu} />
@@ -967,6 +993,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               </Link>
             </div>
           )}
+        </div>
         </div>
       </div>
     </>

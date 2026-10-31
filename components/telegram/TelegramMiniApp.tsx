@@ -266,42 +266,42 @@ export function TelegramMiniApp({
   };
 
   return (
-    <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
+    <main className="min-h-screen bg-surface-soft text-ink dark:bg-surface-soft dark:text-white">
       <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6">
-        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-4 dark:border-white/10">
-          <Link href={`/${locale}/mini-app`} className="inline-flex min-h-11 items-center gap-2 text-lg font-extrabold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4 dark:border-white/10">
+          <Link href={`/${locale}/mini-app`} className="inline-flex min-h-11 items-center gap-2 text-lg font-extrabold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
             <ShoppingBag size={20} />{text.title}
           </Link>
           <nav aria-label={text.title} className="flex flex-wrap gap-2">
-            <Link href={`/${locale}/catalog`} className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:hover:bg-white/10">{text.catalog}</Link>
-            <Link href={`/${locale}/cart`} className="inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:hover:bg-white/10"><ShoppingBag size={16} />{text.cart}</Link>
-            <Link href={`/${locale}/orders`} className="inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:hover:bg-white/10"><Package size={16} />{text.orders}</Link>
+            <Link href={`/${locale}/catalog`} className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:hover:bg-white/10">{text.catalog}</Link>
+            <Link href={`/${locale}/cart`} className="inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:hover:bg-white/10"><ShoppingBag size={16} />{text.cart}</Link>
+            <Link href={`/${locale}/orders`} className="inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:hover:bg-white/10"><Package size={16} />{text.orders}</Link>
           </nav>
         </header>
 
         {authStatus === 'checking' && <p role="status" className="sr-only">{text.checkingAuth}</p>}
-        {authStatus === 'linking' && <p role="status" className="mt-3 text-sm text-stone-600 dark:text-stone-300">{text.login}</p>}
-        {authMessage && <p role={authStatus === 'error' ? 'alert' : 'status'} className="mt-3 rounded-xl border border-stone-200 bg-white p-3 text-sm dark:border-white/10 dark:bg-stone-900">{authMessage}</p>}
+        {authStatus === 'linking' && <p role="status" className="mt-3 text-sm text-muted dark:text-ink-soft">{text.login}</p>}
+        {authMessage && <p role={authStatus === 'error' ? 'alert' : 'status'} className="mt-3 rounded-xl border border-line bg-white p-3 text-sm dark:border-white/10 dark:bg-surface-soft">{authMessage}</p>}
         {authStatus === 'unlinked' && !isAuthenticated && (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm dark:border-amber-900 dark:bg-amber-950/40">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface-soft p-3 text-sm dark:border-line dark:bg-surface-soft">
             <p>{text.login}</p>
-            <Link href={`/${locale}/login?returnTo=${encodeURIComponent(returnTo)}`} className="inline-flex min-h-11 items-center rounded-lg bg-stone-900 px-4 font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:bg-white dark:text-stone-900">{text.loginLink}</Link>
+            <Link href={`/${locale}/login?returnTo=${encodeURIComponent(returnTo)}`} className="inline-flex min-h-11 items-center rounded-lg bg-surface-soft px-4 font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:bg-white dark:text-ink">{text.loginLink}</Link>
           </div>
         )}
         {authStatus === 'unlinked' && isAuthenticated && (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm dark:border-amber-900 dark:bg-amber-950/40">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface-soft p-3 text-sm dark:border-line dark:bg-surface-soft">
             <p>{text.linkConfirm}</p>
-            <button type="button" onClick={() => void linkTelegramAccount()} className="inline-flex min-h-11 items-center rounded-lg bg-stone-900 px-4 font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:bg-white dark:text-stone-900">{text.linkButton}</button>
+            <button type="button" onClick={() => void linkTelegramAccount()} className="inline-flex min-h-11 items-center rounded-lg bg-surface-soft px-4 font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:bg-white dark:text-ink">{text.linkButton}</button>
           </div>
         )}
         {!isAuthenticated && authStatus !== 'unlinked' && authStatus !== 'checking' && (
-          <p className="mt-3 text-sm text-stone-600 dark:text-stone-300">{text.signIn}</p>
+          <p className="mt-3 text-sm text-muted dark:text-ink-soft">{text.signIn}</p>
         )}
 
         {productSlug ? (
           productQuery.isLoading ? <p role="status" className="py-12 text-center">{text.loading}</p>
-            : productQuery.isError ? <div role="alert" className="py-12 text-center"><p>{text.loadError}</p><button type="button" onClick={() => void productQuery.refetch()} className="mt-3 min-h-11 rounded-lg border px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500">{text.retry}</button></div>
-              : !product ? <div className="py-12 text-center"><p role="status">{text.unavailable}</p><button type="button" onClick={() => { setProductSlug(null); setQuestion(null); }} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500"><ArrowLeft size={16} />{text.back}</button></div>
+            : productQuery.isError ? <div role="alert" className="py-12 text-center"><p>{text.loadError}</p><button type="button" onClick={() => void productQuery.refetch()} className="mt-3 min-h-11 rounded-lg border px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">{text.retry}</button></div>
+              : !product ? <div className="py-12 text-center"><p role="status">{text.unavailable}</p><button type="button" onClick={() => { setProductSlug(null); setQuestion(null); }} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"><ArrowLeft size={16} />{text.back}</button></div>
                 : (
                   <>
                   <article className="mt-6 grid gap-6 lg:grid-cols-2">
@@ -321,9 +321,9 @@ export function TelegramMiniApp({
                     <section>
                       <p className="text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-300">{text.confirmed}</p>
                       <h1 className="mt-2 text-3xl font-extrabold">{title}</h1>
-                      <p className="mt-3 text-sm leading-6 text-stone-600 dark:text-stone-300">{description}</p>
+                      <p className="mt-3 text-sm leading-6 text-muted dark:text-ink-soft">{description}</p>
                       <p className="mt-5 text-2xl font-black" aria-label={`${text.price}: ${localizedPrice}`}>{localizedPrice}</p>
-                      <p className={`mt-2 text-sm font-semibold ${availabilityLabel === text.outOfStock ? 'text-rose-700 dark:text-rose-300' : 'text-stone-600 dark:text-stone-300'}`}>{availabilityLabel}</p>
+                      <p className={`mt-2 text-sm font-semibold ${availabilityLabel === text.outOfStock ? 'text-error dark:text-error' : 'text-muted dark:text-ink-soft'}`}>{availabilityLabel}</p>
                       <AddToCart
                         productId={product.id}
                         productPrice={product.salePriceUzs}
@@ -332,18 +332,18 @@ export function TelegramMiniApp({
                         productAvailability={product.availability}
                         variants={product.variants ?? []}
                       />
-                      <section id="ask" className="mt-6 rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900" aria-labelledby="mini-app-ask">
+                      <section id="ask" className="mt-6 rounded-2xl border border-line bg-white p-4 dark:border-white/10 dark:bg-surface-soft" aria-labelledby="mini-app-ask">
                         <h2 id="mini-app-ask" className="flex items-center gap-2 font-bold"><MessageCircle size={18} />{text.ask}</h2>
-                        <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">{text.chooseQuestion}</p>
+                        <p className="mt-2 text-sm text-muted dark:text-ink-soft">{text.chooseQuestion}</p>
                         <div className="mt-3 flex flex-wrap gap-2">
                           {(Object.keys(questionLabels) as AskTopic[]).map((topic) => (
-                            <button key={topic} type="button" aria-pressed={question === topic} onClick={() => setQuestion(topic)} className={`min-h-11 rounded-full border px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 ${question === topic ? 'border-stone-900 bg-stone-900 text-white dark:border-white dark:bg-white dark:text-stone-900' : 'border-stone-300 hover:bg-stone-100 dark:border-white/20 dark:hover:bg-white/10'}`}>
+                            <button key={topic} type="button" aria-pressed={question === topic} onClick={() => setQuestion(topic)} className={`min-h-11 rounded-full border px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${question === topic ? 'border-line bg-surface-soft text-white dark:border-white dark:bg-white dark:text-ink' : 'border-line hover:bg-surface-soft dark:border-white/20 dark:hover:bg-white/10'}`}>
                               {questionLabels[topic]}
                             </button>
                           ))}
                         </div>
-                        {question && <p role="status" className="mt-4 rounded-xl bg-stone-100 p-3 text-sm leading-6 dark:bg-stone-800">{answerFor(question)}</p>}
-                        <p className="mt-3 text-xs text-stone-500">{text.help}</p>
+                        {question && <p role="status" className="mt-4 rounded-xl bg-surface-soft p-3 text-sm leading-6 dark:bg-surface-soft">{answerFor(question)}</p>}
+                        <p className="mt-3 text-xs text-muted">{text.help}</p>
                       </section>
                     </section>
                   </article>
@@ -354,16 +354,16 @@ export function TelegramMiniApp({
           <section className="mt-6">
             <h1 className="text-2xl font-extrabold">{text.catalog}</h1>
             {catalogQuery.isLoading ? <p role="status" className="py-12 text-center">{text.loading}</p>
-              : catalogQuery.isError ? <div role="alert" className="py-12 text-center"><p>{text.loadError}</p><button type="button" onClick={() => void catalogQuery.refetch()} className="mt-3 min-h-11 rounded-lg border px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500">{text.retry}</button></div>
+              : catalogQuery.isError ? <div role="alert" className="py-12 text-center"><p>{text.loadError}</p><button type="button" onClick={() => void catalogQuery.refetch()} className="mt-3 min-h-11 rounded-lg border px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">{text.retry}</button></div>
                 : (
                   <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                     {catalogQuery.data?.items.map((item) => {
                       const itemTitle = productTitle(item, locale);
                       return (
                         <li key={item.slug}>
-                          <Link href={`/${locale}/mini-app?product=${encodeURIComponent(item.slug)}`} className="group block overflow-hidden rounded-2xl border border-stone-200 bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:border-white/10 dark:bg-stone-900">
-                            <div className="aspect-square bg-stone-100 dark:bg-stone-800">
-                              {item.images?.[0]?.url ? <ProductImage src={item.images[0].url} alt={item.images[0].alt?.[locale] ?? itemTitle} /> : <div className="flex h-full items-center justify-center text-sm text-stone-400">AVERON</div>}
+                          <Link href={`/${locale}/mini-app?product=${encodeURIComponent(item.slug)}`} className="group block overflow-hidden rounded-2xl border border-line bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-white/10 dark:bg-surface-soft">
+                            <div className="relative aspect-square bg-surface-soft dark:bg-surface-soft">
+                              {item.images?.[0]?.url ? <ProductImage src={item.images[0].url} alt={item.images[0].alt?.[locale] ?? itemTitle} sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw" /> : <div className="flex h-full items-center justify-center text-sm text-ink-soft">AVERON</div>}
                             </div>
                             <div className="p-3">
                               <h2 className="line-clamp-2 min-h-10 text-sm font-semibold group-hover:underline">{itemTitle}</h2>

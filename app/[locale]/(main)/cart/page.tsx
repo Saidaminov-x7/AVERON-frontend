@@ -106,21 +106,21 @@ function CartContent() {
         <h1 className="averon-title text-3xl">{text.title}</h1>
 
         {isLoading ? (
-          <div role="status" className="mt-8 rounded-2xl border border-stone-200 bg-white p-8 text-stone-500 dark:border-white/10 dark:bg-stone-900">
+          <div role="status" className="mt-8 rounded-2xl border border-line bg-white p-8 text-muted dark:border-white/10 dark:bg-surface-soft">
             {text.loading}
           </div>
         ) : isError ? (
-          <div role="alert" className="mt-8 rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-800 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-200">
+          <div role="alert" className="mt-8 rounded-2xl border border-line bg-surface-soft p-6 text-error dark:border-line dark:bg-surface-soft dark:text-error">
             <p>{errorMessage}</p>
             <button type="button" disabled={retrying} onClick={async () => { setRetrying(true); try { await refetch(); } finally { setRetrying(false); } }} className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl border border-current px-4 font-semibold disabled:opacity-50">
               <RefreshCw size={16} className={retrying ? 'animate-spin' : ''} />{text.retry}
             </button>
           </div>
         ) : items.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-stone-200 bg-white px-6 py-16 text-center dark:border-white/10 dark:bg-stone-900">
-            <ShoppingBag className="mx-auto text-stone-400" size={36} aria-hidden="true" />
+          <div className="mt-8 rounded-2xl border border-line bg-white px-6 py-16 text-center dark:border-white/10 dark:bg-surface-soft">
+            <ShoppingBag className="mx-auto text-ink-soft" size={36} aria-hidden="true" />
             <h2 className="mt-4 text-xl font-bold">{text.empty}</h2>
-            <p className="mx-auto mt-2 max-w-md text-sm text-stone-500">{text.emptyText}</p>
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted">{text.emptyText}</p>
             <Link href={`/${locale}/catalog`} className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-primary-700 px-5 font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
               {text.catalog}
             </Link>
@@ -129,23 +129,23 @@ function CartContent() {
           <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_320px]">
             <section aria-label={text.title} className="space-y-3">
               {mutation.isError && (
-                <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-200">{errorMessage}</p>
+                <p role="alert" className="rounded-xl border border-line bg-surface-soft p-3 text-sm text-error dark:border-line dark:bg-surface-soft dark:text-error">{errorMessage}</p>
               )}
               {items.map((item) => (
                 <article key={item.id} className="flex gap-4 rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
                   <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-sm bg-[var(--color-surface-soft)]">
-                    <ProductImage src={item.imageUrl ?? undefined} alt={item.title} />
+                    <ProductImage src={item.imageUrl ?? undefined} alt={item.title} sizes="96px" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <h2 className="font-semibold leading-5">{item.title}</h2>
                     {(item.variant?.color || item.variant?.size) && (
-                      <p className="mt-1 text-sm text-stone-500">
+                      <p className="mt-1 text-sm text-muted">
                         {[item.variant.color, item.variant.size].filter(Boolean).join(' · ')}
                       </p>
                     )}
-                    <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">{formatUzs(item.unitPriceUzs, locale)}</p>
+                    <p className="mt-2 text-sm text-muted dark:text-ink-soft">{formatUzs(item.unitPriceUzs, locale)}</p>
                     {item.available && item.stock > 0 && (
-                      <p className="mt-1 text-xs text-stone-500">{text.stock}: {item.stock}</p>
+                      <p className="mt-1 text-xs text-muted">{text.stock}: {item.stock}</p>
                     )}
                     {item.available && item.fulfillmentType === 'PREORDER' && (
                       <p className="mt-1 text-sm font-semibold text-primary-700 dark:text-primary-300">
@@ -154,7 +154,7 @@ function CartContent() {
                           ? ` · ${text.preorderDate.replace('{date}', formatDate(item.estimatedAvailableAt, locale)!)}` : ''}
                       </p>
                     )}
-                    {!item.available && <p role="status" className="mt-2 text-sm font-medium text-rose-700 dark:text-rose-300">{text.unavailable}</p>}
+                    {!item.available && <p role="status" className="mt-2 text-sm font-medium text-error dark:text-error">{text.unavailable}</p>}
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                       <QuantityStepper
                         label={text.quantity}
@@ -167,7 +167,7 @@ function CartContent() {
                         increaseLabel={`${text.quantity}: ${item.quantity}, ${text.increase}`}
                       />
                       <p className="font-bold">{formatUzs(item.lineTotalUzs, locale)}</p>
-                      <button type="button" aria-label={`${text.remove}: ${item.title}`} disabled={isMutating} onClick={() => mutation.mutate({ type: 'remove', itemId: item.id })} className="inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-medium text-rose-700 hover:bg-rose-50 disabled:opacity-50 dark:text-rose-300 dark:hover:bg-rose-950/30">
+                      <button type="button" aria-label={`${text.remove}: ${item.title}`} disabled={isMutating} onClick={() => mutation.mutate({ type: 'remove', itemId: item.id })} className="inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-medium text-error hover:bg-surface-soft disabled:opacity-50 dark:text-error dark:hover:bg-surface-soft">
                         <Trash2 size={16} />{text.remove}
                       </button>
                     </div>
@@ -181,11 +181,11 @@ function CartContent() {
               <p className="mt-3 flex justify-between gap-4 text-lg font-extrabold">
                 <span>{text.subtotal}</span><span>{formatUzs(data?.subtotalUzs ?? 0, locale)}</span>
               </p>
-              {hasUnavailable && <p className="mt-3 text-sm text-rose-700 dark:text-rose-300">{text.unavailable}</p>}
+              {hasUnavailable && <p className="mt-3 text-sm text-error dark:text-error">{text.unavailable}</p>}
               <button type="button" disabled={isMutating || hasUnavailable} onClick={() => router.push(`/${locale}/checkout`)} className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary-700 px-4 font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50">
                 {text.checkout}<ArrowRight size={17} />
               </button>
-              <button type="button" disabled={isMutating} onClick={() => mutation.mutate({ type: 'clear' })} className="mt-3 h-10 w-full rounded-xl text-sm font-semibold text-stone-500 hover:bg-stone-100 disabled:opacity-50 dark:hover:bg-white/5">
+              <button type="button" disabled={isMutating} onClick={() => mutation.mutate({ type: 'clear' })} className="mt-3 h-10 w-full rounded-xl text-sm font-semibold text-muted hover:bg-surface-soft disabled:opacity-50 dark:hover:bg-white/5">
                 {text.clear}
               </button>
             </aside>

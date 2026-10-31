@@ -6,6 +6,7 @@ import { ProductImage } from './ProductImage';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { productPlainText, productRouteId, productTitle, type StoreProduct } from '@/lib/products';
+import { resolveProductAssetUrl } from '@/lib/product-images';
 import { ProductRichText } from './ProductRichText';
 import { addWishlistItem, removeWishlistItem } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
@@ -34,15 +35,19 @@ export function ProductCard({
   product,
   locale,
   catalogQuery = '',
+  imageSizes = '(min-width: 1280px) 25vw, (min-width: 768px) 33vw, calc(50vw - 24px)',
+  imagePriority = false,
 }: {
   product: StoreProduct;
   locale: string;
   catalogQuery?: string;
+  imageSizes?: string;
+  imagePriority?: boolean;
 }) {
   const title = productTitle(product, locale);
   const plainTitle = productPlainText(title);
   const productHref = `/${locale}/catalog/${encodeURIComponent(productRouteId(product))}${catalogQuery ? `?${catalogQuery}` : ''}`;
-  const images = product.images?.map(({ url }) => url).filter(Boolean) ?? [];
+  const images = product.images?.map(({ url }) => resolveProductAssetUrl(url)).filter(Boolean) ?? [];
   const [imageIndex, setImageIndex] = useState(0);
   const [secondImageAvailable, setSecondImageAvailable] = useState(Boolean(images[1]));
   const price = Number(product.salePriceUzs || 0).toLocaleString(locale === 'en' ? 'en-US' : 'ru-RU');
@@ -161,53 +166,55 @@ export function ProductCard({
             src={images[imageIndex] || images[0]}
             alt={plainTitle}
             zoomOnHover={false}
-            fit="contain"
+            fit="cover"
+            sizes={imageSizes}
+            priority={imagePriority}
             onError={imageIndex === 1 ? () => {
               setSecondImageAvailable(false);
               setImageIndex(0);
             } : undefined}
           />
           {(preorderOnly || unavailable) && (
-            <span className="absolute left-2 top-2 bg-[var(--color-overlay)] px-1.5 py-1 text-[9px] font-semibold uppercase tracking-[.06em] text-white">
+            <span className="absolute left-2 top-2 bg-[var(--color-overlay)] px-2 py-1 text-[length:var(--font-size-caption)] font-semibold uppercase tracking-[.06em] text-white">
               {availabilityLabel}
             </span>
           )}
           {secondImageAvailable ? (
-            <div className="absolute bottom-2 left-2 flex gap-1 bg-[var(--color-overlay)] px-1.5 py-1" aria-hidden="true">
+            <div className="absolute bottom-2 left-2 flex gap-1 bg-[var(--color-overlay)] px-2 py-1" aria-hidden="true">
               {images.map((_, index) => <span key={index} className={`h-1 w-1/2 rounded-full transition-colors ${imageIndex === index ? 'bg-white' : 'bg-white/45'}`} />)}
             </div>
           ) : null}
         </div>
         <div className="pt-2">
           {colors.length > 0 && (
-            <div className="mb-1.5 flex items-center gap-1" aria-label={locale === 'en' ? 'Available colors' : locale === 'uz' ? 'Mavjud ranglar' : 'Доступные цвета'}>
+            <div className="mb-2 flex items-center gap-1" aria-label={locale === 'en' ? 'Available colors' : locale === 'uz' ? 'Mavjud ranglar' : 'Доступные цвета'}>
               {colors.slice(0, 6).map(({ name, hex }) => (
                 <span key={`${name}-${hex}`} title={name} className="size-3.5 rounded-full border border-black/10 ring-1 ring-white" style={{ backgroundColor: hex }} />
               ))}
-              {colors.length > 6 ? <span className="ml-0.5 text-[11px] text-[var(--color-muted)]">+{colors.length - 6}</span> : null}
+              {colors.length > 6 ? <span className="ml-1 text-[length:var(--font-size-caption)] text-[var(--color-muted)]">+{colors.length - 6}</span> : null}
             </div>
           )}
           <div className="mb-1 flex min-h-4 items-center gap-2">
-            {discountPercent !== null ? <span aria-label={discountLabel} className="text-[10px] font-bold uppercase tracking-[.04em] text-[var(--color-sale)]">−{discountPercent}%</span> : null}
-            {isNew ? <span className="text-[10px] font-bold uppercase tracking-[.04em] text-[var(--color-text)]">{newLabel}</span> : null}
+            {discountPercent !== null ? <span aria-label={discountLabel} className="text-[length:var(--font-size-caption)] font-bold uppercase tracking-[.04em] text-[var(--color-sale)]">−{discountPercent}%</span> : null}
+            {isNew ? <span className="text-[length:var(--font-size-caption)] font-bold uppercase tracking-[.04em] text-[var(--color-text)]">{newLabel}</span> : null}
           </div>
-          <p className="line-clamp-2 text-[13px] font-normal leading-[1.35] text-[var(--color-text)] sm:text-[15px]">
+          <p className="line-clamp-2 text-sm font-normal leading-[1.4] text-[var(--color-text)] sm:text-[length:var(--font-size-body)]">
             <ProductRichText content={title} inline />
           </p>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <strong className={`text-sm font-semibold tabular-nums tracking-tight ${discountPercent !== null ? 'text-[var(--color-sale)]' : 'text-[var(--color-text)]'}`}>{price} {currency}</strong>
+            <strong className={`text-base font-semibold tabular-nums tracking-tight ${discountPercent !== null ? 'text-[var(--color-sale)]' : 'text-[var(--color-text)]'}`}>{price} {currency}</strong>
             {discountPercent !== null ? <span className="text-xs tabular-nums text-[var(--color-muted)] line-through">{compareAtPrice.toLocaleString(locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU')} {currency}</span> : null}
           </div>
         </div>
       </Link>
       {product.fittingRoomAvailable && <div className="mt-2 max-w-40"><FittingRoomTrigger productId={product.id} locale={locale} imageUrl={product.images?.[0]?.url} compact /></div>}
-      <div className="absolute right-2 top-2 flex gap-1.5 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+      <div className="absolute right-2 top-2 flex gap-2 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
         <button
           type="button"
           aria-label={labels.compare}
           aria-pressed={isCompared}
           onClick={toggleComparedProduct}
-          className={`flex size-9 items-center justify-center rounded-sm ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] ${compareButtonStateClass}`}
+          className={`flex size-11 items-center justify-center rounded-sm ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] ${compareButtonStateClass}`}
         >
           <Scale size={17} />
         </button>
@@ -217,7 +224,7 @@ export function ProductCard({
           aria-pressed={isFavorite}
           disabled={favoritePending}
           onClick={() => void toggleFavoriteProduct()}
-          className={`flex size-9 items-center justify-center rounded-sm ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] disabled:cursor-wait disabled:opacity-60 ${
+          className={`flex size-11 items-center justify-center rounded-sm ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)] disabled:cursor-wait disabled:opacity-60 ${
             isFavorite
               ? 'bg-[var(--color-text)] text-[var(--color-surface)] ring-[var(--color-text)]'
               : 'bg-[var(--color-surface)] text-[var(--color-text)] ring-[var(--color-border)] hover:bg-[var(--color-surface-soft)] hover:ring-[var(--color-border-hover)]'
@@ -226,7 +233,7 @@ export function ProductCard({
           <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
         </button>
       </div>
-      {favoriteError && <p role="alert" className="mt-2 px-1 text-xs text-rose-700 dark:text-rose-300">{locale === 'uz' ? 'Tanlanganlarni yangilab bo‘lmadi.' : locale === 'en' ? 'Could not update wishlist.' : 'Не удалось обновить избранное.'}</p>}
+      {favoriteError && <p role="alert" className="mt-2 px-1 text-xs text-error dark:text-error">{locale === 'uz' ? 'Tanlanganlarni yangilab bo‘lmadi.' : locale === 'en' ? 'Could not update wishlist.' : 'Не удалось обновить избранное.'}</p>}
       {compareLimitError && <p role="status" className="mt-2 px-1 text-xs text-[var(--color-text-secondary)]">{labels.compareLimit}</p>}
     </article>
   );

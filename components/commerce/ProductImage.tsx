@@ -1,13 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { ImageOff } from 'lucide-react';
+import { canOptimizeProductImage, resolveProductAssetUrl } from '@/lib/product-images';
 
 export function ProductImage({
   src,
   alt,
   fit = 'contain',
   zoomOnHover = true,
+  sizes = '100vw',
+  priority = false,
   onLoad,
   onError,
 }: {
@@ -15,15 +19,18 @@ export function ProductImage({
   alt: string;
   fit?: 'contain' | 'cover';
   zoomOnHover?: boolean;
+  sizes?: string;
+  priority?: boolean;
   onLoad?: (naturalWidth: number, naturalHeight: number) => void;
   onError?: () => void;
 }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const failed = Boolean(src && failedSrc === src);
+  const resolvedSrc = src ? resolveProductAssetUrl(src) : undefined;
+  const failed = Boolean(resolvedSrc && failedSrc === resolvedSrc);
 
-  if (!src || failed) {
+  if (!resolvedSrc || failed) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-stone-400">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-ink">
         <ImageOff size={24} aria-hidden="true" />
         <span className="text-xs font-semibold tracking-[0.16em]">AVERON</span>
       </div>
@@ -31,14 +38,16 @@ export function ProductImage({
   }
 
   return (
-    // Native img supports supplier/CDN hosts; failed URLs get a stable fallback.
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
+    <Image
+      src={resolvedSrc}
       alt={alt}
-      loading="lazy"
+      fill
+      sizes={sizes}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchPriority={priority ? 'high' : 'auto'}
+      unoptimized={!canOptimizeProductImage(resolvedSrc)}
       onError={() => {
-        setFailedSrc(src ?? null);
+        setFailedSrc(resolvedSrc);
         onError?.();
       }}
       onLoad={(event) => onLoad?.(event.currentTarget.naturalWidth, event.currentTarget.naturalHeight)}

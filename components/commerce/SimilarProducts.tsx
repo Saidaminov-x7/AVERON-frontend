@@ -35,7 +35,7 @@ export function SimilarProducts({
   }
 
   return (
-    <section className="mt-12 border-t border-stone-200 pt-8 dark:border-white/10" aria-labelledby="similar-products-title">
+    <section className="mt-12 border-t border-line pt-8 dark:border-white/10" aria-labelledby="similar-products-title">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="similar-products-title" className="text-2xl font-extrabold">
           {t("similarProductsTitle")}
@@ -45,7 +45,7 @@ export function SimilarProducts({
           onClick={() => void findSimilar()}
           disabled={state === "loading"}
           aria-busy={state === "loading"}
-          className="min-h-11 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-primary-700 disabled:cursor-wait disabled:opacity-60"
+          className="min-h-11 rounded-xl bg-primary-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-700 disabled:cursor-wait disabled:opacity-60"
         >
           {state === "loading"
             ? t("similarProductsLoading")
@@ -56,22 +56,22 @@ export function SimilarProducts({
       </div>
 
       {state === "loading" && (
-        <p className="mt-4 text-sm text-stone-600 dark:text-stone-300" role="status" aria-live="polite">
+        <p className="mt-4 text-sm text-muted dark:text-ink-soft" role="status" aria-live="polite">
           {t("similarProductsLoading")}
         </p>
       )}
       {state === "empty" && (
-        <p className="mt-4 text-sm text-stone-600 dark:text-stone-300" role="status" aria-live="polite">
+        <p className="mt-4 text-sm text-muted dark:text-ink-soft" role="status" aria-live="polite">
           {t("similarProductsEmpty")}
         </p>
       )}
       {state === "unavailable" && (
-        <p className="mt-4 text-sm text-stone-600 dark:text-stone-300" role="status" aria-live="polite">
+        <p className="mt-4 text-sm text-muted dark:text-ink-soft" role="status" aria-live="polite">
           {t("similarProductsUnavailable")}
         </p>
       )}
       {state === "error" && (
-        <p className="mt-4 text-sm text-red-700 dark:text-red-300" role="alert">
+        <p className="mt-4 text-sm text-error dark:text-error" role="alert">
           {t("similarProductsError")}
         </p>
       )}

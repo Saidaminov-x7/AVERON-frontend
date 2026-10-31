@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isLocalApiHost } from './lib/api-origin';
-import { safeMaintenanceReturnPath } from './lib/maintenance-return';
+import { resolveApiOrigin } from './lib/api-origin';
+import { getSafeInternalReturnTo } from './lib/safe-navigation';
 
 // Configuration
 const locales = ['uz', 'en', 'ru'];
@@ -20,17 +20,22 @@ export async function proxy(request: NextRequest) {
   }
 
   // Maintenance mode check via backend API
-  const isMaintenancePage = pathname === '/maintenance' || pathname.endsWith('/maintenance');
-  const API_BASE_URL = isLocalApiHost(request.nextUrl.hostname)
-    ? process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080'
-    : process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
+  const isMaintenancePage = /^\/(?:ru|uz|en)\/maintenance\/?$/.test(pathname);
+  const API_BASE_URL = resolveApiOrigin({
+    NODE_ENV: process.env.NODE_ENV,
+    VITEST: process.env.VITEST,
+    JEST_WORKER_ID: process.env.JEST_WORKER_ID,
+    NEXT_PUBLIC_AVERON_RUNTIME_TARGET: process.env.NEXT_PUBLIC_AVERON_RUNTIME_TARGET,
+    NEXT_PUBLIC_AVERON_LOCAL_API_URL: process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  });
 
   const bypassCookie = request.cookies.get('maintenance_bypass')?.value;
   const locale = locales.find((l) => pathname.startsWith(`/${l}`)) || defaultLocale;
 
   try {
     const maintenanceRes = await fetch(`${API_BASE_URL}/site-settings/public`, {
-      next: { revalidate: 10 },
+      cache: 'no-store',
       signal: AbortSignal.timeout(3000),
     });
     if (maintenanceRes.ok) {
@@ -40,16 +45,16 @@ export async function proxy(request: NextRequest) {
       // 1. Если техобслуживание включено, но нет байпасс-куки и мы не на странице maintenance -> редирект на maintenance
       if (isUnderMaintenance && !isMaintenancePage && !bypassCookie) {
         const maintenanceUrl = new URL(`/${locale}/maintenance`, request.url);
-        const pathnameHasLocale = locales.some((supportedLocale) => pathname === `/${supportedLocale}` || pathname.startsWith(`/${supportedLocale}/`));
-        const returnPath = pathnameHasLocale ? pathname : `/${locale}${pathname === '/' ? '' : pathname}`;
-        maintenanceUrl.searchParams.set('returnTo', `${returnPath}${request.nextUrl.search}`);
+        const previous = getSafeInternalReturnTo(`${pathname}${request.nextUrl.search}`, locale);
+        if (previous) maintenanceUrl.searchParams.set('returnTo', previous);
         return NextResponse.redirect(maintenanceUrl);
       }
 
       // 2. Если техобслуживание ВЫКЛЮЧЕНО (или есть активный байпасс), но пользователь перешел на /maintenance -> редирект на главную
       if ((!isUnderMaintenance || bypassCookie) && isMaintenancePage) {
-        const returnPath = safeMaintenanceReturnPath(request.nextUrl.searchParams.get('returnTo'), locale);
-        return NextResponse.redirect(new URL(returnPath, request.url));
+        const candidate = getSafeInternalReturnTo(request.nextUrl.searchParams.get('returnTo'), locale);
+        const homeUrl = new URL(candidate && !candidate.split(/[?#]/)[0].endsWith('/maintenance') ? candidate : `/${locale}`, request.url);
+        return NextResponse.redirect(homeUrl);
       }
     }
   } catch {

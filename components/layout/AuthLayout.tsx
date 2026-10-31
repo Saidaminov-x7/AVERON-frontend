@@ -14,11 +14,11 @@ export default function AuthLayout({
   const locale = useLocale();
 
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
-      <header className="sticky top-0 z-50 w-full border-b border-stone-200 bg-white/95 backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900/95">
+    <div className="min-h-screen bg-surface-soft dark:bg-surface-soft">
+      <header className="sticky top-0 z-50 w-full border-b border-line bg-white/95 backdrop-blur-sm dark:border-line dark:bg-surface-soft">
         <div className="container mx-auto px-4">
           <div className="flex h-24 items-center justify-between">
-            <Link href={getAuthHomeHref(locale)} className="flex items-center gap-2 text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white">
+            <Link href={getAuthHomeHref(locale)} className="flex items-center gap-2 text-muted hover:text-ink dark:text-ink-soft dark:hover:text-white">
               <ArrowLeft size={20} />
               <span className="text-sm font-medium">{locale === 'uz' ? 'Bosh sahifaga' : locale === 'en' ? 'Go to home' : 'На главную'}</span>
             </Link>

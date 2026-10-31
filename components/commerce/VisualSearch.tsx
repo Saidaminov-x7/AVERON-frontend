@@ -10,6 +10,7 @@ import {
 } from "react";
 import { ImagePlus, LoaderCircle, Search, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/Button";
 import { ProductCard, type StoreProduct } from "@/components/commerce/ProductCard";
 import { CommerceApiError, searchProductsByImage } from "@/lib/visual-search";
 import { useCommerceCapabilities } from "./useCommerceCapabilities";
@@ -21,12 +22,13 @@ type Props = {
   locale: string;
   country?: string;
   category?: string;
+  initiallyOpen?: boolean;
 };
 
-export function VisualSearch({ locale, country, category }: Props) {
+export function VisualSearch({ locale, country, category, initiallyOpen = false }: Props) {
   const t = useTranslations("catalog");
   const capabilities = useCommerceCapabilities();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -161,15 +163,17 @@ export function VisualSearch({ locale, country, category }: Props) {
 
   return (
     <>
-      <button
-        ref={openButtonRef}
+      <Button
+        variant="outline"
+        size="lg"
         type="button"
+        ref={openButtonRef}
         onClick={() => setOpen(true)}
-        className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-primary-700 px-4 py-2 text-sm font-bold text-primary-800 transition-colors hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-950/40"
+        className="mt-5 gap-2 px-4 font-bold"
       >
         <ImagePlus size={18} aria-hidden="true" />
         {t("visualSearchOpen")}
-      </button>
+      </Button>
       {open ? (
         <div
           className="fixed inset-0 z-[100] flex items-end justify-center bg-black/55 p-0 sm:items-center sm:p-4"
@@ -184,14 +188,14 @@ export function VisualSearch({ locale, country, category }: Props) {
             aria-labelledby="visual-search-title"
             aria-busy={loading}
             onKeyDown={onDialogKeyDown}
-            className="max-h-[95dvh] w-full max-w-3xl overflow-y-auto rounded-t-3xl bg-white p-5 text-stone-950 shadow-2xl dark:bg-stone-900 dark:text-white sm:rounded-3xl sm:p-7"
+            className="max-h-[95dvh] w-full max-w-3xl overflow-y-auto rounded-t-3xl bg-white p-5 text-ink shadow-2xl dark:bg-surface-soft dark:text-white sm:rounded-3xl sm:p-8"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 id="visual-search-title" className="text-xl font-extrabold sm:text-2xl">
                   {t("visualSearchTitle")}
                 </h2>
-                <p className="mt-2 text-sm text-stone-500 dark:text-stone-300">
+                <p className="mt-2 text-sm text-muted dark:text-ink-soft">
                   {t("visualSearchHelp")}
                 </p>
               </div>
@@ -200,7 +204,7 @@ export function VisualSearch({ locale, country, category }: Props) {
                 type="button"
                 onClick={close}
                 aria-label={t("visualSearchClose")}
-                className="flex size-10 shrink-0 items-center justify-center rounded-full border border-stone-200 hover:bg-stone-100 dark:border-white/15 dark:hover:bg-white/10"
+                className="flex size-10 shrink-0 items-center justify-center rounded-full border border-line hover:bg-surface-soft dark:border-white/15 dark:hover:bg-white/10"
               >
                 <X size={20} aria-hidden="true" />
               </button>
@@ -236,7 +240,7 @@ export function VisualSearch({ locale, country, category }: Props) {
                 if (event.currentTarget === event.target) setDragging(false);
               }}
               onDrop={onDrop}
-              className={`mt-5 grid gap-5 rounded-2xl border-2 border-dashed p-4 sm:grid-cols-[minmax(0,1fr)_220px] sm:p-5 ${dragging ? "border-primary-600 bg-primary-50 dark:bg-primary-950/30" : "border-stone-300 dark:border-white/20"}`}
+              className={`mt-5 grid gap-5 rounded-2xl border-2 border-dashed p-4 sm:grid-cols-[minmax(0,1fr)_220px] sm:p-5 ${dragging ? "border-primary-600 bg-primary-50 dark:bg-primary-950/30" : "border-line dark:border-white/20"}`}
             >
               <div className="flex min-h-44 flex-col items-center justify-center text-center">
                 {preview ? (
@@ -251,7 +255,7 @@ export function VisualSearch({ locale, country, category }: Props) {
                   <>
                     <ImagePlus size={34} className="text-primary-700 dark:text-primary-300" aria-hidden="true" />
                     <p className="mt-3 font-semibold">{t("visualSearchDrop")}</p>
-                    <p className="mt-1 text-xs text-stone-500">{t("visualSearchFormats")}</p>
+                    <p className="mt-1 text-xs text-muted">{t("visualSearchFormats")}</p>
                   </>
                 )}
               </div>
@@ -259,14 +263,14 @@ export function VisualSearch({ locale, country, category }: Props) {
                 <button
                   type="button"
                   onClick={() => galleryInputRef.current?.click()}
-                  className="min-h-11 rounded-xl border border-stone-300 px-3 text-sm font-semibold hover:bg-stone-50 dark:border-white/20 dark:hover:bg-white/5"
+                  className="min-h-11 rounded-xl border border-line px-3 text-sm font-semibold hover:bg-surface-soft dark:border-white/20 dark:hover:bg-white/5"
                 >
                   {file ? t("visualSearchChange") : t("visualSearchGallery")}
                 </button>
                 <button
                   type="button"
                   onClick={() => cameraInputRef.current?.click()}
-                  className="min-h-11 rounded-xl border border-stone-300 px-3 text-sm font-semibold hover:bg-stone-50 dark:border-white/20 dark:hover:bg-white/5"
+                  className="min-h-11 rounded-xl border border-line px-3 text-sm font-semibold hover:bg-surface-soft dark:border-white/20 dark:hover:bg-white/5"
                 >
                   {t("visualSearchCamera")}
                 </button>
@@ -274,7 +278,7 @@ export function VisualSearch({ locale, country, category }: Props) {
                   <button
                     type="button"
                     onClick={clearFile}
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/30"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-3 text-sm font-semibold text-error hover:bg-surface-soft dark:text-error dark:hover:bg-surface-soft"
                   >
                     <Trash2 size={16} aria-hidden="true" />
                     {t("visualSearchRemove")}
@@ -302,7 +306,7 @@ export function VisualSearch({ locale, country, category }: Props) {
             </div>
 
             {error ? (
-              <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:bg-rose-950/40 dark:text-rose-200" role="alert">
+              <p className="mt-4 rounded-xl bg-surface-soft px-4 py-3 text-sm text-error dark:bg-surface-soft dark:text-error" role="alert">
                 {error}
               </p>
             ) : null}
@@ -311,7 +315,7 @@ export function VisualSearch({ locale, country, category }: Props) {
                 <h3 className="mb-3 font-bold">{t("visualSearchResults")}</h3>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {items.map((product) => (
-                    <ProductCard key={product.id} product={product} locale={locale} />
+                    <ProductCard key={product.id} product={product} locale={locale} imageSizes="(min-width: 768px) 240px, (min-width: 640px) 200px, calc(50vw - 24px)" />
                   ))}
                 </div>
               </section>

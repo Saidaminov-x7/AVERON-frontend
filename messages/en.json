@@ -47,6 +47,7 @@
     "support": "Support",
     "rights": "All rights reserved.",
     "country": "The service operates for buyers in the Republic of Uzbekistan.",
+    "cookieSettings": "Cookie settings",
     "links": {
       "catalog": "All products",
       "favorites": "Favorites",
@@ -145,6 +146,24 @@
     "save": "Save choice",
     "close": "Close"
   },
+  "consent": {
+    "title": "Privacy choices",
+    "description": "Optional analytics helps us understand how the catalog is used. It stays off until you choose it.",
+    "privacyLink": "Privacy policy",
+    "accept": "Accept optional",
+    "reject": "Reject optional",
+    "settings": "Customize",
+    "manage": "Cookie settings",
+    "settingsTitle": "Cookie and analytics settings",
+    "settingsDescription": "Choose whether optional analytics may run. You can change your choice later.",
+    "necessary": "Necessary data",
+    "necessaryDescription": "Required for sign-in, account security, the cart, and navigation. These remain active regardless of your analytics choice.",
+    "analytics": "Analytics",
+    "analyticsDescription": "Measures catalog views and actions using a random device identifier.",
+    "retention": "Your choice is stored for up to 180 days. Analytics events remain on AVERON servers; use the privacy policy contact details to request deletion.",
+    "save": "Save choice",
+    "close": "Close"
+  },
   "comparePage": {
     "loading": "Loading comparison…",
     "loadError": "Could not load products for comparison.",
@@ -208,6 +227,8 @@
     "applying": "Applying filters…",
     "invalidPrice": "Enter a valid price using numbers only.",
     "priceRangeError": "The minimum price cannot exceed the maximum price.",
+    "categoriesUnavailable": "Categories could not be loaded.",
+    "facetsUnavailable": "Available sizes and colors could not be loaded.",
     "reset": "Reset",
     "products": "Products",
     "empty": "No matching products yet",

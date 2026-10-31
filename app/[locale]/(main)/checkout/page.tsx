@@ -190,38 +190,38 @@ function CheckoutContent() {
   const discount = appliedPromo ? Math.floor(Math.round(subtotal * 100) * appliedPromo.discountPercent / 100) / 100 : 0;
 
   return (
-    <main className="min-h-[65vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
+    <main className="min-h-[65vh] bg-surface-soft text-ink dark:bg-surface-soft dark:text-white">
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
         <SmartBackButton fallbackHref={`/${locale}/cart`} />
         <h1 className="mt-4 text-3xl font-extrabold">{text.title}</h1>
 
         {isCartLoading ? <p role="status" className="mt-8">{text.loading}</p> : isCartError ? (
-          <div role="alert" className="mt-8 rounded-xl border border-rose-200 bg-rose-50 p-4 text-rose-800 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-200">
+          <div role="alert" className="mt-8 rounded-xl border border-line bg-surface-soft p-4 text-error dark:border-line dark:bg-surface-soft dark:text-error">
             <p>{text.fail}</p><button type="button" onClick={() => void refetch()} className="mt-3 inline-flex items-center gap-2 underline"><RefreshCw size={15} />{text.retry}</button>
           </div>
         ) : !isCartEligible ? (
-          <div role="alert" className="mt-8 rounded-xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+          <div role="alert" className="mt-8 rounded-xl border border-line bg-white p-5 dark:border-white/10 dark:bg-surface-soft">
             <p>{text.empty}</p><Link href={`/${locale}/cart`} className="mt-3 inline-block font-semibold text-primary-700 dark:text-primary-300">{text.back}</Link>
           </div>
         ) : (
           <form onSubmit={submit} className="mt-8 grid gap-6 md:grid-cols-[1fr_300px]">
             <div className="space-y-6">
-              <fieldset className="space-y-4 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+              <fieldset className="space-y-4 rounded-2xl border border-line bg-white p-5 dark:border-white/10 dark:bg-surface-soft">
                 <legend className="px-1 text-lg font-bold">{text.contact}</legend>
                 <label className="block text-sm font-medium">{text.name}
-                  <input required minLength={2} maxLength={100} autoComplete="name" value={contact.name} onChange={(event) => changeDetails('contact', 'name', event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-950" />
+                  <input required minLength={2} maxLength={100} autoComplete="name" value={contact.name} onChange={(event) => changeDetails('contact', 'name', event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
                 </label>
                 <label className="block text-sm font-medium">{text.phone}
-                  <input required minLength={7} maxLength={30} autoComplete="tel" inputMode="tel" value={contact.phone} onChange={(event) => changeDetails('contact', 'phone', event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-950" />
+                  <input required minLength={7} maxLength={30} autoComplete="tel" inputMode="tel" value={contact.phone} onChange={(event) => changeDetails('contact', 'phone', event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
                 </label>
               </fieldset>
-              <fieldset className="space-y-4 rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+              <fieldset className="space-y-4 rounded-2xl border border-line bg-white p-5 dark:border-white/10 dark:bg-surface-soft">
                 <legend className="px-1 text-lg font-bold">{text.delivery}</legend>
                 <label className="block text-sm font-medium">{text.city}
-                  <input required minLength={2} maxLength={100} autoComplete="address-level2" value={deliveryAddress.city} onChange={(event) => changeDetails('deliveryAddress', 'city', event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-950" />
+                  <input required minLength={2} maxLength={100} autoComplete="address-level2" value={deliveryAddress.city} onChange={(event) => changeDetails('deliveryAddress', 'city', event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
                 </label>
                 <label className="block text-sm font-medium">{text.address}
-                  <input required minLength={4} maxLength={300} autoComplete="street-address" value={deliveryAddress.address} onChange={(event) => changeDetails('deliveryAddress', 'address', event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-950" />
+                  <input required minLength={4} maxLength={300} autoComplete="street-address" value={deliveryAddress.address} onChange={(event) => changeDetails('deliveryAddress', 'address', event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
                 </label>
                 {([
                   ['apartment', text.apartment, 'address-line2'],
@@ -230,12 +230,12 @@ function CheckoutContent() {
                   ['comment', text.comment, ''],
                 ] as const).map(([key, label, autocomplete]) => (
                   <label key={key} className="block text-sm font-medium">{label}
-                    <input maxLength={key === 'comment' ? 500 : 50} autoComplete={autocomplete || undefined} value={deliveryAddress[key]} onChange={(event) => changeDetails('deliveryAddress', key, event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 dark:border-white/15 dark:bg-stone-950" />
+                    <input maxLength={key === 'comment' ? 500 : 50} autoComplete={autocomplete || undefined} value={deliveryAddress[key]} onChange={(event) => changeDetails('deliveryAddress', key, event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-line bg-white px-3 dark:border-white/15 dark:bg-surface-soft" />
                   </label>
                 ))}
               </fieldset>
             </div>
-            <aside className="h-fit rounded-2xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900">
+            <aside className="h-fit rounded-2xl border border-line bg-white p-5 dark:border-white/10 dark:bg-surface-soft">
               <h2 className="text-lg font-bold">{text.total}</h2>
               <ul aria-label={text.orderItems} className="mt-3 divide-y divide-stone-200 text-sm dark:divide-white/10">
                 {cart?.items.map((item) => {
@@ -254,11 +254,11 @@ function CheckoutContent() {
               </ul>
               <div className="mt-3 space-y-2 text-sm">
                 <div className="flex justify-between gap-3"><span>{text.subtotal}</span><span>{formatUzs(cart?.subtotalUzs ?? 0, locale)}</span></div>
-                {appliedPromo && <div className="flex justify-between gap-3 text-emerald-700"><span>{text.discount} ({appliedPromo.discountPercent}%)</span><span>−{formatUzs(discount, locale)}</span></div>}
+                {appliedPromo && <div className="flex justify-between gap-3 text-success"><span>{text.discount} ({appliedPromo.discountPercent}%)</span><span>−{formatUzs(discount, locale)}</span></div>}
               </div>
               <label htmlFor="checkout-promo" className="mt-5 block text-sm font-semibold">{text.promo}</label>
               <div className="mt-2 flex gap-2">
-                <input id="checkout-promo" maxLength={40} value={promoInput} onChange={(event) => { setPromoInput(event.target.value); setPromoError(''); if (appliedPromo) { setAppliedPromo(null); idempotencyKey.current = null; } }} className="min-h-10 min-w-0 flex-1 rounded-lg border border-stone-300 bg-white px-3 uppercase dark:border-white/15 dark:bg-stone-950" />
+                <input id="checkout-promo" maxLength={40} value={promoInput} onChange={(event) => { setPromoInput(event.target.value); setPromoError(''); if (appliedPromo) { setAppliedPromo(null); idempotencyKey.current = null; } }} className="min-h-10 min-w-0 flex-1 rounded-lg border border-line bg-white px-3 uppercase dark:border-white/15 dark:bg-surface-soft" />
                 {appliedPromo
                   ? <button type="button" onClick={() => { setAppliedPromo(null); setPromoInput(''); setPromoError(''); idempotencyKey.current = null; }} className="min-h-10 rounded-lg border px-3 text-sm font-semibold">{text.removePromo}</button>
                   : <Button
@@ -271,11 +271,11 @@ function CheckoutContent() {
                       className="min-h-10 rounded-lg px-3 text-sm font-semibold"
                     >{text.applyPromo}</Button>}
               </div>
-              {promoError && <p role="alert" className="mt-2 text-sm text-rose-700">{promoError}</p>}
-              {appliedPromo && <p role="status" className="mt-2 text-xs text-emerald-700">{text.promoApplied}</p>}
+              {promoError && <p role="alert" className="mt-2 text-sm text-error">{promoError}</p>}
+              {appliedPromo && <p role="status" className="mt-2 text-xs text-success">{text.promoApplied}</p>}
               <p className="mt-4 text-2xl font-extrabold">{formatUzs(subtotal - discount, locale)}</p>
-              <p className="mt-4 text-xs leading-5 text-stone-500">{text.payment}</p>
-              {checkout.isError && <p role="alert" className="mt-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-800 dark:bg-rose-950/30 dark:text-rose-200">{errorMessage}</p>}
+              <p className="mt-4 text-xs leading-5 text-muted">{text.payment}</p>
+              {checkout.isError && <p role="alert" className="mt-4 rounded-xl bg-surface-soft p-3 text-sm text-error dark:bg-surface-soft dark:text-error">{errorMessage}</p>}
               <Button
                 type="submit"
                 loading={checkout.isPending}

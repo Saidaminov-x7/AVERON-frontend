@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -16,6 +17,7 @@ import { ProductRecommendations } from "@/components/commerce/ProductRecommendat
 import { SimilarProducts } from "@/components/commerce/SimilarProducts";
 import { ProductViewTracker } from "@/components/analytics/ProductViewTracker";
 import { ProductLoadFailure } from "@/components/commerce/ProductLoadFailure";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { resolveProductAssetUrl } from "@/lib/product-images";
 import { SmartBackButton } from "@/components/navigation/SmartBackButton";
 import {
@@ -72,27 +74,35 @@ function isSemanticallyRelated(current: StoreProduct, candidate: StoreProduct) {
   return sameCategory || sameAudience;
 }
 
-async function loadFallbackRecommendations(product: StoreProduct): Promise<StoreProduct[]> {
+async function loadFallbackRecommendationCandidates(): Promise<StoreProduct[]> {
   try {
     const query = new URLSearchParams({ limit: "24", sort: "newest" });
     const response = await fetch(`${externalBaseURL}/api/v1/products?${query}`, {
       next: { revalidate: 120 },
       signal: AbortSignal.timeout(2500),
     });
-    if (!response.ok) return [];
+    if (!response.ok) {
+      return [];
+    }
     const payload = await response.json() as { items?: unknown };
     if (!Array.isArray(payload.items)) return [];
     return payload.items
-      .filter((candidate): candidate is StoreProduct => isStoreProduct(candidate) && candidate.id !== product.id)
+      .filter(isStoreProduct)
+      .map(withResolvedProductImages);
+  } catch (error) {
+    return [];
+  }
+}
+
+function selectFallbackRecommendations(product: StoreProduct, candidates: StoreProduct[]): StoreProduct[] {
+  return candidates
+      .filter((candidate) => candidate.id !== product.id)
       .filter((candidate) => isSemanticallyRelated(product, candidate))
       .map((candidate) => ({ candidate, score: recommendationScore(product, candidate) }))
       .filter(({ score }) => score >= 3)
       .sort((left, right) => right.score - left.score || left.candidate.id.localeCompare(right.candidate.id))
       .slice(0, 8)
-      .map(({ candidate }) => withResolvedProductImages(candidate));
-  } catch {
-    return [];
-  }
+      .map(({ candidate }) => candidate);
 }
 
 function isStoreProduct(value: unknown): value is ProductDetail {
@@ -167,6 +177,37 @@ async function loadProduct(slug: string): Promise<ProductDetail | null> {
   }
   if (!isStoreProduct(payload)) throw new ProductRequestError("malformed");
   return withResolvedProductImages(payload);
+}
+
+async function ProductRecommendationsWithFallback({
+  product,
+  locale,
+  candidates,
+}: {
+  product: StoreProduct;
+  locale: string;
+  candidates: Promise<StoreProduct[]>;
+}) {
+  const fallbackCandidates = await candidates;
+  const fallbackRecommendations = selectFallbackRecommendations(product, fallbackCandidates);
+  return <ProductRecommendations slug={product.slug} locale={locale} fallbackProducts={fallbackRecommendations} />;
+}
+
+function ProductRecommendationsSkeleton() {
+  return (
+    <section className="mt-12 border-t border-line pt-8 sm:pt-10" aria-busy="true" aria-hidden="true">
+      <Skeleton className="h-8 w-56 max-w-full rounded motion-reduce:animate-none" />
+      <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+        {[0, 1, 2].map((index) => (
+          <div key={index} className="min-w-0">
+            <Skeleton className="aspect-[3/4] w-full rounded-none motion-reduce:animate-none" />
+            <Skeleton className="mt-3 h-4 w-3/4 motion-reduce:animate-none" />
+            <Skeleton className="mt-2 h-5 w-1/2 motion-reduce:animate-none" />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function getProductDescription(product: StoreProduct, locale: string) {
@@ -260,6 +301,7 @@ export default async function ProductPage({
 }) {
   const [{ id, locale }, filters] = await Promise.all([params, searchParams]);
   const t = await getTranslations({ locale, namespace: "productDetail" });
+  const recommendationCandidates = loadFallbackRecommendationCandidates();
   let product: ProductDetail | null;
   try {
     product = await loadProduct(id);
@@ -311,7 +353,6 @@ export default async function ProductPage({
   const description = getProductDescription(product, locale) ?? copy.descriptionFallback;
   const composition = getProductAttribute(product, ["composition", "fabricComposition"], locale) ?? product.material?.trim() ?? null;
   const care = getProductAttribute(product, ["careInstructions", "care"], locale);
-  const fallbackRecommendations = await loadFallbackRecommendations(product);
   const productUrl = `${SITE_URL}/${locale}/catalog/${encodeURIComponent(productRouteId(product))}`;
   const canonicalPrice = String(product.salePriceUzs);
   const hasCanonicalPrice = /^\d+(?:\.\d+)?$/.test(canonicalPrice) && Number(canonicalPrice) >= 0;
@@ -356,7 +397,7 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, '\\u003c') }}
       />
-      <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
+      <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <SmartBackButton fallbackHref={catalogHref} />
           <nav aria-label={copy.productDetails} className="hidden min-w-0 items-center gap-2 truncate text-xs text-[var(--color-muted)] sm:flex">
@@ -373,7 +414,7 @@ export default async function ProductPage({
             <span className="truncate text-[var(--color-text)]">{plainTitle}</span>
           </nav>
         </div>
-        <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(340px,.95fr)] lg:gap-6 xl:gap-6">
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(360px,.8fr)] lg:gap-8 xl:gap-12">
           <div className="min-w-0">
             <ProductGallery
               images={product.images ?? []}
@@ -390,7 +431,7 @@ export default async function ProductPage({
             />
           </div>
           <section className="min-w-0">
-            <h1 className="averon-title mt-2 text-2xl leading-tight sm:text-3xl lg:text-[2rem]">
+            <h1 className="averon-title mt-2 text-2xl leading-tight font-semibold sm:text-3xl lg:text-[length:var(--font-size-h2)]">
               <ProductRichText content={title} inline />
             </h1>
 
@@ -426,7 +467,7 @@ export default async function ProductPage({
           </section>
         </div>
       </div>
-      <section className="mx-auto max-w-[1440px] px-4 pb-12 sm:px-6 lg:px-10">
+      <section className="mx-auto max-w-[1440px] px-4 pb-12 sm:px-6 lg:px-8">
         <div className="border-t border-[var(--color-border)] pt-8 sm:pt-10">
           <div className={`grid items-start gap-8 ${product.sizeChartType ? 'lg:grid-cols-2 lg:gap-0' : ''}`}>
             <div className={`min-w-0 ${product.sizeChartType ? 'lg:border-r lg:border-[var(--color-border)] lg:pr-8' : ''}`}>
@@ -434,7 +475,7 @@ export default async function ProductPage({
                 <h2 id="product-description-title" className="text-xl font-semibold tracking-tight text-[var(--color-text)] sm:text-2xl">
                   {copy.descriptionTitle}
                 </h2>
-                <div className="mt-4 max-w-[72ch] whitespace-pre-line break-words text-[15px] leading-7 text-[var(--color-text-secondary)]">
+                <div className="mt-4 max-w-[72ch] whitespace-pre-line break-words text-[length:var(--font-size-body)] leading-6 text-[var(--color-text-secondary)]">
                   <ProductRichText content={description} />
                 </div>
               </article>
@@ -478,7 +519,13 @@ export default async function ProductPage({
             </section>
           ) : null}
           <ProductReviews slug={product.slug} routeId={productRouteId(product)} locale={locale} initialOrderNumber={initialOrderNumber} />
-          <ProductRecommendations slug={product.slug} locale={locale} fallbackProducts={fallbackRecommendations} />
+          <Suspense fallback={<ProductRecommendationsSkeleton />}>
+            <ProductRecommendationsWithFallback
+              product={product}
+              locale={locale}
+              candidates={recommendationCandidates}
+            />
+          </Suspense>
           <SimilarProducts slug={product.slug} locale={locale} />
           <CompleteTheLook slug={product.slug} locale={locale} />
         </div>

@@ -121,17 +121,17 @@ export function ProductRecommendations({
   return (
     <>
       {rows.map(([key, titleKey]) => sections[key].length ? (
-        <section key={key} className="mt-12 border-t border-stone-200 pt-8 dark:border-white/10" aria-labelledby={`${key}-recommendations-title`}>
+        <section key={key} className="mt-12 border-t border-line pt-8 dark:border-white/10" aria-labelledby={`${key}-recommendations-title`}>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id={`${key}-recommendations-title`} className="text-2xl font-extrabold">{t(titleKey)}</h2>
             {key === "recent" ? (
-              <button type="button" onClick={() => void clearHistory()} className="min-h-11 rounded-lg px-3 text-sm font-semibold text-stone-600 underline-offset-4 hover:underline dark:text-stone-300">
+              <button type="button" onClick={() => void clearHistory()} className="min-h-11 rounded-lg px-3 text-sm font-semibold text-muted underline-offset-4 hover:underline dark:text-ink-soft">
                 {t("recentlyViewedClear")}
               </button>
             ) : null}
           </div>
           {key === "recent" && historyClearFailed ? (
-            <p className="mt-2 text-sm text-red-700 dark:text-red-300" role="alert">{t("recentlyViewedClearError")}</p>
+            <p className="mt-2 text-sm text-error dark:text-error" role="alert">{t("recentlyViewedClearError")}</p>
           ) : null}
           <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
             {sections[key].map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}

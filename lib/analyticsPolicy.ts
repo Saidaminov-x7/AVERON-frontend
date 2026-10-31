@@ -30,3 +30,4 @@ export function canSendAnalytics() {
 export function canSendOptionalAnalytics() {
   return canSendAnalytics();
 }
+

@@ -218,36 +218,36 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
 
   return (
     <section id="reviews" className="mt-12 scroll-mt-24" aria-labelledby="product-reviews-title">
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 pb-4 dark:border-white/10">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-4 dark:border-white/10">
         <div>
           <p className="text-xs font-bold uppercase tracking-[.16em] text-primary-700 dark:text-primary-300">{t('eyebrow')}</p>
           <h2 id="product-reviews-title" className="mt-1 text-2xl font-extrabold">{t('title')}</h2>
         </div>
         <div className="flex items-center gap-2" aria-label={t('summary.label', { average: summary?.averageRating ?? '—', count: summary?.reviewCount ?? 0 })}>
-          <Star className="fill-cyan-500 text-cyan-600" size={22} aria-hidden="true" />
+          <Star className="fill-current text-primary" size={22} aria-hidden="true" />
           <span className="text-xl font-extrabold">{summary?.averageRating ?? '—'}</span>
-          <span className="text-sm text-stone-500">{t('summary.count', { count: summary?.reviewCount ?? 0 })}</span>
+          <span className="text-sm text-muted">{t('summary.count', { count: summary?.reviewCount ?? 0 })}</span>
         </div>
       </div>
 
-      {reviewsQuery.isLoading ? <p role="status" className="py-6 text-sm text-stone-500">{t('loading')}</p>
-        : reviewsQuery.isError ? <p role="alert" className="py-6 text-sm text-rose-700">{t('errors.generic')}</p>
+      {reviewsQuery.isLoading ? <p role="status" className="py-6 text-sm text-muted">{t('loading')}</p>
+        : reviewsQuery.isError ? <p role="alert" className="py-6 text-sm text-error">{t('errors.generic')}</p>
           : summary && (
-            <div className="grid gap-5 border-b border-stone-200 py-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] dark:border-white/10">
+            <div className="grid gap-5 border-b border-line py-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] dark:border-white/10">
               <div>
                 {[5, 4, 3, 2, 1].map((stars) => {
                   const count = summary.distribution[String(stars)] ?? 0;
                   const width = summary.reviewCount ? `${count / summary.reviewCount * 100}%` : '0%';
                   return <div key={stars} className="grid grid-cols-[2.5rem_1fr_2rem] items-center gap-2 py-1 text-xs">
                     <span>{stars} <span aria-hidden="true">★</span></span>
-                    <span className="h-2 overflow-hidden rounded-full bg-stone-200 dark:bg-stone-700"><span className="block h-full rounded-full bg-cyan-600" style={{ width }} /></span>
-                    <span className="text-right text-stone-500">{count}</span>
+                    <span className="h-2 overflow-hidden rounded-full bg-surface-soft dark:bg-surface-soft"><span className="block h-full rounded-full bg-surface-soft" style={{ width }} /></span>
+                    <span className="text-right text-muted">{count}</span>
                   </div>;
                 })}
               </div>
               <div className="flex flex-wrap content-center gap-2">
                 {fitValues.map((value) => summary.fitDistribution[value] > 0 && (
-                  <span key={value} className="rounded-full border border-stone-200 px-3 py-1.5 text-xs dark:border-white/15">
+                  <span key={value} className="rounded-full border border-line px-3 py-2 text-xs dark:border-white/15">
                     {t(`fit.${value}`)} · {summary.fitDistribution[value]}%
                   </span>
                 ))}
@@ -255,18 +255,18 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
             </div>
           )}
 
-      {formNotice && <p role="status" className="mt-4 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100">{formNotice}</p>}
-      {isAuthenticated && eligibilityQuery.isError && <p role="alert" className="mt-4 text-sm text-rose-700">{t('errors.generic')}</p>}
+      {formNotice && <p role="status" className="mt-4 rounded-xl bg-surface-soft p-3 text-sm text-success dark:bg-surface-soft dark:text-success">{formNotice}</p>}
+      {isAuthenticated && eligibilityQuery.isError && <p role="alert" className="mt-4 text-sm text-error">{t('errors.generic')}</p>}
       {isAuthenticated && purchases.length > 0 && (
         <div className="mt-5 space-y-3">
           {purchases.map((purchase) => {
             const relatedReview = ownReviews.find((review) => review.id === purchase.reviewId);
-            return <div key={purchase.orderItemId} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-3 dark:border-white/10 dark:bg-stone-900">
+            return <div key={purchase.orderItemId} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-white p-3 dark:border-white/10 dark:bg-surface-soft">
               <div className="text-sm">
                 <p className="font-semibold">{purchase.purchasedVariant?.size ? `${t('purchasedSize')}: ${purchase.purchasedVariant.size}` : t('purchaseOrder', { number: purchase.orderNumber })}</p>
-                {purchase.reviewStatus && <p className="mt-1 text-xs text-stone-500">{t('yourReview')}: {reviewStatusLabel(purchase.reviewStatus)}</p>}
+                {purchase.reviewStatus && <p className="mt-1 text-xs text-muted">{t('yourReview')}: {reviewStatusLabel(purchase.reviewStatus)}</p>}
               </div>
-              <button type="button" onClick={() => startReview(purchase, relatedReview)} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-primary-700 px-4 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500">
+              <button type="button" onClick={() => startReview(purchase, relatedReview)} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-primary-700 px-4 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                 {purchase.reviewId ? t('editReview') : t('leaveReview')}
               </button>
             </div>;
@@ -275,15 +275,15 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
       )}
 
       {isAuthenticated && purchases.length === 0 && !eligibilityQuery.isLoading && (
-        <p className="mt-5 text-sm text-stone-500">{t('eligibility')}</p>
+        <p className="mt-5 text-sm text-muted">{t('eligibility')}</p>
       )}
       {!isAuthenticated && <div className="mt-5 flex flex-wrap items-center gap-3">
-        <p className="text-sm text-stone-500">{t('signIn')}</p>
-        <Link href={`/${locale}/login?returnTo=${encodeURIComponent(`/${locale}/catalog/${routeId}#reviews`)}`} className="inline-flex min-h-10 items-center rounded-lg border border-stone-300 px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 dark:border-white/20">{t('signInAction')}</Link>
+        <p className="text-sm text-muted">{t('signIn')}</p>
+        <Link href={`/${locale}/login?returnTo=${encodeURIComponent(`/${locale}/catalog/${routeId}#reviews`)}`} className="inline-flex min-h-10 items-center rounded-lg border border-line px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-white/20">{t('signInAction')}</Link>
       </div>}
 
       {activeReviewId !== null || (activeReviewId === null && purchaseId) ? (
-        <form className="mt-5 space-y-4 rounded-2xl border border-stone-200 bg-white p-4 sm:p-6 dark:border-white/10 dark:bg-stone-900" onSubmit={(event) => { event.preventDefault(); submitReview.mutate(); }}>
+        <form className="mt-5 space-y-4 rounded-2xl border border-line bg-white p-4 sm:p-6 dark:border-white/10 dark:bg-surface-soft" onSubmit={(event) => { event.preventDefault(); submitReview.mutate(); }}>
           <h3 className="text-lg font-bold">{ownReview ? t('editReview') : t('leaveReview')}</h3>
           {!ownReview && purchases.filter((purchase) => !purchase.reviewId).length > 1 && (
             <div className="block text-sm font-semibold">
@@ -305,19 +305,19 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
           <fieldset>
             <legend className="mb-2 text-sm font-semibold">{t('form.rating')}</legend>
             <div role="radiogroup" aria-label={t('form.rating')} className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((value) => <label key={value} className="cursor-pointer rounded focus-within:outline-none focus-within:ring-2 focus-within:ring-cyan-600">
+              {[1, 2, 3, 4, 5].map((value) => <label key={value} className="cursor-pointer rounded focus-within:outline-none focus-within:ring-2 focus-within:ring-primary">
                 <input className="peer sr-only" type="radio" name="product-review-rating" value={value} checked={rating === value} onChange={() => setRating(value)} required aria-label={t('form.ratingOption', { value })} />
-                <span className={`inline-flex min-h-11 min-w-10 items-center justify-center text-2xl ${rating >= value ? 'text-cyan-600' : 'text-stone-300 dark:text-stone-600'}`} aria-hidden="true">★</span>
+                <span className={`inline-flex min-h-11 min-w-10 items-center justify-center text-2xl ${rating >= value ? 'text-primary' : 'text-ink-soft dark:text-muted'}`} aria-hidden="true">★</span>
               </label>)}
               <span className="ml-2 text-sm font-semibold" aria-live="polite">{rating ? `${rating}/5` : t('form.notRated')}</span>
             </div>
           </fieldset>
           <label className="block text-sm font-semibold">{t('form.title')}
-            <input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} className="mt-1 min-h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 font-normal dark:border-white/20" />
+            <input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} className="mt-1 min-h-11 w-full rounded-lg border border-line bg-transparent px-3 font-normal dark:border-white/20" />
           </label>
           <label className="block text-sm font-semibold">{t('form.comment')}
-            <textarea value={comment} onChange={(event) => setComment(event.target.value)} required minLength={3} maxLength={3000} rows={5} className="mt-1 w-full rounded-lg border border-stone-300 bg-transparent p-3 font-normal dark:border-white/20" />
-            <span className="mt-1 block text-right text-xs font-normal text-stone-500">{comment.length}/3000</span>
+            <textarea value={comment} onChange={(event) => setComment(event.target.value)} required minLength={3} maxLength={3000} rows={5} className="mt-1 w-full rounded-lg border border-line bg-transparent p-3 font-normal dark:border-white/20" />
+            <span className="mt-1 block text-right text-xs font-normal text-muted">{comment.length}/3000</span>
           </label>
           <div className="block text-sm font-semibold">
             <span>{t('form.fit')}</span>
@@ -332,24 +332,24 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
             </Select>
           </div>
           <div>
-            <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-stone-300 px-3 text-sm font-semibold focus-within:ring-2 focus-within:ring-cyan-600 dark:border-white/20">
+            <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-line px-3 text-sm font-semibold focus-within:ring-2 focus-within:ring-primary dark:border-white/20">
               <ImagePlus size={18} aria-hidden="true" />{t('form.addImages')}
               <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple className="sr-only" onChange={(event) => { onFilesSelected(event.target.files); event.currentTarget.value = ''; }} />
             </label>
-            <ul className="mt-2 space-y-1 text-xs text-stone-500">{files.map((file, index) => <li key={`${file.name}-${file.lastModified}`} className="flex items-center justify-between gap-2">
+            <ul className="mt-2 space-y-1 text-xs text-muted">{files.map((file, index) => <li key={`${file.name}-${file.lastModified}`} className="flex items-center justify-between gap-2">
               <span className="truncate">{file.name}</span>
-              <button type="button" onClick={() => setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="rounded p-1 text-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" aria-label={t('form.removeImage', { name: file.name })}><Trash2 size={16} /></button>
+              <button type="button" onClick={() => setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="rounded p-1 text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label={t('form.removeImage', { name: file.name })}><Trash2 size={16} /></button>
             </li>)}</ul>
           </div>
-          {formError && <p role="alert" className="text-sm font-medium text-rose-700 dark:text-rose-300">{formError}</p>}
+          {formError && <p role="alert" className="text-sm font-medium text-error dark:text-error">{formError}</p>}
           <div className="flex flex-wrap gap-3">
-            <button type="submit" disabled={submitReview.isPending || !rating || comment.trim().length < 3 || (!ownReview && !selectedPurchase)} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary-700 px-5 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50">
+            <button type="submit" disabled={submitReview.isPending || !rating || comment.trim().length < 3 || (!ownReview && !selectedPurchase)} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary-700 px-5 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50">
               {submitReview.isPending ? t('form.submitting') : t('form.submit')}
             </button>
-            {ownReview && <button type="button" disabled={deleteReview.isPending} onClick={() => deleteReview.mutate(ownReview.id)} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-rose-300 px-4 text-sm font-semibold text-rose-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 disabled:opacity-50"><Trash2 size={16} />{t('form.delete')}</button>}
-            <button type="button" onClick={() => { setPurchaseId(''); setActiveReviewId(null); }} className="min-h-11 rounded-lg border border-stone-300 px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 dark:border-white/20">{t('form.close')}</button>
+            {ownReview && <button type="button" disabled={deleteReview.isPending} onClick={() => deleteReview.mutate(ownReview.id)} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-line px-4 text-sm font-semibold text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"><Trash2 size={16} />{t('form.delete')}</button>}
+            <button type="button" onClick={() => { setPurchaseId(''); setActiveReviewId(null); }} className="min-h-11 rounded-lg border border-line px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-white/20">{t('form.close')}</button>
           </div>
-          {ownReview?.status === 'PUBLISHED' && <p className="text-xs text-stone-500">{t('form.reModeration')}</p>}
+          {ownReview?.status === 'PUBLISHED' && <p className="text-xs text-muted">{t('form.reModeration')}</p>}
         </form>
       ) : null}
 
@@ -361,30 +361,30 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
                 {review.author.avatar && <Image src={review.author.avatar} alt="" width={40} height={40} unoptimized className="h-10 w-10 rounded-full object-cover" />}
                 <div>
                   <h3 className="font-bold">{safeAuthorName(review.author.name, t('anonymous'))}</h3>
-                  <time className="text-xs text-stone-500" dateTime={review.createdAt}>{formatDate(review.createdAt)}</time>
+                  <time className="text-xs text-muted" dateTime={review.createdAt}>{formatDate(review.createdAt)}</time>
                 </div>
               </div>
               <div className="flex items-center gap-2" aria-label={t('reviewRating', { value: review.rating })}>
-                <span className="text-amber-600" aria-hidden="true">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+                <span className="text-primary" aria-hidden="true">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
                 <span className="text-sm font-semibold">{review.rating}/5</span>
-                {review.verifiedPurchase && <span className="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2 py-1 text-xs font-bold text-cyan-900 dark:bg-cyan-950/50 dark:text-cyan-100"><BadgeCheck size={14} aria-hidden="true" />{t('verified')}</span>}
+                {review.verifiedPurchase && <span className="inline-flex items-center gap-1 rounded-full bg-surface-soft px-2 py-1 text-xs font-bold text-primary dark:bg-surface-soft dark:text-primary"><BadgeCheck size={14} aria-hidden="true" />{t('verified')}</span>}
               </div>
             </div>
             {review.title && <h4 className="mt-3 font-bold">{review.title}</h4>}
-            <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-stone-700 dark:text-stone-200">{review.comment}</p>
+            <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-ink-soft dark:text-ink-soft">{review.comment}</p>
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
-              {review.fitFeedback && <span className="rounded-full border border-stone-200 px-3 py-1 dark:border-white/15">{t('fitLabel')}: {t(`fit.${review.fitFeedback}`)}</span>}
-              {review.purchasedVariant?.size && <span className="rounded-full border border-stone-200 px-3 py-1 dark:border-white/15">{t('purchasedSize')}: {review.purchasedVariant.size}</span>}
+              {review.fitFeedback && <span className="rounded-full border border-line px-3 py-1 dark:border-white/15">{t('fitLabel')}: {t(`fit.${review.fitFeedback}`)}</span>}
+              {review.purchasedVariant?.size && <span className="rounded-full border border-line px-3 py-1 dark:border-white/15">{t('purchasedSize')}: {review.purchasedVariant.size}</span>}
             </div>
-            {review.media.length > 0 && <ul className="mt-3 flex flex-wrap gap-2">{review.media.map((media, index) => <li key={`${media.url}-${index}`}><Image src={media.url} alt={t('reviewImageAlt', { index: index + 1 })} width={160} height={160} unoptimized className="h-24 w-24 rounded-lg border border-stone-200 object-cover sm:h-32 sm:w-32 dark:border-white/10" /></li>)}</ul>}
+            {review.media.length > 0 && <ul className="mt-3 flex flex-wrap gap-2">{review.media.map((media, index) => <li key={`${media.url}-${index}`}><Image src={media.url} alt={t('reviewImageAlt', { index: index + 1 })} width={160} height={160} unoptimized className="h-24 w-24 rounded-lg border border-line object-cover sm:h-32 sm:w-32 dark:border-white/10" /></li>)}</ul>}
           </article>
         ))}
-        {!reviewsQuery.isLoading && !reviewsQuery.isError && reviewsQuery.data?.items.length === 0 && <p className="py-6 text-sm text-stone-500">{t('empty')}</p>}
+        {!reviewsQuery.isLoading && !reviewsQuery.isError && reviewsQuery.data?.items.length === 0 && <p className="py-6 text-sm text-muted">{t('empty')}</p>}
       </div>
       {(reviewsQuery.data?.pagination.pages ?? 0) > 1 && <nav className="mt-5 flex items-center justify-center gap-3" aria-label={t('pagination.label')}>
-        <button type="button" disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="min-h-10 rounded-lg border border-stone-300 px-3 text-sm font-semibold disabled:opacity-40 dark:border-white/20">{t('pagination.previous')}</button>
+        <button type="button" disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="min-h-10 rounded-lg border border-line px-3 text-sm font-semibold disabled:opacity-40 dark:border-white/20">{t('pagination.previous')}</button>
         <span className="text-sm">{t('pagination.page', { current: page, total: reviewsQuery.data?.pagination.pages ?? 1 })}</span>
-        <button type="button" disabled={page >= (reviewsQuery.data?.pagination.pages ?? 1)} onClick={() => setPage((current) => current + 1)} className="min-h-10 rounded-lg border border-stone-300 px-3 text-sm font-semibold disabled:opacity-40 dark:border-white/20">{t('pagination.next')}</button>
+        <button type="button" disabled={page >= (reviewsQuery.data?.pagination.pages ?? 1)} onClick={() => setPage((current) => current + 1)} className="min-h-10 rounded-lg border border-line px-3 text-sm font-semibold disabled:opacity-40 dark:border-white/20">{t('pagination.next')}</button>
       </nav>}
     </section>
   );

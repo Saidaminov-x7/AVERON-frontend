@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { externalBaseURL } from '@/lib/axios';
-import { canSendAnalytics } from '@/lib/analyticsPolicy';
-import { subscribeToConsentChanges, clearAnalyticsIdentifier } from '@/lib/consent';
+import { hasAnalyticsConsent, subscribeToConsentChanges, clearAnalyticsIdentifier } from '@/lib/consent';
 import { trackCommerceEvent, type CommerceEventMetadata } from '@/lib/commerceAnalytics';
 
 export function useOptionalAnalytics() {
@@ -14,7 +13,7 @@ export function useOptionalAnalytics() {
   const [consentRevision, setConsentRevision] = useState(0);
 
   useEffect(() => {
-    if (!canSendAnalytics()) {
+    if (!hasAnalyticsConsent()) {
       previousCatalogQuery.current = null;
       return;
     }
@@ -30,11 +29,11 @@ export function useOptionalAnalytics() {
       const currentSearch = current.get('q') ?? '';
       const metadata: CommerceEventMetadata = {};
       const country = current.get('country');
-      if (country && ['CN', 'US', 'TR', 'IT', 'GB'].includes(country)) metadata.country = country as CommerceEventMetadata['country'];
+      if (country === 'CN' || country === 'US' || country === 'TR' || country === 'IT' || country === 'GB') metadata.country = country;
       const audience = current.get('audience');
-      if (audience && ['all', 'women', 'men', 'kids'].includes(audience)) metadata.audience = audience as CommerceEventMetadata['audience'];
+      if (audience === 'all' || audience === 'women' || audience === 'men' || audience === 'kids') metadata.audience = audience;
       const sort = current.get('sort');
-      if (sort && ['popular', 'newest', 'price_asc', 'price_desc'].includes(sort)) metadata.sort = sort as CommerceEventMetadata['sort'];
+      if (sort === 'popular' || sort === 'newest' || sort === 'price_asc' || sort === 'price_desc') metadata.sort = sort;
       const category = current.get('category');
       if (category) metadata.categorySlug = category.slice(0, 100);
       const size = current.get('size');
@@ -60,7 +59,7 @@ export function useOptionalAnalytics() {
   }, [pathname, searchParams, consentRevision]);
 
   useEffect(() => {
-    if (!canSendAnalytics()) {
+    if (!hasAnalyticsConsent()) {
       clearAnalyticsIdentifier();
       return;
     }
@@ -78,7 +77,7 @@ export function useOptionalAnalytics() {
   }, [pathname, consentRevision]);
 
   useEffect(() => subscribeToConsentChanges(() => {
-    if (!canSendAnalytics()) {
+    if (!hasAnalyticsConsent()) {
       clearAnalyticsIdentifier();
       previousCatalogQuery.current = null;
     }

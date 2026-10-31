@@ -47,6 +47,7 @@
     "support": "Yordam",
     "rights": "Barcha huquqlar himoyalangan.",
     "country": "Xizmat O‘zbekiston Respublikasi xaridorlari uchun ishlaydi.",
+    "cookieSettings": "Cookie sozlamalari",
     "links": {
       "catalog": "Barcha mahsulotlar",
       "favorites": "Sevimlilar",
@@ -145,6 +146,24 @@
     "save": "Tanlovni saqlash",
     "close": "Yopish"
   },
+  "consent": {
+    "title": "Maxfiylik sozlamalari",
+    "description": "Ixtiyoriy tahlil katalogdan qanday foydalanilishini tushunishga yordam beradi. Tanlovingizgacha u o‘chiq turadi.",
+    "privacyLink": "Maxfiylik siyosati",
+    "accept": "Ixtiyoriy tahlilga roziman",
+    "reject": "Ixtiyoriy tahlilni rad etish",
+    "settings": "Sozlash",
+    "manage": "Cookie sozlamalari",
+    "settingsTitle": "Cookie va tahlil sozlamalari",
+    "settingsDescription": "Ixtiyoriy tahlilni yoqish yoki o‘chirishni tanlang. Tanlovni keyin o‘zgartirishingiz mumkin.",
+    "necessary": "Zarur ma’lumotlar",
+    "necessaryDescription": "Kirish, hisob himoyasi, savat va navigatsiya uchun kerak. Tahlil tanlovidan qat’i nazar ishlaydi.",
+    "analytics": "Tahlil",
+    "analyticsDescription": "Tasodifiy qurilma identifikatori yordamida katalog ko‘rishlari va amallarini hisoblaydi.",
+    "retention": "Tanlovingiz 180 kungacha saqlanadi. Tahlil hodisalari AVERON serverida qoladi; o‘chirish so‘rovi uchun maxfiylik siyosatidagi aloqa ma’lumotlaridan foydalaning.",
+    "save": "Tanlovni saqlash",
+    "close": "Yopish"
+  },
   "comparePage": {
     "loading": "Taqqoslash yuklanmoqda…",
     "loadError": "Taqqoslash uchun mahsulotlarni yuklab bo‘lmadi.",
@@ -208,6 +227,8 @@
     "applying": "Filtrlar qo‘llanmoqda…",
     "invalidPrice": "Narxni faqat raqamlar bilan kiriting.",
     "priceRangeError": "Minimal narx maksimal narxdan katta bo‘lishi mumkin emas.",
+    "categoriesUnavailable": "Toifalarni yuklab bo‘lmadi.",
+    "facetsUnavailable": "Mavjud o‘lcham va ranglarni yuklab bo‘lmadi.",
     "reset": "Tozalash",
     "products": "Mahsulotlar",
     "empty": "Mos mahsulotlar topilmadi",

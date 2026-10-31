@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
+import { CookieSettingsLink } from '@/components/privacy/CookieSettingsLink';
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CookieSettingsLink } from "@/components/privacy/CookieSettingsLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -86,21 +87,19 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
             <p className="mt-2 max-w-xs text-sm leading-6 text-[var(--color-text-secondary)]">
               {t("description")}
             </p>
-            <div className="mt-3 grid max-w-[24rem] grid-cols-2 gap-2">
-              <div className="flex min-w-0 [&_button]:w-full"><ThemeToggle /></div>
-              <div className="min-w-0 [&_button]:w-full">
-                <CookieSettingsLink label={consentT("manage")} />
-              </div>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <ThemeToggle />
+              <CookieSettingsLink label={t('cookieSettings')} />
               <a
                 href="https://t.me/averon_fashion"
-                className="averon-secondary-button h-11 w-full px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <Send className="mr-2 shrink-0" size={15} />
                 {t("channel")}
               </a>
               <a
                 href="https://t.me/averon_fashion_admin"
-                className="averon-secondary-button h-11 w-full px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] border border-[var(--color-border)] px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
                 <MessageCircle className="mr-2 shrink-0" size={15} />
                 {t("support")}

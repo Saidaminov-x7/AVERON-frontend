@@ -1,16 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store/useAuthStore';
-import { isLocalApiHost, resolveApiOrigin, resolveBrowserApiBaseUrl } from './api-origin';
+import { externalBaseURL } from './api-origin';
 
-const LOCAL_BROWSER_API = 'http://127.0.0.1:8080';
-const localApiUrl = process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || LOCAL_BROWSER_API;
-const isLocalBrowserHost = typeof window !== 'undefined' && isLocalApiHost(window.location.hostname);
-const isLocalRuntime = process.env.NEXT_PUBLIC_AVERON_RUNTIME_TARGET === 'local' || process.env.NODE_ENV !== 'production';
-const externalBaseURL = resolveApiOrigin(
-  isLocalBrowserHost || isLocalRuntime ? localApiUrl : process.env.NEXT_PUBLIC_API_URL || '',
-  isLocalBrowserHost || isLocalRuntime,
-  'https://averon-backend-production.up.railway.app',
-);
 export { externalBaseURL };
 const baseURL = typeof window !== 'undefined'
   ? resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl)

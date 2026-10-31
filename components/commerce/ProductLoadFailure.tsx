@@ -55,12 +55,12 @@ export function ProductLoadFailure({
   const t = copy[locale as keyof typeof copy] ?? copy.ru;
 
   return (
-    <main className="flex min-h-[70vh] flex-col items-center justify-center bg-stone-50 px-4 py-16 text-center text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mb-5 flex size-16 items-center justify-center rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200">
+    <main className="flex min-h-[70vh] flex-col items-center justify-center bg-surface-soft px-4 py-16 text-center text-ink dark:bg-surface-soft dark:text-white">
+      <div className="mb-5 flex size-16 items-center justify-center rounded-full bg-surface-soft text-warning dark:bg-surface-soft dark:text-warning">
         {kind === 'network' ? <WifiOff aria-hidden="true" /> : <RotateCcw aria-hidden="true" />}
       </div>
       <h1 className="text-xl font-bold">{kind === 'network' ? t.networkTitle : kind === 'malformed' ? t.malformedTitle : t.serverTitle}</h1>
-      <p className="mt-2 max-w-md text-sm text-stone-600 dark:text-stone-300">
+      <p className="mt-2 max-w-md text-sm text-muted dark:text-ink-soft">
         {kind === 'network' ? t.networkDescription : kind === 'malformed' ? t.malformedDescription : t.serverDescription}
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -74,7 +74,7 @@ export function ProductLoadFailure({
           <RotateCcw className="mr-2 size-4" aria-hidden="true" />
           {t.retry}
         </Button>
-        <a href={catalogHref} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-stone-300 px-5 text-sm font-semibold text-stone-700 hover:border-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/20 dark:text-stone-200">
+        <a href={catalogHref} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-line px-5 text-sm font-semibold text-ink-soft hover:border-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-white/20 dark:text-ink-soft">
           {t.back}
         </a>
       </div>
