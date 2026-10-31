@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isLocalApiHost } from './lib/api-origin';
+import { safeMaintenanceReturnPath } from './lib/maintenance-return';
 
 // Configuration
 const locales = ['uz', 'en', 'ru'];
@@ -19,7 +20,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Maintenance mode check via backend API
-  const isMaintenancePage = pathname.includes('/maintenance');
+  const isMaintenancePage = pathname === '/maintenance' || pathname.endsWith('/maintenance');
   const API_BASE_URL = isLocalApiHost(request.nextUrl.hostname)
     ? process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080'
     : process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
@@ -39,13 +40,16 @@ export async function proxy(request: NextRequest) {
       // 1. Если техобслуживание включено, но нет байпасс-куки и мы не на странице maintenance -> редирект на maintenance
       if (isUnderMaintenance && !isMaintenancePage && !bypassCookie) {
         const maintenanceUrl = new URL(`/${locale}/maintenance`, request.url);
+        const pathnameHasLocale = locales.some((supportedLocale) => pathname === `/${supportedLocale}` || pathname.startsWith(`/${supportedLocale}/`));
+        const returnPath = pathnameHasLocale ? pathname : `/${locale}${pathname === '/' ? '' : pathname}`;
+        maintenanceUrl.searchParams.set('returnTo', `${returnPath}${request.nextUrl.search}`);
         return NextResponse.redirect(maintenanceUrl);
       }
 
       // 2. Если техобслуживание ВЫКЛЮЧЕНО (или есть активный байпасс), но пользователь перешел на /maintenance -> редирект на главную
       if ((!isUnderMaintenance || bypassCookie) && isMaintenancePage) {
-        const homeUrl = new URL(`/${locale}`, request.url);
-        return NextResponse.redirect(homeUrl);
+        const returnPath = safeMaintenanceReturnPath(request.nextUrl.searchParams.get('returnTo'), locale);
+        return NextResponse.redirect(new URL(returnPath, request.url));
       }
     }
   } catch {

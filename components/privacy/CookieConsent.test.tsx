@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, describe, expect, it } from 'vitest';
 import { CookieConsent } from './CookieConsent';
@@ -19,7 +20,11 @@ function renderConsent(locale: 'ru' | 'uz' | 'en' = 'en') {
 }
 
 describe('CookieConsent', () => {
-  afterEach(() => localStorage.clear());
+  afterEach(() => {
+    localStorage.clear();
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+  });
 
   it.each([
     ['ru', ruMessages.consent],
@@ -61,6 +66,37 @@ describe('CookieConsent', () => {
     fireEvent.keyDown(document, { key: 'Escape' });
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(document.activeElement).toBe(settingsButton);
+  });
+
+  it('shows the settings dialog and locks scrolling only for the dialog lifetime', async () => {
+    const user = userEvent.setup();
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'clip';
+    renderConsent();
+    const settingsButton = await screen.findByRole('button', { name: enMessages.consent.settings });
+
+    await user.click(settingsButton);
+    const dialog = await screen.findByRole('dialog', { name: enMessages.consent.settingsTitle });
+    expect(dialog).toBeVisible();
+    await waitFor(() => {
+      expect(document.body.style.overflow).toBe('hidden');
+      expect(document.documentElement.style.overflow).toBe('hidden');
+    });
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(document.body.style.overflow).toBe('auto');
+    expect(document.documentElement.style.overflow).toBe('clip');
+    expect(settingsButton).toHaveFocus();
+  });
+
+  it('uses a two-column action group so later consent actions wrap naturally', async () => {
+    renderConsent();
+    const settingsButton = await screen.findByRole('button', { name: enMessages.consent.settings });
+    const actions = settingsButton.closest('aside')?.querySelector('.cookie-consent-actions');
+
+    expect(actions).toBeInTheDocument();
+    expect(actions?.children).toHaveLength(3);
   });
 
   it('keeps focus inside the dialog when tabbing forward or backward from the dialog surface', async () => {

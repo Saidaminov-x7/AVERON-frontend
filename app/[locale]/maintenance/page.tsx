@@ -27,9 +27,10 @@ async function getSiteSettings() {
   };
 }
 
-export default async function MaintenancePage({ params }: MaintenancePageProps) {
-  const { locale } = await params;
+export default async function MaintenancePage({ params, searchParams }: MaintenancePageProps) {
+  const [{ locale }, query] = await Promise.all([params, searchParams]);
   const settings = await getSiteSettings();
+  const returnTo = typeof query.returnTo === 'string' ? query.returnTo : null;
 
-  return <MaintenanceView locale={locale} initialSettings={settings} />;
+  return <MaintenanceView locale={locale} initialSettings={settings} returnTo={returnTo} />;
 }
