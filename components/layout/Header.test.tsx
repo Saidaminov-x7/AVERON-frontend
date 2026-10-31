@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -25,7 +25,7 @@ vi.mock('@/store/useAuthStore', () => ({ useAuthStore: (select?: (state: Record<
   const state = { user: null, isAuthenticated: false, logout: vi.fn() };
   return select ? select(state) : state;
 } }));
-vi.mock('@/components/ThemeToggle', () => ({ ThemeToggle: () => null }));
+vi.mock('@/components/ThemeToggle', () => ({ ThemeToggle: () => <button type="button" aria-label="Theme" /> }));
 vi.mock('@/components/privacy/CookieSettingsLink', () => ({ CookieSettingsLink: () => null }));
 vi.mock('framer-motion', () => ({ motion: { span: 'span' }, useReducedMotion: () => false }));
 
@@ -184,5 +184,30 @@ describe('Header catalog search', () => {
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Suggestions are unavailable right now'), { timeout: 6000 });
     expect(screen.getByRole('option', { name: /Search “winter”/ })).toBeInTheDocument();
     expect(screen.queryByText('network unavailable')).not.toBeInTheDocument();
+  });
+
+  it('keeps locale and theme controls in the mobile drawer footer and uses local flags', async () => {
+    const user = userEvent.setup();
+    renderHeader();
+    const menuTrigger = screen.getByRole('button', { name: 'Menu' });
+    await user.click(menuTrigger);
+
+    const drawer = await screen.findByRole('dialog', { name: 'Menu' });
+    const languageButton = within(drawer).getByRole('button', { name: 'Language' });
+    const drawerFooter = drawer.querySelector('div.shrink-0.border-t');
+    expect(drawerFooter).toContainElement(languageButton);
+    expect(within(drawer).getByRole('button', { name: 'Theme' })).toBeInTheDocument();
+
+    await user.click(languageButton);
+    const menu = within(drawer).getByRole('menu');
+    expect(within(menu).getByRole('menuitemradio', { name: /Русский/ })).toBeInTheDocument();
+    expect(within(menu).getByRole('menuitemradio', { name: /O'zbekcha/ })).toBeInTheDocument();
+    expect(within(menu).getByRole('menuitemradio', { name: /English/ })).toBeInTheDocument();
+    expect(Array.from(menu.querySelectorAll('img')).map((image) => image.getAttribute('src')))
+      .toEqual(['/flags/ru.svg', '/flags/uz.svg', '/flags/us.svg']);
+
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument());
+    expect(menuTrigger).toHaveFocus();
   });
 });
