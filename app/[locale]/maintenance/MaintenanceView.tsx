@@ -129,7 +129,7 @@ export function MaintenanceView({ locale, initialSettings, returnTo = null }: Ma
     setPasswordError('');
 
     try {
-      const res = await fetch(apiUrl('site-settings/public/check-bypass'), {
+      const res = await fetch('/api/maintenance/bypass', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: password.trim() }),
@@ -137,11 +137,10 @@ export function MaintenanceView({ locale, initialSettings, returnTo = null }: Ma
       const data = await res.json();
 
       if (res.ok && data.allowed) {
-        document.cookie = `maintenance_bypass=true; path=/; max-age=${24 * 60 * 60}; SameSite=Lax`;
         setShowPasswordModal(false);
         returnToSite();
       } else {
-        setPasswordError(data.message || t.invalidPassword);
+        setPasswordError(data.unavailable ? t.connectionError : data.message || t.invalidPassword);
       }
     } catch {
       setPasswordError(t.connectionError);

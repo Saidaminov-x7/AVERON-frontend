@@ -76,8 +76,24 @@ describe('MaintenanceView', () => {
     fireEvent.click(withinFormSubmit(dialog));
 
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/en/orders?tab=active'));
-    expect(fetch).toHaveBeenCalledWith('https://api.averon.test/site-settings/public/check-bypass', expect.objectContaining({ method: 'POST' }));
+    expect(fetch).toHaveBeenCalledWith('/api/maintenance/bypass', expect.objectContaining({ method: 'POST' }));
     await waitFor(() => expect(document.body.style.overflow).toBe(''));
+  });
+
+  it('shows a connection/configuration error instead of blaming the password when bypass is unavailable', async () => {
+    vi.mocked(fetch).mockImplementation(async (_input, init) => new Response(JSON.stringify(
+      init?.method === 'POST'
+        ? { allowed: false, unavailable: true }
+        : { maintenanceMode: true, maintenancePasswordEnabled: true },
+    ), { status: init?.method === 'POST' ? 503 : 200 }));
+    render(<MaintenanceView locale="en" initialSettings={{ maintenanceMode: true, maintenancePasswordEnabled: true }} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Enter access password' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Early access' });
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'test-access-code' } });
+    fireEvent.click(withinFormSubmit(dialog));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Could not verify the password. Check your connection and try again.');
   });
 });
 

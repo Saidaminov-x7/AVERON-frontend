@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isLocalApiHost } from './lib/api-origin';
 import { safeMaintenanceReturnPath } from './lib/maintenance-return';
+import { MAINTENANCE_BYPASS_COOKIE, verifyMaintenanceBypassToken } from './lib/maintenance-bypass';
 
 // Configuration
 const locales = ['uz', 'en', 'ru'];
@@ -25,7 +26,8 @@ export async function proxy(request: NextRequest) {
     ? process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080'
     : process.env.NEXT_PUBLIC_API_URL || 'https://averon-backend-production.up.railway.app';
 
-  const bypassCookie = request.cookies.get('maintenance_bypass')?.value;
+  const bypassCookie = request.cookies.get(MAINTENANCE_BYPASS_COOKIE)?.value;
+  const hasValidBypass = verifyMaintenanceBypassToken(bypassCookie, process.env.MAINTENANCE_BYPASS_SECRET);
   const locale = locales.find((l) => pathname.startsWith(`/${l}`)) || defaultLocale;
 
   try {
@@ -38,7 +40,7 @@ export async function proxy(request: NextRequest) {
       const isUnderMaintenance = Boolean(data?.maintenanceMode);
 
       // 1. Если техобслуживание включено, но нет байпасс-куки и мы не на странице maintenance -> редирект на maintenance
-      if (isUnderMaintenance && !isMaintenancePage && !bypassCookie) {
+      if (isUnderMaintenance && !isMaintenancePage && !hasValidBypass) {
         const maintenanceUrl = new URL(`/${locale}/maintenance`, request.url);
         const pathnameHasLocale = locales.some((supportedLocale) => pathname === `/${supportedLocale}` || pathname.startsWith(`/${supportedLocale}/`));
         const returnPath = pathnameHasLocale ? pathname : `/${locale}${pathname === '/' ? '' : pathname}`;
@@ -47,7 +49,7 @@ export async function proxy(request: NextRequest) {
       }
 
       // 2. Если техобслуживание ВЫКЛЮЧЕНО (или есть активный байпасс), но пользователь перешел на /maintenance -> редирект на главную
-      if ((!isUnderMaintenance || bypassCookie) && isMaintenancePage) {
+      if ((!isUnderMaintenance || hasValidBypass) && isMaintenancePage) {
         const returnPath = safeMaintenanceReturnPath(request.nextUrl.searchParams.get('returnTo'), locale);
         return NextResponse.redirect(new URL(returnPath, request.url));
       }

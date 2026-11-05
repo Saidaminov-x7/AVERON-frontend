@@ -1,10 +1,16 @@
 import { NextRequest } from 'next/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { proxy } from './proxy';
+import { createMaintenanceBypassToken } from './lib/maintenance-bypass';
+
+const BYPASS_SECRET = 'test-maintenance-bypass-signing-secret-32-bytes';
 
 describe('maintenance proxy redirects', () => {
   beforeEach(() => vi.stubGlobal('fetch', vi.fn()));
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
 
   it('saves the localized request path and query before redirecting to maintenance', async () => {
     vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({ maintenanceMode: true }), { status: 200 }));
@@ -27,5 +33,31 @@ describe('maintenance proxy redirects', () => {
 
     const directResponse = await proxy(new NextRequest('https://averon.test/uz/maintenance'));
     expect(new URL(directResponse.headers.get('location')!).pathname).toBe('/uz');
+  });
+
+  it('does not trust a client-created maintenance bypass cookie', async () => {
+    vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({ maintenanceMode: true }), { status: 200 }));
+    const request = new NextRequest('https://averon.test/ru/catalog', {
+      headers: { cookie: 'maintenance_bypass=true' },
+    });
+
+    const response = await proxy(request);
+
+    expect(response.status).toBe(307);
+    expect(new URL(response.headers.get('location')!).pathname).toBe('/ru/maintenance');
+  });
+
+  it('accepts only a signed, unexpired maintenance bypass cookie', async () => {
+    vi.stubEnv('MAINTENANCE_BYPASS_SECRET', BYPASS_SECRET);
+    vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({ maintenanceMode: true }), { status: 200 }));
+    const token = createMaintenanceBypassToken(BYPASS_SECRET)!;
+    const request = new NextRequest('https://averon.test/ru/catalog', {
+      headers: { cookie: `maintenance_bypass=${token}` },
+    });
+
+    const response = await proxy(request);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('location')).toBeNull();
   });
 });
