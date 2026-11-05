@@ -11,6 +11,8 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    // Vercel's generated build output is not source code.
+    ".vercel/**",
     "next-env.d.ts",
     // Repository-local agent skills are tooling, not application source.
     ".agents/**",

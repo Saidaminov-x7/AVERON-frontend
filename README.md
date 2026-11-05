@@ -31,6 +31,12 @@ Firebase authentication uses the `NEXT_PUBLIC_FIREBASE_*` values in
 secrets. Set them from the intended Firebase project for each environment;
 without the required Firebase values, phone verification is unavailable.
 
+The server runtime also needs `MAINTENANCE_BYPASS_SECRET` to sign the
+maintenance-access cookie. Configure a unique random value of at least 32
+bytes in each deployment environment. The bypass remains unavailable when
+the variable is missing or too short; never expose it as a `NEXT_PUBLIC_*`
+value.
+
 ## Checks
 
 ```powershell
