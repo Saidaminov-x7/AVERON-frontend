@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getProduct, getProducts, productRouteId, productTitle, type StoreProduct } from '@/lib/products';
 import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
 import {
   Select,
   SelectContent,
@@ -239,7 +240,7 @@ function OutfitBuilderContent() {
 
   return (
     <main className="min-h-[70vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_280px]">
+      <Container className="grid gap-8 py-10 lg:grid-cols-[1fr_280px]">
         <section>
           <h1 className="text-3xl font-extrabold">{text.title}</h1>
           <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">{text.intro}</p>
@@ -310,7 +311,7 @@ function OutfitBuilderContent() {
           )}</div>
           <Button type="button" variant="outline" onClick={() => { setOutfitId(null); setName(''); setItems([]); setMessage(''); }} className="mt-3 min-h-10 w-full px-3 text-sm">{text.start}</Button>
         </aside>
-      </div>
+      </Container>
     </main>
   );
 }

@@ -1,5 +1,7 @@
 'use client';
 
+import { Container } from '@/components/ui/Container';
+
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
@@ -47,7 +49,7 @@ function OrdersContent() {
 
   return (
     <main className="min-h-[65vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+      <Container className="py-10">
         <SmartBackButton fallbackHref={`/${locale}/catalog`} />
         <h1 className="text-3xl font-extrabold">{text.title}</h1>
         {query.isLoading ? (
@@ -88,7 +90,7 @@ function OrdersContent() {
             })}
           </div>
         )}
-      </div>
+      </Container>
     </main>
   );
 }

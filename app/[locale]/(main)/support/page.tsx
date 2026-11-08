@@ -1,3 +1,4 @@
+import { Container } from '@/components/ui/Container';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { Headphones, Mail, MessageCircle, PackageSearch } from 'lucide-react';
@@ -15,8 +16,8 @@ export default function SupportPage() {
   const cardIcons = [PackageSearch, MessageCircle, Headphones];
 
   return (
-    <main className="min-h-screen bg-stone-50 px-4 py-12 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto max-w-5xl">
+    <main className="min-h-screen bg-stone-50 py-12 text-stone-950 dark:bg-stone-950 dark:text-white">
+      <Container>
         <p className="text-xs font-bold uppercase tracking-[.2em] text-primary-700">{t('eyebrow')}</p>
         <h1 className="mt-3 text-4xl font-extrabold">{t('title')}</h1>
         <p className="mt-4 max-w-2xl leading-7 text-stone-500">{t('description')}</p>
@@ -59,7 +60,7 @@ export default function SupportPage() {
             </Button>
           </div>
         </div>
-      </div>
+      </Container>
     </main>
   );
 }

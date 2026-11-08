@@ -93,7 +93,7 @@ export function DynamicSectionRenderer({
   if (activeSections.length === 0) return null;
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-16 py-8">
       {activeSections.map((section) => {
         // Контент уже приходит развёрнутым под нужный locale с бэкенда (?locale=ru),
         // но на всякий случай поддерживаем и старый формат { ru: {...}, uz: {...} }.

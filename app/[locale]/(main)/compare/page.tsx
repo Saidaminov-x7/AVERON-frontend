@@ -1,5 +1,7 @@
 "use client";
 
+import { Container } from '@/components/ui/Container';
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -49,18 +51,18 @@ export default function ComparePage() {
     );
   if (error)
     return (
-      <div className="mx-auto max-w-3xl px-4 py-20 text-center text-red-500">
+      <Container className="py-20 text-center text-red-500">
         <div>
           <p>{error}</p>
           <Button type="button" variant="outline" onClick={() => window.location.reload()} className="mt-4 px-4 text-sm font-semibold">
             {t("retry")}
           </Button>
         </div>
-      </div>
+      </Container>
     );
   if (!products.length)
     return (
-      <div className="mx-auto max-w-3xl px-4 py-20 text-center">
+      <Container className="py-20 text-center">
         <Scale size={42} className="mx-auto text-primary-700" />
         <h1 className="mt-5 text-2xl font-bold">{t("emptyTitle")}</h1>
         <p className="mt-2 text-stone-500">
@@ -72,7 +74,7 @@ export default function ComparePage() {
         >
           {t("catalog")} <ArrowRight size={16} />
         </Link>
-      </div>
+      </Container>
     );
 
   const rows = [
@@ -105,7 +107,7 @@ export default function ComparePage() {
   ] as const;
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10">
+    <Container as="main" className="py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[.18em] text-primary-700">
@@ -188,6 +190,6 @@ export default function ComparePage() {
           </div>
         </div>
       </div>
-    </main>
+    </Container>
   );
 }

@@ -12,6 +12,7 @@ import api from '@/lib/axios';
 import { getProduct, getProducts, productTitle, type StoreProduct } from '@/lib/products';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
 
 type TelegramWindow = Window & {
   Telegram?: {
@@ -268,7 +269,7 @@ export function TelegramMiniApp({
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6">
+      <Container className="py-5">
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-4 dark:border-white/10">
           <Link href={`/${locale}/mini-app`} className="inline-flex min-h-11 items-center gap-2 text-lg font-extrabold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500">
             <ShoppingBag size={20} />{text.title}
@@ -379,7 +380,7 @@ export function TelegramMiniApp({
             }
           </section>
         )}
-      </div>
+      </Container>
     </main>
   );
 }

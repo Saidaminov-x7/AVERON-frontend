@@ -134,7 +134,7 @@ export const Modal: React.FC<ModalProps> = ({
             className={`relative z-10 flex min-h-0 w-full flex-col overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] shadow-xl outline-none ${panelSize} ${panelClassName}`}
             initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: prefersReducedMotion ? 0 : 8, transition: { duration: 0 } }}
+            exit={{ opacity: 0, y: prefersReducedMotion ? 0 : 8, transition: { duration: prefersReducedMotion ? 0 : 0.18 } }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: [0.23, 1, 0.32, 1] }}
           >
             {hideHeader ? <h2 id={titleId} className="sr-only">{title}</h2> : (

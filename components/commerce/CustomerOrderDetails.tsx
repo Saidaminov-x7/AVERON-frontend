@@ -9,6 +9,7 @@ import { CheckCircle2, Circle, RefreshCw } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
 import { cancelCustomerOrder, commerceQueryKeys, getCustomerOrder } from '@/lib/commerce-orders';
 
 const copy = {
@@ -101,7 +102,7 @@ function OrderDetailsContent({ success }: { success: boolean }) {
 
   return (
     <main className="min-h-[65vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <Container className="py-10">
         <SmartBackButton fallbackHref={`/${locale}/orders`} />
         {query.isLoading ? (
           <p role="status" className="mt-8">{text.loading}</p>
@@ -244,7 +245,7 @@ function OrderDetailsContent({ success }: { success: boolean }) {
             )}
           </section>
         ) : null}
-      </div>
+      </Container>
     </main>
   );
 }
