@@ -1,5 +1,7 @@
 'use client';
 
+import { Container } from '@/components/ui/Container';
+
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
@@ -7,6 +9,7 @@ import { ArrowRight, PackageCheck, RefreshCw } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { commerceQueryKeys, getCustomerOrders } from '@/lib/commerce-orders';
+import { Button } from '@/components/ui/Button';
 
 const copy = {
   ru: { title: 'Мои заказы', empty: 'У вас пока нет заказов', emptyText: 'Оформленные заказы появятся здесь.', shop: 'Перейти в каталог', retry: 'Повторить', error: 'Не удалось загрузить заказы.', total: 'Сумма', status: 'Статус', date: 'Дата', open: 'Подробнее' },
@@ -46,7 +49,7 @@ function OrdersContent() {
 
   return (
     <main className="min-h-[65vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+      <Container className="py-10">
         <SmartBackButton fallbackHref={`/${locale}/catalog`} />
         <h1 className="text-3xl font-extrabold">{text.title}</h1>
         {query.isLoading ? (
@@ -54,9 +57,9 @@ function OrdersContent() {
         ) : query.isError ? (
           <div role="alert" className="mt-8 rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-800 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-200">
             <p>{text.error}</p>
-            <button type="button" onClick={() => void query.refetch()} className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl border border-current px-4 font-semibold">
+            <Button type="button" variant="outline" onClick={() => void query.refetch()} className="mt-4 h-10 border-current px-4 font-semibold">
               <RefreshCw size={16} />{text.retry}
-            </button>
+            </Button>
           </div>
         ) : !query.data?.length ? (
           <div className="mt-8 rounded-2xl border border-stone-200 bg-white px-6 py-16 text-center dark:border-white/10 dark:bg-stone-900">
@@ -87,7 +90,7 @@ function OrdersContent() {
             })}
           </div>
         )}
-      </div>
+      </Container>
     </main>
   );
 }

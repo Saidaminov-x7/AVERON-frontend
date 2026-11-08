@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Container } from '@/components/ui/Container';
 
 export function InfoPage({
   eyebrow,
@@ -19,7 +20,7 @@ export function InfoPage({
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <section className="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
+      <Container className="py-14">
         <p className="text-xs font-bold uppercase tracking-[.2em] text-primary-700">{eyebrow}</p>
         <h1 className="mt-3 max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl">{title}</h1>
         <p className="mt-5 max-w-2xl text-base leading-7 text-stone-500">{description}</p>
@@ -38,7 +39,7 @@ export function InfoPage({
         >
           {t('backToCatalog')} <ArrowRight size={16} />
         </Link>
-      </section>
+      </Container>
     </main>
   );
 }

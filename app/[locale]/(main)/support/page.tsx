@@ -1,6 +1,8 @@
+import { Container } from '@/components/ui/Container';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { Headphones, Mail, MessageCircle, PackageSearch } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -14,8 +16,8 @@ export default function SupportPage() {
   const cardIcons = [PackageSearch, MessageCircle, Headphones];
 
   return (
-    <main className="min-h-screen bg-stone-50 px-4 py-12 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto max-w-5xl">
+    <main className="min-h-screen bg-stone-50 py-12 text-stone-950 dark:bg-stone-950 dark:text-white">
+      <Container>
         <p className="text-xs font-bold uppercase tracking-[.2em] text-primary-700">{t('eyebrow')}</p>
         <h1 className="mt-3 text-4xl font-extrabold">{t('title')}</h1>
         <p className="mt-4 max-w-2xl leading-7 text-stone-500">{t('description')}</p>
@@ -53,12 +55,12 @@ export default function SupportPage() {
               rows={5}
               className="rounded-xl border border-stone-300 bg-transparent p-4 outline-none focus:border-primary-600 dark:border-white/15 sm:col-span-2"
             />
-            <button className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary-700 px-6 font-bold text-white transition-colors hover:bg-primary-800 sm:w-fit">
+            <Button className="h-12 px-6 font-bold sm:w-fit">
               <Mail size={18} /> {t('submitButton')}
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
+      </Container>
     </main>
   );
 }

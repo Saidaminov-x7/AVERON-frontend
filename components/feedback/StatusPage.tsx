@@ -1,13 +1,16 @@
 import type { LucideIcon } from 'lucide-react';
 import { RotateCcw } from 'lucide-react';
 import { SmartBackButton } from '@/components/navigation/SmartBackButton';
+import { Button } from '@/components/ui/Button';
 import { Suspense } from 'react';
+import { Container } from '@/components/ui/Container';
 
 type StatusPageProps = { code: string; eyebrow: string; title: string; description: string; icon: LucideIcon; onRetry?: () => void; retryLabel?: string; homeLabel: string };
 
 export function StatusPage({ code, eyebrow, title, description, icon: Icon, onRetry, retryLabel = 'Попробовать снова', homeLabel }: StatusPageProps) {
   return (
-    <main className="mx-auto grid min-h-[72vh] w-full max-w-[1232px] place-items-center px-4 py-12 sm:px-6">
+    <main className="grid min-h-[72vh] w-full place-items-center py-12">
+      <Container className="grid w-full place-items-center">
       <section className="averon-panel grid w-full max-w-4xl overflow-hidden md:grid-cols-[.72fr_1fr]">
         <div className="relative flex min-h-64 flex-col justify-between overflow-hidden bg-[var(--color-surface-soft)] p-8 text-[var(--color-text)] md:min-h-[440px] md:p-12">
           <div className="absolute -right-16 -top-16 h-64 w-64 border border-[var(--color-border)]" /><div className="absolute -bottom-20 -left-20 h-72 w-72 border border-[var(--color-border)]" />
@@ -17,9 +20,10 @@ export function StatusPage({ code, eyebrow, title, description, icon: Icon, onRe
         <div className="flex flex-col justify-center bg-[var(--color-surface)] p-8 md:p-12">
           <div className="mb-8 flex h-12 w-12 items-center justify-center border border-[var(--color-border)] text-[var(--color-primary)]"><Icon size={22} strokeWidth={1.7} /></div>
           <p className="averon-kicker">{eyebrow}</p><h1 className="averon-title mt-3 text-3xl sm:text-4xl">{title}</h1><p className="mt-4 max-w-md text-sm leading-6 text-[var(--color-text-secondary)]">{description}</p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">{onRetry && <button type="button" onClick={onRetry} className="averon-primary-button"><RotateCcw size={16} />{retryLabel}</button>}<Suspense fallback={null}><SmartBackButton fallbackHref="/" label={homeLabel} variant={onRetry ? 'secondary' : 'primary'} /></Suspense></div>
+          <div className="mt-8 flex flex-wrap items-center gap-3">{onRetry && <Button type="button" onClick={onRetry}><RotateCcw size={16} />{retryLabel}</Button>}<Suspense fallback={null}><SmartBackButton fallbackHref="/" label={homeLabel} variant={onRetry ? 'secondary' : 'primary'} /></Suspense></div>
         </div>
       </section>
+      </Container>
     </main>
   );
 }

@@ -1,5 +1,7 @@
 'use client';
 
+import { Container } from '@/components/ui/Container';
+
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useState } from 'react';
@@ -11,6 +13,7 @@ import { ProductImage } from '@/components/commerce/ProductImage';
 import { QuantityStepper } from '@/components/commerce/QuantityStepper';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { getCommerceErrorCode } from '@/lib/commerce-orders';
+import { Button } from '@/components/ui/Button';
 
 const copy = {
   ru: {
@@ -101,7 +104,7 @@ function CartContent() {
 
   return (
     <main className="min-h-[65vh] bg-[var(--color-bg)] text-[var(--color-text)]">
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+      <Container className="py-10">
         <SmartBackButton fallbackHref={`/${locale}/catalog`} />
         <h1 className="averon-title text-3xl">{text.title}</h1>
 
@@ -182,16 +185,16 @@ function CartContent() {
                 <span>{text.subtotal}</span><span>{formatUzs(data?.subtotalUzs ?? 0, locale)}</span>
               </p>
               {hasUnavailable && <p className="mt-3 text-sm text-rose-700 dark:text-rose-300">{text.unavailable}</p>}
-              <button type="button" disabled={isMutating || hasUnavailable} onClick={() => router.push(`/${locale}/checkout`)} className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary-700 px-4 font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50">
+              <Button type="button" disabled={isMutating || hasUnavailable} onClick={() => router.push(`/${locale}/checkout`)} className="mt-5 h-12 w-full px-4 font-bold">
                 {text.checkout}<ArrowRight size={17} />
-              </button>
-              <button type="button" disabled={isMutating} onClick={() => mutation.mutate({ type: 'clear' })} className="mt-3 h-10 w-full rounded-xl text-sm font-semibold text-stone-500 hover:bg-stone-100 disabled:opacity-50 dark:hover:bg-white/5">
+              </Button>
+              <Button type="button" variant="ghost" disabled={isMutating} onClick={() => mutation.mutate({ type: 'clear' })} className="mt-3 h-10 w-full text-sm font-semibold text-stone-500 dark:hover:bg-white/5">
                 {text.clear}
-              </button>
+              </Button>
             </aside>
           </div>
         )}
-      </div>
+      </Container>
     </main>
   );
 }

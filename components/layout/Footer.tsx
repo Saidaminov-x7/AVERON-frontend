@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Container } from "@/components/ui/Container";
 import { CookieSettingsLink } from "@/components/privacy/CookieSettingsLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import type { NavLink } from "@/lib/siteSettings";
@@ -74,7 +75,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
 
   return (
     <footer className="w-full border-t border-[var(--color-border)] bg-[var(--color-surface)]">
-      <div className="mx-auto max-w-[1440px] px-4 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:pt-12 sm:pb-[calc(3rem+env(safe-area-inset-bottom))] md:px-6 lg:px-8 min-[1400px]:px-12">
+      <Container className="pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:pt-12 sm:pb-[calc(3rem+env(safe-area-inset-bottom))]">
         <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-[1.25fr_repeat(3,1fr)] lg:gap-10">
           <div className="min-w-0">
             <Link
@@ -127,7 +128,7 @@ export function Footer({ locale: localeProp }: { locale?: string } = {}) {
           </p>
           <p>{t("country")}</p>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

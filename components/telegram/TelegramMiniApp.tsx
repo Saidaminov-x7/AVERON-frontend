@@ -11,6 +11,8 @@ import { ProductReviews } from '@/components/commerce/ProductReviews';
 import api from '@/lib/axios';
 import { getProduct, getProducts, productTitle, type StoreProduct } from '@/lib/products';
 import { useAuthStore } from '@/store/useAuthStore';
+import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
 
 type TelegramWindow = Window & {
   Telegram?: {
@@ -267,7 +269,7 @@ export function TelegramMiniApp({
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6">
+      <Container className="py-5">
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-4 dark:border-white/10">
           <Link href={`/${locale}/mini-app`} className="inline-flex min-h-11 items-center gap-2 text-lg font-extrabold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500">
             <ShoppingBag size={20} />{text.title}
@@ -291,7 +293,7 @@ export function TelegramMiniApp({
         {authStatus === 'unlinked' && isAuthenticated && (
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm dark:border-amber-900 dark:bg-amber-950/40">
             <p>{text.linkConfirm}</p>
-            <button type="button" onClick={() => void linkTelegramAccount()} className="inline-flex min-h-11 items-center rounded-lg bg-stone-900 px-4 font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:bg-white dark:text-stone-900">{text.linkButton}</button>
+            <Button type="button" onClick={() => void linkTelegramAccount()} className="min-h-11 px-4 font-semibold">{text.linkButton}</Button>
           </div>
         )}
         {!isAuthenticated && authStatus !== 'unlinked' && authStatus !== 'checking' && (
@@ -300,8 +302,8 @@ export function TelegramMiniApp({
 
         {productSlug ? (
           productQuery.isLoading ? <p role="status" className="py-12 text-center">{text.loading}</p>
-            : productQuery.isError ? <div role="alert" className="py-12 text-center"><p>{text.loadError}</p><button type="button" onClick={() => void productQuery.refetch()} className="mt-3 min-h-11 rounded-lg border px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500">{text.retry}</button></div>
-              : !product ? <div className="py-12 text-center"><p role="status">{text.unavailable}</p><button type="button" onClick={() => { setProductSlug(null); setQuestion(null); }} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500"><ArrowLeft size={16} />{text.back}</button></div>
+            : productQuery.isError ? <div role="alert" className="py-12 text-center"><p>{text.loadError}</p><Button type="button" variant="outline" onClick={() => void productQuery.refetch()} className="mt-3 min-h-11 px-4">{text.retry}</Button></div>
+              : !product ? <div className="py-12 text-center"><p role="status">{text.unavailable}</p><Button type="button" variant="outline" onClick={() => { setProductSlug(null); setQuestion(null); }} className="mt-4 min-h-11 gap-2 px-4 font-semibold"><ArrowLeft size={16} />{text.back}</Button></div>
                 : (
                   <>
                   <article className="mt-6 grid gap-6 lg:grid-cols-2">
@@ -354,7 +356,7 @@ export function TelegramMiniApp({
           <section className="mt-6">
             <h1 className="text-2xl font-extrabold">{text.catalog}</h1>
             {catalogQuery.isLoading ? <p role="status" className="py-12 text-center">{text.loading}</p>
-              : catalogQuery.isError ? <div role="alert" className="py-12 text-center"><p>{text.loadError}</p><button type="button" onClick={() => void catalogQuery.refetch()} className="mt-3 min-h-11 rounded-lg border px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500">{text.retry}</button></div>
+              : catalogQuery.isError ? <div role="alert" className="py-12 text-center"><p>{text.loadError}</p><Button type="button" variant="outline" onClick={() => void catalogQuery.refetch()} className="mt-3 min-h-11 px-4">{text.retry}</Button></div>
                 : (
                   <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                     {catalogQuery.data?.items.map((item) => {
@@ -378,7 +380,7 @@ export function TelegramMiniApp({
             }
           </section>
         )}
-      </div>
+      </Container>
     </main>
   );
 }

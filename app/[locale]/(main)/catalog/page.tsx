@@ -1,3 +1,4 @@
+import { Container } from '@/components/ui/Container';
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -145,7 +146,7 @@ function CatalogContent({
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
-      <div className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 lg:px-12">
+      <Container className="py-8">
         <CatalogCountryDefaultResolver
           locale={locale}
           hasExplicitCountry={Object.prototype.hasOwnProperty.call(f, "country")}
@@ -243,7 +244,7 @@ function CatalogContent({
             ) : null}
           </>
         </CatalogFilterLayout>
-      </div>
+      </Container>
     </main>
   );
 }

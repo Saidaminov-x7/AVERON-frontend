@@ -3,7 +3,6 @@
 import {
   ChangeEvent,
   DragEvent,
-  KeyboardEvent,
   useEffect,
   useRef,
   useState,
@@ -13,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { ProductCard, type StoreProduct } from "@/components/commerce/ProductCard";
 import { CommerceApiError, searchProductsByImage } from "@/lib/visual-search";
 import { useCommerceCapabilities } from "./useCommerceCapabilities";
+import { Modal } from "@/components/ui/Modal";
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -33,22 +33,10 @@ export function VisualSearch({ locale, country, category }: Props) {
   const [items, setItems] = useState<StoreProduct[]>([]);
   const [dragging, setDragging] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const openButtonRef = useRef<HTMLButtonElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    closeButtonRef.current?.focus();
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [open]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
   useEffect(
@@ -102,30 +90,6 @@ export function VisualSearch({ locale, country, category }: Props) {
     validateAndSetFile(event.dataTransfer.files?.[0]);
   };
 
-  const onDialogKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      close();
-      return;
-    }
-    if (event.key !== "Tab" || !dialogRef.current) return;
-    const focusable = Array.from(
-      dialogRef.current.querySelectorAll<HTMLElement>(
-        'button:not([disabled]):not([tabindex="-1"]), input:not([disabled]):not([tabindex="-1"]), [tabindex]:not([tabindex="-1"])',
-      ),
-    ).filter((element) => element.offsetParent !== null);
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  };
-
   const submit = async () => {
     if (!file || loading) return;
     setLoading(true);
@@ -170,22 +134,20 @@ export function VisualSearch({ locale, country, category }: Props) {
         <ImagePlus size={18} aria-hidden="true" />
         {t("visualSearchOpen")}
       </button>
-      {open ? (
-        <div
-          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/55 p-0 sm:items-center sm:p-4"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) close();
-          }}
-        >
-          <div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="visual-search-title"
-            aria-busy={loading}
-            onKeyDown={onDialogKeyDown}
-            className="max-h-[95dvh] w-full max-w-3xl overflow-y-auto rounded-t-3xl bg-white p-5 text-stone-950 shadow-2xl dark:bg-stone-900 dark:text-white sm:rounded-3xl sm:p-7"
-          >
+      <Modal
+        isOpen={open}
+        onClose={close}
+        title={t("visualSearchTitle")}
+        closeLabel={t("visualSearchClose")}
+        hideHeader
+        maxWidth="max-w-none"
+        zIndexClassName="z-[100]"
+        rootClassName="items-end p-0 sm:items-center sm:p-4"
+        panelClassName="!max-h-[95dvh] !max-w-3xl !rounded-t-3xl !border-0 !bg-white !text-stone-950 !shadow-2xl dark:!bg-stone-900 dark:!text-white sm:!rounded-3xl"
+        contentClassName="overflow-y-auto p-5 sm:p-7"
+        ariaBusy={loading}
+        animateExit={false}
+      >
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 id="visual-search-title" className="text-xl font-extrabold sm:text-2xl">
@@ -196,7 +158,6 @@ export function VisualSearch({ locale, country, category }: Props) {
                 </p>
               </div>
               <button
-                ref={closeButtonRef}
                 type="button"
                 onClick={close}
                 aria-label={t("visualSearchClose")}
@@ -316,9 +277,7 @@ export function VisualSearch({ locale, country, category }: Props) {
                 </div>
               </section>
             ) : null}
-          </div>
-        </div>
-      ) : null}
+      </Modal>
     </>
   );
 }

@@ -14,6 +14,7 @@ import { googleAuth, getMe } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
 import { getErrorDetails } from '@/lib/errorDetails';
 import { ArrowRight, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 interface GoogleAuthButtonProps {
   locale: string;
@@ -235,23 +236,24 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           className="h-10 w-full rounded-xl border border-stone-200 bg-white px-4 text-center text-lg font-mono font-bold tracking-widest text-stone-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-stone-900 dark:text-white"
         />
         <div className="flex gap-2">
-          <button
+          <Button
             type="button"
             onClick={verifyOtpAndComplete}
             disabled={otpCode.length !== 6}
-            className="flex h-10 flex-1 items-center justify-center rounded-xl bg-primary-600 text-sm font-semibold text-white hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="h-10 flex-1 text-sm font-semibold"
           >
             Подтвердить и войти
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="outline"
             onClick={sendOtp}
             disabled={countdown > 0}
-            className="flex h-10 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 text-xs text-stone-600 hover:text-stone-900 disabled:opacity-40 dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 transition-colors"
+            className="h-10 gap-1.5 px-3 text-xs text-stone-600 hover:text-stone-900 dark:text-stone-300"
           >
             <RefreshCw size={13} />
             {countdown > 0 ? `${countdown}с` : 'Ещё раз'}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -272,15 +274,16 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           <AlertCircle size={14} /> {error}
         </div>
       )}
-      <button
+      <Button
         type="button"
+        variant="outline"
         disabled={step === 'loading'}
         onClick={() => {
           setError(null);
           setStep('loading');
           loginWithGoogle();
         }}
-        className="flex h-10 w-full items-center justify-center gap-2.5 rounded-xl border border-stone-200 bg-white px-4 text-sm font-semibold text-stone-700 shadow-xs transition-colors hover:bg-stone-50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800"
+        className="h-10 w-full gap-2.5 border-stone-200 bg-white px-4 text-sm font-semibold text-stone-700 shadow-xs hover:bg-stone-50 active:scale-[0.99] dark:border-white/10 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800"
       >
         {step === 'loading' ? (
           <svg className="h-4 w-4 animate-spin text-primary-600" viewBox="0 0 24 24" fill="none">
@@ -297,7 +300,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
             ? 'Зарегистрироваться через Google'
             : 'Войти через Google'}
         </span>
-      </button>
+      </Button>
       <div ref={recaptchaRef} />
     </div>
   );

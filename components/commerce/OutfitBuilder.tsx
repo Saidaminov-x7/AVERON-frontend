@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getProduct, getProducts, productRouteId, productTitle, type StoreProduct } from '@/lib/products';
 import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
 import {
   Select,
   SelectContent,
@@ -239,7 +240,7 @@ function OutfitBuilderContent() {
 
   return (
     <main className="min-h-[70vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_280px]">
+      <Container className="grid gap-8 py-10 lg:grid-cols-[1fr_280px]">
         <section>
           <h1 className="text-3xl font-extrabold">{text.title}</h1>
           <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">{text.intro}</p>
@@ -256,7 +257,7 @@ function OutfitBuilderContent() {
               <li key={product.id} className="flex items-center gap-3">
                 {product.images?.[0]?.url && <Image src={product.images[0].url} alt="" width={48} height={48} unoptimized className="size-12 rounded-lg object-cover" />}
                 <span className="min-w-0 flex-1 truncate">{productTitle(product, locale)}</span>
-                <button type="button" onClick={() => addProduct(product)} className="min-h-10 rounded-lg border px-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{replaceAt === null ? text.add : text.replace}</button>
+                <Button type="button" variant="outline" onClick={() => addProduct(product)} className="min-h-10 px-3 text-sm font-semibold">{replaceAt === null ? text.add : text.replace}</Button>
               </li>
             ))}</ul>
           </div>}
@@ -285,8 +286,8 @@ function OutfitBuilderContent() {
                     </div>}
                   </div>
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => setReplaceAt(index)} className="min-h-10 rounded-lg border px-3 text-sm">{text.replace}</button>
-                    <button type="button" onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="min-h-10 rounded-lg border px-3 text-sm">{text.remove}</button>
+                    <Button type="button" variant="outline" onClick={() => setReplaceAt(index)} className="min-h-10 px-3 text-sm">{text.replace}</Button>
+                    <Button type="button" variant="outline" onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="min-h-10 px-3 text-sm">{text.remove}</Button>
                   </div>
                 </article>
               ))}
@@ -308,9 +309,9 @@ function OutfitBuilderContent() {
           <div className="mt-2 space-y-2">{savedQuery.data?.map((outfit) =>
             <Button key={outfit.id} type="button" loading={openingOutfit === outfit.id} loadingLabel={text.loading} disabled={openingOutfit !== null} onClick={() => void openOutfit(outfit)} variant="ghost" className="block min-h-10 w-full rounded-lg bg-stone-100 px-3 text-left text-sm dark:bg-white/5">{outfit.name}</Button>,
           )}</div>
-          <button type="button" onClick={() => { setOutfitId(null); setName(''); setItems([]); setMessage(''); }} className="mt-3 min-h-10 w-full rounded-lg border px-3 text-sm">{text.start}</button>
+          <Button type="button" variant="outline" onClick={() => { setOutfitId(null); setName(''); setItems([]); setMessage(''); }} className="mt-3 min-h-10 w-full px-3 text-sm">{text.start}</Button>
         </aside>
-      </div>
+      </Container>
     </main>
   );
 }

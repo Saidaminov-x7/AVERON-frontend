@@ -1,5 +1,7 @@
 'use client';
 
+import { Container } from '@/components/ui/Container';
+
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
@@ -29,7 +31,7 @@ export default function SharedWishlistPage() {
   });
 
   return (
-    <main className="mx-auto min-h-[60dvh] max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <Container as="main" className="min-h-[60dvh] py-10">
       <h1 className="mb-8 text-3xl font-bold">{text.title}</h1>
       {wishlist.isPending && <p role="status">{text.loading}</p>}
       {wishlist.isError && <p role="alert" className="rounded-xl border border-stone-200 p-6">{text.unavailable}</p>}
@@ -51,6 +53,6 @@ export default function SharedWishlistPage() {
           ))}
         </ul>
       )}
-    </main>
+    </Container>
   );
 }

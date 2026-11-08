@@ -12,6 +12,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import Image from 'next/image';
+import { Modal } from '@/components/ui/Modal';
 
 /** Карусель фотографий объявления с полноэкранным просмотром (Lightbox) и зумом */
 export function Gallery({ images, alt }: { images: string[]; alt: string }) {
@@ -72,19 +73,15 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
     if (!isLightboxOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeLightbox();
       if (e.key === 'ArrowLeft') lightboxPrev();
       if (e.key === 'ArrowRight') lightboxNext();
       if (e.key === '+' || e.key === '=') setZoomLevel((z) => Math.min(z + 0.5, 3));
       if (e.key === '-') setZoomLevel((z) => Math.max(z - 0.5, 1));
     };
 
-    // Блокируем скролл страницы
-    document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.body.style.overflow = '';
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isLightboxOpen, lightboxPrev, lightboxNext]);
@@ -149,11 +146,22 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
       </div>
 
       {/* ─── FULLSCREEN LIGHTBOX MODAL ────────────────────────────────────── */}
-      {isLightboxOpen && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-between bg-black/95 backdrop-blur-xl animate-in fade-in duration-200 p-4 select-none"
-          onClick={closeLightbox}
-        >
+      <Modal
+        isOpen={isLightboxOpen}
+        onClose={closeLightbox}
+        title={alt}
+        closeLabel="Закрыть просмотр изображения"
+        hideHeader
+        fullscreenOnMobile
+        maxWidth="max-w-none"
+        zIndexClassName="z-50"
+        overlayClassName="!bg-black/95 backdrop-blur-xl"
+        panelClassName="!h-dvh !max-h-dvh !max-w-none !rounded-none !border-0 !bg-transparent !text-white !shadow-none"
+        contentClassName="flex h-full flex-col items-center justify-between p-4 sm:p-5"
+        onContentClick={closeLightbox}
+        animateExit={false}
+      >
+          <div className="flex h-full w-full select-none flex-col items-center justify-between">
           {/* Top Bar */}
           <div
             className="w-full flex items-center justify-between z-10"
@@ -273,8 +281,8 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
               ))}
             </div>
           )}
-        </div>
-      )}
+          </div>
+      </Modal>
     </>
   );
 }

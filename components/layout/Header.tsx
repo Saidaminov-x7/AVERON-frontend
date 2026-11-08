@@ -15,6 +15,7 @@ import {
   Headphones, Shirt, Footprints, ShoppingBag,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Container } from '@/components/ui/Container';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -500,7 +501,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   if (isAuthPage) {
     return (
       <header className="sticky top-0 z-40 flex h-[calc(5rem+env(safe-area-inset-top))] w-full items-center border-b border-stone-200/80 bg-white/95 pt-[env(safe-area-inset-top)] dark:border-white/10 dark:bg-[#1A1A1A]/95 sm:h-20 sm:pt-0">
-        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Container className="flex items-center justify-between">
           <Link
             href={to('/')}
             className="flex items-center gap-1.5 rounded-sm text-sm text-stone-400 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
@@ -512,7 +513,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             <ThemeToggle />
             <LanguagePicker />
           </div>
-        </div>
+        </Container>
       </header>
     );
   }
@@ -528,7 +529,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             : 'bg-[var(--color-surface)]'
         )}
       >
-        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <Container className="flex items-center justify-between gap-4">
           
           {/* Left: Logo & Nav */}
           <div className="flex min-w-0 items-center gap-7">
@@ -678,7 +679,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <Menu size={18} />
             </button>
           </div>
-        </div>
+        </Container>
         {searchOpen && (
           <div id="mobile-header-search" className="averon-menu-surface absolute inset-x-4 top-full z-50 p-3 lg:hidden">
             <form onSubmit={(e) => { e.preventDefault(); doSearch(query); }} className="relative flex items-center">

@@ -1,14 +1,15 @@
 import { Skeleton } from '@/components/ui/Skeleton';
+import { Container } from '@/components/ui/Container';
 
 export default function Loading() {
   return (
     <main
-      className="min-h-screen bg-stone-50 px-4 py-10 text-stone-950 dark:bg-stone-950 dark:text-white sm:px-6 lg:px-8"
+      className="min-h-screen bg-stone-50 py-10 text-stone-950 dark:bg-stone-950 dark:text-white"
       aria-busy="true"
       aria-live="polite"
     >
       <p className="sr-only" role="status">Загрузка каталога и товаров</p>
-      <div className="mx-auto max-w-[1440px]">
+      <Container>
         <div className="mb-8">
           <Skeleton className="h-8 w-64" />
           <Skeleton className="mt-2 h-4 w-80" />
@@ -27,7 +28,7 @@ export default function Loading() {
             </div>
           ))}
         </div>
-      </div>
+      </Container>
     </main>
   );
 }

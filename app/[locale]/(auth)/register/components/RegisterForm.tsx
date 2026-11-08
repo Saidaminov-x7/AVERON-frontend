@@ -161,12 +161,14 @@ export function RegisterForm({ locale }: RegisterFormProps) {
       <CardFooter className="text-sm text-stone-500 dark:text-stone-400">
         <p>
           {t('haveAccount')}{' '}
-          <button
+          <Button
+            type="button"
+            variant="link"
             onClick={() => router.push(`/${locale}/login`)}
-            className="text-primary-600 hover:underline"
+            className="h-auto p-0 text-primary-600"
           >
             {t('login')}
-          </button>
+          </Button>
         </p>
       </CardFooter>
     </Card>

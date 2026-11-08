@@ -1,5 +1,7 @@
 'use client';
 
+import { Container } from '@/components/ui/Container';
+
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { FormEvent, useRef, useState } from 'react';
@@ -191,7 +193,7 @@ function CheckoutContent() {
 
   return (
     <main className="min-h-[65vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      <Container className="py-10">
         <SmartBackButton fallbackHref={`/${locale}/cart`} />
         <h1 className="mt-4 text-3xl font-extrabold">{text.title}</h1>
 
@@ -288,7 +290,7 @@ function CheckoutContent() {
             </aside>
           </form>
         )}
-      </div>
+      </Container>
     </main>
   );
 }

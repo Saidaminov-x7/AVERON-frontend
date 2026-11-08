@@ -1,5 +1,7 @@
 'use client';
 
+import { Container } from '@/components/ui/Container';
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -125,8 +127,8 @@ export default function DynamicPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen bg-stone-950 text-stone-100 py-12">
+      <Container className="space-y-8">
         <Link
           href={`/${locale}`}
           className="inline-flex items-center gap-2 text-sm text-stone-400 hover:text-primary-400 transition-colors"
@@ -163,7 +165,7 @@ export default function DynamicPage() {
             <ReactMarkdown>{page.content}</ReactMarkdown>
           </article>
         )}
-      </div>
+      </Container>
     </div>
   );
 }

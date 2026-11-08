@@ -1,11 +1,14 @@
 "use client";
 
+import { Container } from '@/components/ui/Container';
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ArrowRight, LoaderCircle, Scale, Trash2, X } from "lucide-react";
 import { ProductImage } from "@/components/commerce/ProductImage";
+import { Button } from "@/components/ui/Button";
 import { ProductRichText } from "@/components/commerce/ProductRichText";
 import { productRouteId } from "@/lib/products";
 import {
@@ -48,18 +51,18 @@ export default function ComparePage() {
     );
   if (error)
     return (
-      <div className="mx-auto max-w-3xl px-4 py-20 text-center text-red-500">
+      <Container className="py-20 text-center text-red-500">
         <div>
           <p>{error}</p>
-          <button type="button" onClick={() => window.location.reload()} className="mt-4 rounded-lg border border-stone-300 px-4 py-2 text-sm font-semibold dark:border-white/15">
+          <Button type="button" variant="outline" onClick={() => window.location.reload()} className="mt-4 px-4 text-sm font-semibold">
             {t("retry")}
-          </button>
+          </Button>
         </div>
-      </div>
+      </Container>
     );
   if (!products.length)
     return (
-      <div className="mx-auto max-w-3xl px-4 py-20 text-center">
+      <Container className="py-20 text-center">
         <Scale size={42} className="mx-auto text-primary-700" />
         <h1 className="mt-5 text-2xl font-bold">{t("emptyTitle")}</h1>
         <p className="mt-2 text-stone-500">
@@ -71,7 +74,7 @@ export default function ComparePage() {
         >
           {t("catalog")} <ArrowRight size={16} />
         </Link>
-      </div>
+      </Container>
     );
 
   const rows = [
@@ -104,7 +107,7 @@ export default function ComparePage() {
   ] as const;
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10">
+    <Container as="main" className="py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[.18em] text-primary-700">
@@ -114,13 +117,15 @@ export default function ComparePage() {
             {t("title", { count: products.length })}
           </h1>
         </div>
-        <button
+        <Button
+          type="button"
+          variant="outline"
           onClick={clear}
-          className="inline-flex h-11 items-center gap-2 rounded-xl border border-red-500/30 px-4 text-sm font-semibold text-red-500"
+          className="h-11 border-red-500/30 px-4 text-sm font-semibold text-red-500"
         >
           <Trash2 size={16} />
           {t("clear")}
-        </button>
+        </Button>
       </div>
       <div className="mt-8 overflow-x-auto rounded-2xl border border-stone-200 dark:border-white/10">
         <div
@@ -185,6 +190,6 @@ export default function ComparePage() {
           </div>
         </div>
       </div>
-    </main>
+    </Container>
   );
 }

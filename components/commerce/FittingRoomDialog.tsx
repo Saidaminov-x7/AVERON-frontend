@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PanelRightClose, PanelRightOpen, ShoppingCart, Trash2, X } from 'lucide-react';
 import { getFittingProduct, getFittingProducts, type FittingAsset, type FittingLayer, type FittingProduct } from '@/lib/fitting-room';
 import { useCommerceCart } from '@/hooks/useCommerceCart';
 import { useAuthStore } from '@/store/useAuthStore';
 import { repairMojibake } from '@/lib/repair-mojibake';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
+import { Modal } from '@/components/ui/Modal';
 
 const FittingRoomViewer = dynamic(() => import('./FittingRoomViewer').then((module) => module.FittingRoomViewer), { ssr: false });
 const text = {
@@ -42,7 +43,6 @@ export function FittingRoomDialog({ productId, locale, imageUrl, onClose }: { pr
   const collapseLabel = language === 'en' ? 'Collapse fitting room' : language === 'uz' ? 'Kiyib ko‘rishni yig‘ish' : 'Свернуть примерочную';
   const expandLabel = language === 'en' ? 'Expand fitting room' : language === 'uz' ? 'Kiyib ko‘rishni kengaytirish' : 'Развернуть примерочную';
   const outOfStock = language === 'en' ? 'out of stock' : language === 'uz' ? 'mavjud emas' : repairMojibake('РЅРµС‚ РІ РЅР°Р»РёС‡РёРё');
-  const dialogRef = useRef<HTMLElement>(null);
   const { isAuthenticated } = useAuthStore();
   const { mutation } = useCommerceCart();
   const [selected, setSelected] = useState<SelectedItem[]>([]);
@@ -61,32 +61,11 @@ export function FittingRoomDialog({ productId, locale, imageUrl, onClose }: { pr
 
   useEffect(() => {
     let active = true;
-    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    dialogRef.current?.focus();
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-      if (event.key !== 'Tab' || !dialogRef.current) return;
-      const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>('button:not(:disabled),a[href],input,select,[tabindex="0"]'));
-      if (!focusable.length) return;
-      if (event.shiftKey && document.activeElement === focusable[0]) {
-        event.preventDefault();
-        focusable.at(-1)?.focus();
-      } else if (!event.shiftKey && document.activeElement === focusable.at(-1)) {
-        event.preventDefault();
-        focusable[0]?.focus();
-      }
-    };
-    document.addEventListener('keydown', onKeyDown);
     void getFittingProduct(productId, language).then((product) => { if (active) setInitialProduct(product); }).catch(() => { if (active) setInitialError(true); });
     return () => {
       active = false;
-      document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = previousOverflow;
-      if (previousFocus?.isConnected) previousFocus.focus();
     };
-  }, [language, onClose, productId]);
+  }, [language, productId]);
 
   useEffect(() => {
     let active = true;
@@ -163,16 +142,20 @@ export function FittingRoomDialog({ productId, locale, imageUrl, onClose }: { pr
   const formatPrice = (amount: number) => `${Number.isFinite(amount) ? amount.toLocaleString(language === 'en' ? 'en-US' : language === 'uz' ? 'uz-UZ' : 'ru-RU') : '0'} ${language === 'en' ? 'UZS' : language === 'uz' ? "so'm" : 'сум'}`;
 
   return (
-    <div className="fixed inset-0 z-[75]">
-      <button type="button" className="absolute inset-0 hidden bg-black/20 sm:block" aria-label={copy.close} onClick={onClose} />
-      <aside
-        ref={dialogRef}
-        tabIndex={-1}
-        role="dialog"
-        aria-modal="true"
-        aria-label={copy.title}
-        className={`fixed inset-0 flex min-h-0 flex-col border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] outline-none sm:inset-y-0 sm:right-0 sm:left-auto sm:border-l sm:border-y-0 sm:border-r-0 ${collapsed ? 'sm:w-16' : 'sm:w-[min(760px,76vw)]'}`}
-      >
+    <Modal
+      isOpen
+      onClose={onClose}
+      title={copy.title}
+      closeLabel={copy.close}
+      hideHeader
+      maxWidth="max-w-none"
+      zIndexClassName="z-[75]"
+      rootClassName="items-stretch justify-end p-0"
+      overlayClassName="hidden bg-black/20 sm:block"
+      panelClassName={`!h-dvh !max-h-dvh !max-w-none !rounded-none !border-x !border-y-0 sm:!w-[min(760px,76vw)] ${collapsed ? 'sm:!w-16' : ''}`}
+      contentClassName="flex min-h-0 flex-col p-0"
+      animateExit={false}
+    >
         <header className="flex shrink-0 items-center justify-between gap-4 border-b border-[var(--color-border)] px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] sm:px-6 sm:py-4">
           <div className={`min-w-0 ${collapsed ? 'sm:hidden' : ''}`}><p className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#244FC7] dark:text-[#8EA5FF]">{copy.kicker}</p><h2 className="mt-1 truncate text-lg font-semibold sm:text-xl">{copy.title}</h2></div>
           <div className="flex shrink-0 items-center gap-2">
@@ -230,7 +213,6 @@ export function FittingRoomDialog({ productId, locale, imageUrl, onClose }: { pr
               })}</ul> : <p className="mt-3 text-sm text-[var(--color-text-secondary)]">{copy.noResults}</p>}
           </section>
         </div>}
-      </aside>
-    </div>
+    </Modal>
   );
 }

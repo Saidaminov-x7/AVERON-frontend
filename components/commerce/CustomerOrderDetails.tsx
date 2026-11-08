@@ -9,6 +9,7 @@ import { CheckCircle2, Circle, RefreshCw } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
 import { cancelCustomerOrder, commerceQueryKeys, getCustomerOrder } from '@/lib/commerce-orders';
 
 const copy = {
@@ -101,16 +102,16 @@ function OrderDetailsContent({ success }: { success: boolean }) {
 
   return (
     <main className="min-h-[65vh] bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <Container className="py-10">
         <SmartBackButton fallbackHref={`/${locale}/orders`} />
         {query.isLoading ? (
           <p role="status" className="mt-8">{text.loading}</p>
         ) : query.isError ? (
           <div role="alert" className="mt-8 rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-800 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-200">
             <p>{text.error}</p>
-            <button type="button" onClick={() => void query.refetch()} className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl border border-current px-4 font-semibold">
+            <Button type="button" variant="outline" onClick={() => void query.refetch()} className="mt-4 h-10 border-current px-4 font-semibold">
               <RefreshCw size={16} />{text.retry}
-            </button>
+            </Button>
           </div>
         ) : query.data ? (
           <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-6 dark:border-white/10 dark:bg-stone-900">
@@ -229,22 +230,22 @@ function OrderDetailsContent({ success }: { success: boolean }) {
                       >
                         {text.confirmCancel}
                       </Button>
-                      <button type="button" disabled={cancellation.isPending} onClick={() => setConfirmCancellation(false)} className="min-h-10 rounded-xl border border-stone-300 px-4 text-sm font-semibold hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 disabled:opacity-50 dark:border-white/15 dark:hover:bg-white/5">
+                      <Button type="button" variant="outline" disabled={cancellation.isPending} onClick={() => setConfirmCancellation(false)} className="min-h-10 border-stone-300 px-4 text-sm font-semibold hover:bg-stone-50 dark:border-white/15 dark:hover:bg-white/5">
                         {text.keepOrder}
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => setConfirmCancellation(true)} className="min-h-10 rounded-xl border border-rose-300 px-4 text-sm font-semibold text-rose-700 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-rose-900 dark:text-rose-300 dark:hover:bg-rose-950/30">
+                  <Button type="button" variant="outline" onClick={() => setConfirmCancellation(true)} className="min-h-10 border-rose-300 px-4 text-sm font-semibold text-rose-700 hover:bg-rose-50 dark:border-rose-900 dark:text-rose-300 dark:hover:bg-rose-950/30">
                     {text.cancel}
-                  </button>
+                  </Button>
                 )}
                 {cancellation.isError && <p role="alert" className="mt-3 text-sm text-rose-700 dark:text-rose-300">{text.cancelError}</p>}
               </div>
             )}
           </section>
         ) : null}
-      </div>
+      </Container>
     </main>
   );
 }
