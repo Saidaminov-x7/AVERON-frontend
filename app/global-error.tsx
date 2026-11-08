@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import { getSafeErrorReportPath } from '@/lib/safe-error-report';
 import { resolveBrowserApiBaseUrl } from '@/lib/api-origin';
+import { Button } from '@/components/ui/Button';
 
 const themeBootstrap = `(() => {
   try {
@@ -71,9 +72,9 @@ export default function GlobalError({
                 Произошла непредвиденная ошибка. Попробуйте повторить действие или вернитесь на главную.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <button type="button" onClick={() => reset()} className="averon-primary-button">
+                <Button type="button" onClick={() => reset()}>
                   Попробовать снова
-                </button>
+                </Button>
                 <Link href="/" className="averon-secondary-button">
                   На главную
                 </Link>

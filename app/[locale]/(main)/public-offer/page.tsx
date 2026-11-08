@@ -1,3 +1,4 @@
+import { Container } from '@/components/ui/Container';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
@@ -12,7 +13,7 @@ export default function PublicOfferPage() {
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-white">
-      <article className="mx-auto w-full max-w-[1000px] px-4 py-12 sm:px-6">
+      <Container className="py-12"><article>
         <p className="text-xs font-bold uppercase tracking-[.18em] text-primary-600">{t('eyebrow')}</p>
         <h1 className="mt-3 text-4xl font-extrabold">{t('title')}</h1>
         <div className="mt-8 space-y-6 rounded-2xl border border-stone-200 bg-white p-6 leading-7 text-stone-600 dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 sm:p-8">
@@ -30,7 +31,7 @@ export default function PublicOfferPage() {
           </section>
           <p className="text-sm">{t('footer')}</p>
         </div>
-      </article>
+      </article></Container>
     </main>
   );
 }

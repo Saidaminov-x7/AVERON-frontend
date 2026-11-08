@@ -109,7 +109,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
           {smsAvailable === false ? t.unavailable : step === 'phone' ? t.send : t.save}
         </Button>
       </form>
-      {step === 'code' ? <button type="button" onClick={() => setStep('phone')} className="mx-auto flex min-h-10 items-center gap-2 rounded-sm text-sm text-stone-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"><ArrowLeft size={15} aria-hidden="true" />{t.back}</button> : null}
+      {step === 'code' ? <Button type="button" variant="ghost" onClick={() => setStep('phone')} className="mx-auto min-h-10 gap-2 rounded-sm text-sm text-stone-400"><ArrowLeft size={15} aria-hidden="true" />{t.back}</Button> : null}
     </div>
   );
 }

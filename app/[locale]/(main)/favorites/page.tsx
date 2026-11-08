@@ -17,6 +17,7 @@ import {
   regenerateWishlistShare,
 } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
+import { Button } from '@/components/ui/Button';
 
 const sharingCopy = {
   ru: { title: 'Поделиться избранным', enable: 'Включить доступ по ссылке', copy: 'Скопировать ссылку', regenerate: 'Создать новую ссылку', disable: 'Отключить доступ', copied: 'Ссылка скопирована.', error: 'Не удалось обновить настройки общего доступа.' },
@@ -101,18 +102,18 @@ function FavoritesContent() {
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {!wishlist.data?.sharingEnabled
-            ? <button type="button" disabled={sharingMutation.isPending} onClick={() => sharingMutation.mutate()} className="min-h-10 rounded-lg bg-primary-700 px-4 font-semibold text-white disabled:opacity-50">{text.enable}</button>
+            ? <Button type="button" loading={sharingMutation.isPending} onClick={() => sharingMutation.mutate()} className="h-10 px-4 font-semibold">{text.enable}</Button>
             : <>
-              <button type="button" onClick={() => void copyShareLink()} className="min-h-10 rounded-lg bg-primary-700 px-4 font-semibold text-white">{text.copy}</button>
-              <button type="button" disabled={regenerateMutation.isPending} onClick={() => regenerateMutation.mutate()} className="min-h-10 rounded-lg border px-4 font-semibold disabled:opacity-50">{text.regenerate}</button>
-              <button type="button" disabled={disableMutation.isPending} onClick={() => disableMutation.mutate()} className="min-h-10 rounded-lg border border-rose-300 px-4 font-semibold text-rose-700 disabled:opacity-50">{text.disable}</button>
+              <Button type="button" onClick={() => void copyShareLink()} className="h-10 px-4 font-semibold">{text.copy}</Button>
+              <Button type="button" variant="outline" loading={regenerateMutation.isPending} onClick={() => regenerateMutation.mutate()} className="h-10 px-4 font-semibold">{text.regenerate}</Button>
+              <Button type="button" variant="outline" loading={disableMutation.isPending} onClick={() => disableMutation.mutate()} className="h-10 border-rose-300 px-4 font-semibold text-rose-700">{text.disable}</Button>
             </>}
         </div>
         {shareMessage && <p role="status" className="mt-3 text-sm">{shareMessage}</p>}
         {wishlist.isError && <p role="alert" className="mt-3 text-sm text-rose-700">{text.error}</p>}
       </section>
       {loading ? <div className="flex items-center justify-center gap-3 py-24 text-stone-500"><LoaderCircle className="animate-spin" /> Загружаем товары…</div> : null}
-      {!loading && error ? <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-8 text-center"><p>{error}</p><button onClick={() => void load()} className="mt-4 inline-flex h-11 items-center gap-2 rounded-xl bg-primary-600 px-5 font-semibold text-white"><RefreshCw size={17}/>Повторить</button></div> : null}
+      {!loading && error ? <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-8 text-center"><p>{error}</p><Button type="button" onClick={() => void load()} className="mt-4 h-11 px-5 font-semibold"><RefreshCw size={17}/>Повторить</Button></div> : null}
       {!loading && !error && products.length ? <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{products.map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}</div> : null}
       {!loading && !error && !products.length ? <div className="rounded-2xl border border-stone-200 bg-white p-12 text-center dark:border-white/10 dark:bg-stone-900"><Heart size={44} className="mx-auto text-stone-300"/><h2 className="mt-4 text-xl font-bold">Избранное пока пусто</h2><p className="mt-2 text-sm text-stone-500">Нажимайте на сердце в карточке товара — выбранное сохранится здесь.</p><Link href={`/${locale}/catalog`} className="mt-6 inline-flex h-11 items-center rounded-xl bg-primary-600 px-5 font-semibold text-white">Открыть каталог</Link></div> : null}
     </main>

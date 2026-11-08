@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ProductCard } from "@/components/commerce/ProductCard";
+import { Button } from "@/components/ui/Button";
 import { CatalogAssistantError, loadCompleteTheLook } from "@/lib/catalog-assistant";
 import { useCommerceCapabilities } from "./useCommerceCapabilities";
 
@@ -36,9 +37,9 @@ export function CompleteTheLook({
     <section className="mt-12 border-t border-stone-200 pt-8 dark:border-white/10" aria-labelledby="complete-the-look-title">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="complete-the-look-title" className="text-2xl font-extrabold">{t("completeTheLookTitle")}</h2>
-        <button type="button" onClick={() => void findLook()} disabled={state === "loading"} aria-busy={state === "loading"} className="min-h-11 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-primary-700 disabled:cursor-wait disabled:opacity-60">
+        <Button type="button" onClick={() => void findLook()} loading={state === "loading"} loadingLabel={t("completeTheLookLoading")} className="min-h-11 px-5 py-2.5 font-bold">
           {state === "loading" ? t("completeTheLookLoading") : t("completeTheLookAction")}
-        </button>
+        </Button>
       </div>
       {state === "loading" ? <p className="mt-4 text-sm text-stone-600 dark:text-stone-300" role="status">{t("completeTheLookLoading")}</p> : null}
       {state === "empty" ? <p className="mt-4 text-sm text-stone-600 dark:text-stone-300" role="status">{t("completeTheLookEmpty")}</p> : null}

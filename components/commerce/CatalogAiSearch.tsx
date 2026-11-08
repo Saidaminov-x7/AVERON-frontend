@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ProductCard } from "@/components/commerce/ProductCard";
+import { Button } from "@/components/ui/Button";
 import {
   CatalogAssistantError,
   searchCatalogWithIntent,
@@ -118,14 +119,15 @@ export function CatalogAiSearch({
           maxLength={500}
           aria-label={t("aiSearchTitle")}
         />
-        <button
+        <Button
           type="submit"
-          disabled={loading || !query.trim()}
-          aria-busy={loading}
-          className="min-h-12 rounded-xl bg-primary-700 px-5 text-sm font-bold text-white transition hover:bg-primary-800 disabled:cursor-wait disabled:opacity-60"
+          loading={loading}
+          disabled={!query.trim()}
+          loadingLabel={t("aiSearchLoading")}
+          className="min-h-12 px-5 text-sm font-bold"
         >
           {loading ? t("aiSearchLoading") : t("aiSearchSubmit")}
-        </button>
+        </Button>
       </form>
 
       {loading ? <p className="mt-4 text-sm" role="status" aria-live="polite">{t("aiSearchLoading")}</p> : null}

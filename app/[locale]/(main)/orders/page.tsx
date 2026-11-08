@@ -7,6 +7,7 @@ import { ArrowRight, PackageCheck, RefreshCw } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { SmartBackButton } from '@/components/navigation/SmartBackButton';
 import { commerceQueryKeys, getCustomerOrders } from '@/lib/commerce-orders';
+import { Button } from '@/components/ui/Button';
 
 const copy = {
   ru: { title: 'Мои заказы', empty: 'У вас пока нет заказов', emptyText: 'Оформленные заказы появятся здесь.', shop: 'Перейти в каталог', retry: 'Повторить', error: 'Не удалось загрузить заказы.', total: 'Сумма', status: 'Статус', date: 'Дата', open: 'Подробнее' },
@@ -54,9 +55,9 @@ function OrdersContent() {
         ) : query.isError ? (
           <div role="alert" className="mt-8 rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-800 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-200">
             <p>{text.error}</p>
-            <button type="button" onClick={() => void query.refetch()} className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl border border-current px-4 font-semibold">
+            <Button type="button" variant="outline" onClick={() => void query.refetch()} className="mt-4 h-10 border-current px-4 font-semibold">
               <RefreshCw size={16} />{text.retry}
-            </button>
+            </Button>
           </div>
         ) : !query.data?.length ? (
           <div className="mt-8 rounded-2xl border border-stone-200 bg-white px-6 py-16 text-center dark:border-white/10 dark:bg-stone-900">

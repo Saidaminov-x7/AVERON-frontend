@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import api from '@/lib/axios';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
+import { Button } from '@/components/ui/Button';
 import {
   Select,
   SelectContent,
@@ -266,9 +267,9 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
                 <p className="font-semibold">{purchase.purchasedVariant?.size ? `${t('purchasedSize')}: ${purchase.purchasedVariant.size}` : t('purchaseOrder', { number: purchase.orderNumber })}</p>
                 {purchase.reviewStatus && <p className="mt-1 text-xs text-stone-500">{t('yourReview')}: {reviewStatusLabel(purchase.reviewStatus)}</p>}
               </div>
-              <button type="button" onClick={() => startReview(purchase, relatedReview)} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-primary-700 px-4 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500">
+              <Button type="button" onClick={() => startReview(purchase, relatedReview)} className="min-h-10 px-4 text-sm font-bold">
                 {purchase.reviewId ? t('editReview') : t('leaveReview')}
-              </button>
+              </Button>
             </div>;
           })}
         </div>
@@ -343,11 +344,11 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
           </div>
           {formError && <p role="alert" className="text-sm font-medium text-rose-700 dark:text-rose-300">{formError}</p>}
           <div className="flex flex-wrap gap-3">
-            <button type="submit" disabled={submitReview.isPending || !rating || comment.trim().length < 3 || (!ownReview && !selectedPurchase)} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary-700 px-5 text-sm font-bold text-white hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50">
+            <Button type="submit" loading={submitReview.isPending} disabled={!rating || comment.trim().length < 3 || (!ownReview && !selectedPurchase)} className="min-h-11 px-5 text-sm font-bold">
               {submitReview.isPending ? t('form.submitting') : t('form.submit')}
-            </button>
-            {ownReview && <button type="button" disabled={deleteReview.isPending} onClick={() => deleteReview.mutate(ownReview.id)} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-rose-300 px-4 text-sm font-semibold text-rose-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 disabled:opacity-50"><Trash2 size={16} />{t('form.delete')}</button>}
-            <button type="button" onClick={() => { setPurchaseId(''); setActiveReviewId(null); }} className="min-h-11 rounded-lg border border-stone-300 px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 dark:border-white/20">{t('form.close')}</button>
+            </Button>
+            {ownReview && <Button type="button" variant="outline" loading={deleteReview.isPending} onClick={() => deleteReview.mutate(ownReview.id)} className="min-h-11 gap-2 border-rose-300 px-4 text-sm font-semibold text-rose-800"><Trash2 size={16} />{t('form.delete')}</Button>}
+            <Button type="button" variant="outline" onClick={() => { setPurchaseId(''); setActiveReviewId(null); }} className="min-h-11 border-stone-300 px-4 text-sm font-semibold dark:border-white/20">{t('form.close')}</Button>
           </div>
           {ownReview?.status === 'PUBLISHED' && <p className="text-xs text-stone-500">{t('form.reModeration')}</p>}
         </form>
@@ -382,9 +383,9 @@ export function ProductReviews({ slug, routeId = slug, locale, initialOrderNumbe
         {!reviewsQuery.isLoading && !reviewsQuery.isError && reviewsQuery.data?.items.length === 0 && <p className="py-6 text-sm text-stone-500">{t('empty')}</p>}
       </div>
       {(reviewsQuery.data?.pagination.pages ?? 0) > 1 && <nav className="mt-5 flex items-center justify-center gap-3" aria-label={t('pagination.label')}>
-        <button type="button" disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="min-h-10 rounded-lg border border-stone-300 px-3 text-sm font-semibold disabled:opacity-40 dark:border-white/20">{t('pagination.previous')}</button>
+        <Button type="button" variant="outline" disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="min-h-10 border-stone-300 px-3 text-sm font-semibold dark:border-white/20">{t('pagination.previous')}</Button>
         <span className="text-sm">{t('pagination.page', { current: page, total: reviewsQuery.data?.pagination.pages ?? 1 })}</span>
-        <button type="button" disabled={page >= (reviewsQuery.data?.pagination.pages ?? 1)} onClick={() => setPage((current) => current + 1)} className="min-h-10 rounded-lg border border-stone-300 px-3 text-sm font-semibold disabled:opacity-40 dark:border-white/20">{t('pagination.next')}</button>
+        <Button type="button" variant="outline" disabled={page >= (reviewsQuery.data?.pagination.pages ?? 1)} onClick={() => setPage((current) => current + 1)} className="min-h-10 border-stone-300 px-3 text-sm font-semibold dark:border-white/20">{t('pagination.next')}</Button>
       </nav>}
     </section>
   );

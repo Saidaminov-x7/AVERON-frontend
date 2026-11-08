@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 import {
   Bot,
   Heart,
@@ -206,13 +207,15 @@ function ProfileContent() {
               ) : null}
             </div>
           </div>
-          <button
+          <Button
+            type="button"
+            variant="outline"
             onClick={() => void signOut()}
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-red-500/20 px-4 text-sm font-semibold text-red-500"
+            className="h-11 shrink-0 gap-2 border-red-500/20 px-4 text-sm font-semibold text-red-500"
           >
             <LogOut size={16} />
             {t("signOut")}
-          </button>
+          </Button>
         </div>
       </section>
       <nav className="mt-6 flex max-w-full gap-2 overflow-x-auto pb-2">
@@ -308,7 +311,7 @@ function ProfileContent() {
               <label className="text-sm">{t("bodyProfile.heightLabel")}<input type="number" min="80" max="250" value={heightCm} onChange={(event) => setHeightCmDraft(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={t("bodyProfile.heightPlaceholder")} /></label>
               <label className="text-sm">{t("bodyProfile.weightLabel")}<input type="number" min="20" max="300" value={weightKg} onChange={(event) => setWeightKgDraft(event.target.value)} className="mt-1 h-11 w-full rounded-lg border border-stone-300 bg-transparent px-3 dark:border-white/20" placeholder={t("bodyProfile.weightPlaceholder")} /></label>
             </div>
-            <button type="button" onClick={() => void saveBodyProfile()} className="averon-primary-button mt-4">{t("bodyProfile.save")}</button>
+            <Button type="button" onClick={() => void saveBodyProfile()} className="mt-4">{t("bodyProfile.save")}</Button>
             {bodyProfileStatus ? <p className={`mt-2 text-sm ${bodyProfileStatus === "error" ? "text-red-600" : "text-emerald-600"}`}>{bodyProfileStatus === "error" ? t("bodyProfile.saveError") : t("bodyProfile.saved")}</p> : null}
             <p className="mt-4 text-sm text-stone-500">{t("bodyProfile.noRecommendation")}</p>
           </section>

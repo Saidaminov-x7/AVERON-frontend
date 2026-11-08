@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { Headphones, Mail, MessageCircle, PackageSearch } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -53,9 +54,9 @@ export default function SupportPage() {
               rows={5}
               className="rounded-xl border border-stone-300 bg-transparent p-4 outline-none focus:border-primary-600 dark:border-white/15 sm:col-span-2"
             />
-            <button className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary-700 px-6 font-bold text-white transition-colors hover:bg-primary-800 sm:w-fit">
+            <Button className="h-12 px-6 font-bold sm:w-fit">
               <Mail size={18} /> {t('submitButton')}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ArrowRight, LoaderCircle, Scale, Trash2, X } from "lucide-react";
 import { ProductImage } from "@/components/commerce/ProductImage";
+import { Button } from "@/components/ui/Button";
 import { ProductRichText } from "@/components/commerce/ProductRichText";
 import { productRouteId } from "@/lib/products";
 import {
@@ -51,9 +52,9 @@ export default function ComparePage() {
       <div className="mx-auto max-w-3xl px-4 py-20 text-center text-red-500">
         <div>
           <p>{error}</p>
-          <button type="button" onClick={() => window.location.reload()} className="mt-4 rounded-lg border border-stone-300 px-4 py-2 text-sm font-semibold dark:border-white/15">
+          <Button type="button" variant="outline" onClick={() => window.location.reload()} className="mt-4 px-4 text-sm font-semibold">
             {t("retry")}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -114,13 +115,15 @@ export default function ComparePage() {
             {t("title", { count: products.length })}
           </h1>
         </div>
-        <button
+        <Button
+          type="button"
+          variant="outline"
           onClick={clear}
-          className="inline-flex h-11 items-center gap-2 rounded-xl border border-red-500/30 px-4 text-sm font-semibold text-red-500"
+          className="h-11 border-red-500/30 px-4 text-sm font-semibold text-red-500"
         >
           <Trash2 size={16} />
           {t("clear")}
-        </button>
+        </Button>
       </div>
       <div className="mt-8 overflow-x-auto rounded-2xl border border-stone-200 dark:border-white/10">
         <div

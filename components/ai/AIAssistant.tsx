@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import api from "@/lib/axios";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Button } from "@/components/ui/Button";
 type Message = { role: "user" | "assistant"; content: string };
 const dict = {
   ru: {
@@ -140,14 +141,16 @@ export default function AIAssistant() {
         <div className="border-t border-stone-200 p-3 dark:border-white/10 sm:p-4">
           <div className="mb-3 flex gap-2 overflow-x-auto">
             {t.suggestions.map((x) => (
-              <button
+              <Button
                 key={x}
+                type="button"
+                variant="outline"
                 onClick={() => void submit(x)}
-                className="whitespace-nowrap rounded-full border border-stone-300 px-3 py-2 text-xs dark:border-white/15"
+                className="whitespace-nowrap rounded-full border-stone-300 px-3 py-2 text-xs dark:border-white/15"
               >
                 <Sparkles className="mr-1 inline" size={13} />
                 {x}
-              </button>
+              </Button>
             ))}
           </div>
           <form onSubmit={onSubmit} className="flex gap-2">
@@ -157,13 +160,15 @@ export default function AIAssistant() {
               placeholder={t.placeholder}
               className="h-12 flex-1 rounded-xl border border-stone-300 bg-transparent px-4 text-sm outline-none focus:border-primary-500 dark:border-white/15"
             />
-            <button
+            <Button
+              type="submit"
+              variant="default"
               disabled={loading}
-              className="flex size-12 items-center justify-center rounded-xl bg-primary-600 text-white"
+              className="size-12 p-0"
               aria-label={t.send}
             >
               <Send size={18} />
-            </button>
+            </Button>
           </form>
         </div>
       </section>

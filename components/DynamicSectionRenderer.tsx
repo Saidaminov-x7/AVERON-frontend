@@ -267,7 +267,7 @@ export function DynamicSectionRenderer({
             const title = c.title || section.title;
             const align = c.align || 'left';
             return (
-              <div key={section.id} className={`py-6 max-w-4xl mx-auto text-${align}`}>
+              <div key={section.id} className={`py-6 text-${align}`}>
                 {title && (
                   <h2 className="mb-3 text-2xl font-bold text-stone-900 dark:text-white sm:text-3xl">{title}</h2>
                 )}
@@ -318,7 +318,7 @@ export function DynamicSectionRenderer({
             const title = c.title || section.title || 'Вопросы и ответы';
             const items = Array.isArray(c.items) ? c.items : [];
             return (
-              <div key={section.id} className="py-6 max-w-3xl mx-auto">
+              <div key={section.id} className="py-6">
                 {title && (
                   <h2 className="mb-8 text-center text-2xl font-bold text-stone-900 dark:text-white sm:text-3xl">
                     {title}
@@ -348,7 +348,7 @@ export function DynamicSectionRenderer({
             const c = content as ContactInfoContent;
             const title = c.title || section.title || 'Контакты';
             return (
-              <div key={section.id} className="py-6 max-w-4xl mx-auto">
+              <div key={section.id} className="py-6">
                 {title && (
                   <h2 className="mb-8 text-center text-2xl font-bold text-stone-900 dark:text-white sm:text-3xl">
                     {title}

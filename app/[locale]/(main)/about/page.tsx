@@ -1,3 +1,4 @@
+import { Container } from '@/components/ui/Container';
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import {
@@ -40,7 +41,7 @@ export default async function AboutPage({
   ];
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
-      <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+      <section><Container className="py-8 sm:py-12 lg:py-16">
         <div className="grid gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-center lg:gap-14">
           <div className="py-2">
             <p className="averon-kicker">{t("eyebrow")}</p>
@@ -103,9 +104,9 @@ export default async function AboutPage({
             </div>
           </aside>
         </div>
-      </section>
+      </Container></section>
 
-      <section className="mx-auto max-w-[1440px] px-4 pb-12 sm:px-6 sm:pb-16 lg:px-8">
+      <section><Container className="pb-12 sm:pb-16">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="averon-kicker">{t("howEyebrow")}</p>
@@ -166,7 +167,7 @@ export default async function AboutPage({
             </Link>
           </div>
         </div>
-      </section>
+      </Container></section>
     </main>
   );
 }

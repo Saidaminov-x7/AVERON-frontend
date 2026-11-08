@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type PointerEvent, type TouchEvent, type WheelEvent } from 'react';
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { ProductImage } from '@/components/commerce/ProductImage';
+import { Modal } from '@/components/ui/Modal';
 
 export interface ProductGalleryImage {
   id?: string;
@@ -56,7 +57,6 @@ export function ProductGallery({
   const [pan, setPan] = useState<Point>({ x: 0, y: 0 });
   const [pointerActive, setPointerActive] = useState(false);
   const openerRef = useRef<HTMLButtonElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
   const pointersRef = useRef(new Map<number, Point>());
   const pinchStartRef = useRef<{ distance: number; zoom: number } | null>(null);
@@ -149,11 +149,6 @@ export function ProductGallery({
 
   useEffect(() => {
     if (!viewerOpen) return;
-    const previousOverflow = document.body.style.overflow;
-    const opener = openerRef.current;
-    document.body.style.overflow = 'hidden';
-    closeButtonRef.current?.focus();
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
@@ -174,9 +169,7 @@ export function ProductGallery({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', handleKeyDown);
-      opener?.focus();
     };
   }, [viewerOpen, images.length]);
 
@@ -288,30 +281,23 @@ export function ProductGallery({
           ))}
         </div>
       )}
-      {viewerOpen && selectedImage ? (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={label}
-          className="fixed inset-0 z-[100] flex flex-col bg-neutral-950 text-white"
-          onClick={(event) => {
+      {selectedImage ? (
+        <Modal
+          isOpen={viewerOpen}
+          onClose={() => setViewerOpen(false)}
+          title={label}
+          closeLabel={closeViewerLabel}
+          hideHeader
+          fullscreenOnMobile
+          maxWidth="max-w-none"
+          zIndexClassName="z-[100]"
+          overlayClassName="!bg-neutral-950"
+          panelClassName="!h-dvh !max-h-dvh !max-w-none !rounded-none !border-0 !bg-neutral-950 !text-white !shadow-none"
+          contentClassName="relative flex h-full flex-col p-0"
+          onContentClick={(event) => {
             if (event.target === event.currentTarget) setViewerOpen(false);
           }}
-          onKeyDown={(event) => {
-            if (event.key !== 'Tab') return;
-            const focusable = event.currentTarget.querySelectorAll<HTMLElement>(
-              'button:not([disabled])',
-            );
-            const first = focusable[0];
-            const last = focusable[focusable.length - 1];
-            if (event.shiftKey && document.activeElement === first) {
-              event.preventDefault();
-              last?.focus();
-            } else if (!event.shiftKey && document.activeElement === last) {
-              event.preventDefault();
-              first?.focus();
-            }
-          }}
+          animateExit={false}
         >
           <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 p-3 sm:p-5">
             <span className="rounded-md bg-black/60 px-3 py-2 text-sm tabular-nums" aria-live="polite">
@@ -342,7 +328,6 @@ export function ProductGallery({
                 <ZoomIn size={20} aria-hidden="true" />
               </button>
               <button
-                ref={closeButtonRef}
                 type="button"
                 aria-label={closeViewerLabel}
                 onClick={() => setViewerOpen(false)}
@@ -410,7 +395,7 @@ export function ProductGallery({
               </button>
             </div>
           ) : null}
-        </div>
+        </Modal>
       ) : null}
     </section>
   );

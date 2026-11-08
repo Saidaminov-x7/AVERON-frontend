@@ -1,3 +1,4 @@
+import { Container } from '@/components/ui/Container';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
@@ -56,7 +57,7 @@ function ProductShelf({ title, href, products, locale, allLabel }: {
   if (products.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 lg:px-12">
+    <section><Container className="py-8">
       <div className="mb-6 flex items-end justify-between gap-4">
         <h2 className="averon-title text-xl sm:text-2xl">{title}</h2>
         <Link href={href} className="flex shrink-0 items-center gap-2 text-sm font-semibold text-[var(--color-text)] hover:opacity-60">
@@ -68,7 +69,7 @@ function ProductShelf({ title, href, products, locale, allLabel }: {
           {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} locale={locale} />)}
         </div>
       ) : null}
-    </section>
+    </Container></section>
   );
 }
 
@@ -106,9 +107,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@graph': [{ '@type': 'Organization', name: 'AVERON', url: SITE_URL }, { '@type': 'WebSite', name: 'AVERON', url: `${SITE_URL}/${locale}`, inLanguage: locale }] }).replace(/</g, '\\u003c') }} />
-      <div className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto flex min-h-9 max-w-[1440px] items-center justify-between px-4 text-[10px] font-semibold uppercase tracking-[.08em] sm:px-8 lg:px-12"><span className="truncate">{c.route}</span><span className="hidden text-[var(--color-muted)] md:block">RU · UZ · EN</span></div></div>
+      <div className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><Container className="flex min-h-9 items-center justify-between text-[10px] font-semibold uppercase tracking-[.08em]"><span className="truncate">{c.route}</span><span className="hidden text-[var(--color-muted)] md:block">RU · UZ · EN</span></Container></div>
 
-      <section className="mx-auto max-w-[1440px] px-4 py-6 sm:px-8 lg:px-12">
+      <section><Container className="py-6">
         <div className="bg-[var(--color-surface-soft)] px-6 py-9 sm:px-10 sm:py-11 lg:px-12">
           <h1 className="averon-title max-w-3xl text-3xl leading-tight sm:text-4xl">{t('heroTitle')}</h1>
           <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--color-muted)] sm:text-base">{t('heroBody')}</p>
@@ -116,9 +117,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             {locale === 'en' ? 'How to order' : locale === 'uz' ? 'Qanday buyurtma berish' : 'Как заказать'} <ArrowRight size={14} />
           </Link>
         </div>
-      </section>
+      </Container></section>
 
-      <section className="mx-auto max-w-[1440px] px-4 pb-6 pt-8 sm:px-8 lg:px-12">
+      <section><Container className="pb-6 pt-8">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="averon-kicker">{c.world}</p>
@@ -152,13 +153,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </Link>
           ))}
         </div>
-      </section>
+      </Container></section>
 
       <ProductShelf title={s.new} href={to('/catalog?sort=newest')} products={newest} locale={locale} allLabel={s.all} />
       <ProductShelf title={s.sale} href={to('/catalog?sort=price_asc')} products={discounted} locale={locale} allLabel={s.all} />
       <ProductShelf title={s.popular} href={to('/catalog?sort=popular')} products={products} locale={locale} allLabel={s.all} />
 
-      <section className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><div className="mx-auto max-w-[1440px] px-4 py-10 sm:px-8 lg:px-12"><p className="averon-kicker">{c.process}</p><h2 className="averon-title mt-2 max-w-2xl text-2xl sm:text-3xl">{c.guarantee}</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--color-muted)]">{c.guaranteeBody}</p><div className="mt-6 grid gap-px border border-[var(--color-border)] bg-[var(--color-border)] md:grid-cols-3">{c.steps.map((step, index) => <div key={step} className="bg-[var(--color-surface)] p-5"><span className="text-xs font-bold text-[var(--color-primary)]">0{index + 1}</span><h3 className="mt-4 font-semibold">{step}</h3><div className="mt-3 text-[var(--color-muted)]">{index === 0 ? <Sparkles size={19}/> : index === 1 ? <ShieldCheck size={19}/> : <Truck size={19}/>}</div></div>)}</div></div></section>
+      <section className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><Container className="py-10"><p className="averon-kicker">{c.process}</p><h2 className="averon-title mt-2 max-w-2xl text-2xl sm:text-3xl">{c.guarantee}</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--color-muted)]">{c.guaranteeBody}</p><div className="mt-6 grid gap-px border border-[var(--color-border)] bg-[var(--color-border)] md:grid-cols-3">{c.steps.map((step, index) => <div key={step} className="bg-[var(--color-surface)] p-5"><span className="text-xs font-bold text-[var(--color-primary)]">0{index + 1}</span><h3 className="mt-4 font-semibold">{step}</h3><div className="mt-3 text-[var(--color-muted)]">{index === 0 ? <Sparkles size={19}/> : index === 1 ? <ShieldCheck size={19}/> : <Truck size={19}/>}</div></div>)}</div></Container></section>
     </main>
   );
 }

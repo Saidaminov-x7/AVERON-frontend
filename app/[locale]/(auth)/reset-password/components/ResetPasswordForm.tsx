@@ -86,13 +86,13 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
             <p className="text-sm text-stone-400">{t('successMessage')}</p>
           </div>
         </div>
-        <button
+        <Button
           type="button"
           onClick={() => router.push(`/${locale}/login`)}
-          className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 font-semibold text-white transition-all hover:bg-primary-500 shadow-lg shadow-primary-900/30 active:scale-[0.98]"
+          className="h-11 w-full font-semibold shadow-lg shadow-primary-900/30 active:scale-[0.98]"
         >
           {t('loginWithNewPassword')}
-        </button>
+        </Button>
       </div>
     );
   }

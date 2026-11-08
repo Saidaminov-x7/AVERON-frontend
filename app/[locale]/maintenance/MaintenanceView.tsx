@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AlertTriangle, CheckCircle2, Hammer, KeyRound, Lock, RefreshCw, X } from 'lucide-react';
 import { resolveBrowserApiBaseUrl } from '@/lib/api-origin';
 import { safeMaintenanceReturnPath } from '@/lib/maintenance-return';
+import { Button } from '@/components/ui/Button';
 
 const localApiUrl = process.env.NEXT_PUBLIC_AVERON_LOCAL_API_URL || 'http://127.0.0.1:8080';
 const apiUrl = (path: string) => `${resolveBrowserApiBaseUrl(window.location.hostname, localApiUrl)}/${path}`;
@@ -170,16 +171,16 @@ export function MaintenanceView({ locale, initialSettings, returnTo = null }: Ma
         </div>
 
         <div className="flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row">
-          <button type="button" onClick={handleManualCheck} disabled={isCheckingStatus} aria-busy={isCheckingStatus} className="averon-primary-button w-full gap-2 px-5 sm:w-auto">
+          <Button type="button" onClick={handleManualCheck} disabled={isCheckingStatus} aria-busy={isCheckingStatus} className="w-full gap-2 px-5 sm:w-auto">
             <RefreshCw className={`size-4 ${isCheckingStatus ? 'animate-spin' : ''}`} aria-hidden="true" />
             {t.check}
-          </button>
+          </Button>
 
           {settings.maintenancePasswordEnabled && (
-            <button ref={passwordTriggerRef} type="button" onClick={() => setShowPasswordModal(true)} className="averon-secondary-button w-full gap-2 px-5 sm:w-auto">
+            <Button ref={passwordTriggerRef} type="button" variant="outline" onClick={() => setShowPasswordModal(true)} className="w-full gap-2 px-5 sm:w-auto">
               <KeyRound className="size-4" aria-hidden="true" />
               {t.password}
-            </button>
+            </Button>
           )}
         </div>
       </section>
@@ -217,11 +218,11 @@ export function MaintenanceView({ locale, initialSettings, returnTo = null }: Ma
               )}
 
               <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                <button type="button" onClick={() => setShowPasswordModal(false)} className="averon-secondary-button px-4">{t.cancel}</button>
-                <button type="submit" disabled={isVerifying || !password.trim()} aria-busy={isVerifying} className="averon-primary-button gap-2 px-5">
+                <Button type="button" variant="outline" onClick={() => setShowPasswordModal(false)} className="px-4">{t.cancel}</Button>
+                <Button type="submit" disabled={isVerifying || !password.trim()} aria-busy={isVerifying} className="gap-2 px-5">
                   {isVerifying ? <RefreshCw className="size-4 animate-spin" aria-hidden="true" /> : <CheckCircle2 className="size-4" aria-hidden="true" />}
                   {t.enter}
-                </button>
+                </Button>
               </div>
             </form>
           </section>

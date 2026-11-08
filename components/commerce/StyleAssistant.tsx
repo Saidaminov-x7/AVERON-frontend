@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ProductCard } from "@/components/commerce/ProductCard";
+import { Button } from "@/components/ui/Button";
 import { CatalogAssistantError, requestStyleOutfit, type OutfitResult } from "@/lib/catalog-assistant";
 
 function suggestions(locale: string) {
@@ -72,9 +73,9 @@ export function StyleAssistant({
       <p className="mt-1 text-sm text-stone-300">{t("styleAssistantIntro")}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         {suggestions(locale).map((value) => (
-          <button key={value} type="button" onClick={() => void suggest(value)} disabled={loading} className="min-h-10 rounded-full border border-white/20 px-3 text-xs font-semibold transition hover:border-primary-300 hover:text-primary-200 disabled:opacity-50">
+          <Button key={value} type="button" variant="outline" onClick={() => void suggest(value)} disabled={loading} className="min-h-10 rounded-full border-white/20 px-3 text-xs font-semibold text-white hover:border-primary-300 hover:text-primary-200">
             {value}
-          </button>
+          </Button>
         ))}
       </div>
       <form onSubmit={submit} className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto]">
@@ -86,9 +87,9 @@ export function StyleAssistant({
           maxLength={500}
           aria-label={t("styleAssistantTitle")}
         />
-        <button type="submit" disabled={loading || !prompt.trim()} aria-busy={loading} className="min-h-11 self-end rounded-xl bg-primary-600 px-5 text-sm font-bold text-white transition hover:bg-primary-500 disabled:cursor-wait disabled:opacity-60">
+        <Button type="submit" loading={loading} disabled={!prompt.trim()} loadingLabel={t("styleAssistantLoading")} className="min-h-11 self-end px-5 text-sm font-bold">
           {loading ? t("styleAssistantLoading") : t("styleAssistantSubmit")}
-        </button>
+        </Button>
       </form>
       {loading ? <p className="mt-4 text-sm text-stone-300" role="status" aria-live="polite">{t("styleAssistantLoading")}</p> : null}
       {disabled ? <p className="mt-4 text-sm text-amber-300" role="status">{t("styleAssistantError")}</p> : null}

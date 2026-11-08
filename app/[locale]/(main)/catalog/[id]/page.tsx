@@ -1,3 +1,4 @@
+import { Container } from '@/components/ui/Container';
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -356,7 +357,7 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, '\\u003c') }}
       />
-      <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
+      <Container className="py-6 sm:py-8">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <SmartBackButton fallbackHref={catalogHref} />
           <nav aria-label={copy.productDetails} className="hidden min-w-0 items-center gap-2 truncate text-xs text-[var(--color-muted)] sm:flex">
@@ -425,8 +426,8 @@ export default async function ProductPage({
 
           </section>
         </div>
-      </div>
-      <section className="mx-auto max-w-[1440px] px-4 pb-12 sm:px-6 lg:px-10">
+      </Container>
+      <section><Container className="pb-12">
         <div className="border-t border-[var(--color-border)] pt-8 sm:pt-10">
           <div className={`grid items-start gap-8 ${product.sizeChartType ? 'lg:grid-cols-2 lg:gap-0' : ''}`}>
             <div className={`min-w-0 ${product.sizeChartType ? 'lg:border-r lg:border-[var(--color-border)] lg:pr-8' : ''}`}>
@@ -482,7 +483,7 @@ export default async function ProductPage({
           <SimilarProducts slug={product.slug} locale={locale} />
           <CompleteTheLook slug={product.slug} locale={locale} />
         </div>
-      </section>
+      </Container></section>
     </main>
   );
 }
