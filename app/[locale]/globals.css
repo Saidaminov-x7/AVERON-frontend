@@ -345,9 +345,6 @@ html { scroll-behavior: smooth; }
   font-family: var(--font-family);
   transition: border-color var(--duration-press) var(--ease-out-ui), box-shadow var(--duration-press) var(--ease-out-ui), background-color var(--duration-press) var(--ease-out-ui);
 }
-.averon-site-shell :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]):not([type="range"]), textarea, select) {
-  border-radius: 0 !important;
-}
 .averon-site-shell input[type="checkbox"], .cookie-consent-dialog input[type="checkbox"] {
   appearance: none;
   width: 20px;

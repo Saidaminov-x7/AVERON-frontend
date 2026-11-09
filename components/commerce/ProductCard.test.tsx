@@ -15,6 +15,18 @@ describe('ProductCard', () => {
     useCompareStore.setState({ ids: [] });
   });
 
+  it('prioritizes only the requested initial image and keeps other cards lazy', () => {
+    const item = { ...product, images: [{ url: '/first.jpg' }, { url: '/second.jpg' }] };
+    const { rerender } = render(<ProductCard product={item} locale="ru" priority />);
+    const image = screen.getByRole('img', { name: 'Красное платье' });
+    expect(image).toHaveAttribute('loading', 'eager');
+    expect(image).toHaveAttribute('fetchpriority', 'high');
+    fireEvent.mouseEnter(screen.getByRole('article'));
+    expect(image).toHaveAttribute('loading', 'lazy');
+    rerender(<ProductCard product={item} locale="ru" />);
+    expect(image).toHaveAttribute('loading', 'lazy');
+  });
+
   it('shows only the second image on hover without zooming the card or image', () => {
     render(
       <ProductCard
