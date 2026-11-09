@@ -23,8 +23,14 @@ export default function Loading() {
           {Array.from({ length: 8 }).map((_, index) => (
             <div key={index} className="min-w-0">
               <Skeleton className="aspect-[3/4] w-full" />
-              <Skeleton className="mt-3 h-4 w-3/4" />
-              <Skeleton className="mt-2 h-5 w-1/2" />
+              <div className="pt-2">
+                <Skeleton className="mb-1 h-4 w-1/2" />
+                <div className="mb-1 flex flex-col">
+                  <Skeleton className="h-[17.55px] w-full sm:h-[20.25px]" />
+                  <Skeleton className="h-[17.55px] w-3/4 sm:h-[20.25px]" />
+                </div>
+                <Skeleton className="mt-1 h-5 w-1/2" />
+              </div>
             </div>
           ))}
         </div>
