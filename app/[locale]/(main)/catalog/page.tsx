@@ -203,12 +203,13 @@ function CatalogContent({
               </div>
             ) : products.length ? (
               <div className="catalog-product-grid mt-5 grid grid-cols-2 gap-x-3 gap-y-7 lg:grid-cols-3 xl:gap-x-5 2xl:grid-cols-4">
-                {products.map((p) => (
+                {products.map((p, index) => (
                   <ProductCard
                     key={p.id}
                     product={p}
                     locale={locale}
                     catalogQuery={catalogQuery}
+                    priority={index === 0}
                   />
                 ))}
               </div>

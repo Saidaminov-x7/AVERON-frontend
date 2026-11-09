@@ -11,7 +11,7 @@ import { addWishlistItem, removeWishlistItem } from '@/lib/commerce-orders';
 import { trackCommerceEvent } from '@/lib/commerceAnalytics';
 import { useAuthStore } from '@/store/useAuthStore';
 import { FittingRoomTrigger } from './FittingRoomTrigger';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type { StoreProduct } from '@/lib/products';
 export { productTitle } from '@/lib/products';
@@ -34,10 +34,12 @@ export function ProductCard({
   product,
   locale,
   catalogQuery = '',
+  priority = false,
 }: {
   product: StoreProduct;
   locale: string;
   catalogQuery?: string;
+  priority?: boolean;
 }) {
   const title = productTitle(product, locale);
   const plainTitle = productPlainText(title);
@@ -45,6 +47,10 @@ export function ProductCard({
   const images = product.images?.map(({ url }) => url).filter(Boolean) ?? [];
   const [imageIndex, setImageIndex] = useState(0);
   const [secondImageAvailable, setSecondImageAvailable] = useState(Boolean(images[1]));
+  const handleSecondImageError = useCallback(() => {
+    setSecondImageAvailable(false);
+    setImageIndex(0);
+  }, []);
   const price = Number(product.salePriceUzs || 0).toLocaleString(locale === 'en' ? 'en-US' : 'ru-RU');
   const currency = locale === 'en' ? 'UZS' : locale === 'uz' ? "so'm" : 'сум';
   const preorderOnly = product.recommendationAvailability
@@ -160,12 +166,10 @@ export function ProductCard({
           <ProductImage
             src={images[imageIndex] || images[0]}
             alt={plainTitle}
+            priority={priority && imageIndex === 0}
             zoomOnHover={false}
             fit="contain"
-            onError={imageIndex === 1 ? () => {
-              setSecondImageAvailable(false);
-              setImageIndex(0);
-            } : undefined}
+            onError={imageIndex === 1 ? handleSecondImageError : undefined}
           />
           {(preorderOnly || unavailable) && (
             <span className="absolute left-2 top-2 bg-[var(--color-overlay)] px-1.5 py-1 text-[9px] font-semibold uppercase tracking-[.06em] text-white">

@@ -8,6 +8,7 @@ export function ProductImage({
   alt,
   fit = 'contain',
   zoomOnHover = true,
+  priority = false,
   onLoad,
   onError,
 }: {
@@ -15,6 +16,7 @@ export function ProductImage({
   alt: string;
   fit?: 'contain' | 'cover';
   zoomOnHover?: boolean;
+  priority?: boolean;
   onLoad?: (naturalWidth: number, naturalHeight: number) => void;
   onError?: () => void;
 }) {
@@ -36,7 +38,8 @@ export function ProductImage({
     <img
       src={src}
       alt={alt}
-      loading="lazy"
+      loading={priority ? 'eager' : 'lazy'}
+      fetchPriority={priority ? 'high' : 'auto'}
       onError={() => {
         setFailedSrc(src ?? null);
         onError?.();

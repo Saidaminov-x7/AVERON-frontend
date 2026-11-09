@@ -223,6 +223,7 @@ export function ProductGallery({
             key={selectedImage.url}
             src={selectedImage.url}
             alt={selectedAlt}
+            priority
             fit="contain"
             zoomOnHover={false}
             onLoad={(width, height) => {
