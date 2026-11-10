@@ -41,8 +41,8 @@ html { scroll-behavior: smooth; }
   --color-image-surface: #f3f3f3;
   --color-text: #111111;
   --color-text-secondary: #4a4a4a;
-  --color-border: #dddddd;
-  --color-border-hover: #999999;
+  --color-border: #767676;
+  --color-border-hover: #686868;
   --color-muted: #767676;
   --color-sale: #d6001c;
   --color-on-primary: #ffffff;
@@ -193,7 +193,7 @@ html { scroll-behavior: smooth; }
   --color-action-bg: #e7e8ea;
   --color-button-hover: #d5d8dd;
   --color-on-action: #17191c;
-  --color-border: #3a3a3a;
+  --color-border: #80858b;
   --color-border-hover: #737373;
   --color-muted: #a3a3a3;
   --color-sale: #ff6577;
@@ -318,6 +318,9 @@ html { scroll-behavior: smooth; }
 }
 .averon-site-shell :where(button, [role="button"], a.averon-primary-button, a.averon-secondary-button, a.averon-control-button):disabled {
   cursor: not-allowed;
+  opacity: 1 !important;
+  background-color: var(--color-surface-soft);
+  color: var(--color-text-secondary);
 }
 .averon-site-shell :is(button, a):is([class~="bg-primary"], [class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-primary-700"], [class~="bg-primary-800"]),
 .averon-auth-shell :is(button, a):is([class~="bg-primary"], [class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-primary-700"], [class~="bg-primary-800"]) {
@@ -356,6 +359,13 @@ html { scroll-behavior: smooth; }
   background-color: var(--color-surface);
   cursor: pointer;
 }
+/* Keep the 20px checkbox glyph while giving its associated label a 44px touch target. */
+.averon-site-shell label:has(> input[type="checkbox"]),
+.cookie-consent-dialog label:has(> input[type="checkbox"]) {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 12px;
+}
 .averon-site-shell input[type="checkbox"]:checked, .cookie-consent-dialog input[type="checkbox"]:checked {
   border-color: var(--color-text);
   background-color: var(--color-text);
@@ -363,13 +373,16 @@ html { scroll-behavior: smooth; }
   background-position: center;
   background-repeat: no-repeat;
 }
+.averon-site-shell :where(button, [role="button"]):disabled {
+  background-color: var(--color-surface-soft) !important;
+  color: var(--color-text-secondary) !important;
+}
 .averon-site-shell input[type="checkbox"]:focus-visible, .cookie-consent-dialog input[type="checkbox"]:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 .averon-site-shell input[type="checkbox"]:disabled, .cookie-consent-dialog input[type="checkbox"]:disabled {
   cursor: not-allowed;
-  opacity: .6;
 }
 .averon-site-shell :where([role="option"], [role="menuitem"], [role="menuitemradio"]) {
   border-radius: 0 !important;
@@ -381,16 +394,19 @@ html { scroll-behavior: smooth; }
 }
 .averon-site-shell :where(input, textarea, select):disabled {
   cursor: not-allowed;
-  opacity: .6;
+  opacity: 1;
+  background-color: var(--color-surface-soft);
+  color: var(--color-text-secondary);
 }
 .averon-site-shell :where([role="listbox"], [role="menu"], [data-radix-popper-content-wrapper] > *) { color: var(--color-text); }
 .averon-site-shell .averon-hero-actions .averon-secondary-button {
   border-color: rgb(255 255 255 / .45);
-  background: rgb(0 0 0 / .2);
+  background: rgb(0 0 0 / .72);
   color: #fff;
+  text-shadow: 0 1px 2px #000, 0 0 8px rgb(0 0 0 / .9);
 }
 .averon-site-shell .averon-hero-actions .averon-secondary-button:hover {
-  background: rgb(255 255 255 / .14);
+  background: rgb(0 0 0 / .78);
 }
 .averon-site-shell :where(section, article, aside)[class~="bg-white"] {
   border-color: var(--color-border);
