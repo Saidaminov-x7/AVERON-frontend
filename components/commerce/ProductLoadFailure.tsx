@@ -55,7 +55,7 @@ export function ProductLoadFailure({
   const t = copy[locale as keyof typeof copy] ?? copy.ru;
 
   return (
-    <main className="flex min-h-[70vh] flex-col items-center justify-center bg-stone-50 px-4 py-16 text-center text-stone-950 dark:bg-stone-950 dark:text-white">
+    <div className="flex min-h-[70vh] flex-col items-center justify-center bg-stone-50 px-4 py-16 text-center text-stone-950 dark:bg-stone-950 dark:text-white">
       <div className="mb-5 flex size-16 items-center justify-center rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200">
         {kind === 'network' ? <WifiOff aria-hidden="true" /> : <RotateCcw aria-hidden="true" />}
       </div>
@@ -78,6 +78,6 @@ export function ProductLoadFailure({
           {t.back}
         </a>
       </div>
-    </main>
+    </div>
   );
 }

@@ -28,7 +28,7 @@ export function CatalogFilterLayout({
   return (
     <>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold">{t('products')} <span className="font-normal text-[var(--color-muted)]">({resultCount})</span></h2>
+        <h1 className="text-lg font-semibold">{t('products')} <span className="font-normal text-[var(--color-muted)]">({resultCount})</span></h1>
         <Button
           type="button"
           variant="outline"

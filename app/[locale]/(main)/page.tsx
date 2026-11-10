@@ -105,7 +105,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const s = sectionCopy[activeLocale];
   const to = (path: string) => `/${locale}${path}`;
   return (
-    <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@graph': [{ '@type': 'Organization', name: 'AVERON', url: SITE_URL }, { '@type': 'WebSite', name: 'AVERON', url: `${SITE_URL}/${locale}`, inLanguage: locale }] }).replace(/</g, '\\u003c') }} />
       <div className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><Container className="flex min-h-9 items-center justify-between text-[10px] font-semibold uppercase tracking-[.08em]"><span className="truncate">{c.route}</span><span className="hidden text-[var(--color-muted)] md:block">RU · UZ · EN</span></Container></div>
 
@@ -160,6 +160,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <ProductShelf title={s.popular} href={to('/catalog?sort=popular')} products={products} locale={locale} allLabel={s.all} />
 
       <section className="border-y border-[var(--color-border)] bg-[var(--color-surface-soft)]"><Container className="py-10"><p className="averon-kicker">{c.process}</p><h2 className="averon-title mt-2 max-w-2xl text-2xl sm:text-3xl">{c.guarantee}</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--color-muted)]">{c.guaranteeBody}</p><div className="mt-6 grid gap-px border border-[var(--color-border)] bg-[var(--color-border)] md:grid-cols-3">{c.steps.map((step, index) => <div key={step} className="bg-[var(--color-surface)] p-5"><span className="text-xs font-bold text-[var(--color-primary)]">0{index + 1}</span><h3 className="mt-4 font-semibold">{step}</h3><div className="mt-3 text-[var(--color-muted)]">{index === 0 ? <Sparkles size={19}/> : index === 1 ? <ShieldCheck size={19}/> : <Truck size={19}/>}</div></div>)}</div></Container></section>
-    </main>
+    </div>
   );
 }

@@ -347,7 +347,7 @@ export default async function ProductPage({
     ],
   };
   return (
-    <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <ProductViewTracker productId={product.id} />
       <script
         type="application/ld+json"
@@ -484,6 +484,6 @@ export default async function ProductPage({
           <CompleteTheLook slug={product.slug} locale={locale} />
         </div>
       </Container></section>
-    </main>
+    </div>
   );
 }

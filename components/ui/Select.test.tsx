@@ -83,4 +83,15 @@ describe('Select', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
+
+  it('closes on Escape when focus remains on the open trigger', async () => {
+    const user = userEvent.setup();
+    render(<TestSelect />);
+    const trigger = screen.getByRole('combobox', { name: 'Language' });
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await user.keyboard('{Escape}');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger).toHaveFocus();
+  });
 });

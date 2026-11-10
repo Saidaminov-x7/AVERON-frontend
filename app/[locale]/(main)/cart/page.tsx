@@ -103,7 +103,7 @@ function CartContent() {
   };
 
   return (
-    <main className="min-h-[65vh] bg-[var(--color-bg)] text-[var(--color-text)]">
+    <div className="min-h-[65vh] bg-[var(--color-bg)] text-[var(--color-text)]">
       <Container className="py-10">
         <SmartBackButton fallbackHref={`/${locale}/catalog`} />
         <h1 className="averon-title text-3xl">{text.title}</h1>
@@ -195,7 +195,7 @@ function CartContent() {
           </div>
         )}
       </Container>
-    </main>
+    </div>
   );
 }
 
