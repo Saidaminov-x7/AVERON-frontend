@@ -11,6 +11,8 @@
     "test": "vitest run",
     "test:axe": "node scripts/axe-ci.mjs",
     "lhci": "lhci autorun --config=.lighthouserc.cjs",
+    "ci:axe": "start-server-and-test \"pnpm start --hostname 127.0.0.1\" http://127.0.0.1:3000/ru \"pnpm test:axe\"",
+    "ci:lighthouse": "start-server-and-test \"pnpm start --hostname 127.0.0.1\" http://127.0.0.1:3000/ru \"node scripts/run-lighthouse-ci.mjs\"",
     "test:watch": "vitest"
   },
   "dependencies": {
@@ -58,6 +60,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.6",
     "jsdom": "^26.1.0",
+    "start-server-and-test": "2.1.3",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.11"
