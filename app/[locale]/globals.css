@@ -131,6 +131,9 @@ html { scroll-behavior: smooth; }
 .cookie-consent-banner button {
   min-height: 44px;
 }
+body:has(.cookie-consent-banner) [data-scroll-to-top] {
+  visibility: hidden;
+}
 .cookie-consent-actions {
   display: grid;
   width: min(100%, 320px);
