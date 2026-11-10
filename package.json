@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "test:axe": "node scripts/axe-ci.mjs",
+    "lhci": "lhci autorun --config=.lighthouserc.cjs",
     "test:watch": "vitest"
   },
   "dependencies": {
@@ -41,6 +43,9 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.11.0",
+    "@lhci/cli": "0.15.1",
+    "@playwright/test": "1.58.2",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

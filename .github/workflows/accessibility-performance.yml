@@ -1,0 +1,95 @@
+name: Accessibility and Performance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-a11y-perf-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # actions/checkout v6.0.2
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # pnpm/action-setup v4
+        with:
+          version: 9.15.9
+      - uses: actions/setup-node@249970729cb0ef3589644e289664e5dc5ba9c38 # actions/setup-node v6.5.0
+        with:
+          node-version: 22.x
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Start deterministic public API fixture
+        run: node scripts/mock-api.mjs > mock-api.log 2>&1 &
+      - name: Build production app against the local fixture
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_AVERON_RUNTIME_TARGET: local
+          NEXT_PUBLIC_AVERON_LOCAL_API_URL: http://127.0.0.1:8081
+      - name: Start production server
+        run: pnpm start -- --hostname 127.0.0.1 > server.log 2>&1 &
+      - name: Wait for production server
+        run: node scripts/wait-for-server.mjs http://127.0.0.1:3000/ru
+      - name: Run axe on home, catalog, and product pages in ru/uz/en
+        run: pnpm test:axe
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # actions/upload-artifact v4.6.2
+        with:
+          name: frontend-axe-reports
+          path: artifacts/axe/*.json
+          if-no-files-found: warn
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # actions/checkout v6.0.2
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # pnpm/action-setup v4
+        with:
+          version: 9.15.9
+      - uses: actions/setup-node@249970729cb0ef3589644e289664e5dc5ba9c38 # actions/setup-node v6.5.0
+        with:
+          node-version: 22.x
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Start deterministic public API fixture
+        run: node scripts/mock-api.mjs > mock-api.log 2>&1 &
+      - name: Build production app against the local fixture
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_AVERON_RUNTIME_TARGET: local
+          NEXT_PUBLIC_AVERON_LOCAL_API_URL: http://127.0.0.1:8081
+      - name: Start production server
+        run: pnpm start -- --hostname 127.0.0.1 > server.log 2>&1 &
+      - name: Wait for production server
+        run: node scripts/wait-for-server.mjs http://127.0.0.1:3000/ru
+      - name: Lighthouse home (mobile)
+        env:
+          LHCI_URL: http://127.0.0.1:3000/ru
+          LHCI_FORM_FACTOR: mobile
+          LHCI_OUTPUT: artifacts/lighthouse/home
+        run: |
+          pnpm lhci
+          node scripts/check-lighthouse-budget.mjs artifacts/lighthouse/home /ru 0.45
+      - name: Lighthouse catalog (desktop)
+        env:
+          LHCI_URL: http://127.0.0.1:3000/ru/catalog
+          LHCI_FORM_FACTOR: desktop
+          LHCI_OUTPUT: artifacts/lighthouse/catalog
+        run: |
+          pnpm lhci
+          node scripts/check-lighthouse-budget.mjs artifacts/lighthouse/catalog /ru/catalog 0.40
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # actions/upload-artifact v4.6.2
+        with:
+          name: frontend-lighthouse-reports
+          path: artifacts/lighthouse/**/*.json
+          if-no-files-found: warn
