@@ -35,7 +35,7 @@ jobs:
           NEXT_PUBLIC_AVERON_RUNTIME_TARGET: local
           NEXT_PUBLIC_AVERON_LOCAL_API_URL: http://127.0.0.1:8081
       - name: Start production server
-        run: pnpm start -- --hostname 127.0.0.1 > server.log 2>&1 &
+        run: nohup pnpm start -- --hostname 127.0.0.1 > server.log 2>&1 < /dev/null &
       - name: Wait for production server
         run: node scripts/wait-for-server.mjs http://127.0.0.1:3000/ru
       - name: Run axe on home, catalog, and product pages in ru/uz/en
@@ -68,7 +68,7 @@ jobs:
           NEXT_PUBLIC_AVERON_RUNTIME_TARGET: local
           NEXT_PUBLIC_AVERON_LOCAL_API_URL: http://127.0.0.1:8081
       - name: Start production server
-        run: pnpm start -- --hostname 127.0.0.1 > server.log 2>&1 &
+        run: nohup pnpm start -- --hostname 127.0.0.1 > server.log 2>&1 < /dev/null &
       - name: Wait for production server
         run: node scripts/wait-for-server.mjs http://127.0.0.1:3000/ru
       - name: Lighthouse home (mobile)
