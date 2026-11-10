@@ -113,7 +113,7 @@ html { scroll-behavior: smooth; }
 .cookie-consent-banner {
   position: fixed;
   z-index: 45;
-  right: max(16px, env(safe-area-inset-right));
+  left: max(16px, env(safe-area-inset-left));
   bottom: max(16px, env(safe-area-inset-bottom));
   display: flex;
   width: min(760px, calc(100vw - 32px));
@@ -130,9 +130,6 @@ html { scroll-behavior: smooth; }
 }
 .cookie-consent-banner button {
   min-height: 44px;
-}
-body:has(.cookie-consent-banner) [data-scroll-to-top] {
-  visibility: hidden;
 }
 .cookie-consent-actions {
   display: grid;
@@ -178,10 +175,11 @@ body:has(.cookie-consent-banner) [data-scroll-to-top] {
   box-shadow: var(--shadow-elevated);
 }
 
-@media (max-width: 639px) {
+@media (max-width: 1023px) {
   .cookie-consent-banner { right: max(16px, env(safe-area-inset-right)); left: max(16px, env(safe-area-inset-left)); width: auto; }
   .cookie-consent-banner { max-height: 70dvh; overflow-y: auto; align-items: stretch; flex-direction: column; gap: 12px; padding: 12px; }
   .cookie-consent-actions { width: 100%; flex: 0 0 auto; }
+  .cookie-consent-banner { left: max(16px, env(safe-area-inset-left)); right: max(16px, env(safe-area-inset-right)); }
   .cookie-consent-dialog { padding: 16px; }
 }
 
