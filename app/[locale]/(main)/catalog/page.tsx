@@ -145,7 +145,7 @@ function CatalogContent({
   ];
 
   return (
-    <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <Container className="py-8">
         <CatalogCountryDefaultResolver
           locale={locale}
@@ -246,6 +246,6 @@ function CatalogContent({
           </>
         </CatalogFilterLayout>
       </Container>
-    </main>
+    </div>
   );
 }

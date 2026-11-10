@@ -81,7 +81,7 @@ const SelectValue = forwardRef<HTMLSpanElement, SelectValueProps>(
     const selectedLabel = context?.value ? context.labelMap[context.value] : null;
 
     return (
-      <span ref={ref} className={cn('truncate', !selectedLabel && 'text-stone-400 dark:text-stone-500', className)} {...props}>
+      <span ref={ref} className={cn('truncate', !selectedLabel && 'text-[var(--color-muted)]', className)} {...props}>
         {selectedLabel || placeholder}
       </span>
     );
@@ -105,6 +105,12 @@ const SelectTrigger = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<H
         disabled={disabled || context?.disabled}
         onClick={() => !disabled && context?.setOpen((prev) => !prev)}
         onKeyDown={(event) => {
+          if (event.key === 'Escape' && context?.open) {
+            event.preventDefault();
+            event.stopPropagation();
+            context.setOpen(false);
+            return;
+          }
           if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && !context?.open) {
             event.preventDefault();
             const trigger = event.currentTarget;

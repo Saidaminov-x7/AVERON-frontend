@@ -43,7 +43,7 @@ html { scroll-behavior: smooth; }
   --color-text-secondary: #4a4a4a;
   --color-border: #767676;
   --color-border-hover: #686868;
-  --color-muted: #767676;
+  --color-muted: #6b6b6b;
   --color-sale: #d6001c;
   --color-on-primary: #ffffff;
   --color-overlay: rgb(0 0 0 / .58);
@@ -144,7 +144,9 @@ html { scroll-behavior: smooth; }
   min-width: 0;
   min-height: 44px;
   height: auto;
-  padding-inline: 8px;
+  padding-inline: 4px;
+  font-size: 13px;
+  line-height: 1.1;
   white-space: normal;
 }
 .cookie-consent-actions button:last-child {

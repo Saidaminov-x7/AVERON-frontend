@@ -85,24 +85,24 @@ export function LoginForm({ locale }: { locale: string }) {
         {step === 'credentials' ? (
           <>
             <label className="block space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">{copy.phone}</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-muted)]">{copy.phone}</span>
               <div className="relative">
                 <Phone size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500" aria-hidden="true" />
                 <input value={phone} onChange={(event) => setPhone(event.target.value)} autoComplete="tel" inputMode="tel" className={`${field} pl-11 pr-4`} />
               </div>
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">{copy.password}</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-muted)]">{copy.password}</span>
               <div className="relative">
                 <LockKeyhole size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500" aria-hidden="true" />
                 <input type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" className={`${field} pl-11 pr-11`} />
-                <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'} className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-sm text-stone-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+                <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'} className="absolute right-0 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-sm text-stone-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
                   {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
             </label>
             <div className="flex justify-end">
-              <Link href={`/${locale}/forgot-password`} className="rounded-sm text-sm font-semibold text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{copy.forgot}</Link>
+              <Link href={`/${locale}/forgot-password`} className="inline-flex min-h-11 items-center rounded-sm text-sm font-semibold text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{copy.forgot}</Link>
             </div>
           </>
         ) : (
@@ -116,7 +116,7 @@ export function LoginForm({ locale }: { locale: string }) {
           loading={loading}
           loadingLabel={copy.wait}
           disabled={disabled}
-          className="h-12 w-full rounded-xl bg-primary-600 font-semibold text-white hover:bg-primary-500"
+          className="h-12 w-full rounded-xl bg-primary-600 font-semibold text-white hover:bg-primary-500 disabled:!bg-stone-600 disabled:!text-white disabled:opacity-100"
         >
           {smsAvailable === false ? copy.smsUnavailable : step === 'credentials' ? copy.next : copy.confirm}
         </Button>
@@ -129,7 +129,7 @@ export function LoginForm({ locale }: { locale: string }) {
       ) : null}
       <p className="text-center text-sm text-stone-500">
         {copy.noAccount}{' '}
-        <Link href={`/${locale}/register`} className="rounded-sm font-semibold text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{copy.register}</Link>
+        <Link href={`/${locale}/register`} className="inline-flex min-h-11 items-center align-middle rounded-sm font-semibold text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">{copy.register}</Link>
       </p>
     </div>
   );
