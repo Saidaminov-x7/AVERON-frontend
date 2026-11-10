@@ -522,6 +522,3 @@ html:not(.dark) .averon-site-shell :where(main, section, article, aside)[class*=
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
-
-/* TEMPORARY CI contrast probe: remove after the expected failing run. */
-h1.averon-title, h1.averon-title * { color: #fff !important; background-color: #fff !important; }
