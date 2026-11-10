@@ -34,12 +34,13 @@ jobs:
         env:
           NEXT_PUBLIC_AVERON_RUNTIME_TARGET: local
           NEXT_PUBLIC_AVERON_LOCAL_API_URL: http://127.0.0.1:8081
-      - name: Start production server
-        run: nohup pnpm start -- --hostname 127.0.0.1 > server.log 2>&1 < /dev/null &
-      - name: Wait for production server
-        run: node scripts/wait-for-server.mjs http://127.0.0.1:3000/ru
       - name: Run axe on home, catalog, and product pages in ru/uz/en
-        run: pnpm test:axe
+        run: |
+          pnpm start -- --hostname 127.0.0.1 > server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          node scripts/wait-for-server.mjs http://127.0.0.1:3000/ru
+          pnpm test:axe
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # actions/upload-artifact v4.6.2
         with:
@@ -67,24 +68,20 @@ jobs:
         env:
           NEXT_PUBLIC_AVERON_RUNTIME_TARGET: local
           NEXT_PUBLIC_AVERON_LOCAL_API_URL: http://127.0.0.1:8081
-      - name: Start production server
-        run: nohup pnpm start -- --hostname 127.0.0.1 > server.log 2>&1 < /dev/null &
-      - name: Wait for production server
-        run: node scripts/wait-for-server.mjs http://127.0.0.1:3000/ru
-      - name: Lighthouse home (mobile)
-        env:
-          LHCI_URL: http://127.0.0.1:3000/ru
-          LHCI_FORM_FACTOR: mobile
-          LHCI_OUTPUT: artifacts/lighthouse/home
+      - name: Lighthouse home (mobile) and catalog (desktop)
         run: |
+          pnpm start -- --hostname 127.0.0.1 > server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          node scripts/wait-for-server.mjs http://127.0.0.1:3000/ru
+          export LHCI_URL=http://127.0.0.1:3000/ru
+          export LHCI_FORM_FACTOR=mobile
+          export LHCI_OUTPUT=artifacts/lighthouse/home
           pnpm lhci
           node scripts/check-lighthouse-budget.mjs artifacts/lighthouse/home /ru 0.45
-      - name: Lighthouse catalog (desktop)
-        env:
-          LHCI_URL: http://127.0.0.1:3000/ru/catalog
-          LHCI_FORM_FACTOR: desktop
-          LHCI_OUTPUT: artifacts/lighthouse/catalog
-        run: |
+          export LHCI_URL=http://127.0.0.1:3000/ru/catalog
+          export LHCI_FORM_FACTOR=desktop
+          export LHCI_OUTPUT=artifacts/lighthouse/catalog
           pnpm lhci
           node scripts/check-lighthouse-budget.mjs artifacts/lighthouse/catalog /ru/catalog 0.40
       - if: always()
