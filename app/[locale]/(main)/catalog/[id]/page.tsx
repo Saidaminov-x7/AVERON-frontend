@@ -391,7 +391,7 @@ export default async function ProductPage({
             />
           </div>
           <section className="min-w-0">
-            <h1 className="averon-title mt-2 text-2xl leading-tight sm:text-3xl lg:text-[2rem]">
+            <h1 className="averon-title mt-2 text-2xl leading-tight sm:text-3xl lg:text-[2rem]" style={{ color: "#fff", backgroundColor: "#fff" }}>
               <ProductRichText content={title} inline />
             </h1>
 
