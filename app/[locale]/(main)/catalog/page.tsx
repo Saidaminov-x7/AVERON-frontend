@@ -55,7 +55,9 @@ export async function generateMetadata({
       title: t("title"),
       description: t("subtitle"),
       url: canonical,
+      images: [{ url: '/logotip.png', alt: 'AVERON' }],
     },
+    twitter: { card: 'summary', title: t('title'), description: t('subtitle'), images: ['/logotip.png'] },
   };
 }
 

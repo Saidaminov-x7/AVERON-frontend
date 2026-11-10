@@ -33,11 +33,13 @@ export async function generateMetadata({
       title,
       description,
       url: `/${locale}`,
+      images: [{ url: '/logotip.png', alt: 'AVERON' }],
     },
     twitter: {
       card: 'summary',
       title,
       description,
+      images: ['/logotip.png'],
     },
   };
 }

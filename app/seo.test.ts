@@ -13,6 +13,10 @@ describe('SEO route metadata', () => {
 
   it('points robots.txt at the approved production sitemap', () => {
     expect(robots().sitemap).toBe('https://averon.uz/sitemap.xml');
+    const rules = JSON.stringify(robots().rules);
+    for (const route of ['/*/checkout', '/*/profile', '/*/orders', '/*/cart', '/*/favorites', '/*/compare']) {
+      expect(rules).toContain(route);
+    }
   });
 
   it('keeps generated sitemap URLs on the approved public routes and origin', async () => {
@@ -27,6 +31,9 @@ describe('SEO route metadata', () => {
     expect(urls.length).toBeGreaterThan(0);
     expect(urls.every((url) => url.startsWith('https://averon.uz/'))).toBe(true);
     expect(urls).toContain('https://averon.uz/ru/catalog/sample-product');
+    expect(urls).toContain('https://averon.uz/ru/terms');
+    expect(urls).toContain('https://averon.uz/uz/privacy');
+    expect(urls).toContain('https://averon.uz/en/public-offer');
     expect(urls.some((url) => /\/(?:listings|account|admin)(?:\/|$)/.test(url))).toBe(false);
   });
 });

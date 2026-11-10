@@ -17,9 +17,14 @@ const STATIC_PATHS = [
   '/size-guide',
   '/faq',
   '/support',
+  '/outfits',
+  '/ai',
+  '/terms',
+  '/privacy',
+  '/public-offer',
 ] as const;
 const PRODUCTS_PER_PAGE = 100;
-const MAX_PRODUCT_PAGES = 100;
+const MAX_PRODUCT_PAGES = 1000;
 
 type SitemapProduct = { slug: string; publicId?: string | null; updatedAt?: string };
 
