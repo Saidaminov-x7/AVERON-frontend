@@ -525,3 +525,6 @@ html:not(.dark) .averon-site-shell :where(main, section, article, aside)[class*=
 
 /* TEMPORARY CI contrast probe: remove after the expected failing run. */
 h1.averon-title, h1.averon-title * { color: #fff !important; background-color: #fff !important; }
+
+/* TEMPORARY CI contrast regression probe. */
+.axe-contrast-probe { color: #fff !important; background-color: #fff !important; padding: 1rem !important; font-size: 24px !important; }
