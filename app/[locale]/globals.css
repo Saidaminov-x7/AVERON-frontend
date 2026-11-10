@@ -41,8 +41,8 @@ html { scroll-behavior: smooth; }
   --color-image-surface: #f3f3f3;
   --color-text: #111111;
   --color-text-secondary: #4a4a4a;
-  --color-border: #dddddd;
-  --color-border-hover: #999999;
+  --color-border: #767676;
+  --color-border-hover: #686868;
   --color-muted: #767676;
   --color-sale: #d6001c;
   --color-on-primary: #ffffff;
@@ -193,7 +193,7 @@ html { scroll-behavior: smooth; }
   --color-action-bg: #e7e8ea;
   --color-button-hover: #d5d8dd;
   --color-on-action: #17191c;
-  --color-border: #3a3a3a;
+  --color-border: #80858b;
   --color-border-hover: #737373;
   --color-muted: #a3a3a3;
   --color-sale: #ff6577;
