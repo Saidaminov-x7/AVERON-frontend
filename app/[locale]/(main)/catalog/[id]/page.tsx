@@ -391,7 +391,6 @@ export default async function ProductPage({
             />
           </div>
           <section className="min-w-0">
-            <p className="axe-contrast-probe">Temporary contrast regression probe</p>
             <h1 className="averon-title mt-2 text-2xl leading-tight sm:text-3xl lg:text-[2rem]">
               <ProductRichText content={title} inline />
             </h1>
