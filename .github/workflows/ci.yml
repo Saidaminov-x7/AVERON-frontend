@@ -1,4 +1,4 @@
-name: Frontend CI
+name: verify
 
 on:
   pull_request:
