@@ -34,10 +34,21 @@ try {
           await page.getByText(expected, { exact: false }).first().waitFor({ state: 'visible', timeout: 10000 });
         }
         const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-        const report = { page: pageName, locale, url: path, pageError, violations: results.violations, passes: results.passes.length, incomplete: results.incomplete.length };
+        const report = { page: pageName, locale, url: path, pageError, violations: results.violations, passes: results.passes.length, incomplete: results.incomplete };
         await writeFile(`${reportDir}/${locale}-${pageName}.json`, `${JSON.stringify(report, null, 2)}\n`);
         const serious = results.violations.filter(item => item.impact === 'critical' || item.impact === 'serious');
+        const measuredContrastFailures = results.incomplete
+          .filter(item => item.id === 'color-contrast')
+          .flatMap(item => item.nodes.flatMap(node => {
+            const failedChecks = (node.any ?? []).filter(check => {
+              const ratio = Number(check.data?.contrastRatio);
+              const expected = Number.parseFloat(String(check.data?.expectedContrastRatio ?? ''));
+              return Number.isFinite(ratio) && Number.isFinite(expected) && ratio < expected;
+            });
+            return failedChecks.map(check => `${node.target.join(', ')} (${check.message})`);
+          }));
         if (serious.length) failures.push(`${locale} ${pageName}: ${serious.map(item => `${item.id} (${item.impact})`).join(', ')}`);
+        if (measuredContrastFailures.length) failures.push(`${locale} ${pageName}: color-contrast (${measuredContrastFailures.join('; ')})`);
       } catch (error) {
         await writeFile(`${reportDir}/${locale}-${pageName}.json`, `${JSON.stringify({ page: pageName, locale, url: path, error: String(error) }, null, 2)}\n`);
         failures.push(`${locale} ${pageName}: ${error}`);
