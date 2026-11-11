@@ -186,7 +186,7 @@ describe('Header catalog search', () => {
     expect(screen.queryByText('network unavailable')).not.toBeInTheDocument();
   });
 
-  it('keeps locale and theme controls in the mobile drawer footer and uses local flags', async () => {
+  it('keeps locale and theme controls in the mobile drawer footer and shows only locale codes', async () => {
     const user = userEvent.setup();
     renderHeader();
     const menuTrigger = screen.getByRole('button', { name: 'Menu' });
@@ -200,14 +200,24 @@ describe('Header catalog search', () => {
 
     await user.click(languageButton);
     const menu = within(drawer).getByRole('menu');
-    expect(within(menu).getByRole('menuitemradio', { name: /Русский/ })).toBeInTheDocument();
-    expect(within(menu).getByRole('menuitemradio', { name: /O'zbekcha/ })).toBeInTheDocument();
-    expect(within(menu).getByRole('menuitemradio', { name: /English/ })).toBeInTheDocument();
-    expect(Array.from(menu.querySelectorAll('img')).map((image) => image.getAttribute('src')))
-      .toEqual(['/flags/ru.svg', '/flags/uz.svg', '/flags/us.svg']);
+    expect(within(menu).getByRole('menuitemradio', { name: 'Русский' })).toHaveTextContent('RU');
+    expect(within(menu).getByRole('menuitemradio', { name: "O'zbekcha" })).toHaveTextContent('UZ');
+    expect(within(menu).getByRole('menuitemradio', { name: 'English' })).toHaveTextContent('EN');
+    expect(menu.textContent?.replace(/\s+/g, '')).toBe('RUUZEN');
 
     await user.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument());
     expect(menuTrigger).toHaveFocus();
+    expect(mocks.push).not.toHaveBeenCalled();
+  });
+
+  it('changes locale routing when a code is selected', async () => {
+    const user = userEvent.setup();
+    renderHeader();
+    const languageButton = screen.getAllByRole('button', { name: 'Language' })[0];
+    await user.click(languageButton);
+    const menu = screen.getAllByRole('menu')[0];
+    await user.click(within(menu).getByRole('menuitemradio', { name: 'Русский' }));
+    expect(mocks.push).toHaveBeenCalledWith('/ru', { scroll: false });
   });
 });

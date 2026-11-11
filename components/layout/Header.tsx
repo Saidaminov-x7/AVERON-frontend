@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -27,9 +26,9 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { localizeHrefPreservingSafeQuery } from '@/lib/safe-navigation';
 
 const LOCALES = [
-  { code: 'ru', short: 'RU', label: 'Русский', flag: 'ru' },
-  { code: 'uz', short: 'UZ', label: "O'zbekcha", flag: 'uz' },
-  { code: 'en', short: 'EN', label: 'English', flag: 'us' },
+  { code: 'ru', short: 'RU', label: 'Русский' },
+  { code: 'uz', short: 'UZ', label: "O'zbekcha" },
+  { code: 'en', short: 'EN', label: 'English' },
 ] as const;
 
 const BTN_CLASS =
@@ -63,6 +62,7 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
   const prefersReducedMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [openUpward, setOpenUpward] = useState(false);
+  const [menuWidth, setMenuWidth] = useState<number>();
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -79,6 +79,12 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
 
   useEffect(() => {
     if (!open) return;
+    const updateMenuWidth = () => {
+      const width = triggerRef.current?.getBoundingClientRect().width;
+      if (width) setMenuWidth(width);
+    };
+    updateMenuWidth();
+    window.addEventListener('resize', updateMenuWidth);
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setOpen(false);
@@ -86,12 +92,16 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
       }
     };
     document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('resize', updateMenuWidth);
+    };
   }, [open]);
 
   const handleToggle = () => {
     if (!open && ref.current) {
-      const rect = ref.current.getBoundingClientRect();
+      const rect = triggerRef.current?.getBoundingClientRect() ?? ref.current.getBoundingClientRect();
+      setMenuWidth(rect.width);
       const spaceBelow = window.innerHeight - rect.bottom;
       setOpenUpward(spaceBelow < 150);
     }
@@ -124,11 +134,12 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        <Image src={`/flags/${current.flag}.svg`} width={24} height={18} alt="" aria-hidden="true" className="h-[18px] w-6 shrink-0 border border-[var(--color-border)] object-cover" />
+        <span aria-hidden="true">{current.short}</span>
       </button>
       <div
         ref={menuRef}
         role="menu"
+        style={{ width: menuWidth }}
         aria-hidden={!open}
         inert={!open}
         onKeyDown={(event) => {
@@ -148,19 +159,20 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
           items[nextIndex]?.focus();
         }}
         className={
-          'averon-menu-surface absolute right-0 z-50 w-40 overflow-hidden py-1 ' +
+          'averon-menu-surface absolute right-0 z-50 overflow-hidden py-1 ' +
           (prefersReducedMotion ? 'transition-none ' : 'transition-all duration-200 ') +
           (openUpward ? 'bottom-full mb-2 origin-bottom-right' : 'top-full mt-2 origin-top-right') + ' ' +
           (open ? 'pointer-events-auto scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0')
         }
       >
-        {LOCALES.map(({ code, short, label, flag }) => {
+        {LOCALES.map(({ code, short, label }) => {
           const active = code === locale;
           return (
             <button
               key={code}
               type="button"
               role="menuitemradio"
+              aria-label={label}
               aria-checked={active}
               onClick={() => handleSelectLocale(code)}
               className={
@@ -171,9 +183,7 @@ function LanguagePicker({ onSelect }: { onSelect?: () => void }) {
                   : '')
               }
             >
-              <Image src={`/flags/${flag}.svg`} width={24} height={18} alt="" aria-hidden="true" className="ml-2 h-[18px] w-6 shrink-0 border border-[var(--color-border)] object-cover" />
-              <span className="ml-2 flex-1 text-left">{label}</span>
-              <span className="text-[10px] text-[var(--color-muted)]">{short}</span>
+              <span aria-hidden="true">{short}</span>
             </button>
           );
         })}
