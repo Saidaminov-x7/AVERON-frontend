@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  statuses: write
 
 concurrency:
   group: frontend-ci-${{ github.ref }}
@@ -40,3 +41,30 @@ jobs:
         run: |
           current="$(git rev-parse HEAD)"
           printf 'Frontend current=%s verified=%s status=%s\n' "$current" "$current" "${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish the required verify status
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          STATUS_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          node --input-type=module <<'NODE'
+          const response = await fetch(`https://api.github.com/repos/${process.env.REPOSITORY}/statuses/${process.env.STATUS_SHA}`, {
+            method: 'POST',
+            headers: {
+              accept: 'application/vnd.github+json',
+              authorization: `Bearer ${process.env.GH_TOKEN}`,
+              'content-type': 'application/json',
+              'x-github-api-version': '2022-11-28',
+            },
+            body: JSON.stringify({
+              state: 'success',
+              context: 'verify',
+              description: 'Tests, type-check, lint, and production build passed.',
+              target_url: process.env.RUN_URL,
+            }),
+          });
+          if (!response.ok) throw new Error(`Could not publish verify status: ${response.status} ${await response.text()}`);
+          console.log(`Published required verify status for ${process.env.STATUS_SHA}`);
+          NODE
