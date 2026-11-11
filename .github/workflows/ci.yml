@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
   statuses: write
 
 concurrency:
@@ -46,12 +47,25 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           CHECKOUT_SHA: ${{ github.sha }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           node --input-type=module <<'NODE'
           const shas = new Set([process.env.PR_HEAD_SHA, process.env.CHECKOUT_SHA]);
+          if (process.env.PR_NUMBER) {
+            const pull = await fetch(`https://api.github.com/repos/${process.env.REPOSITORY}/pulls/${process.env.PR_NUMBER}`, {
+              headers: {
+                accept: 'application/vnd.github+json',
+                authorization: `Bearer ${process.env.GH_TOKEN}`,
+                'x-github-api-version': '2022-11-28',
+              },
+            });
+            if (!pull.ok) throw new Error(`Could not read PR merge SHA: ${pull.status} ${await pull.text()}`);
+            const mergeSha = (await pull.json()).merge_commit_sha;
+            if (mergeSha) shas.add(mergeSha);
+          }
           for (const sha of shas) {
             const response = await fetch(`https://api.github.com/repos/${process.env.REPOSITORY}/statuses/${sha}`, {
               method: 'POST',
