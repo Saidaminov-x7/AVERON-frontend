@@ -43,7 +43,13 @@ try {
             const failedChecks = (node.any ?? []).filter(check => {
               const ratio = Number(check.data?.contrastRatio);
               const expected = Number.parseFloat(String(check.data?.expectedContrastRatio ?? ''));
-              return Number.isFinite(ratio) && Number.isFinite(expected) && ratio < expected;
+              const foreground = check.data?.fgColor;
+              const background = check.data?.bgColor;
+              return typeof foreground === 'string'
+                && typeof background === 'string'
+                && Number.isFinite(ratio)
+                && Number.isFinite(expected)
+                && ratio < expected;
             });
             return failedChecks.map(check => `${node.target.join(', ')} (${check.message})`);
           }));
