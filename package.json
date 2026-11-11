@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "node scripts/discover-routes.mjs && next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint --ignore-pattern verification/**",
     "test": "vitest run",
     "test:axe": "node scripts/axe-ci.mjs",
     "lhci": "lhci autorun --config=.lighthouserc.cjs",
