@@ -216,7 +216,7 @@ function CatalogContent({
                 ))}
               </div>
             ) : (
-              <div className="mt-5 rounded-2xl border border-dashed border-stone-300 bg-white px-6 py-16 text-center dark:border-white/15 dark:bg-stone-900">
+              <div className="mt-5 rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-surface-soft)] px-6 py-16 text-center">
                 <Search className="mx-auto text-primary-700 dark:text-primary-300" size={36} />
                 <h2 className="mt-4 text-xl font-bold">{t("empty")}</h2>
                 <p className="mt-2 text-sm text-stone-500">{t("emptyText")}</p>
