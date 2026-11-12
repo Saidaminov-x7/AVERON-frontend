@@ -744,7 +744,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           transitionTimingFunction: 'var(--ease-drawer)',
         }}
         className={
-          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-[min(92vw,400px)] max-w-full flex-col overflow-hidden overscroll-contain bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-[240ms]'} lg:hidden ` +
+          `fixed inset-y-0 right-0 z-[61] flex h-dvh w-screen max-w-full flex-col overflow-hidden overscroll-contain bg-[var(--color-surface)] pt-[env(safe-area-inset-top)] text-[var(--color-text)] transition-transform ${prefersReducedMotion ? 'duration-0' : 'duration-[240ms]'} sm:w-[min(92vw,400px)] lg:hidden ` +
           (mobileOpen ? 'translate-x-0' : 'translate-x-full')
         }
       >
