@@ -4,7 +4,7 @@ import { Container } from '@/components/ui/Container';
 export default function Loading() {
   return (
     <main
-      className="min-h-screen bg-stone-50 py-10 text-stone-950 dark:bg-stone-950 dark:text-white"
+      className="min-h-screen bg-[var(--color-bg)] py-10 text-[var(--color-text)]"
       aria-busy="true"
       aria-live="polite"
     >
